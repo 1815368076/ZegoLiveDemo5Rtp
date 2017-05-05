@@ -1644,11 +1644,11 @@
                         <viewControllerLayoutGuide type="bottom" id="Wwz-Jd-l2a"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="SFC-MU-3KV">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="h1n-7p-Uts" userLabel="like View" customClass="ZegoLikeView">
-                                <rect key="frame" x="276" y="319" width="92" height="300"/>
+                                <rect key="frame" x="276" y="299" width="92" height="300"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="92" id="ReL-9U-bNU"/>
@@ -1656,7 +1656,7 @@
                                 </constraints>
                             </view>
                             <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GqI-ID-27A" userLabel="Comment View">
-                                <rect key="frame" x="0.0" y="627" width="375" height="40"/>
+                                <rect key="frame" x="0.0" y="607" width="375" height="40"/>
                                 <subviews>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hiN-57-dnn">
                                         <rect key="frame" x="8" y="5" width="304" height="30"/>
@@ -1686,7 +1686,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rBi-dt-K9q" userLabel="Comment">
-                                <rect key="frame" x="6" y="619" width="40" height="40"/>
+                                <rect key="frame" x="6" y="599" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="PPG-1Y-Z9l"/>
                                     <constraint firstAttribute="height" constant="40" id="zcn-Xo-s0o"/>
@@ -1697,7 +1697,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sam-9U-YJb">
-                                <rect key="frame" x="259" y="619" width="40" height="40"/>
+                                <rect key="frame" x="259" y="599" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="1n8-TL-cEs"/>
                                     <constraint firstAttribute="height" constant="40" id="F0p-79-0lF"/>
@@ -1708,14 +1708,14 @@
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bWI-yf-4jD" userLabel="Tap View">
-                                <rect key="frame" x="54" y="618" width="197" height="42"/>
+                                <rect key="frame" x="54" y="598" width="197" height="42"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="MKn-8c-Evr"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ib4-sn-DQ6" userLabel="Top View">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="611"/>
+                                <rect key="frame" x="0.0" y="-20" width="375" height="611"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="rgu-62-QMg">
                                         <rect key="frame" x="0.0" y="407.5" width="275" height="203.5"/>
@@ -1832,6 +1832,13 @@
                                             <constraint firstItem="TXG-5v-clQ" firstAttribute="centerX" secondItem="84V-iF-Mum" secondAttribute="centerX" id="sf1-5L-kOI"/>
                                         </constraints>
                                     </view>
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10:09:00:123" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ViK-6v-hLB">
+                                        <rect key="frame" x="98" y="325.5" width="179.5" height="36"/>
+                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                                        <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -1849,7 +1856,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AKl-du-RfA">
-                                <rect key="frame" x="319" y="619" width="40" height="40"/>
+                                <rect key="frame" x="319" y="599" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="DEz-xz-sCa"/>
                                     <constraint firstAttribute="width" constant="40" id="ewz-fq-m1g"/>
@@ -1867,8 +1874,10 @@
                             <constraint firstItem="AKl-du-RfA" firstAttribute="top" secondItem="h1n-7p-Uts" secondAttribute="bottom" id="7e3-8l-aa1"/>
                             <constraint firstItem="bWI-yf-4jD" firstAttribute="leading" secondItem="rBi-dt-K9q" secondAttribute="trailing" constant="8" id="9sv-X2-K7l"/>
                             <constraint firstItem="bWI-yf-4jD" firstAttribute="centerY" secondItem="rBi-dt-K9q" secondAttribute="centerY" id="BYY-B2-xYd"/>
+                            <constraint firstItem="ViK-6v-hLB" firstAttribute="centerX" secondItem="SFC-MU-3KV" secondAttribute="centerX" id="F93-bL-cnv"/>
                             <constraint firstItem="sam-9U-YJb" firstAttribute="centerY" secondItem="AKl-du-RfA" secondAttribute="centerY" id="G7u-0y-Hyx"/>
                             <constraint firstItem="AKl-du-RfA" firstAttribute="leading" secondItem="sam-9U-YJb" secondAttribute="trailing" constant="20" id="HSY-6g-WZz"/>
+                            <constraint firstItem="ViK-6v-hLB" firstAttribute="centerY" secondItem="SFC-MU-3KV" secondAttribute="centerY" id="Lv7-in-djO"/>
                             <constraint firstItem="rBi-dt-K9q" firstAttribute="leading" secondItem="SFC-MU-3KV" secondAttribute="leadingMargin" constant="-10" id="TRh-kc-PX9"/>
                             <constraint firstAttribute="trailing" secondItem="ib4-sn-DQ6" secondAttribute="trailing" id="ZiV-xs-wfm"/>
                             <constraint firstAttribute="trailing" secondItem="h1n-7p-Uts" secondAttribute="trailing" constant="7" id="lBR-hy-Mte"/>
@@ -1902,13 +1911,14 @@
                         <outlet property="shareButton" destination="sam-9U-YJb" id="byV-7E-RH1"/>
                         <outlet property="stopPublishButton" destination="YoC-ph-r3t" id="wYe-FO-ibR"/>
                         <outlet property="textField" destination="hiN-57-dnn" id="pc3-Gw-clW"/>
+                        <outlet property="timeLabel" destination="ViK-6v-hLB" id="kj5-wM-jVQ"/>
                         <outlet property="topViewBottomConstraint" destination="1Q1-Sl-8Lb" id="Zv8-hC-plP"/>
                         <outlet property="topViewHeightConstraint" destination="kbL-Rm-tEl" id="4np-dN-Cim"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5ou-0b-bjh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2713" y="233"/>
+            <point key="canvasLocation" x="2712.8000000000002" y="232.53373313343329"/>
         </scene>
         <!--Zego Werewolf In Turn View Controller-->
         <scene sceneID="adx-2W-rIJ">
@@ -2232,6 +2242,6 @@
         <image name="share" width="32" height="32"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="3lO-KB-maX"/>
+        <segue reference="GHN-GM-heZ"/>
     </inferredMetricsTieBreakers>
 </document>

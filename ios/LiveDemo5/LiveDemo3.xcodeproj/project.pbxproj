@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1608E4061EB8317000F0CF4D /* ZegoTestPushViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1608E4051EB8317000F0CF4D /* ZegoTestPushViewController.m */; };
 		16E24E111EB1D0290055F7A4 /* ZegoTestPullViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 16E24E101EB1D0290055F7A4 /* ZegoTestPullViewController.m */; };
 		A745D7441E4B322E009A4265 /* ZegoLiveRoom.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A745D7431E4B322E009A4265 /* ZegoLiveRoom.framework */; };
 		A745D7451E4B32FC009A4265 /* ZegoLiveRoom.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A745D7431E4B322E009A4265 /* ZegoLiveRoom.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A7CD23E01EBB6135002F446A /* ZegoTestPushViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A7CD23DF1EBB6135002F446A /* ZegoTestPushViewController.m */; };
+		A7CD23E11EBB6135002F446A /* ZegoTestPushViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A7CD23DF1EBB6135002F446A /* ZegoTestPushViewController.m */; };
 		EF1314371DAB752000FEBACF /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF1314361DAB752000FEBACF /* ReplayKit.framework */; };
 		EF13143E1DAB752000FEBACF /* SampleHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = EF13143D1DAB752000FEBACF /* SampleHandler.m */; };
 		EF1314451DAB752000FEBACF /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF1314361DAB752000FEBACF /* ReplayKit.framework */; };
@@ -191,13 +192,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1608E4041EB8317000F0CF4D /* ZegoTestPushViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZegoTestPushViewController.h; sourceTree = "<group>"; };
-		1608E4051EB8317000F0CF4D /* ZegoTestPushViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZegoTestPushViewController.m; sourceTree = "<group>"; };
 		16E24E0F1EB1D0290055F7A4 /* ZegoTestPullViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZegoTestPullViewController.h; path = LiveDemo3/ZegoTestPullViewController.h; sourceTree = "<group>"; };
 		16E24E101EB1D0290055F7A4 /* ZegoTestPullViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ZegoTestPullViewController.m; path = LiveDemo3/ZegoTestPullViewController.m; sourceTree = "<group>"; };
 		4D5E1CE51D9BB0E000FFE6EB /* Bugly.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bugly.framework; sourceTree = "<group>"; };
 		A745D7431E4B322E009A4265 /* ZegoLiveRoom.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZegoLiveRoom.framework; path = libs/ZegoLiveRoom.framework; sourceTree = "<group>"; };
 		A745D7481E4C197F009A4265 /* LiveDemo5.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LiveDemo5.entitlements; sourceTree = "<group>"; };
+		A7CD23DE1EBB6135002F446A /* ZegoTestPushViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZegoTestPushViewController.h; path = LiveDemo3/ZegoTestPushViewController.h; sourceTree = "<group>"; };
+		A7CD23DF1EBB6135002F446A /* ZegoTestPushViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ZegoTestPushViewController.m; path = LiveDemo3/ZegoTestPushViewController.m; sourceTree = "<group>"; };
 		EF1314341DAB752000FEBACF /* GameLive.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GameLive.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF1314361DAB752000FEBACF /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		EF13143C1DAB752000FEBACF /* SampleHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleHandler.h; sourceTree = "<group>"; };
@@ -415,8 +416,8 @@
 			children = (
 				16E24E0F1EB1D0290055F7A4 /* ZegoTestPullViewController.h */,
 				16E24E101EB1D0290055F7A4 /* ZegoTestPullViewController.m */,
-				1608E4041EB8317000F0CF4D /* ZegoTestPushViewController.h */,
-				1608E4051EB8317000F0CF4D /* ZegoTestPushViewController.m */,
+				A7CD23DE1EBB6135002F446A /* ZegoTestPushViewController.h */,
+				A7CD23DF1EBB6135002F446A /* ZegoTestPushViewController.m */,
 			);
 			name = TestPullAndPushStream;
 			path = ..;
@@ -1152,6 +1153,7 @@
 				EF71E9B91E67CFAD00723EF7 /* ZegoLiveApi-utils.m in Sources */,
 				EF576B861D82A348002D5AED /* ZegoMoreAnchorViewController.m in Sources */,
 				EF7BA75A1E1D00CF0094BBA7 /* YYTextView.m in Sources */,
+				A7CD23E11EBB6135002F446A /* ZegoTestPushViewController.m in Sources */,
 				EF576B8F1D82C09B002D5AED /* ZegoMoreAudienceViewController.m in Sources */,
 				EF7BA7341E1D00CF0094BBA7 /* YYTextKeyboardManager.m in Sources */,
 				EF576B8A1D82AAF5002D5AED /* ZegoMixStreamAnchorViewController.m in Sources */,
@@ -1176,7 +1178,7 @@
 				EF94F7911E88E9BD00F2C71C /* ZegoWerewolfInTurnViewController.m in Sources */,
 				EF7BA72B1E1D00CF0094BBA7 /* YYTextContainerView.m in Sources */,
 				EFE0D8FA1D1B7F920090F719 /* ZegoAnchorOptionViewController.m in Sources */,
-				1608E4061EB8317000F0CF4D /* ZegoTestPushViewController.m in Sources */,
+				A7CD23E01EBB6135002F446A /* ZegoTestPushViewController.m in Sources */,
 				EF7BA7411E1D00CF0094BBA7 /* YYTextParser.m in Sources */,
 				EF3AA9671DAF7C3A00AF960C /* ZegoInstrument.m in Sources */,
 				EF7BA7451E1D00CF0094BBA7 /* YYTextRunDelegate.m in Sources */,

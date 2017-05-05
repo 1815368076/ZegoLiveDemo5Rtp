@@ -31,21 +31,23 @@ BOOL g_useHardwareEncode = YES;
 BOOL g_useHardwareDecode = YES;
 #endif
 
-#ifdef ZEGO_TEST_RTP_INTEL
-BOOL g_useInternationDomain = YES;
-#else
-BOOL g_useInternationDomain = NO;
-#endif
-
 BOOL g_enableVideoRateControl = NO;
 
 BOOL g_useExternalCaptrue = NO;
 BOOL g_useExternalRender = NO;
-BOOL g_useExternalFilter = NO;
+
 
 BOOL g_enableReverb = NO;
 
+#ifdef ZEGO_TEST_RTP_INTEL
+BOOL g_recordTime = YES;
+BOOL g_useInternationDomain = YES;
+BOOL g_useExternalFilter = YES;
+#else
 BOOL g_recordTime = NO;
+BOOL g_useInternationDomain = NO;
+BOOL g_useExternalFilter = NO;
+#endif
 
 BOOL g_useHeadSet = NO;
 
@@ -76,7 +78,8 @@ static __strong id<ZegoVideoFilterFactory> g_filterFactory = nullptr;
 #endif
         
         [self setupVideoCaptureDevice];
-        
+        [self setupVideoFilter];
+    
         [ZegoLiveRoomApi setUserID:[ZegoSettings sharedInstance].userID userName:[ZegoSettings sharedInstance].userName];
 
         NSData * appSign = [self zegoAppSignFromServer];
@@ -382,6 +385,17 @@ void prep_func(const short* inData, int inSamples, int sampleRate, short *outDat
      }
      */
 #endif
+}
+
++ (void)setupVideoFilter
+{
+    if (!g_useExternalFilter)
+        return;
+    
+    if (g_filterFactory == nullptr)
+        g_filterFactory = [[ZegoVideoFilterFactoryDemo alloc] init];
+    
+    [ZegoLiveRoomApi setVideoFilterFactory:g_filterFactory];
 }
 
 + (uint32_t)appID
