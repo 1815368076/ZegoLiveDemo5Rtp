@@ -22,6 +22,8 @@ import android.view.SurfaceView;
 import android.view.TextureView;
 
 
+import com.zego.livedemo5.videocapture.ve_gl.GlShader;
+import com.zego.livedemo5.videocapture.ve_gl.GlUtil;
 import com.zego.zegoliveroom.callback.IZegoExternalRenderCallback;
 
 import java.nio.ByteBuffer;
