@@ -86,7 +86,7 @@
     
     if (!self.recordTimer)
     {
-        self.recordTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(updateTimeLabel) userInfo:nil repeats:YES];
+        self.recordTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/60 target:self selector:@selector(updateTimeLabel) userInfo:nil repeats:YES];
         [[NSRunLoop mainRunLoop] addTimer:self.recordTimer forMode:NSRunLoopCommonModes];
         
         [self.recordTimer fire];
