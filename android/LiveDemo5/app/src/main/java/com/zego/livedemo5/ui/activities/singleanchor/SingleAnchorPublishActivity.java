@@ -130,6 +130,11 @@ public class SingleAnchorPublishActivity extends BasePublishActivity {
             public void onStreamExtraInfoUpdated(ZegoStreamInfo[] zegoStreamInfos, String s) {
 
             }
+
+            @Override
+            public void onRecvCustomCommand(String userID, String userName, String content, String roomID) {
+
+            }
         });
 
         mZegoLiveRoom.setZegoIMCallback(new IZegoIMCallback() {
@@ -184,6 +189,8 @@ public class SingleAnchorPublishActivity extends BasePublishActivity {
 
     @Override
     protected void initPublishConfigs() {
+        // 单主播模式, 直推CDN
+        mPublishFlag = ZegoConstants.PublishFlag.SingleAnchor;
     }
 
     @Override

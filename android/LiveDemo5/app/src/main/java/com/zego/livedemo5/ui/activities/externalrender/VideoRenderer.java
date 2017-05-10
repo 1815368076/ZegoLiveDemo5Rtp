@@ -614,7 +614,7 @@ public class VideoRenderer implements Choreographer.FrameCallback, IZegoExternal
         pixelBuffer.width = width;
         pixelBuffer.height = height;
         mConsumeQueue.add(pixelBuffer);
-        mWriteIndex++;
+        mWriteIndex = (mWriteIndex + 1) % mProduceQueue.size();
     }
 
     private synchronized void returnProducerPixelBuffer(PixelBuffer pixelBuffer) {

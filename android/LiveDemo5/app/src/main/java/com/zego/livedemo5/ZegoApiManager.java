@@ -75,17 +75,12 @@ public class ZegoApiManager {
         // 开启测试环境
         if(mUseTestEvn){
             ZegoLiveRoom.setTestEnv(true);
-        }else {
-            ZegoLiveRoom.setTestEnv(false);
         }
-
 
         // 外部渲染
         if(mUseExternalRender){
             // 开启外部渲染
             ZegoLiveRoom.enableExternalRender(true);
-        }else {
-            ZegoLiveRoom.enableExternalRender(false);
         }
 
         // 外部采集
@@ -94,8 +89,6 @@ public class ZegoApiManager {
             VideoCaptureFactoryDemo factoryDemo = new VideoCaptureFactoryDemo();
             factoryDemo.setContext(ZegoApplication.sApplicationContext);
             ZegoLiveRoom.setVideoCaptureFactory(factoryDemo);
-        }else {
-            ZegoLiveRoom.setVideoCaptureFactory(null);
         }
 
         // 外部滤镜
@@ -103,8 +96,6 @@ public class ZegoApiManager {
             // 外部滤镜
             VideoFilterFactoryDemo videoFilterFactoryDemo = new VideoFilterFactoryDemo();
             ZegoLiveRoom.setVideoFilterFactory(videoFilterFactoryDemo);
-        }else {
-            ZegoLiveRoom.setVideoFilterFactory(null);
         }
 
         ZegoLiveRoom.enableAudioPrep(mEnableAudioPrep);
@@ -138,7 +129,6 @@ public class ZegoApiManager {
         openAndvancedFunctions();
 
         mAppID = appID;
-
 
 
         // 初始化sdk
@@ -204,6 +194,12 @@ public class ZegoApiManager {
     }
 
     public void releaseSDK() {
+        // 清空高级设置
+        ZegoLiveRoom.setTestEnv(false);
+        ZegoLiveRoom.enableExternalRender(false);
+        ZegoLiveRoom.setVideoCaptureFactory(null);
+        ZegoLiveRoom.setVideoFilterFactory(null);
+
         mZegoLiveRoom.unInitSDK();
     }
 
