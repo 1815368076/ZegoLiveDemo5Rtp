@@ -20,6 +20,7 @@ using namespace ZEGO;
 
 
 #define VOLUME_TIMER_ID   1002
+#define TIMTER_KILL_WINDOW 1001
 
 static int g_AVViews[] =
 {
@@ -297,8 +298,11 @@ void CZegoRoomDlg::OnGetMinMaxInfo(MINMAXINFO *lpMMI)
 
 void CZegoRoomDlg::OnClose()
 {
+    this->ShowWindow(false);
+
     GetOut();
-	__super::OnClose();
+    
+    SetTimer(TIMTER_KILL_WINDOW, 500, NULL);
 }
 
 void CZegoRoomDlg::OnSize(UINT nType, int cx, int cy)
@@ -327,6 +331,12 @@ void CZegoRoomDlg::OnTimer(UINT_PTR id)
     {
         float fCaptureLevel = LIVEROOM::GetCaptureSoundLevel();
         m_captureVolumeProg.SetPos(fCaptureLevel);
+
+    }else  if (id == TIMTER_KILL_WINDOW)
+    {
+        KillTimer(TIMTER_KILL_WINDOW);
+        CloseWindow();
+        TerminateProcess(GetCurrentProcess(), 0);
     }
 }
 
@@ -545,6 +555,7 @@ void CZegoRoomDlg::FreeAVView(StreamPtr stream)
     if (pAVView != nullptr)
     {
         pAVView->ShowQuailtyTips(-1);
+        pAVView->Invalidate();
     }
 }
 

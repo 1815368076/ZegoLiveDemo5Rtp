@@ -159,6 +159,16 @@ namespace ZEGO
         /// \return true 成功 false 失败
         ZEGO_API bool SetAudioBitrate(int bitrate);
         
+        /// \brief 设置音频设备模式
+        /// \param mode 模式
+        /// \note 在 Init 前调用
+        ZEGO_API void SetAudioDeviceMode(AV::ZegoAVAPIAudioDeviceMode mode);
+        
+        /// \brief 音频采集自动增益开关
+        /// \param bEnalbe 是否开启
+        /// \return true 成功，false 失败
+        ZEGO_API bool EnableAGC(bool bEnable);
+        
         /// \brief 回声消除开关
         /// \param bEnable true 打开 false 关闭
         /// \return true 成功 false 失败
@@ -229,6 +239,21 @@ namespace ZEGO
         /// \param strategy 策略配置，参考 ZegoVideoEncoderRateControlStrategy
         /// \param encoderCRF 当策略为恒定质量（ZEGO_RC_VBR/ZEGO_RC_CRF）有效，取值范围 [0~51]，越小质量越好，建议取值范围 [18, 28]
         ZEGO_API void SetVideoEncoderRateControlConfig(int strategy, int encoderCRF);
+        
+        /// \brief 发送媒体次要信息开关
+        /// \param bStart true 开启, false 关闭
+        /// \param bOnlyAudioPublish true 纯音频直播，不传输视频数据, false 音视频直播，传输视频数据
+        ZEGO_API void SetMediaSideFlags(bool bStart, bool bOnlyAudioPublish);
+        
+        /// \brief 发送媒体次要信息
+        /// \param inData 媒体次要信息数据
+        /// \param dataLen 数据长度
+        /// \param bPacket 是否外部已经打包好包头，true 已打包, false 未打包
+        ZEGO_API void SendMediaSideInfo(const unsigned char *inData, int dataLen, bool bPacket);
+        
+        /// \brief 设置回调, 接收媒体次要信息
+        /// \param OnMediaSideCallback 回调函数指针,  buf 媒体数据,  dataLen 数据长度
+        ZEGO_API void SetMediaSideCallback(void(*OnMediaSideCallback)(const unsigned char* buf, int dataLen));
     }
 }
 #endif /* LiveRoom_Publisher_h */

@@ -68,6 +68,13 @@ namespace ZEGO
              *  -------------------(right, bottom)
              */
         };
+        
+        enum ZegoAVAPIAudioDeviceMode
+        {
+            ZEGO_AUDIO_DEVICE_MODE_COMMUNICATION = 1,
+            ZEGO_AUDIO_DEVICE_MODE_GENERAL = 2,
+            ZEGO_AUDIO_DEVICE_MODE_AUTO = 3
+        };
     }
 #endif
 }

@@ -250,6 +250,8 @@ namespace AVE {
         BUFFER_TYPE_SURFACE_TEXTURE = 1 << 3,
         BUFFER_TYPE_HYBRID_MEM_GL_TEXTURE_2D = 1 << 4,
         BUFFER_TYPE_SYNC_GL_TEXTURE_2D = 1 << 5,
+        BUFFER_TYPE_ASYNC_I420_MEM = 1 << 6,
+        BUFFER_TYPE_ASYNC_I420_PIXEL_BUFFER = 1 << 7,
     };
 
     class VideoBufferPool {
