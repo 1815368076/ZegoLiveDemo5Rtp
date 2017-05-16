@@ -102,4 +102,10 @@ typedef enum : NSUInteger {
     ZEGO_BEAUTIFY_SHARPEN       = 1 << 3
 } ZegoBeautifyFeature;
 
+typedef enum : NSUInteger {
+    ZEGOAPI_AUDIO_DEVICE_MODE_COMMUNICATION = 1,
+    ZEGOAPI_AUDIO_DEVICE_MODE_GENERAL = 2,
+    ZEGOAPI_AUDIO_DEVICE_MODE_AUTO = 3
+} ZegoAPIAudioDeviceMode;
+
 #endif /* ZegoLiveRoomApiDefines_Publisher_h */

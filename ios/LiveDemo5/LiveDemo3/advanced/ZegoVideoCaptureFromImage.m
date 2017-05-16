@@ -265,7 +265,7 @@ static CVPixelBufferRef pb = NULL;
     
     if (!pb)
     {
-        UIImage *img = [UIImage imageNamed:@"AppIcon60x60@3x.png"];
+        UIImage *img = [UIImage imageNamed:@"zego.png"];
         pb = [self pixelBufferFromCGImage:img.CGImage];
         
         CGImageRef image = [self createCGImageFromCVPixelBuffer:pb];

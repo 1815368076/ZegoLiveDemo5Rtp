@@ -110,6 +110,10 @@
 /// \return 最大支持播放流数
 + (int)getMaxPlayChannelCount;
 
+/// \brief 设置回调, 接收媒体次要信息
+/// \param onMediaSideCallback 回调函数指针, buf 媒体数据, dataLen 数据长度
+- (void)setMediaSideCallback:(void(*)(const unsigned char* buf, int dataLen))onMediaSideCallback;
+
 @end
 
 

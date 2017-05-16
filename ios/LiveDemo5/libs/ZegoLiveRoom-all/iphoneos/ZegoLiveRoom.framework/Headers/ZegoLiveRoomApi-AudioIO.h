@@ -14,7 +14,18 @@
 
 @interface ZegoLiveRoomApi (AudioIO)
 
+/**
+ 启用外部音频采集
+
+ @param enable true 启用，false 不启用。默认 false
+ */
 + (void)enableExternalAudioDevice:(bool)enable;
+
+/**
+ 获取 IAudioDataInOutput 对象
+
+ @return IAudioDataInOutput 对象
+ */
 - (AVE::IAudioDataInOutput *)getIAudioDataInOutput;
 
 @end

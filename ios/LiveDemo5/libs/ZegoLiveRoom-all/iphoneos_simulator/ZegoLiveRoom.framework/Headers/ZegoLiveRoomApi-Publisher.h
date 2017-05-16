@@ -210,10 +210,20 @@
 /// \return true 成功 false 失败
 - (bool)setAudioBitrate:(int)bitrate;
 
+/// \brief 设置音频设备模式
+/// \param mode 模式
+/// \note 在 Init 前调用
++ (void)setAudioDeviceMode:(ZegoAPIAudioDeviceMode) mode;
+
 /// \brief 回声消除开关
 /// \param bEnable true 打开 false 关闭
 /// \return true 成功 false 失败
 - (bool)enableAEC:(bool)bEnable;
+
+/// \brief 音频采集自动增益开关
+/// \param enable 是否开启
+/// \return true 成功，false 失败
+- (bool)enableAGC:(bool)enable;
 
 /// \brief 设置外部采集模块
 /// \param factory 工厂对象
@@ -230,6 +240,16 @@
 /// \note 必须在InitSDK前调用，并且不能置空
 + (void)setAudioPrep:(void(*)(const short* inData, int inSamples, int sampleRate, short *outData))prep;
 
+/// \brief 发送媒体次要信息开关
+/// \param start true 开启, false 关闭
+/// \param onlyAudioPublish true 纯音频直播，不传输视频数据, false 音视频直播，传输视频数据
+- (void)setMediaSideFlags:(bool)start onlyAudioPublish:(bool)onlyAudioPublish;
+
+/// \brief 发送媒体次要信息
+/// \param inData 媒体次要信息数据
+/// \param dataLen 数据长度
+/// \param packet 是否外部已经打包好包头，true 已打包, false 未打包
+- (void)sendMediaSideInfo:(const unsigned char *)inData dataLen:(int)dataLen packet:(bool)packet;
 
 @end
 

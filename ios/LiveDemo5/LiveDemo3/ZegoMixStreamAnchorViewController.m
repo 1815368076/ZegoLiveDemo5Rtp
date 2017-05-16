@@ -256,7 +256,7 @@
         CGFloat height = [[ZegoSettings sharedInstance] currentConfig].videoEncodeResolution.height; // 主播设置的推流分辨率高
         CGFloat width = [[ZegoSettings sharedInstance] currentConfig].videoEncodeResolution.width; // 主播设置的推流分辨率宽
         
-        if (self.mixStreamConfig.count == 0) // 主播流布局
+        if (self.mixStreamConfig.count == 0)    // 主播流布局，占据整个画面
         {
             ZegoMixStreamInfo *info = [[ZegoMixStreamInfo alloc] init];
             info.streamID = self.streamID;
@@ -267,18 +267,15 @@
             [self.mixStreamConfig addObject:info];
         }
         
-        if (self.mixStreamConfig.count == 1) // 新增第1条流布局
-        {
+        if (self.mixStreamConfig.count == 1) {  // 新增第1条流布局
             ZegoMixStreamInfo *info = [[ZegoMixStreamInfo alloc] init];
             info.streamID = streamID;
             info.top = ceilf(height * 2 / 3);
-            info.left = ceilf(width * 2 / 3);
+            info.left = ceilf(width * 2 / 3);   // 画面左上角坐标为（ceilf(width * 2 / 3), ceilf(height * 2 / 3))
             info.bottom = height;
-            info.right = width;
+            info.right = width; // 画面右下角坐标为（width, height)
             [self.mixStreamConfig addObject:info];
-        }
-        else if (self.mixStreamConfig.count == 2) // 新增第2条流布局
-        {
+        } else if (self.mixStreamConfig.count == 2) {   // 新增第2条流布局
             ZegoMixStreamInfo *info = [[ZegoMixStreamInfo alloc] init];
             info.streamID = streamID;
             info.top = ceilf(height * 2 / 3);
@@ -288,6 +285,7 @@
             [self.mixStreamConfig addObject:info];
         }
         
+        // 更新流布局配置
         [[ZegoDemoHelper api] updateMixInputStreams:self.mixStreamConfig];
     }
     
@@ -310,6 +308,7 @@
         NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"删除一条流, 流ID:%@", nil), streamID];
         [self addLogString:logString];
         
+        // 删除变更流的配置
         for (ZegoMixStreamInfo *info in self.mixStreamConfig)
         {
             if ([info.streamID isEqualToString:streamID])
@@ -319,6 +318,7 @@
             }
         }
         
+        // 更新
         [[ZegoDemoHelper api] updateMixInputStreams:self.mixStreamConfig];
     }
     
@@ -399,6 +399,7 @@
     
     [self.viewContainersDict removeObjectForKey:streamID];
 }
+
 - (void)closeAllStream
 {
     [[ZegoDemoHelper api] stopPreview];

@@ -16,6 +16,10 @@
 
 @end
 
+@interface ZegoVideoFilterI420Demo : NSObject<ZegoVideoFilter, ZegoVideoBufferPool>
+
+@end
+
 @interface ZegoVideoFilterFactoryDemo : NSObject<ZegoVideoFilterFactory>
 
 @end

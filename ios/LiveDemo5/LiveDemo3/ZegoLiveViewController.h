@@ -17,10 +17,20 @@
 
 @interface ZegoLiveViewController : UIViewController <ZegoAnchorOptionDelegate>
 
+//YES 启用摄像头
+@property (nonatomic, assign) BOOL enableCamera;
 //YES 使用前置摄像头
 @property (nonatomic, assign) BOOL useFrontCamera;
+//预览镜像
+@property (nonatomic, assign) BOOL enablePreviewMirror;
+//采集镜像
+@property (nonatomic, assign) BOOL enableCaptureMirror;
 //YES 开启麦克风
 @property (nonatomic, assign) BOOL enableMicrophone;
+//YES 开启手电筒
+@property (nonatomic, assign) BOOL enableTorch;
+//采集监听
+@property (nonatomic, assign) BOOL enableLoopback;
 //设置美颜效果
 @property (nonatomic, assign) ZegoBeautifyFeature beautifyFeature;
 //设置滤镜
@@ -29,29 +39,18 @@
 @property (nonatomic, assign) BOOL enablePreview;
 //设置视频view格式（等比缩放，等比缩放填充，填充整个视图等)
 @property (nonatomic, assign) ZegoVideoViewMode viewMode;
-//YES 开启手电筒
-@property (nonatomic, assign) BOOL enableTorch;
-//YES 启用摄像头 
-@property (nonatomic, assign) BOOL enableCamera;
 //YES 扬声器打开
 @property (nonatomic, assign) BOOL enableSpeaker;
 //YES 混音
 @property (nonatomic, assign) BOOL enableAux;
-//预览镜像
-@property (nonatomic, assign) BOOL enablePreviewMirror;
-//采集镜像
-@property (nonatomic, assign) BOOL enableCaptureMirror;
-//采集监听
-@property (nonatomic, assign) BOOL enableLoopback;
-
 //日志记录
 @property (nonatomic, strong) NSMutableArray *logArray;
-
 //帧率，码率信息
 @property (nonatomic, strong) NSMutableArray *staticsArray;
 
 @property (nonatomic, assign, readonly) NSUInteger maxStreamCount;
 
+// 设置主播配置
 - (void)setAnchorConfig:(UIView *)publishView;
 
 - (BOOL)isDeviceiOS7;
@@ -63,7 +62,7 @@
 - (void)showPublishOption;
 - (void)showLogViewController;
 
-//收到请求上台消息，弹框提示
+//收到请求连麦消息，弹框提示
 - (void)requestPublishAlert:(ZegoUser *)requestUser seq:(int)seq;
 //被主播拒绝后的提示
 - (void)requestPublishResultAlert:(NSString *)fromUserName;
@@ -88,6 +87,7 @@
 //获取第一个view
 - (UIView *)getFirstViewInContainer:(UIView *)containerView;
 
+//分享到QQ
 - (void)shareToQQ:(NSString *)hls rtmp:(NSString *)rtmp bizToken:(NSString *)bizToken bizID:(NSString *)bizID streamID:(NSString *)streamID;
 
 - (NSString *)encodeDictionaryToJSON:(NSDictionary *)dictionary;

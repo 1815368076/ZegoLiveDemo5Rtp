@@ -45,6 +45,8 @@
 
 @implementation ZegoLiveViewController
 
+#pragma mark - Life cycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -132,6 +134,511 @@
     [self.view addGestureRecognizer:longPressGesture];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self setIdelTimerDisable:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [self setIdelTimerDisable:NO];
+    [super viewWillDisappear:animated];
+    
+    [self.usageTimer invalidate];
+    self.usageTimer = nil;
+    
+    if (self.isBeingDismissed)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+    }
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Public methods
+
+- (void)setAnchorConfig:(UIView *)publishView
+{
+    [[ZegoDemoHelper api] setAppOrientation:[UIApplication sharedApplication].statusBarOrientation];
+    
+    ZegoAVConfig *config = [ZegoSettings sharedInstance].currentConfig;
+    
+    if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)
+        && config.videoEncodeResolution.height > config.videoEncodeResolution.width)
+    {
+        // * adjust width/height for landscape
+        config.videoEncodeResolution = CGSizeMake(config.videoEncodeResolution.height, config.videoEncodeResolution.width);
+        config.videoCaptureResolution = config.videoEncodeResolution;
+    }
+    
+    self.videoSize = config.videoEncodeResolution;
+    
+    int ret = [[ZegoDemoHelper api] setAVConfig:config];
+    assert(ret);
+    
+    bool b = [[ZegoDemoHelper api] setFrontCam:self.useFrontCamera];
+    assert(b);
+    
+    b = [[ZegoDemoHelper api] enableMic:self.enableMicrophone];
+    assert(b);
+    
+    b = [[ZegoDemoHelper api] enableBeautifying:self.beautifyFeature];
+    assert(b);
+    
+    b = [[ZegoDemoHelper api] setFilter:self.filter];
+    assert(b);
+    
+    [self enablePreview:self.enablePreview LocalView:publishView];
+    [[ZegoDemoHelper api] setPreviewViewMode:self.viewMode];
+    
+    if ([ZegoDemoHelper recordTime])
+    {
+        [[ZegoDemoHelper api] enablePreviewMirror:false];
+        self.enablePreviewMirror = NO;
+    }
+}
+
+- (BOOL)isDeviceiOS7
+{
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 8.0)
+        return YES;
+    
+    return NO;
+}
+
+
+- (BOOL)setContainerConstraints:(UIView *)view containerView:(UIView *)containerView viewCount:(NSUInteger)viewCount
+{
+    [self addPlayViewConstraints:view containerView:containerView viewIndex:viewCount];
+    
+    [UIView animateWithDuration:0.1 animations:^{
+        [self.view layoutIfNeeded];
+    }];
+    
+    return YES;
+}
+
+- (void)updateContainerConstraintsForTap:(UIView *)tapView containerView:(UIView *)containerView
+{
+    UIView *bigView = [self getFirstViewInContainer:containerView];
+    if (bigView == tapView || tapView == nil)
+        return;
+    
+    NSUInteger tapIndex = [self getViewIndex:tapView containerView:containerView];
+    [containerView removeConstraints:containerView.constraints];
+    [containerView exchangeSubviewAtIndex:0 withSubviewAtIndex:tapIndex];
+    
+    for (int i = 0; i < containerView.subviews.count; i++)
+    {
+        UIView *view = containerView.subviews[i];
+        [self addPlayViewConstraints:view containerView:containerView viewIndex:i];
+    }
+    
+    [UIView animateWithDuration:0.1 animations:^{
+        [self.view layoutIfNeeded];
+    }];
+    
+}
+
+- (void)updateContainerConstraintsForRemove:(UIView *)removeView containerView:(UIView *)containerView
+{
+    if (removeView == nil)
+        return;
+    
+    NSUInteger removeIndex = [self getViewIndex:removeView containerView:containerView];
+    [containerView removeConstraints:containerView.constraints];
+    
+    for (UIView *view in containerView.subviews)
+    {
+        NSUInteger viewIndex = [self getViewIndex:view containerView:containerView];
+        if (viewIndex == 0 && removeIndex != 0)
+            [self addFirstPlayViewConstraints:view containerView:containerView];
+        else if (viewIndex > removeIndex)
+            [self addPlayViewConstraints:view containerView:containerView viewIndex:viewIndex - 1];
+        else if (viewIndex < removeIndex)
+            [self addPlayViewConstraints:view containerView:containerView viewIndex:viewIndex];
+    }
+    
+    [removeView removeFromSuperview];
+    [UIView animateWithDuration:0.1 animations:^{
+        [self.view layoutIfNeeded];
+    }];
+}
+
+- (void)showPublishOption
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    ZegoAnchorOptionViewController *optionController = (ZegoAnchorOptionViewController *)[storyboard instantiateViewControllerWithIdentifier:@"anchorOptionID"];
+    
+    optionController.delegate = self;
+    
+    self.definesPresentationContext = YES;
+    if (![self isDeviceiOS7])
+        optionController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    else
+        optionController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    
+    optionController.view.backgroundColor = [UIColor clearColor];
+    [self presentViewController:optionController animated:YES completion:nil];
+}
+
+- (void)showLogViewController
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UINavigationController *navigationController = (UINavigationController *)[storyboard instantiateViewControllerWithIdentifier:@"logNavigationID"];
+    
+    ZegoLogTableViewController *logViewController = (ZegoLogTableViewController *)[navigationController.viewControllers firstObject];
+    logViewController.logArray = self.logArray;
+    
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)requestPublishAlert:(ZegoUser *)requestUser seq:(int)seq
+{
+    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"%@ 请求直播，是否允许", nil), requestUser.userName];
+    if ([self isDeviceiOS7])
+    {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:message delegate:self cancelButtonTitle:NSLocalizedString(@"拒绝", nil) otherButtonTitles:NSLocalizedString(@"允许", nil), nil];
+        NSDictionary *contextDictionary = @{@"Magic": @(seq), @"User": requestUser, @"AlertView": alertView};
+        if (self.requestAlertContextList.count == 0)
+            [alertView show];
+        [self.requestAlertContextList addObject:contextDictionary];
+    }
+    else
+    {
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"拒绝", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            [self sendRequestPublishRespond:NO seq:seq requestPublisher:requestUser];
+            
+            NSUInteger index = [self getWaitingRequestListIndex:seq];
+            if (index != NSNotFound)
+                [self.requestAlertList removeObjectAtIndex:index];
+            [self continueOtherRequest];
+        }];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"允许", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self sendRequestPublishRespond:YES seq:seq requestPublisher:requestUser];
+            
+            NSUInteger index = [self getWaitingRequestListIndex:seq];
+            if (index != NSNotFound)
+                [self.requestAlertList removeObjectAtIndex:index];
+            [self continueOtherRequest];
+        }];
+        
+        [alertController addAction:cancelAction];
+        [alertController addAction:okAction];
+        
+        NSDictionary *contextDictionary = @{@"Magic": @(seq), @"User": requestUser, @"AlertController": alertController};
+        [self.requestAlertList addObject:contextDictionary];
+        
+        if (![self.presentedViewController isKindOfClass:[UIAlertController class]])
+        {
+            [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+            
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
+    }
+}
+
+// 主播响应拒绝连麦
+- (void)requestPublishResultAlert:(NSString *)fromUserName
+{
+    if (self.presentedViewController)
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+    
+    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"%@ 不允许连麦", nil), fromUserName];
+    if ([self isDeviceiOS7])
+    {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alertView show];
+    }
+    else
+    {
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            
+            [self continueOtherRequest];
+        }];
+        
+        [alertController addAction:cancelAction];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
+- (BOOL)shouldShowPublishAlert
+{
+    return YES;
+}
+
+- (void)onReceiveJoinLive:(NSString *)userId userName:(NSString *)userName seq:(int)seq
+{
+    ZegoUser *requestUser = [ZegoUser new];
+    requestUser.userId = userId;
+    requestUser.userName = userName;
+    
+    [self requestPublishAlert:requestUser seq:seq];
+}
+
+- (void)sendRequestPublishRespond:(BOOL)agreed seq:(int)seq requestPublisher:(ZegoUser *)requestUser
+{
+    [[ZegoDemoHelper api] respondJoinLiveReq:seq result:(agreed == false)];
+}
+
+- (void)setIdelTimerDisable:(BOOL)disable
+{
+    [[UIApplication sharedApplication] setIdleTimerDisabled:disable];
+}
+
+- (void)audioSessionWasInterrupted:(NSNotification *)notification
+{
+    NSLog(@"%s: %@", __func__, notification);
+    if (AVAudioSessionInterruptionTypeBegan == [notification.userInfo[AVAudioSessionInterruptionTypeKey] intValue])
+    {
+        // 暂停音频设备
+        [[ZegoDemoHelper api] pauseModule:ZEGOAPI_MODULE_AUDIO];
+    }
+    else if(AVAudioSessionInterruptionTypeEnded == [notification.userInfo[AVAudioSessionInterruptionTypeKey] intValue])
+    {
+        // 恢复音频设备
+        [[ZegoDemoHelper api] resumeModule:ZEGOAPI_MODULE_AUDIO];
+    }
+}
+
+- (void)addLogString:(NSString *)logString
+{
+    if (logString.length != 0)
+    {
+        NSString *totalString = [NSString stringWithFormat:@"%@: %@", [self getCurrentTime], logString];
+        [self.logArray insertObject:totalString atIndex:0];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"logUpdateNotification" object:self userInfo:nil];
+    }
+}
+
+- (void)updateQuality:(int)quality view:(UIView *)playerView
+{
+    if (playerView == nil)
+        return;
+    
+    CALayer *qualityLayer = nil;
+    CATextLayer *textLayer = nil;
+    
+    for (CALayer *layer in playerView.layer.sublayers)
+    {
+        if ([layer.name isEqualToString:@"quality"])
+            qualityLayer = layer;
+        
+        if ([layer.name isEqualToString:@"indicate"])
+            textLayer = (CATextLayer *)layer;
+    }
+    
+    int originQuality = 0;
+    if (qualityLayer != nil)
+    {
+        if (CGColorEqualToColor(qualityLayer.backgroundColor, [UIColor greenColor].CGColor))
+            originQuality = 0;
+        else if (CGColorEqualToColor(qualityLayer.backgroundColor, [UIColor yellowColor].CGColor))
+            originQuality = 1;
+        else if (CGColorEqualToColor(qualityLayer.backgroundColor, [UIColor redColor].CGColor))
+            originQuality = 2;
+        else
+            originQuality = 3;
+        
+        if (quality == originQuality)
+            return;
+    }
+    
+    UIFont *textFont = [UIFont systemFontOfSize:10];
+    
+    if (qualityLayer == nil)
+    {
+        qualityLayer = [CALayer layer];
+        qualityLayer.name = @"quality";
+        [playerView.layer addSublayer:qualityLayer];
+        qualityLayer.frame = CGRectMake(12, 22, 10, 10);
+        qualityLayer.contentsScale = [UIScreen mainScreen].scale;
+        qualityLayer.cornerRadius = 5.0f;
+    }
+    
+    if (textLayer == nil)
+    {
+        textLayer = [CATextLayer layer];
+        textLayer.name = @"indicate";
+        [playerView.layer addSublayer:textLayer];
+        textLayer.backgroundColor = [UIColor clearColor].CGColor;
+        textLayer.font = (__bridge CFTypeRef)textFont.fontName;
+        textLayer.foregroundColor = [UIColor blackColor].CGColor;
+        textLayer.fontSize = textFont.pointSize;
+        textLayer.contentsScale = [UIScreen mainScreen].scale;
+    }
+    
+    UIColor *qualityColor = nil;
+    NSString *text = nil;
+    if (quality == 0)
+    {
+        qualityColor = [UIColor greenColor];
+        text = [NSString stringWithFormat:@"%@%@", NSLocalizedString(@"当前质量:", nil), NSLocalizedString(@"优", nil)];
+    }
+    else if (quality == 1)
+    {
+        qualityColor = [UIColor yellowColor];
+        text = [NSString stringWithFormat:@"%@%@", NSLocalizedString(@"当前质量:", nil), NSLocalizedString(@"良", nil)];
+    }
+    else if (quality == 2)
+    {
+        qualityColor = [UIColor redColor];
+        text = [NSString stringWithFormat:@"%@%@", NSLocalizedString(@"当前质量:", nil), NSLocalizedString(@"中", nil)];
+    }
+    else
+    {
+        qualityColor = [UIColor grayColor];
+        text = [NSString stringWithFormat:@"%@%@", NSLocalizedString(@"当前质量:", nil), NSLocalizedString(@"差", nil)];
+    }
+    
+    qualityLayer.backgroundColor = qualityColor.CGColor;
+    CGSize textSize = [text sizeWithAttributes:@{NSFontAttributeName: textFont}];
+    CGRect textFrame = CGRectMake(CGRectGetMaxX(qualityLayer.frame) + 3, CGRectGetMinY(qualityLayer.frame) + (CGRectGetHeight(qualityLayer.frame) - ceilf(textSize.height))/2, ceilf(textSize.width), ceilf(textSize.height));
+    textLayer.frame = textFrame;
+    textLayer.string = text;
+}
+
+- (void)auxCallback:(void *)pData dataLen:(int *)pDataLen sampleRate:(int *)pSampleRate channelCount:(int *)pChannelCount
+{
+    if (self.auxData == nil)
+    {
+        //初始化auxData
+        NSURL *auxURL = [[NSBundle mainBundle] URLForResource:@"a.pcm" withExtension:nil];
+        if (auxURL)
+        {
+            self.auxData = [NSData dataWithContentsOfURL:auxURL options:0 error:nil];
+            self.pPos = (void *)[self.auxData bytes];
+        }
+    }
+    
+    if (self.auxData)
+    {
+        int nLen = (int)[self.auxData length];
+        if (self.pPos == 0)
+            self.pPos = (void *)[self.auxData bytes];
+        
+        const void *pAuxData = [self.auxData bytes];
+        if (pAuxData == NULL)
+            return;
+        
+        int nLeftLen = (int)(pAuxData + nLen - self.pPos);
+        if (nLeftLen < *pDataLen) {
+            self.pPos = (void *)pAuxData;
+            *pDataLen = 0;
+            return;
+        }
+        
+        if (pSampleRate)
+            *pSampleRate = 44100;
+        
+        if (pChannelCount)
+            *pChannelCount = 2;
+        
+        memcpy(pData, self.pPos, *pDataLen);
+        self.pPos = self.pPos + *pDataLen;
+    }
+}
+
+- (UIView *)getFirstViewInContainer:(UIView *)containerView
+{
+    for (UIView *subview in containerView.subviews)
+    {
+        if (CGRectGetWidth(subview.frame) == CGRectGetWidth(containerView.frame))
+            return subview;
+    }
+    
+    return nil;
+}
+
+- (void)shareToQQ:(NSString *)hls rtmp:(NSString *)rtmp bizToken:(NSString *)bizToken bizID:(NSString *)bizID streamID:(NSString *)streamID
+{
+#if TARGET_OS_SIMULATOR
+#else
+    
+    NSString *encodeHls = [self encodeStringAddingEscape:hls];
+    NSString *encodeRtmp = [self encodeStringAddingEscape:rtmp];
+    NSString *encodeID = [self encodeStringAddingEscape:bizID];
+    NSString *encodeStream = [self encodeStringAddingEscape:streamID];
+    
+    NSString *urlString = [NSString stringWithFormat:@"http://www.zego.im/share/index2?video=%@&rtmp=%@&id=%@&stream=%@",
+                           encodeHls,
+                           encodeRtmp,
+                           encodeID,
+                           encodeStream ];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    UIImage *logoImage = [UIImage imageNamed:@"zego"];
+    NSData *previewImageData = UIImagePNGRepresentation(logoImage);
+    
+    NSString *title = @"LiveDemo";
+    NSString *description = @"快来围观我的直播";
+    
+    QQApiURLObject *urlObject = [QQApiURLObject objectWithURL:url title:title description:description previewImageData:previewImageData targetContentType:QQApiURLTargetTypeNews];
+    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:urlObject];
+    QQApiSendResultCode result = [QQApiInterface sendReq:req];
+    
+    NSLog(@"share To QQ URL: %@, result %d", urlString, result);
+    
+#endif
+    
+}
+
+- (NSString *)encodeDictionaryToJSON:(NSDictionary *)dictionary
+{
+    if (dictionary == nil)
+        return nil;
+    
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:nil];
+    if (jsonData)
+    {
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        return jsonString;
+    }
+    
+    return nil;
+}
+
+- (NSDictionary *)decodeJSONToDictionary:(NSString *)json
+{
+    if (json == nil)
+        return nil;
+    
+    NSData *jsonData = [json dataUsingEncoding:NSUTF8StringEncoding];
+    if (jsonData)
+    {
+        NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:nil];
+        return dictionary;
+    }
+    
+    return nil;
+}
+
+- (void)addStaticsInfo:(BOOL)publish stream:(NSString *)streamID fps:(double)fps kbs:(double)kbs
+{
+    if (streamID.length == 0)
+        return;
+    
+    NSString *totalString = [NSString stringWithFormat:@"%@: %@ fps %.3f, kbs %.3f", publish ? @"PUBS": @"PULL", streamID, fps, kbs];
+    [self.staticsArray insertObject:totalString atIndex:0];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"logUpdateNotification" object:self userInfo:nil];
+}
+
+#pragma mark - Private methods
+
+#pragma mark -- Handle log
+
 - (NSString *)getLogFileName
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -170,46 +677,6 @@
     [fileHandle closeFile];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [self setIdelTimerDisable:YES];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [self setIdelTimerDisable:NO];
-    [super viewWillDisappear:animated];
-    
-    [self.usageTimer invalidate];
-    self.usageTimer = nil;
-    
-    if (self.isBeingDismissed)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
-    }
-}
-
-- (void)audioSessionWasInterrupted:(NSNotification *)notification
-{
-    NSLog(@"%s: %@", __func__, notification);
-    if (AVAudioSessionInterruptionTypeBegan == [notification.userInfo[AVAudioSessionInterruptionTypeKey] intValue])
-    {
-        // 暂停音频设备
-        [[ZegoDemoHelper api] pauseModule:ZEGOAPI_MODULE_AUDIO];
-    }
-    else if(AVAudioSessionInterruptionTypeEnded == [notification.userInfo[AVAudioSessionInterruptionTypeKey] intValue])
-    {
-        // 恢复音频设备
-        [[ZegoDemoHelper api] resumeModule:ZEGOAPI_MODULE_AUDIO];
-    }
-}
-
 - (void)handleAudioRouteChanged:(NSNotification *)notification
 {
     NSInteger reason = [[notification.userInfo objectForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
@@ -229,7 +696,204 @@
     }
 }
 
-#pragma mark ZegoAnchorOptionDelegate
+- (void)enablePreview:(BOOL)enable LocalView:(UIView *)view
+{
+    if (enable && view)
+    {
+        [[ZegoDemoHelper api] setPreviewView:view];
+        [[ZegoDemoHelper api] startPreview];
+    }
+    else
+    {
+        [[ZegoDemoHelper api] setPreviewView:nil];
+        [[ZegoDemoHelper api] stopPreview];
+    }
+}
+
+- (void)addFirstPlayViewConstraints:(UIView *)firstView containerView:(UIView *)containerView
+{
+    [containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[firstView]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(firstView)]];
+    [containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[firstView]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(firstView)]];
+}
+
+
+- (void)addPlayViewConstraints:(UIView *)view containerView:(UIView *)containerView viewIndex:(NSUInteger)viewIndex
+{
+    if (viewIndex == 0)
+        [self addFirstPlayViewConstraints:view containerView:containerView];
+    else
+    {
+        NSUInteger xIndex = (viewIndex - 1) % self.subViewPerRow;
+        NSUInteger yIndex = (viewIndex - 1) / self.subViewPerRow;
+        
+        CGFloat xToLeftConstraints = xIndex * (self.subViewSpace + self.subViewWidth) + self.subViewSpace;
+        CGFloat yTobottomConstraints = yIndex * (self.subViewSpace + self.subViewHeight) + self.subViewSpace;
+        
+        NSLayoutConstraint *widthConstraints = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeWidth multiplier:1.0 constant:self.subViewWidth];
+        NSLayoutConstraint *heightConstraints = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeHeight multiplier:1.0 constant:self.subViewHeight];
+        NSLayoutConstraint *leftConstraints = [NSLayoutConstraint constraintWithItem:containerView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:xToLeftConstraints];
+        NSLayoutConstraint *bottomConstraints = [NSLayoutConstraint constraintWithItem:containerView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:yTobottomConstraints];
+        
+        [containerView addConstraints:@[widthConstraints, heightConstraints, leftConstraints, bottomConstraints]];
+    }
+}
+
+- (NSUInteger)getViewIndex:(UIView *)view containerView:(UIView *)containerView
+{
+    if (CGRectGetWidth(view.frame) == CGRectGetWidth(containerView.frame) &&
+        CGRectGetHeight(view.frame) == CGRectGetHeight(containerView.frame))
+        return 0;
+    else
+    {
+        CGFloat deltaHeight = CGRectGetHeight(containerView.frame) - CGRectGetMaxY(view.frame) - self.subViewSpace;
+        CGFloat deltaWidth = CGRectGetWidth(containerView.frame) - CGRectGetMaxX(view.frame) - self.subViewSpace;
+        
+        NSUInteger xIndex = deltaWidth / (self.subViewSpace + self.subViewWidth);
+        NSUInteger yIndex = deltaHeight / (self.subViewSpace + self.subViewHeight);
+        
+        return yIndex * self.subViewPerRow + xIndex + 1;
+    }
+}
+
+
+
+
+
+
+
+
+- (void)onShowStaticsViewController:(UIGestureRecognizer *)gesture
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UINavigationController *navigationController = (UINavigationController *)[storyboard instantiateViewControllerWithIdentifier:@"logNavigationID"];
+    
+    ZegoLogTableViewController *logViewController = (ZegoLogTableViewController *)[navigationController.viewControllers firstObject];
+    logViewController.logArray = self.staticsArray;
+    
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
+
+
+
+- (void)continueOtherRequest
+{
+    if ([self isDeviceiOS7])
+    {
+        if (self.requestAlertContextList.count == 0)
+            return;
+        
+        if ([self shouldShowPublishAlert])
+        {
+            NSDictionary *dict = [self.requestAlertContextList firstObject];
+            UIAlertView *alertView = dict[@"AlertView"];
+            [alertView show];
+        }
+        else
+        {
+            for (NSDictionary *dict in self.requestAlertContextList)
+                [self sendRequestPublishRespond:NO seq:[dict[@"Magic"] intValue] requestPublisher:dict[@"User"]];
+            
+            [self.requestAlertContextList removeAllObjects];
+        }
+    }
+    else
+    {
+        if (self.requestAlertList.count == 0)
+            return;
+        
+        if ([self shouldShowPublishAlert])
+        {
+            NSDictionary *dict = [self.requestAlertList firstObject];
+            UIAlertController *alertController = dict[@"AlertController"];
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
+        else
+        {
+            for (NSDictionary *dict in self.requestAlertList)
+            {
+                [self sendRequestPublishRespond:NO seq:[dict[@"Magic"] intValue] requestPublisher:dict[@"User"]];
+            }
+            
+            [self.requestAlertList removeAllObjects];
+        }
+    }
+}
+
+- (NSUInteger)getWaitingRequestListIndex:(int)seq
+{
+    if ([self isDeviceiOS7])
+    {
+        for (NSDictionary *dict in self.requestAlertContextList)
+        {
+            if ([dict[@"Magic"] intValue] == seq)
+                return [self.requestAlertContextList indexOfObject:dict];
+        }
+        
+        return NSNotFound;
+    }
+    else
+    {
+        for (NSDictionary *dict in self.requestAlertList)
+        {
+            if ([dict[@"Magic"] intValue] == seq)
+                return [self.requestAlertList indexOfObject:dict];
+        }
+    }
+    
+    return NSNotFound;
+}
+
+
+
+
+
+
+
+- (NSString *)getCurrentTime
+{
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"[HH-mm-ss:SSS]";
+    return [formatter stringFromDate:[NSDate date]];
+}
+
+- (NSString *)encodeStringAddingEscape:(NSString *)urlString
+{
+    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)urlString, NULL, (CFStringRef)@"!*'();:@&=+$,/?%#[]", kCFStringEncodingUTF8));
+}
+
+
+
+- (void)enableAudioRecord:(BOOL)enable
+{
+    //
+    // * test audio record
+    //
+    [[ZegoDemoHelper api] enableAudioRecord:enable];
+    if (enable)
+    {
+        [[ZegoDemoHelper api] setAudioRecordDelegate:self];
+    }
+    else
+    {
+        [[ZegoDemoHelper api] setAudioRecordDelegate:nil];
+        
+        if (self.recordedAudio)
+        {
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+            NSString *cachesDir = [paths objectAtIndex:0];
+            NSString *auidoFilePathname = [cachesDir stringByAppendingPathComponent:@"recored_audio"];
+            
+            [self.recordedAudio writeToFile:auidoFilePathname atomically:YES];
+            self.recordedAudio = nil;
+        }
+    }
+}
+
+
+#pragma mark - ZegoAnchorOptionDelegate
+
 - (void)onUseFrontCamera:(BOOL)use
 {
     self.useFrontCamera = use;
@@ -362,525 +1026,20 @@
     return self.enableLoopback;
 }
 
-#pragma mark setter
-- (void)setBeautifyFeature:(ZegoBeautifyFeature)beautifyFeature
-{
-    if (_beautifyFeature == beautifyFeature)
-        return;
-    
-    _beautifyFeature = beautifyFeature;
-    [[ZegoDemoHelper api] enableBeautifying:beautifyFeature];
-}
+#pragma mark - ZegoLiveApiAudioRecordDelegate
 
-- (void)setFilter:(ZegoFilter)filter
+- (void)onAudioRecord:(NSData *)audioData sampleRate:(int)sampleRate numOfChannels:(int)numOfChannels bitDepth:(int)bitDepth
 {
-    if (_filter == filter)
-        return;
-    
-    _filter = filter;
-    [[ZegoDemoHelper api] setFilter:filter];
-}
-
-- (void)setUseFrontCamera:(BOOL)useFrontCamera
-{
-    if (_useFrontCamera == useFrontCamera)
-        return;
-    
-    _useFrontCamera = useFrontCamera;
-    [[ZegoDemoHelper api] setFrontCam:useFrontCamera];
-}
-
-- (void)setEnableMicrophone:(BOOL)enableMicrophone
-{
-    if (_enableMicrophone == enableMicrophone)
-        return;
-    
-    _enableMicrophone = enableMicrophone;
-    [[ZegoDemoHelper api] enableMic:enableMicrophone];
-}
-
-- (void)setEnableTorch:(BOOL)enableTorch
-{
-    if (_enableTorch == enableTorch)
-        return;
-    
-    _enableTorch = enableTorch;
-    [[ZegoDemoHelper api] enableTorch:enableTorch];
-}
-
-- (void)setEnableCamera:(BOOL)enableCamera
-{
-    if (_enableCamera == enableCamera)
-        return;
-    
-    _enableCamera = enableCamera;
-    [[ZegoDemoHelper api] enableCamera:enableCamera];
-}
-
-- (void)setEnableSpeaker:(BOOL)enableSpeaker
-{
-    if (_enableSpeaker == enableSpeaker)
-        return;
-    
-    _enableSpeaker = enableSpeaker;
-    [[ZegoDemoHelper api] enableSpeaker:enableSpeaker];
-}
-
-- (void)setEnableAux:(BOOL)enableAux
-{
-    if (_enableAux == enableAux)
-        return;
-    
-    _enableAux = enableAux;
-    [[ZegoDemoHelper api] enableAux:enableAux];
-    
-    if (enableAux == NO)
+    if (!self.recordedAudio)
     {
-        self.pPos = NULL;
-        self.auxData = nil;
-    }
-}
-
-- (void)setEnablePreviewMirror:(BOOL)enablePreviewMirror
-{
-    if (_enablePreviewMirror == enablePreviewMirror)
-        return;
-    
-    _enablePreviewMirror = enablePreviewMirror;
-    [[ZegoDemoHelper api] enablePreviewMirror:enablePreviewMirror];
-}
-
-- (void)setEnableCaptureMirror:(BOOL)enableCaptureMirror
-{
-    if (_enableCaptureMirror == enableCaptureMirror)
-        return;
-    
-    _enableCaptureMirror = enableCaptureMirror;
-    [[ZegoDemoHelper api] enableCaptureMirror:enableCaptureMirror];
-}
-
-- (void)setEnableLoopback:(BOOL)enableLoopback
-{
-    if (_enableLoopback == enableLoopback)
-        return;
-    
-    _enableLoopback = enableLoopback;
-    [[ZegoDemoHelper api] enableLoopback:enableLoopback];
-    if (enableLoopback)
-        [[ZegoDemoHelper api] setLoopbackVolume:50];
-}
-
-- (void)setAnchorConfig:(UIView *)publishView
-{
-    [[ZegoDemoHelper api] setAppOrientation:[UIApplication sharedApplication].statusBarOrientation];
- 
-    ZegoAVConfig *config = [ZegoSettings sharedInstance].currentConfig;
-    
-    if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)
-        && config.videoEncodeResolution.height > config.videoEncodeResolution.width)
-    {
-        // * adjust width/height for landscape
-        config.videoEncodeResolution = CGSizeMake(config.videoEncodeResolution.height, config.videoEncodeResolution.width);
-        config.videoCaptureResolution = config.videoEncodeResolution;
+        self.recordedAudio = [NSMutableData data];
     }
     
-    self.videoSize = config.videoEncodeResolution;
-    
-    int ret = [[ZegoDemoHelper api] setAVConfig:config];
-    assert(ret);
-    
-    bool b = [[ZegoDemoHelper api] setFrontCam:self.useFrontCamera];
-    assert(b);
-    
-    b = [[ZegoDemoHelper api] enableMic:self.enableMicrophone];
-    assert(b);
-    
-    b = [[ZegoDemoHelper api] enableBeautifying:self.beautifyFeature];
-    assert(b);
-    
-    b = [[ZegoDemoHelper api] setFilter:self.filter];
-    assert(b);
-    
-    [self enablePreview:self.enablePreview LocalView:publishView];
-    [[ZegoDemoHelper api] setPreviewViewMode:self.viewMode];
-    
-    if ([ZegoDemoHelper recordTime])
-    {
-        [[ZegoDemoHelper api] enablePreviewMirror:false];
-        self.enablePreviewMirror = NO;
-    }
+    [self.recordedAudio appendData:audioData];
 }
 
-- (void)enablePreview:(BOOL)enable LocalView:(UIView *)view
-{
-    if (enable && view)
-    {
-        [[ZegoDemoHelper api] setPreviewView:view];
-        [[ZegoDemoHelper api] startPreview];
-    }
-    else
-    {
-        [[ZegoDemoHelper api] setPreviewView:nil];
-        [[ZegoDemoHelper api] stopPreview];
-    }
-}
+#pragma mark - UIAlertViewDelegate
 
-- (void)addFirstPlayViewConstraints:(UIView *)firstView containerView:(UIView *)containerView
-{
-    [containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[firstView]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(firstView)]];
-    [containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[firstView]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(firstView)]];
-}
-
-- (UIView *)getFirstViewInContainer:(UIView *)containerView
-{
-    for (UIView *subview in containerView.subviews)
-    {
-        if (CGRectGetWidth(subview.frame) == CGRectGetWidth(containerView.frame))
-            return subview;
-    }
-    
-    return nil;
-}
-
-- (void)addPlayViewConstraints:(UIView *)view containerView:(UIView *)containerView viewIndex:(NSUInteger)viewIndex
-{
-    if (viewIndex == 0)
-        [self addFirstPlayViewConstraints:view containerView:containerView];
-    else
-    {
-        NSUInteger xIndex = (viewIndex - 1) % self.subViewPerRow;
-        NSUInteger yIndex = (viewIndex - 1) / self.subViewPerRow;
-        
-        CGFloat xToLeftConstraints = xIndex * (self.subViewSpace + self.subViewWidth) + self.subViewSpace;
-        CGFloat yTobottomConstraints = yIndex * (self.subViewSpace + self.subViewHeight) + self.subViewSpace;
-        
-        NSLayoutConstraint *widthConstraints = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeWidth multiplier:1.0 constant:self.subViewWidth];
-        NSLayoutConstraint *heightConstraints = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeHeight multiplier:1.0 constant:self.subViewHeight];
-        NSLayoutConstraint *leftConstraints = [NSLayoutConstraint constraintWithItem:containerView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:xToLeftConstraints];
-        NSLayoutConstraint *bottomConstraints = [NSLayoutConstraint constraintWithItem:containerView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:yTobottomConstraints];
-        
-        [containerView addConstraints:@[widthConstraints, heightConstraints, leftConstraints, bottomConstraints]];
-    }
-}
-
-- (NSUInteger)getViewIndex:(UIView *)view containerView:(UIView *)containerView
-{
-    if (CGRectGetWidth(view.frame) == CGRectGetWidth(containerView.frame) &&
-        CGRectGetHeight(view.frame) == CGRectGetHeight(containerView.frame))
-        return 0;
-    else
-    {
-        CGFloat deltaHeight = CGRectGetHeight(containerView.frame) - CGRectGetMaxY(view.frame) - self.subViewSpace;
-        CGFloat deltaWidth = CGRectGetWidth(containerView.frame) - CGRectGetMaxX(view.frame) - self.subViewSpace;
-        
-        NSUInteger xIndex = deltaWidth / (self.subViewSpace + self.subViewWidth);
-        NSUInteger yIndex = deltaHeight / (self.subViewSpace + self.subViewHeight);
-        
-        return yIndex * self.subViewPerRow + xIndex + 1;
-    }
-}
-
-- (void)updateContainerConstraintsForTap:(UIView *)tapView containerView:(UIView *)containerView
-{
-    UIView *bigView = [self getFirstViewInContainer:containerView];
-    if (bigView == tapView || tapView == nil)
-        return;
-    
-    NSUInteger tapIndex = [self getViewIndex:tapView containerView:containerView];
-    [containerView removeConstraints:containerView.constraints];
-    [containerView exchangeSubviewAtIndex:0 withSubviewAtIndex:tapIndex];
-    
-    for (int i = 0; i < containerView.subviews.count; i++)
-    {
-        UIView *view = containerView.subviews[i];
-        [self addPlayViewConstraints:view containerView:containerView viewIndex:i];
-    }
-    
-    [UIView animateWithDuration:0.1 animations:^{
-        [self.view layoutIfNeeded];
-    }];
-    
-}
-
-- (void)updateContainerConstraintsForRemove:(UIView *)removeView containerView:(UIView *)containerView
-{
-    if (removeView == nil)
-        return;
-    
-    NSUInteger removeIndex = [self getViewIndex:removeView containerView:containerView];
-    [containerView removeConstraints:containerView.constraints];
-    
-    for (UIView *view in containerView.subviews)
-    {
-        NSUInteger viewIndex = [self getViewIndex:view containerView:containerView];
-        if (viewIndex == 0 && removeIndex != 0)
-            [self addFirstPlayViewConstraints:view containerView:containerView];
-        else if (viewIndex > removeIndex)
-            [self addPlayViewConstraints:view containerView:containerView viewIndex:viewIndex - 1];
-        else if (viewIndex < removeIndex)
-            [self addPlayViewConstraints:view containerView:containerView viewIndex:viewIndex];
-    }
-    
-    [removeView removeFromSuperview];
-    [UIView animateWithDuration:0.1 animations:^{
-        [self.view layoutIfNeeded];
-    }];
-}
-
-- (BOOL)setContainerConstraints:(UIView *)view containerView:(UIView *)containerView viewCount:(NSUInteger)viewCount
-{
-    [self addPlayViewConstraints:view containerView:containerView viewIndex:viewCount];
-    
-    [UIView animateWithDuration:0.1 animations:^{
-        [self.view layoutIfNeeded];
-    }];
-    
-    return YES;
-}
-
-- (BOOL)isDeviceiOS7
-{
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 8.0)
-        return YES;
-    
-    return NO;
-}
-
-- (void)showPublishOption
-{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    ZegoAnchorOptionViewController *optionController = (ZegoAnchorOptionViewController *)[storyboard instantiateViewControllerWithIdentifier:@"anchorOptionID"];
-    
-    optionController.delegate = self;
-    
-    self.definesPresentationContext = YES;
-    if (![self isDeviceiOS7])
-        optionController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    else
-        optionController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    
-    optionController.view.backgroundColor = [UIColor clearColor];
-    [self presentViewController:optionController animated:YES completion:nil];
-}
-
-- (void)showLogViewController
-{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    UINavigationController *navigationController = (UINavigationController *)[storyboard instantiateViewControllerWithIdentifier:@"logNavigationID"];
-    
-    ZegoLogTableViewController *logViewController = (ZegoLogTableViewController *)[navigationController.viewControllers firstObject];
-    logViewController.logArray = self.logArray;
-    
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)onShowStaticsViewController:(UIGestureRecognizer *)gesture
-{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    UINavigationController *navigationController = (UINavigationController *)[storyboard instantiateViewControllerWithIdentifier:@"logNavigationID"];
-    
-    ZegoLogTableViewController *logViewController = (ZegoLogTableViewController *)[navigationController.viewControllers firstObject];
-    logViewController.logArray = self.staticsArray;
-    
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)sendRequestPublishRespond:(BOOL)agreed seq:(int)seq requestPublisher:(ZegoUser *)requestUser
-{
-    [[ZegoDemoHelper api] respondJoinLiveReq:seq result:(agreed == false)];
-}
-
-- (BOOL)shouldShowPublishAlert
-{
-    return YES;
-}
-
-- (void)continueOtherRequest
-{
-    if ([self isDeviceiOS7])
-    {
-        if (self.requestAlertContextList.count == 0)
-            return;
-        
-        if ([self shouldShowPublishAlert])
-        {
-            NSDictionary *dict = [self.requestAlertContextList firstObject];
-            UIAlertView *alertView = dict[@"AlertView"];
-            [alertView show];
-        }
-        else
-        {
-            for (NSDictionary *dict in self.requestAlertContextList)
-                [self sendRequestPublishRespond:NO seq:[dict[@"Magic"] intValue] requestPublisher:dict[@"User"]];
-            
-            [self.requestAlertContextList removeAllObjects];
-        }
-    }
-    else
-    {
-        if (self.requestAlertList.count == 0)
-            return;
-        
-        if ([self shouldShowPublishAlert])
-        {
-            NSDictionary *dict = [self.requestAlertList firstObject];
-            UIAlertController *alertController = dict[@"AlertController"];
-            [self presentViewController:alertController animated:YES completion:nil];
-        }
-        else
-        {
-            for (NSDictionary *dict in self.requestAlertList)
-            {
-                [self sendRequestPublishRespond:NO seq:[dict[@"Magic"] intValue] requestPublisher:dict[@"User"]];
-            }
-            
-            [self.requestAlertList removeAllObjects];
-        }
-    }
-}
-
-- (NSUInteger)getWaitingRequestListIndex:(int)seq
-{
-    if ([self isDeviceiOS7])
-    {
-        for (NSDictionary *dict in self.requestAlertContextList)
-        {
-            if ([dict[@"Magic"] intValue] == seq)
-                return [self.requestAlertContextList indexOfObject:dict];
-        }
-        
-        return NSNotFound;
-    }
-    else
-    {
-        for (NSDictionary *dict in self.requestAlertList)
-        {
-            if ([dict[@"Magic"] intValue] == seq)
-                return [self.requestAlertList indexOfObject:dict];
-        }
-    }
-    
-    return NSNotFound;
-}
-
-- (void)requestPublishAlert:(ZegoUser *)requestUser seq:(int)seq
-{
-    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"%@ 请求直播，是否允许", nil), requestUser.userName];
-    if ([self isDeviceiOS7])
-    {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:message delegate:self cancelButtonTitle:NSLocalizedString(@"拒绝", nil) otherButtonTitles:NSLocalizedString(@"允许", nil), nil];
-        NSDictionary *contextDictionary = @{@"Magic": @(seq), @"User": requestUser, @"AlertView": alertView};
-        if (self.requestAlertContextList.count == 0)
-            [alertView show];
-        [self.requestAlertContextList addObject:contextDictionary];
-    }
-    else
-    {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"拒绝", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-            [self sendRequestPublishRespond:NO seq:seq requestPublisher:requestUser];
-            
-            NSUInteger index = [self getWaitingRequestListIndex:seq];
-            if (index != NSNotFound)
-                [self.requestAlertList removeObjectAtIndex:index];
-            [self continueOtherRequest];
-        }];
-        
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"允许", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self sendRequestPublishRespond:YES seq:seq requestPublisher:requestUser];
-            
-            NSUInteger index = [self getWaitingRequestListIndex:seq];
-            if (index != NSNotFound)
-                [self.requestAlertList removeObjectAtIndex:index];
-            [self continueOtherRequest];
-        }];
-        
-        [alertController addAction:cancelAction];
-        [alertController addAction:okAction];
-        
-        NSDictionary *contextDictionary = @{@"Magic": @(seq), @"User": requestUser, @"AlertController": alertController};
-        [self.requestAlertList addObject:contextDictionary];
-        
-        if (![self.presentedViewController isKindOfClass:[UIAlertController class]])
-        {
-            [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-            
-            [self presentViewController:alertController animated:YES completion:nil];
-        }
-    }
-}
-
-- (void)requestPublishResultAlert:(NSString *)fromUserName
-{
-    if (self.presentedViewController)
-        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-    
-    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"%@ 不允许连麦", nil), fromUserName];
-    if ([self isDeviceiOS7])
-    {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [alertView show];
-    }
-    else
-    {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-            
-            [self continueOtherRequest];
-        }];
-        
-        [alertController addAction:cancelAction];
-        
-        [self presentViewController:alertController animated:YES completion:nil];
-    }
-}
-
-- (void)onReceiveJoinLive:(NSString *)userId userName:(NSString *)userName seq:(int)seq
-{
-    ZegoUser *requestUser = [ZegoUser new];
-    requestUser.userId = userId;
-    requestUser.userName = userName;
-    
-    [self requestPublishAlert:requestUser seq:seq];
-}
-
-- (void)setIdelTimerDisable:(BOOL)disable
-{
-    [[UIApplication sharedApplication] setIdleTimerDisabled:disable];
-}
-
-- (NSString *)getCurrentTime
-{
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"[HH-mm-ss:SSS]";
-    return [formatter stringFromDate:[NSDate date]];
-}
-
-- (void)addLogString:(NSString *)logString
-{
-    if (logString.length != 0)
-    {
-        NSString *totalString = [NSString stringWithFormat:@"%@: %@", [self getCurrentTime], logString];
-        [self.logArray insertObject:totalString atIndex:0];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"logUpdateNotification" object:self userInfo:nil];
-    }
-}
-
-- (void)addStaticsInfo:(BOOL)publish stream:(NSString *)streamID fps:(double)fps kbs:(double)kbs
-{
-    if (streamID.length == 0)
-        return;
-    
-    NSString *totalString = [NSString stringWithFormat:@"%@: %@ fps %.3f, kbs %.3f", publish ? @"PUBS": @"PULL", streamID, fps, kbs];
-    [self.staticsArray insertObject:totalString atIndex:0];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"logUpdateNotification" object:self userInfo:nil];
-}
-
-#pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     int seq = 0;
@@ -916,240 +1075,82 @@
     
 }
 
-- (void)updateQuality:(int)quality view:(UIView *)playerView
+#pragma mark - Setter
+
+- (void)setBeautifyFeature:(ZegoBeautifyFeature)beautifyFeature
 {
-    if (playerView == nil)
-        return;
-    
-    CALayer *qualityLayer = nil;
-    CATextLayer *textLayer = nil;
-    
-    for (CALayer *layer in playerView.layer.sublayers)
-    {
-        if ([layer.name isEqualToString:@"quality"])
-            qualityLayer = layer;
-        
-        if ([layer.name isEqualToString:@"indicate"])
-            textLayer = (CATextLayer *)layer;
-    }
-    
-    int originQuality = 0;
-    if (qualityLayer != nil)
-    {
-        if (CGColorEqualToColor(qualityLayer.backgroundColor, [UIColor greenColor].CGColor))
-            originQuality = 0;
-        else if (CGColorEqualToColor(qualityLayer.backgroundColor, [UIColor yellowColor].CGColor))
-            originQuality = 1;
-        else if (CGColorEqualToColor(qualityLayer.backgroundColor, [UIColor redColor].CGColor))
-            originQuality = 2;
-        else
-            originQuality = 3;
-        
-        if (quality == originQuality)
-            return;
-    }
-    
-    UIFont *textFont = [UIFont systemFontOfSize:10];
-    
-    if (qualityLayer == nil)
-    {
-        qualityLayer = [CALayer layer];
-        qualityLayer.name = @"quality";
-        [playerView.layer addSublayer:qualityLayer];
-        qualityLayer.frame = CGRectMake(12, 22, 10, 10);
-        qualityLayer.contentsScale = [UIScreen mainScreen].scale;
-        qualityLayer.cornerRadius = 5.0f;
-    }
-    
-    if (textLayer == nil)
-    {
-        textLayer = [CATextLayer layer];
-        textLayer.name = @"indicate";
-        [playerView.layer addSublayer:textLayer];
-        textLayer.backgroundColor = [UIColor clearColor].CGColor;
-        textLayer.font = (__bridge CFTypeRef)textFont.fontName;
-        textLayer.foregroundColor = [UIColor blackColor].CGColor;
-        textLayer.fontSize = textFont.pointSize;
-        textLayer.contentsScale = [UIScreen mainScreen].scale;
-    }
-    
-    UIColor *qualityColor = nil;
-    NSString *text = nil;
-    if (quality == 0)
-    {
-        qualityColor = [UIColor greenColor];
-        text = [NSString stringWithFormat:@"%@%@", NSLocalizedString(@"当前质量:", nil), NSLocalizedString(@"优", nil)];
-    }
-    else if (quality == 1)
-    {
-        qualityColor = [UIColor yellowColor];
-        text = [NSString stringWithFormat:@"%@%@", NSLocalizedString(@"当前质量:", nil), NSLocalizedString(@"良", nil)];
-    }
-    else if (quality == 2)
-    {
-        qualityColor = [UIColor redColor];
-        text = [NSString stringWithFormat:@"%@%@", NSLocalizedString(@"当前质量:", nil), NSLocalizedString(@"中", nil)];
-    }
-    else
-    {
-        qualityColor = [UIColor grayColor];
-        text = [NSString stringWithFormat:@"%@%@", NSLocalizedString(@"当前质量:", nil), NSLocalizedString(@"差", nil)];
-    }
-    
-    qualityLayer.backgroundColor = qualityColor.CGColor;
-    CGSize textSize = [text sizeWithAttributes:@{NSFontAttributeName: textFont}];
-    CGRect textFrame = CGRectMake(CGRectGetMaxX(qualityLayer.frame) + 3, CGRectGetMinY(qualityLayer.frame) + (CGRectGetHeight(qualityLayer.frame) - ceilf(textSize.height))/2, ceilf(textSize.width), ceilf(textSize.height));
-    textLayer.frame = textFrame;
-    textLayer.string = text;
+    _beautifyFeature = beautifyFeature;
+    [[ZegoDemoHelper api] enableBeautifying:beautifyFeature];
 }
 
-- (void)auxCallback:(void *)pData dataLen:(int *)pDataLen sampleRate:(int *)pSampleRate channelCount:(int *)pChannelCount
+- (void)setFilter:(ZegoFilter)filter
 {
-    if (self.auxData == nil)
-    {
-        //初始化auxData
-        NSURL *auxURL = [[NSBundle mainBundle] URLForResource:@"a.pcm" withExtension:nil];
-        if (auxURL)
-        {
-            self.auxData = [NSData dataWithContentsOfURL:auxURL options:0 error:nil];
-            self.pPos = (void *)[self.auxData bytes];
-        }
-    }
+    _filter = filter;
+    [[ZegoDemoHelper api] setFilter:filter];
+}
+
+- (void)setUseFrontCamera:(BOOL)useFrontCamera
+{
+    _useFrontCamera = useFrontCamera;
+    [[ZegoDemoHelper api] setFrontCam:useFrontCamera];
+}
+
+- (void)setEnableMicrophone:(BOOL)enableMicrophone
+{
+    _enableMicrophone = enableMicrophone;
+    [[ZegoDemoHelper api] enableMic:enableMicrophone];
+}
+
+- (void)setEnableTorch:(BOOL)enableTorch
+{
+    _enableTorch = enableTorch;
+    [[ZegoDemoHelper api] enableTorch:enableTorch];
+}
+
+- (void)setEnableCamera:(BOOL)enableCamera
+{
+    _enableCamera = enableCamera;
+    [[ZegoDemoHelper api] enableCamera:enableCamera];
+}
+
+- (void)setEnableSpeaker:(BOOL)enableSpeaker
+{
+    _enableSpeaker = enableSpeaker;
+    [[ZegoDemoHelper api] enableSpeaker:enableSpeaker];
+}
+
+- (void)setEnableAux:(BOOL)enableAux
+{
+    _enableAux = enableAux;
+    [[ZegoDemoHelper api] enableAux:enableAux];
     
-    if (self.auxData)
+    if (enableAux == NO)
     {
-        int nLen = (int)[self.auxData length];
-        if (self.pPos == 0)
-            self.pPos = (void *)[self.auxData bytes];
-        
-        const void *pAuxData = [self.auxData bytes];
-        if (pAuxData == NULL)
-            return;
-        
-        int nLeftLen = (int)(pAuxData + nLen - self.pPos);
-        if (nLeftLen < *pDataLen) {
-            self.pPos = (void *)pAuxData;
-            *pDataLen = 0;
-            return;
-        }
-        
-        if (pSampleRate)
-            *pSampleRate = 44100;
-        
-        if (pChannelCount)
-            *pChannelCount = 2;
-        
-        memcpy(pData, self.pPos, *pDataLen);
-        self.pPos = self.pPos + *pDataLen;
+        self.pPos = NULL;
+        self.auxData = nil;
     }
 }
 
-- (NSString *)encodeStringAddingEscape:(NSString *)urlString
+- (void)setEnablePreviewMirror:(BOOL)enablePreviewMirror
 {
-    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)urlString, NULL, (CFStringRef)@"!*'();:@&=+$,/?%#[]", kCFStringEncodingUTF8));
+    _enablePreviewMirror = enablePreviewMirror;
+    [[ZegoDemoHelper api] enablePreviewMirror:enablePreviewMirror];
 }
 
-- (void)shareToQQ:(NSString *)hls rtmp:(NSString *)rtmp bizToken:(NSString *)bizToken bizID:(NSString *)bizID streamID:(NSString *)streamID
+- (void)setEnableCaptureMirror:(BOOL)enableCaptureMirror
 {
-#if TARGET_OS_SIMULATOR
-#else
-    
-    NSString *encodeHls = [self encodeStringAddingEscape:hls];
-    NSString *encodeRtmp = [self encodeStringAddingEscape:rtmp];
-    NSString *encodeID = [self encodeStringAddingEscape:bizID];
-    NSString *encodeStream = [self encodeStringAddingEscape:streamID];
-    
-    NSString *urlString = [NSString stringWithFormat:@"http://www.zego.im/share/index2?video=%@&rtmp=%@&id=%@&stream=%@",
-                           encodeHls,
-                           encodeRtmp,
-                           encodeID,
-                           encodeStream ];
-    
-    NSURL *url = [NSURL URLWithString:urlString];
-    UIImage *logoImage = [UIImage imageNamed:@"zego"];
-    NSData *previewImageData = UIImagePNGRepresentation(logoImage);
-    
-    NSString *title = @"LiveDemo";
-    NSString *description = @"快来围观我的直播";
-    
-    QQApiURLObject *urlObject = [QQApiURLObject objectWithURL:url title:title description:description previewImageData:previewImageData targetContentType:QQApiURLTargetTypeNews];
-    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:urlObject];
-    QQApiSendResultCode result = [QQApiInterface sendReq:req];
-    
-    NSLog(@"share To QQ URL: %@, result %d", urlString, result);
-
-#endif
-    
+    _enableCaptureMirror = enableCaptureMirror;
+    [[ZegoDemoHelper api] enableCaptureMirror:enableCaptureMirror];
 }
 
-
-#pragma mark - ZegoLiveApiAudioRecordDelegate
-
-- (void)onAudioRecord:(NSData *)audioData sampleRate:(int)sampleRate numOfChannels:(int)numOfChannels bitDepth:(int)bitDepth
+- (void)setEnableLoopback:(BOOL)enableLoopback
 {
-    if (!self.recordedAudio)
-    {
-        self.recordedAudio = [NSMutableData data];
-    }
-    
-    [self.recordedAudio appendData:audioData];
+    _enableLoopback = enableLoopback;
+    [[ZegoDemoHelper api] enableLoopback:enableLoopback];
+    if (enableLoopback)
+        [[ZegoDemoHelper api] setLoopbackVolume:50];
 }
 
-- (void)enableAudioRecord:(BOOL)enable
-{
-    //
-    // * test audio record
-    //
-    [[ZegoDemoHelper api] enableAudioRecord:enable];
-    if (enable)
-    {
-        [[ZegoDemoHelper api] setAudioRecordDelegate:self];
-    }
-    else
-    {
-        [[ZegoDemoHelper api] setAudioRecordDelegate:nil];
-        
-        if (self.recordedAudio)
-        {
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-            NSString *cachesDir = [paths objectAtIndex:0];
-            NSString *auidoFilePathname = [cachesDir stringByAppendingPathComponent:@"recored_audio"];
-            
-            [self.recordedAudio writeToFile:auidoFilePathname atomically:YES];
-            self.recordedAudio = nil;
-        }
-    }
-}
-
-- (NSString *)encodeDictionaryToJSON:(NSDictionary *)dictionary
-{
-    if (dictionary == nil)
-        return nil;
-    
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:nil];
-    if (jsonData)
-    {
-        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        return jsonString;
-    }
-    
-    return nil;
-}
-
-- (NSDictionary *)decodeJSONToDictionary:(NSString *)json
-{
-    if (json == nil)
-        return nil;
-    
-    NSData *jsonData = [json dataUsingEncoding:NSUTF8StringEncoding];
-    if (jsonData)
-    {
-        NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:nil];
-        return dictionary;
-    }
-    
-    return nil;
-}
 
 
 @end

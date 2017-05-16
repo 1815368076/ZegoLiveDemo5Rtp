@@ -244,6 +244,198 @@
 
 @end
 
+@interface ZegoVideoFilterI420Demo()
+@property (atomic) int pendingCount;
+@end
+
+@implementation ZegoVideoFilterI420Demo {
+    id<ZegoVideoFilterClient> client_;
+    id<ZegoVideoBufferPool> buffer_pool_;
+    
+    dispatch_queue_t queue_;
+    int width_;
+    int height_;
+    int stride_;
+    
+    CVPixelBufferPoolRef pool_;
+    int buffer_count_;
+}
+
+- (void)zego_allocateAndStart:(id<ZegoVideoFilterClient>) client {
+    client_ = client;
+    if ([client_ conformsToProtocol:@protocol(ZegoVideoBufferPool)]) {
+        buffer_pool_ = client;
+    }
+    
+    width_ = 0;
+    height_ = 0;
+    stride_ = 0;
+    pool_ = nil;
+    buffer_count_ = 4;
+    self.pendingCount = 0;
+    
+    queue_ = dispatch_queue_create("video.filter", nil);
+}
+
+- (void)zego_stopAndDeAllocate {
+    if (queue_) {
+        dispatch_sync(queue_, ^ {
+        });
+        queue_ = nil;
+    }
+    
+    if (pool_) {
+        [self destroyPool:&pool_];
+        pool_ = nil;
+    }
+    
+    if (client_) {
+        [client_ destroy];
+        client_ = nil;
+        buffer_pool_ = nil;
+    }
+}
+
+- (ZegoVideoBufferType)supportBufferType {
+    return ZegoVideoBufferTypeAsyncI420PixelBuffer;
+}
+
+- (CVPixelBufferRef)dequeueInputBuffer:(int)width height:(int)height stride:(int)stride {
+    if (width_ != width || height_ != height || stride_ != stride) {
+        if (pool_) {
+            [self destroyPool:&pool_];
+        }
+        
+        if ([self createPool:width height:height pool:&pool_]) {
+            width_ = width;
+            height_ = height;
+            stride_ = stride;
+        } else {
+            return nil;
+        }
+    }
+    
+    if (self.pendingCount >= buffer_count_) {
+        return nil;
+    }
+    
+    CVPixelBufferRef pixel_buffer = nil;
+    CVReturn ret = CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault, pool_, &pixel_buffer);
+    
+    if (ret != kCVReturnSuccess) {
+        return nil;
+    } else {
+        self.pendingCount = self.pendingCount + 1;
+        return pixel_buffer;
+    }
+}
+
+- (void)queueInputBuffer:(CVPixelBufferRef)pixel_buffer timestamp:(unsigned long long)timestamp_100n {
+    dispatch_async(queue_, ^ {
+        int imageWidth = (int)CVPixelBufferGetWidth(pixel_buffer);
+        int imageHeight = (int)CVPixelBufferGetHeight(pixel_buffer);
+        int imageStride = (int)CVPixelBufferGetBytesPerRowOfPlane(pixel_buffer, 0);
+        
+        CVPixelBufferRef dst = [buffer_pool_ dequeueInputBuffer:imageWidth height:imageHeight stride:imageStride];
+        if (!dst) {
+            return ;
+        }
+        
+        // add your own code here
+        if ([self copyVideoFrame:pixel_buffer toPixelBuffer:dst]) {
+            [buffer_pool_ queueInputBuffer:dst timestamp:timestamp_100n];
+        }
+        
+        self.pendingCount = self.pendingCount - 1;
+        
+        CVPixelBufferRelease(pixel_buffer);
+    });
+}
+
+- (bool) createPool:(int)width height:(int)height pool:(CVPixelBufferPoolRef*)pool {
+    CFMutableDictionaryRef attrs;
+    
+    SInt32 cvPixelFormatTypeValue = kCVPixelFormatType_420YpCbCr8Planar;
+    CFNumberRef cfPixelFormat = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, (const void*)(&(cvPixelFormatTypeValue)));
+    SInt32 cvWidthValue = width;
+    CFNumberRef cfWidth = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, (const void*)(&(cvWidthValue)));
+    SInt32 cvHeightValue = height;
+    CFNumberRef cfHeight = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, (const void*)(&(cvHeightValue)));
+    
+    attrs = CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                      3,
+                                      &kCFTypeDictionaryKeyCallBacks,
+                                      &kCFTypeDictionaryValueCallBacks);
+    
+    CFDictionarySetValue(attrs, kCVPixelBufferPixelFormatTypeKey, cfPixelFormat);
+    CFDictionarySetValue(attrs, kCVPixelBufferWidthKey, cfWidth);
+    CFDictionarySetValue(attrs, kCVPixelBufferHeightKey, cfHeight);
+    
+    CVReturn ret = CVPixelBufferPoolCreate(kCFAllocatorDefault, nil, attrs, pool);
+    
+    CFRelease(attrs);
+    CFRelease(cfPixelFormat);
+    CFRelease(cfWidth);
+    CFRelease(cfHeight);
+    
+    if (ret != kCVReturnSuccess) {
+        return false;
+    }
+    
+    return true;
+}
+
+- (void) destroyPool:(CVPixelBufferPoolRef*) pool {
+    CVPixelBufferPoolRelease(*pool);
+    *pool = nil;
+}
+
+- (bool) copyVideoFrame:(CVPixelBufferRef)src toPixelBuffer:(CVPixelBufferRef)dst {
+    bool ret = true;
+    
+    CVPixelBufferLockBaseAddress(src, kCVPixelBufferLock_ReadOnly);
+    
+    unsigned char* pb = (unsigned char*)CVPixelBufferGetBaseAddressOfPlane(src, 0);
+    int height = (int)CVPixelBufferGetHeight(src);
+    int stride = (int)CVPixelBufferGetBytesPerRow(src);
+    int size = (int)CVPixelBufferGetDataSize(src);
+    
+    while (1) {
+        CVReturn cvRet = CVPixelBufferLockBaseAddress(dst, 0);
+        if (cvRet != kCVReturnSuccess) {
+            ret = false;
+            break;
+        }
+        
+        int dst_height = (int)CVPixelBufferGetHeight(dst);
+        int dst_stride = (int)CVPixelBufferGetBytesPerRow(dst);
+        int dst_size = (int)CVPixelBufferGetDataSize(dst);
+        
+        if (stride == dst_stride && dst_size == size) {
+            unsigned char* temp = (unsigned char*)CVPixelBufferGetBaseAddressOfPlane(dst, 0);
+            memcpy(temp, pb, size);
+        } else {
+            int copy_height = height > dst_height ? dst_height : height;
+            int copy_stride = stride > dst_stride ? dst_stride : stride;
+            
+            unsigned char* offset_dst = (unsigned char*)CVPixelBufferGetBaseAddressOfPlane(dst, 0);
+            unsigned char* offset_src = pb;
+            for (int i = 0; i < copy_height; i++) {
+                memcpy(offset_dst, offset_src, copy_stride);
+                offset_src += stride;
+                offset_dst += dst_stride;
+            }
+        }
+        
+        CVPixelBufferUnlockBaseAddress(dst, 0);
+        break;
+    }
+    
+    CVPixelBufferUnlockBaseAddress(src, kCVPixelBufferLock_ReadOnly);
+    return ret;
+}
+
+@end
 
 @implementation ZegoVideoFilterFactoryDemo {
     id<ZegoVideoFilter> g_filter_;
@@ -252,7 +444,12 @@
 - (id<ZegoVideoFilter>)zego_create {
     if (g_filter_ == nil) {
         bool async = true;
-        if (async) {
+        bool useI420 = false;
+        if (useI420)
+        {
+            g_filter_ = [[ZegoVideoFilterI420Demo alloc] init];
+        }
+        else if (async) {
             g_filter_ = [[ZegoVideoFilterDemo alloc]init];
         } else {
             g_filter_ = [[ZegoVideoFilterDemo2 alloc]init];
