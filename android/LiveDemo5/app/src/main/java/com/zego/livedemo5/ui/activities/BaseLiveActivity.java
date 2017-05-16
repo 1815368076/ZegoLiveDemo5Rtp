@@ -73,8 +73,6 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
 
     protected LinkedList<ViewLive> mListViewLive = new LinkedList<>();
 
-    protected LinkedList<String> mListLog = new LinkedList<>();
-
     protected TextView mTvPublisnControl = null;
 
     protected TextView mTvPublishSetting = null;
@@ -353,8 +351,6 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
-        PreferenceUtil.getInstance().setObjectToString(LogListActivity.KEY_LIST_LOG, mListLog);
     }
 
     /**
@@ -473,11 +469,6 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
 
         return viewLive;
     }
-
-    protected void recordLog(String msg) {
-        mListLog.addFirst(msg);
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

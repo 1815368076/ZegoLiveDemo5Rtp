@@ -88,6 +88,8 @@ public final class ViewActionsEx {
 
             @Override
             public void perform(UiController uiController, View view) {
+                if (!view.isEnabled()) return;
+
                 Checkable checkAble = (Checkable)view;
                 if (checkAble.isChecked() == checked) return;
 

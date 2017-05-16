@@ -17,6 +17,7 @@ import com.zego.livedemo5.ui.activities.gamelive.GameLivingPlayActivity;
 import com.zego.livedemo5.ui.activities.mixstream.MixStreamPlayActivity;
 import com.zego.livedemo5.ui.activities.moreanchors.MoreAnchorsPlayActivity;
 import com.zego.livedemo5.ui.activities.singleanchor.SingleAnchorPlayActivity;
+import com.zego.livedemo5.ui.activities.wolvesgame.WolvesGameInTurnActivity;
 import com.zego.livedemo5.utils.ZegoRoomUtil;
 import com.zego.livedemo5.ui.adapters.ListRoomAdapter;
 import com.zego.livedemo5.ui.adapters.SpaceItemDecoration;
@@ -71,7 +72,7 @@ public class RoomListFragment extends AbsBaseFragment {
             public void onUpdateRoomList(List<RoomInfo> listRoom) {
                 mListRoom.clear();
                 for(RoomInfo roomInfo : listRoom){
-                    if(roomInfo.stream_info != null && roomInfo.stream_info.size() > 0){
+                    if ((roomInfo.stream_info != null && roomInfo.stream_info.size() > 0) || roomInfo.room_id.startsWith(ZegoRoomUtil.ROOM_PREFIX_WERE_WOLVES)){
                         mListRoom.add(roomInfo);
                     }
                 }
@@ -107,6 +108,8 @@ public class RoomListFragment extends AbsBaseFragment {
                     publishType = 3;
                 } else if(roomInfo.room_id.startsWith(ZegoRoomUtil.ROOM_PREFIX_GAME_LIVING)){
                     publishType = 4;
+                } else if (roomInfo.room_id.startsWith(ZegoRoomUtil.ROOM_PREFIX_WERE_WOLVES)) {
+                    publishType = 5;
                 }
 
                 switch (publishType) {
@@ -125,6 +128,9 @@ public class RoomListFragment extends AbsBaseFragment {
                         break;
                     case 4:
                         GameLivingPlayActivity.actionStart(mParentActivity, roomInfo.room_id);
+                        break;
+                    case 5:
+                        WolvesGameInTurnActivity.actionStart(mParentActivity, roomInfo);
                         break;
                 }
 

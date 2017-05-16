@@ -52,6 +52,11 @@ public class GlUtil {
         final int frameBufferId = frameBufferArray[0];
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferId);
         GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, textureId, 0);
+        int status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER);
+
+        if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
+            return -1;
+        }
 
         checkNoGLES2Error("generateFrameBuffer");
         return frameBufferId;

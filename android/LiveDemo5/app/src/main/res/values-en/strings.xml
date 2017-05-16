@@ -85,6 +85,7 @@
     <string name="single_anchor_mode">Single Anchor</string>
     <string name="game_live_mode">Game Live</string>
     <string name="play_mixstream">Play MixStream</string>
+    <string name="wolves_game_mode">Wolves Game</string>
 
     <string name="external_capture">External Capture</string>
     <string name="external_render">External Render</string>
@@ -97,4 +98,30 @@
 
     <string name="message_can_not_be_empty">Message can not be empty!</string>
     <string name="me">Me</string>
+
+    <string name="start_speaking">Start Speaking</string>
+    <string name="end_speaking">End Speaking</string>
+    <string name="in_turn">In-Turn</string>
+    <string name="end_in_turn">End In-Turn</string>
+    <string name="mode_free_speaking">Mode: Free speaking</string>
+    <string name="mode_in_turn_speaking">Mode: In turn speaking</string>
+    <string name="mode_in_turn_speaking_wait">Mode：In turn speaking(is gaming, wait for next...)</string>
+    <string name="mode_updating_system">Updating system...</string>
+    <string name="mode_update_system_success">Update system success</string>
+    <string name="mode_update_system_failed">Update system failed</string>
+
+    <string name="publish_way_title">Select publish way</string>
+    <string name="publish_way_low_delay">Low Delay</string>
+    <string name="publish_way_low_cost">Low Cost</string>
+
+    <string name="wolf_role">Role: %1$d</string>
+    <string name="tips_login_success">Login room success</string>
+    <string name="tips_login_failed" formatted="true">Login room failed：%1$d</string>
+    <string name="tips_wait_anchor_answer">Wait for anchor answer</string>
+    <string name="dialog_anchor_leave_room">Anchor has leave the room</string>
+    <string name="tips_all_members_leave">All members have leaved</string>
+    <string name="tips_publish_failed">Publish failed，errorCode: %1$d, streamId: %2$s</string>
+    <string name="tips_publish_finish">Publish finish，errorCode: %1$d, streamId: %2$s</string>
+    <string name="tips_publish_stop">Stop publish</string>
+
 </resources>

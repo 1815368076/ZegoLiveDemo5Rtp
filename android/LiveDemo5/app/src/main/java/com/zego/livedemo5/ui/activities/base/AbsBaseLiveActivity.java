@@ -7,6 +7,13 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 
+import com.zego.livedemo5.ui.activities.LogListActivity;
+import com.zego.livedemo5.utils.PreferenceUtil;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+
 import butterknife.ButterKnife;
 
 
@@ -20,6 +27,8 @@ public abstract class AbsBaseLiveActivity extends AppCompatActivity {
     protected Handler mHandler;
 
     protected ProgressDialog mProgressDialog;
+
+    protected LinkedList<String> mListLog = new LinkedList<>();
 
     /**
      * 获取内容页面的布局.
@@ -80,5 +89,16 @@ public abstract class AbsBaseLiveActivity extends AppCompatActivity {
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
 
+    static private SimpleDateFormat sDataFormat = new SimpleDateFormat("[hh:mm:ss.SSS]");
+    protected void recordLog(String msg) {
+        String now = sDataFormat.format(new Date());
+        mListLog.addFirst(String.format("%s %s", now, msg));
+        PreferenceUtil.getInstance().setObjectToString(LogListActivity.KEY_LIST_LOG, mListLog);
+    }
+
+    protected void recordLog(String msgFormat, Object... args) {
+        String message = String.format(msgFormat, args);
+        recordLog(message);
+    }
 
 }

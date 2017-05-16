@@ -100,10 +100,22 @@ public class GlRectDrawer {
     private static class Shader {
         public final GlShader glShader;
         public final int texMatrixLocation;
+        public final int posLocation;
+        public final int tcLocation;
+        public int tex0Location;
+        public int tex1Location;
+        public int tex2Location;
 
         public Shader(String fragmentShader) {
             this.glShader = new GlShader(VERTEX_SHADER_STRING, fragmentShader);
             this.texMatrixLocation = glShader.getUniformLocation("texMatrix");
+            this.posLocation = glShader.getAttribLocation("in_pos");
+            this.tcLocation = glShader.getAttribLocation("in_tc");
+
+            GLES20.glEnableVertexAttribArray(this.posLocation);
+            GLES20.glEnableVertexAttribArray(this.tcLocation);
+
+            tex0Location = tex1Location = tex2Location = 0;
         }
     }
 
@@ -174,25 +186,38 @@ public class GlRectDrawer {
             shader = new Shader(fragmentShader);
             shaders.put(fragmentShader, shader);
             shader.glShader.useProgram();
-            // Initialize fragment shader uniform values.
             if (fragmentShader == YUV_FRAGMENT_SHADER_STRING) {
-                GLES20.glUniform1i(shader.glShader.getUniformLocation("y_tex"), 0);
-                GLES20.glUniform1i(shader.glShader.getUniformLocation("u_tex"), 1);
-                GLES20.glUniform1i(shader.glShader.getUniformLocation("v_tex"), 2);
+                shader.tex0Location = shader.glShader.getUniformLocation("y_tex");
+                shader.tex1Location = shader.glShader.getUniformLocation("u_tex");
+                shader.tex2Location = shader.glShader.getUniformLocation("v_tex");
             } else if (fragmentShader == RGB_FRAGMENT_SHADER_STRING) {
-                GLES20.glUniform1i(shader.glShader.getUniformLocation("rgb_tex"), 0);
+                shader.tex0Location = shader.glShader.getUniformLocation("rgb_tex");
             } else if (fragmentShader == OES_FRAGMENT_SHADER_STRING) {
-                GLES20.glUniform1i(shader.glShader.getUniformLocation("oes_tex"), 0);
+                shader.tex0Location = shader.glShader.getUniformLocation("oes_tex");
             } else {
                 throw new IllegalStateException("Unknown fragment shader: " + fragmentShader);
             }
             GlUtil.checkNoGLES2Error("Initialize fragment shader uniform values.");
-            // Initialize vertex shader attributes.
-            shader.glShader.setVertexAttribArray("in_pos", 2, FULL_RECTANGLE_BUF);
-            shader.glShader.setVertexAttribArray("in_tc", 2, FULL_RECTANGLE_TEX_BUF);
         }
         shader.glShader.useProgram();
         // Copy the texture transformation matrix over.
+
+        GLES20.glEnableVertexAttribArray(shader.posLocation);
+        GLES20.glEnableVertexAttribArray(shader.tcLocation);
+        if (shader.tex0Location != 0) {
+            GLES20.glUniform1i(shader.tex0Location, 0);
+        }
+
+        if (shader.tex1Location != 0) {
+            GLES20.glUniform1i(shader.tex1Location, 1);
+        }
+
+        if (shader.tex2Location != 0) {
+            GLES20.glUniform1i(shader.tex1Location, 2);
+        }
+
+        GLES20.glVertexAttribPointer(shader.posLocation, 2, GLES20.GL_FLOAT, false, 0, FULL_RECTANGLE_BUF);
+        GLES20.glVertexAttribPointer(shader.tcLocation, 2, GLES20.GL_FLOAT, false, 0, FULL_RECTANGLE_TEX_BUF);
         GLES20.glUniformMatrix4fv(shader.texMatrixLocation, 1, false, texMatrix, 0);
     }
 

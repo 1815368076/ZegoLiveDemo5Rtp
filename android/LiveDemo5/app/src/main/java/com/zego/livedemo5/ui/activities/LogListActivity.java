@@ -2,6 +2,7 @@ package com.zego.livedemo5.ui.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import com.zego.livedemo5.R;
 import com.zego.livedemo5.ui.adapters.LogListAdapter;
 import com.zego.livedemo5.ui.activities.base.AbsBaseActivity;
 import com.zego.livedemo5.utils.PreferenceUtil;
+import com.zego.livedemo5.utils.ShareUtils;
 
 import java.util.LinkedList;
 
@@ -33,6 +35,8 @@ public class LogListActivity extends AbsBaseActivity {
 
     private LinkedList<String> mLinkedListData;
 
+    private PreferenceUtil.OnChangeListener mOnChangeListener;
+
     public static void actionStart(Activity activity){
         Intent intent = new Intent(activity, LogListActivity.class);
         activity.startActivity(intent);
@@ -53,6 +57,20 @@ public class LogListActivity extends AbsBaseActivity {
         if (mLinkedListData == null) {
             mLinkedListData = new LinkedList<>();
         }
+        mOnChangeListener = new PreferenceUtil.OnChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (KEY_LIST_LOG.equals(key)) {
+                    mLinkedListData.clear();
+                    LinkedList<String> data = (LinkedList<String>) PreferenceUtil.getInstance().getObjectFromString(KEY_LIST_LOG);
+                    if (data != null) {
+                        mLinkedListData.addAll(data);
+                    }
+                    mLogListAdapter.notifyDataSetChanged();
+                }
+            }
+        };
+        PreferenceUtil.getInstance().registerOnChangeListener(mOnChangeListener);
     }
 
     @Override
@@ -69,6 +87,7 @@ public class LogListActivity extends AbsBaseActivity {
 
     @OnClick(R.id.tv_back)
     public void back(){
+        PreferenceUtil.getInstance().unregisterOnChangeListener(mOnChangeListener);
         finish();
     }
 }

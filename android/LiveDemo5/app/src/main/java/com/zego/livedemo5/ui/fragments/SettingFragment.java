@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.zego.livedemo5.BuildConfig;
 import com.zego.livedemo5.MainActivity;
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
@@ -107,6 +108,8 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
 
     private int mCount = 0;
 
+    private long currentAppId;
+
     private final int[][] VIDEO_RESOLUTIONS = new int[][]{{320, 240}, {352, 288}, {640, 360},
             {640, 360}, {1280, 720}, {1920, 1080}};
 
@@ -125,7 +128,7 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
     @Override
     protected void initVariables() {
         mResolutionTexts = mResources.getStringArray(R.array.resolutions);
-
+        currentAppId = BuildConfig.APP_ID;
     }
 
     @Override
@@ -217,6 +220,7 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
         seekbarResolution.setEnabled(false);
         seekBarFps.setEnabled(false);
         seekBarBitrate.setEnabled(false);
+        etAppID.setText(String.valueOf(currentAppId));
     }
 
     @Override
@@ -309,6 +313,13 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
             ZegoApiManager.getInstance().setZegoConfig(zegoAvConfig);
         }
 
+        String newUserName = etUserName.getText().toString();
+        if (!newUserName.equals(PreferenceUtil.getInstance().getUserName())) {
+            PreferenceUtil.getInstance().setUserName(newUserName);
+            ZegoApiManager.getInstance().getZegoLiveRoom().setUser(PreferenceUtil.getInstance().getUserID(), newUserName);
+            mNeedToReInitSDK = true;
+        }
+
         // 设置appID appKey
         final String appID = etAppID.getText().toString().trim();
         final String appKey = etAppKey.getText().toString().trim();
@@ -326,6 +337,7 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
                         return;
                     }
 
+                    currentAppId = Long.valueOf(appID);
                     byte[] signKey = new byte[32];
                     for (int i = 0; i < 32; i++) {
                         int data = Integer.valueOf(keys[i].trim().replace("0x", ""), 16);
@@ -334,7 +346,7 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
 
                     // 重新初始化sdk
                     ZegoApiManager.getInstance().releaseSDK();
-                    ZegoApiManager.getInstance().reInitSDK(Long.valueOf(appID), signKey);
+                    ZegoApiManager.getInstance().reInitSDK(currentAppId, signKey);
 
                 } else if (mNeedToReInitSDK) {
 

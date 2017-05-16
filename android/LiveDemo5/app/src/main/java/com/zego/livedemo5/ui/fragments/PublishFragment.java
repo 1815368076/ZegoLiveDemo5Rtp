@@ -1,7 +1,6 @@
 package com.zego.livedemo5.ui.fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -11,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Surface;
-import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -29,8 +27,8 @@ import com.zego.livedemo5.ui.activities.gamelive.GameLiveActivity;
 import com.zego.livedemo5.ui.activities.mixstream.MixStreamPublishActivity;
 import com.zego.livedemo5.ui.activities.moreanchors.MoreAnchorsPublishActivity;
 import com.zego.livedemo5.ui.activities.base.AbsBaseFragment;
-import com.zego.livedemo5.ui.activities.singleanchor.SingleAnchorPlayActivity;
 import com.zego.livedemo5.ui.activities.singleanchor.SingleAnchorPublishActivity;
+import com.zego.livedemo5.ui.activities.wolvesgame.WolvesGameHostActivity;
 import com.zego.livedemo5.ui.widgets.DialogSelectPublishMode;
 import com.zego.livedemo5.utils.PreferenceUtil;
 import com.zego.livedemo5.utils.SystemUtil;
@@ -246,6 +244,11 @@ public class PublishFragment extends AbsBaseFragment {
             @Override
             public void onGameLivingSelect() {
                 GameLiveActivity.actionStart(mParentActivity, publishTitleTemp, mParentActivity.getWindowManager().getDefaultDisplay().getRotation());
+            }
+
+            @Override
+            public void onWolvesGameSelect() {
+                WolvesGameHostActivity.actionStart(mParentActivity, publishTitleTemp, mParentActivity.getWindowManager().getDefaultDisplay().getRotation());
             }
         });
 

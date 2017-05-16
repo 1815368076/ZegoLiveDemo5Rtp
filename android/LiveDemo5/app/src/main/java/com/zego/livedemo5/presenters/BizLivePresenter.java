@@ -75,8 +75,18 @@ public class BizLivePresenter {
             public void run() {
                 RequestQueue mQueue = Volley.newRequestQueue(ZegoApplication.sApplicationContext);
                 long appID = ZegoApiManager.getInstance().getAppID();
+                // 区分国内环境与国际环境
                 String domain = ZegoApiManager.getInstance().isInternationalProduct(appID) ? "zegocloud.com" : "zego.im";
                 String url = String.format("https://liveroom%d-api.%s/demo/roomlist?appid=%s", appID, domain, appID);
+
+                //  测试环境, 使用不同的url获取房间列表
+                if(ZegoApiManager.getInstance().isUseTestEvn()){
+                    String testBase = "https://test2-liveroom-api.zego.im";
+                    if(ZegoApiManager.getInstance().isInternationalProduct(appID)){
+                        testBase = "https://test2-liveroom-api.zegocloud.com";
+                    }
+                    url = String.format("%s/demo/roomlist?appid=%s", testBase, appID);
+                }
                 StringRequest request = new StringRequest(url,
                         new Response.Listener<String>() {
                             @Override

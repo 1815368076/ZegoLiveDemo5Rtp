@@ -294,4 +294,8 @@ public class ZegoApiManager {
     public boolean isRtmpProduct(long appId) {
         return appId == 1L;
     }
+
+    public boolean isUseTestEvn(){
+        return mUseTestEvn;
+    }
 }

@@ -1,6 +1,7 @@
 package com.zego.livedemo5;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -144,7 +145,7 @@ public class PublishInstrumentedTest {
         for (int settingCombinationIndex = 0; settingCombinationIndex < (1<< 8); settingCombinationIndex++) {
             int[] combinationIds = SettingsInstrumentedTest.modifyLiveSetting(settingCombinationIndex);
             startPublishStream("testSingleAnchor", R.id.tv_select_single_anchor);
-            waitForPublishSuccess(10000);
+            waitForPublishSuccess(10000, mActivity);
             exitLive();
             SettingsInstrumentedTest.resetLiveSetting(combinationIds);
         }
@@ -156,7 +157,7 @@ public class PublishInstrumentedTest {
         for (int settingCombinationIndex = 0; settingCombinationIndex < (1<< 8); settingCombinationIndex++) {
             int[] combinationIds = SettingsInstrumentedTest.modifyLiveSetting(settingCombinationIndex);
             startPublishStream("testMoreAnchors", R.id.tv_select_more_anchors);
-            waitForPublishSuccess(10000);
+            waitForPublishSuccess(10000, mActivity);
             exitLive();
             SettingsInstrumentedTest.resetLiveSetting(combinationIds);
         }
@@ -168,13 +169,13 @@ public class PublishInstrumentedTest {
         for (int settingCombinationIndex = 0; settingCombinationIndex < (1<< 8); settingCombinationIndex++) {
             int[] combinationIds = SettingsInstrumentedTest.modifyLiveSetting(settingCombinationIndex);
             startPublishStream("testMixAnchors", R.id.tv_select_mix_stream);
-            waitForPublishSuccess(10000);
+            waitForPublishSuccess(10000, mActivity);
             exitLive();
             SettingsInstrumentedTest.resetLiveSetting(combinationIds);
         }
     }
 
-    private void startPublishStream(String roomName, int btnResId) {
+    static public void startPublishStream(String roomName, int btnResId) {
         onView(withId(R.id.et_publish_title)).perform(clearText(), typeText(roomName), closeSoftKeyboard());
         // 点击开始直播
         onView(withId(R.id.btn_start_publish)).perform(click());
@@ -185,7 +186,7 @@ public class PublishInstrumentedTest {
     private void keepSilent() {
         onView(withId(R.id.tv_speaker)).perform(click());
 
-        waitForPublishSuccess(5000);    // 等待设置按钮可用(推流成功后才可点击)，此处因使用 IdlingResource 有难度
+        waitForPublishSuccess(5000, mActivity);    // 等待设置按钮可用(推流成功后才可点击)，此处因使用 IdlingResource 有难度
 
         onView(withId(R.id.tv_publish_settings)).perform(click());
 
@@ -211,32 +212,39 @@ public class PublishInstrumentedTest {
         return new float[] { trafficStatistics.getAppTotalTxKBytes(), trafficStatistics.getAppTotalRxKBytes() };
     }
 
-    private JoinLiveRequestMonitor monitorJoinLiveRequest() {
+    static public JoinLiveRequestMonitor monitorJoinLiveRequest() {
         JoinLiveRequestMonitor monitor = new JoinLiveRequestMonitor("joinLiveMonitor");
         monitor.start();
         return monitor;
     }
 
-    private void exitLive() {
+    static public void exitLive() {
         onView(withId(R.id.tv_close)).perform(click());
         onView(withText(R.string.Yes)).perform(click());
     }
 
-    private void waitForPublishSuccess(long timeout) {
+    static public boolean waitForPublishSuccess(long timeout, Context context) {
         UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        UiObject settingTab = uiDevice.findObject(new UiSelector().className("android.widget.TextView").text(mActivity.getString(R.string.publish_setting)).resourceId("com.zego.livedemo5:id/tv_publish_settings"));
+        UiObject settingTab = uiDevice.findObject(new UiSelector().className("android.widget.TextView").text(context.getString(R.string.publish_setting)).resourceId(context.getPackageName() + ":id/tv_publish_settings"));
         long usedTime = 0;
+        boolean isTimeout = true;
         while (usedTime <= timeout) {
             try {
-                if (settingTab.isEnabled()) break;
+                if (settingTab.isEnabled()) {
+                    isTimeout = false;
+                    printLog("publish success, interrupt waiting");
+                    break;
+                }
 
-                printLog("wait for publish success");
+                printLog("waiting for publish success");
             } catch (UiObjectNotFoundException e) {
+                printLog("exception: %s", e);
             }
 
             sleep(500);
             usedTime += 500;
         }
+        return isTimeout;
     }
 
 }

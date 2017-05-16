@@ -8,7 +8,7 @@ import com.zego.zegoliveroom.videofilter.ZegoVideoFilterFactory;
  */
 
 public class VideoFilterFactoryDemo extends ZegoVideoFilterFactory {
-    private int mode = 0;
+    private int mode = 5;
     private ZegoVideoFilter mFilter = null;
 
     public ZegoVideoFilter create() {
@@ -24,6 +24,12 @@ public class VideoFilterFactoryDemo extends ZegoVideoFilterFactory {
                 break;
             case 3:
                 mFilter = new VideoFilterSurfaceTextureDemo2();
+                break;
+            case 4:
+                mFilter = new VideoFilterSurfaceTextureDemo2();
+                break;
+            case 5:
+                mFilter = new VideoFilterI420MemDemo();
                 break;
         }
 

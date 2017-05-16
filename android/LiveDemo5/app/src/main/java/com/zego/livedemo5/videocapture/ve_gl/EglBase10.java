@@ -168,7 +168,7 @@ public final class EglBase10 extends EglBase {
 
     @Override
     public EglBase.Context getEglBaseContext() {
-        return new Context(eglContext);
+        return new EglBase10.Context(eglContext);
     }
 
     @Override

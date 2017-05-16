@@ -134,4 +134,14 @@ public class PreferenceUtil {
         }
     }
 
+    public void registerOnChangeListener(OnChangeListener listener) {
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(listener);
+    }
+
+    public void unregisterOnChangeListener(OnChangeListener listener) {
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(listener);
+    }
+
+    public interface OnChangeListener extends SharedPreferences.OnSharedPreferenceChangeListener {
+    }
 }

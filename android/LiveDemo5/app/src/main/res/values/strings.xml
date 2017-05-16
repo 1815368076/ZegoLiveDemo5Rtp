@@ -83,6 +83,7 @@
     <string name="single_anchor_mode">单主播模式</string>
     <string name="game_live_mode">游戏直播</string>
     <string name="play_mixstream">播放混流</string>
+    <string name="wolves_game_mode">狼人杀</string>
 
     <string name="external_capture">外部采集</string>
     <string name="external_render">外部渲染</string>
@@ -95,4 +96,31 @@
 
     <string name="message_can_not_be_empty">消息不能为空!</string>
     <string name="me">我</string>
+
+    <string name="start_speaking">开始说话</string>
+    <string name="end_speaking">结束说话</string>
+    <string name="in_turn">轮流说话</string>
+    <string name="end_in_turn">结束轮流说话</string>
+    <string name="mode_free_speaking">当前模式：自由说话</string>
+    <string name="mode_in_turn_speaking">当前模式：轮流说话</string>
+    <string name="mode_in_turn_speaking_wait">当前模式：轮流说话（正在游戏，等待下一局）</string>
+    <string name="mode_updating_system">正在系统同步...</string>
+    <string name="mode_update_system_success">系统同步成功</string>
+    <string name="mode_update_system_failed">系统同步失败</string>
+
+    <string name="publish_way_title">选择推流方式</string>
+    <string name="publish_way_low_delay">低延迟</string>
+    <string name="publish_way_low_cost">低成本</string>
+
+    <string name="wolf_role">角色: %1$d</string>
+    <string name="tips_login_success">登录房间成功</string>
+    <string name="tips_login_failed" formatted="true">登录房间失败：%1$d</string>
+    <string name="tips_wait_anchor_answer">等待主持人响应</string>
+    <string name="dialog_anchor_leave_room">主持人已离开房间</string>
+    <string name="tips_all_members_leave">所有玩家都退出了</string>
+    <string name="tips_publish_failed">发布直播失败，errorCode: %1$d, streamId: %2$s</string>
+    <string name="tips_publish_finish">发布直播结束，errorCode: %1$d, streamId: %2$s</string>
+    <string name="tips_publish_stop">推流终止</string>
+
+
 </resources>
