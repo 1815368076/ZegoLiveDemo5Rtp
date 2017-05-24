@@ -53,6 +53,10 @@
 /// \note 更新附加信息会覆盖上次设置的附加信息
 - (bool)updateStreamExtraInfo:(NSString *)extraInfo;
 
+/// \brief 自定义推流配置
+/// \param config 配置信息，参考 kPublishCustomTarget
+- (void)setPublishConfig:(NSDictionary *)config;
+
 /// \brief 停止直播
 /// \return true 成功，false 失败
 - (bool)stopPublishing;
@@ -250,6 +254,11 @@
 /// \param dataLen 数据长度
 /// \param packet 是否外部已经打包好包头，true 已打包, false 未打包
 - (void)sendMediaSideInfo:(const unsigned char *)inData dataLen:(int)dataLen packet:(bool)packet;
+
+/// \brief 设置延迟模式
+/// \param mode 延迟模式，默认 ZEGOAPI_LATENCY_MODE_NORMAL
+/// \note 在推流前调用
+- (void)setLatencyMode:(ZegoAPILatencyMode)mode;
 
 @end
 

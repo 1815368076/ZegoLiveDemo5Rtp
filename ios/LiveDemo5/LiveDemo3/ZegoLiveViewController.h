@@ -47,7 +47,7 @@
 @property (nonatomic, strong) NSMutableArray *logArray;
 //帧率，码率信息
 @property (nonatomic, strong) NSMutableArray *staticsArray;
-
+//支持的最大流数量
 @property (nonatomic, assign, readonly) NSUInteger maxStreamCount;
 
 // 设置主播配置
@@ -55,6 +55,7 @@
 
 - (BOOL)isDeviceiOS7;
 
+// 设置更新视图约束
 - (BOOL)setContainerConstraints:(UIView *)view containerView:(UIView *)containerView viewCount:(NSUInteger)viewCount;
 - (void)updateContainerConstraintsForTap:(UIView *)tapView containerView:(UIView *)containerView;
 - (void)updateContainerConstraintsForRemove:(UIView *)removeView containerView:(UIView *)containerView;
@@ -69,16 +70,18 @@
 
 - (BOOL)shouldShowPublishAlert;
 
+// 主播端处理收到连麦请求
 - (void)onReceiveJoinLive:(NSString *)userId userName:(NSString *)userName seq:(int)seq;
+// 主播端响应连麦请求
 - (void)sendRequestPublishRespond:(BOOL)agreed seq:(int)seq requestPublisher:(ZegoUser *)requestUser;
 
 - (void)setIdelTimerDisable:(BOOL)disable;
 
-//电话监听处理函数
+// 电话监听处理函数
 - (void)audioSessionWasInterrupted:(NSNotification *)notification;
-
+// 添加 log（可在日志界面更新）
 - (void)addLogString:(NSString *)logString;
-
+// 更新直播质量
 - (void)updateQuality:(int)quality view:(UIView *)playerView;
 
 //混流时的回调实现

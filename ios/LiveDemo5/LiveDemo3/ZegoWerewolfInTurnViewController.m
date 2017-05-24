@@ -172,7 +172,7 @@
     else
     {
         //推流成功，停止推流
-        self.tipsLabel.text = NSLocalizedString(@"正在系统同步...", nil);
+        self.tipsLabel.text = NSLocalizedString(@"推流中止", nil);
         
         self.speakButton.enabled = NO;
         self.sendStopSpeakingTimer = [NSTimer scheduledTimerWithTimeInterval:kPostSpeakingInterval target:self selector:@selector(onStopSpeakingTimer) userInfo:nil repeats:NO];

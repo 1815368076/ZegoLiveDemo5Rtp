@@ -13,44 +13,41 @@
 
 @interface ZegoWerewolfHostViewController () <ZegoRoomDelegate, ZegoLivePublisherDelegate, ZegoLivePlayerDelegate, ZegoIMDelegate>
 
-@property (nonatomic, weak) IBOutlet UIButton *inTurnSpeakButton;
-@property (nonatomic, weak) IBOutlet UIButton *endInTurnSpeakButton;
-@property (nonatomic, weak) IBOutlet UILabel *tipsLabel;
+@property (nonatomic, weak) IBOutlet UIButton *inTurnSpeakButton;       // 轮流说话 button
+@property (nonatomic, weak) IBOutlet UIButton *endInTurnSpeakButton;    // 结束轮流说话 button
+@property (nonatomic, weak) IBOutlet UILabel *tipsLabel;                // 当前模式 label
 
-@property (nonatomic, copy) NSString *roomID;
+@property (nonatomic, copy) NSString *roomID;                   // 房间 ID
+@property (nonatomic, strong) NSMutableArray<ZegoWerewolUserInfo *> *userList;           // 用户列表
 
-@property (nonatomic, strong) NSMutableArray<ZegoWerewolUserInfo *> *userList;
-
-//主播控制座位号
-@property (nonatomic, assign) NSUInteger currentIndex;
-@property (nonatomic, strong) NSMutableArray<ZegoWerewolUserInfo *> *inturnSpekingList;
+@property (nonatomic, assign) NSUInteger currentIndex;          // 主播控制座位号
+@property (nonatomic, strong) NSMutableArray<ZegoWerewolUserInfo *> *inturnSpeakingList; // 轮流讲话用户列表
 
 @property (nonatomic, assign) NSUInteger selfCharacter;
 
-//说话时间计时
-@property (nonatomic, strong) NSTimer *speakingTimer;
-//主播时间计时
-@property (nonatomic, strong) NSTimer *anchorTimer;
-//当前说话模式
-@property (nonatomic, assign) ZegoSpeakingMode speakingMode;
+@property (nonatomic, strong) NSTimer *speakingTimer;           // 说话时间计时
+@property (nonatomic, strong) NSTimer *anchorTimer;             // 主播时间计时
+@property (nonatomic, assign) ZegoSpeakingMode speakingMode;    // 当前说话模式
 
-//当前说话座位号
-@property (nonatomic, assign) NSUInteger currentSpeakingIndex;
-@property (nonatomic, copy) NSString *currentSpeakingUserId;
+@property (nonatomic, assign) NSUInteger currentSpeakingIndex;  // 当前说话座位号
+@property (nonatomic, copy) NSString *currentSpeakingUserId;    // 当前说话用户 Id
 
 @property (nonatomic, strong) NSTimer *sendStopSpeakingTimer;
-@property (nonatomic, assign) BOOL isPublishing;
-@property (nonatomic, assign) BOOL isSpeaking;
+@property (nonatomic, assign) BOOL isPublishing;                // 正在发布状态
+@property (nonatomic, assign) BOOL isSpeaking;                  // 正在讲话状态
 
 @end
 
 @implementation ZegoWerewolfHostViewController
 
+#pragma mark - Life cycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-
+    
     _userList = [[NSMutableArray alloc] initWithCapacity:self.maxStreamCount];
+    
+    // 设置当前模式为自由讲话模式
     self.speakingMode = kFreeSpeakingMode;
     self.roomID = [ZegoDemoHelper getMyRoomID:WerewolfInTurnRoom];
     
@@ -58,6 +55,7 @@
     [self.speakButton setTitle:kStartSpeakingTitle forState:UIControlStateNormal];
     [self.speakButton setExclusiveTouch:YES];
     
+    // 无音视频权限不允许讲话
     [self checkAudioAuthorizationWithResult:^(BOOL granted) {
         if (granted == NO)
             self.speakButton.enabled = NO;
@@ -92,7 +90,9 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark Action
+#pragma mark - Event response
+
+// 关闭页面
 - (IBAction)onCloseView:(id)sender
 {
     if (self.speakingTimer)
@@ -114,6 +114,7 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+// 开始说话
 - (IBAction)onStartTalking:(id)sender
 {
     if (self.speakButton.enabled == NO)
@@ -121,19 +122,22 @@
     
     if (!self.isSpeaking)
     {
-        //开始说活
+        // 开始说活
         [self.speakButton setTitle:NSLocalizedString(@"结束说话", nil) forState:UIControlStateNormal];
         [self startTalking];
     }
     else
     {
+        // 停止说话
         [self stopTalking];
     }
 }
 
+#pragma mark --  Touch InTurnButton
+
 - (IBAction)onInturnButton:(id)sender
 {
-    self.inturnSpekingList = [NSMutableArray arrayWithArray:self.userList];
+    self.inturnSpeakingList = [NSMutableArray arrayWithArray:self.userList];
     
     self.speakButton.enabled = NO;
     
@@ -144,24 +148,13 @@
     [self broadInTurnSpeaking:characters];
 }
 
-- (BOOL)isRandomNumberExist:(NSArray *)countArray number:(int)number
-{
-    for (NSNumber *character in countArray)
-    {
-        if ([character intValue] == number)
-            return YES;
-    }
-    
-    return NO;
-}
-
 - (NSDictionary *)randomCharacter
 {
-    NSUInteger count = self.inturnSpekingList.count;
+    NSUInteger count = self.inturnSpeakingList.count;
     NSMutableDictionary *characters = [NSMutableDictionary dictionary];
     NSMutableArray *countArray = [NSMutableArray array];
     
-    for (ZegoWerewolUserInfo *userInfo in self.inturnSpekingList)
+    for (ZegoWerewolUserInfo *userInfo in self.inturnSpeakingList)
     {
         int x = arc4random() % count + 1;
         while ([self isRandomNumberExist:countArray number:x])
@@ -176,11 +169,24 @@
     return characters;
 }
 
+- (BOOL)isRandomNumberExist:(NSArray *)countArray number:(int)number
+{
+    for (NSNumber *character in countArray)
+    {
+        if ([character intValue] == number)
+            return YES;
+    }
+    
+    return NO;
+}
+
+#pragma mark --  Touch EndInTurnButton
+
 - (IBAction)onEndInturnButton:(id)sender
 {
     //每个人都可以推流
-    [self.inturnSpekingList removeAllObjects];
-    self.inturnSpekingList = nil;
+    [self.inturnSpeakingList removeAllObjects];
+    self.inturnSpeakingList = nil;
     self.characterLabel.hidden = YES;
     self.speakButton.enabled = NO;
     
@@ -203,24 +209,20 @@
     [self broadFreeSpeaking];
 }
 
-#pragma mark speakButton
-- (void)stopTimer:(NSTimer *)timer
-{
-    if (timer)
-    {
-        [timer invalidate];
-        timer = nil;
-    }
-}
+#pragma mark -- Talking
 
+// 开始说话
 - (void)startTalking
 {
     self.tipsLabel.text = NSLocalizedString(@"正在系统同步...", nil);
     
     [self stopTimer:self.sendStopSpeakingTimer];
     
+    // 关闭麦克风和摄像头
     [[ZegoDemoHelper api] enableMic:NO];
     [[ZegoDemoHelper api] enableCamera:NO];
+    
+    // 发布
     [self doPublish];
 }
 
@@ -249,8 +251,8 @@
     else
     {
         //推流成功，停止推流
-        self.tipsLabel.text = NSLocalizedString(@"正在系统同步...", nil);
-    
+        self.tipsLabel.text = NSLocalizedString(@"推流中止", nil);
+        
         self.speakButton.enabled = NO;
         self.sendStopSpeakingTimer = [NSTimer scheduledTimerWithTimeInterval:kPostSpeakingInterval target:self selector:@selector(onStopSpeakingTimer) userInfo:nil repeats:NO];
     }
@@ -285,9 +287,114 @@
         self.tipsLabel.text = NSLocalizedString(@"当前模式:轮流说话", nil);
 }
 
+- (void)stopTimer:(NSTimer *)timer
+{
+    if (timer)
+    {
+        [timer invalidate];
+        timer = nil;
+    }
+}
 
-#pragma mark Help function
+#pragma mark - Private methods
 
+#pragma mark -- Live room
+
+- (void)setupLiveKit
+{
+    [[ZegoDemoHelper api] setRoomDelegate:self];
+    [[ZegoDemoHelper api] setPlayerDelegate:self];
+    [[ZegoDemoHelper api] setPublisherDelegate:self];
+    [[ZegoDemoHelper api] setIMDelegate:self];
+}
+
+- (void)loginChatRoom
+{
+    self.tipsLabel.text = NSLocalizedString(@"开始登录房间", nil);
+    
+    [[ZegoDemoHelper api] setRoomConfig:NO userStateUpdate:YES];
+    
+    [[ZegoDemoHelper api] loginRoom:self.roomID
+                           roomName:self.liveTitle
+                               role:ZEGO_ANCHOR
+                withCompletionBlock:^(int errorCode, NSArray<ZegoStream *> *streamList) {
+                    if (errorCode == 0)
+                    {
+                        self.tipsLabel.text = NSLocalizedString(@"登录房间成功", nil);
+                        
+                        NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录房间成功. roomId %@", nil), self.roomID];
+                        [self addLogString:logString];
+                        
+                        ZegoWerewolUserInfo *userInfo = [ZegoWerewolUserInfo new];
+                        userInfo.userId = [ZegoSettings sharedInstance].userID;
+                        userInfo.userName = [ZegoSettings sharedInstance].userName;
+                        userInfo.index = 1;
+                        
+                        self.currentIndex = 1;
+                        
+                        [self createPublishView:userInfo];
+                        [self.userList addObject:userInfo];
+                        
+                        self.speakButton.enabled = YES;     // 登录成功以后，才讲开始说话button enable
+                        self.tipsLabel.text = NSLocalizedString(@"当前模式:自由说话", nil);
+                    }
+                    else
+                    {
+                        self.tipsLabel.text = NSLocalizedString(@"登录房间失败", nil);
+                        NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录房间失败. error: %d", nil), errorCode];
+                        [self addLogString:logString];
+                    }
+                }];
+    
+    [self addLogString:[NSString stringWithFormat:NSLocalizedString(@"开始登录房间", nil)]];
+}
+
+// 创建新发布view
+- (void)createPublishView:(ZegoWerewolUserInfo *)userInfo
+{
+    [self createPlayView:userInfo];
+    
+    [self setAnchorConfig];
+}
+
+// 创建新播放view
+- (void)createPlayView:(ZegoWerewolUserInfo *)userInfo
+{
+    userInfo.videoView = [[UIView alloc] init];
+    userInfo.videoView.translatesAutoresizingMaskIntoConstraints = NO;
+    userInfo.videoView.backgroundColor = [UIColor colorWithWhite:0.667 alpha:0.5];
+    [self.playViewContainer addSubview:userInfo.videoView];
+    
+    [self addNumber:userInfo.index toView:userInfo.videoView];
+    [self addText:userInfo.userName toView:userInfo.videoView];
+    
+    [self.playViewContainer sendSubviewToBack:userInfo.videoView];
+    
+    [self setContainerConstraints:userInfo.videoView viewIndex:self.playViewContainer.subviews.count];
+}
+
+// 推流设置
+- (void)setAnchorConfig
+{
+    ZegoAVConfig *config = [[ZegoAVConfig alloc] init];
+    config.videoEncodeResolution = self.videoSize;
+    config.videoCaptureResolution = config.videoEncodeResolution;
+    config.fps= 15;
+    config.bitrate = self.bitrate;
+    
+    [[ZegoDemoHelper api] setAVConfig:config];
+    [[ZegoDemoHelper api] enableBeautifying:ZEGO_BEAUTIFY_POLISH | ZEGO_BEAUTIFY_WHITEN];
+    [[ZegoDemoHelper api] setPreviewViewMode:ZegoVideoViewModeScaleAspectFill];
+    
+    if ([ZegoDemoHelper recordTime])
+    {
+        [[ZegoDemoHelper api] enablePreviewMirror:false];
+    }
+}
+
+#pragma mark -- User
+
+// 获取当前用户列表
 - (NSArray<ZegoUser *> *)getCurrentMemberList
 {
     NSMutableArray *memberList = [NSMutableArray arrayWithCapacity:self.userList.count];
@@ -306,33 +413,7 @@
     return memberList;
 }
 
-- (void)removeInTurnSpeakingUser:(NSString *)userId
-{
-    if (self.speakingMode == kFreeSpeakingMode)
-        return;
-    
-    ZegoWerewolUserInfo *userInfo = nil;
-    for (ZegoWerewolUserInfo *info in self.inturnSpekingList)
-    {
-        if ([userId isEqualToString:info.userId])
-        {
-            userInfo = info;
-            break;
-        }
-    }
-    
-    if (userInfo != nil)
-    {
-        if (userInfo.index == self.currentSpeakingIndex && self.currentSpeakingIndex != 0)
-        {
-            [self resetPlayViewAndStop:userId];
-            [self arrangeNextSpeaker];
-        }
-        
-        [self.inturnSpekingList removeObject:userInfo];
-    }
-}
-
+// 移除用户
 - (void)removeOldUser:(NSString *)userId broadcast:(BOOL)broadcast
 {
     ZegoWerewolUserInfo *userInfo = [self getUserInfoByUserId:userId];
@@ -367,96 +448,39 @@
         [self stopCurrentMode];
         self.speakingMode = kFreeSpeakingMode;
         [self updateSpeakingButton:YES];
-            
+        
         self.tipsLabel.text = NSLocalizedString(@"所有玩家都退出了", nil);
     }
 }
 
-- (void)setupLiveKit
+- (void)removeInTurnSpeakingUser:(NSString *)userId
 {
-    [[ZegoDemoHelper api] setRoomDelegate:self];
-    [[ZegoDemoHelper api] setPlayerDelegate:self];
-    [[ZegoDemoHelper api] setPublisherDelegate:self];
-    [[ZegoDemoHelper api] setIMDelegate:self];
-}
-
-- (void)loginChatRoom
-{
-    self.tipsLabel.text = NSLocalizedString(@"开始登录房间", nil);
+    if (self.speakingMode == kFreeSpeakingMode)
+        return;
     
-    [[ZegoDemoHelper api] setRoomConfig:NO userStateUpdate:YES];
-    [[ZegoDemoHelper api] loginRoom:self.roomID roomName:self.liveTitle role:ZEGO_ANCHOR withCompletionBlock:^(int errorCode, NSArray<ZegoStream *> *streamList) {
-        if (errorCode == 0)
-        {
-            self.tipsLabel.text = NSLocalizedString(@"登录房间成功", nil);
-            
-            NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录房间成功. roomId %@", nil), self.roomID];
-            [self addLogString:logString];
-            
-            ZegoWerewolUserInfo *userInfo = [ZegoWerewolUserInfo new];
-            userInfo.userId = [ZegoSettings sharedInstance].userID;
-            userInfo.userName = [ZegoSettings sharedInstance].userName;
-            userInfo.index = 1;
-            
-            self.currentIndex = 1;
-            
-            [self createPublishView:userInfo];
-            [self.userList addObject:userInfo];
-            
-            self.speakButton.enabled = YES;
-            self.tipsLabel.text = NSLocalizedString(@"当前模式:自由说话", nil);
-        }
-        else
-        {
-            self.tipsLabel.text = NSLocalizedString(@"登录房间失败", nil);
-            NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录房间失败. error: %d", nil), errorCode];
-            [self addLogString:logString];
-        }
-    }];
-    
-    [self addLogString:[NSString stringWithFormat:NSLocalizedString(@"开始登录房间", nil)]];
-}
-
-- (void)createPublishView:(ZegoWerewolUserInfo *)userInfo
-{
-    [self createPlayView:userInfo];
-    
-    [self setAnchorConfig];
-}
-
-- (void)createPlayView:(ZegoWerewolUserInfo *)userInfo
-{
-    userInfo.videoView = [[UIView alloc] init];
-    userInfo.videoView.translatesAutoresizingMaskIntoConstraints = NO;
-    userInfo.videoView.backgroundColor = [UIColor colorWithWhite:0.667 alpha:0.5];
-    [self.playViewContainer addSubview:userInfo.videoView];
-    
-    [self addNumber:userInfo.index toView:userInfo.videoView];
-    [self addText:userInfo.userName toView:userInfo.videoView];
-    
-    [self.playViewContainer sendSubviewToBack:userInfo.videoView];
-    
-    [self setContainerConstraints:userInfo.videoView viewIndex:self.playViewContainer.subviews.count];
-}
-
-- (void)setAnchorConfig
-{
-    ZegoAVConfig *config = [[ZegoAVConfig alloc] init];
-    config.videoEncodeResolution = self.videoSize;
-    config.videoCaptureResolution = config.videoEncodeResolution;
-    config.fps= 15;
-    config.bitrate = self.bitrate;
-    
-    [[ZegoDemoHelper api] setAVConfig:config];
-    [[ZegoDemoHelper api] enableBeautifying:ZEGO_BEAUTIFY_POLISH | ZEGO_BEAUTIFY_WHITEN];
-    [[ZegoDemoHelper api] setPreviewViewMode:ZegoVideoViewModeScaleAspectFill];
-    
-    if ([ZegoDemoHelper recordTime])
+    ZegoWerewolUserInfo *userInfo = nil;
+    for (ZegoWerewolUserInfo *info in self.inturnSpeakingList)
     {
-        [[ZegoDemoHelper api] enablePreviewMirror:false];
+        if ([userId isEqualToString:info.userId])
+        {
+            userInfo = info;
+            break;
+        }
+    }
+    
+    if (userInfo != nil)
+    {
+        if (userInfo.index == self.currentSpeakingIndex && self.currentSpeakingIndex != 0)
+        {
+            [self resetPlayViewAndStop:userId];
+            [self arrangeNextSpeaker];
+        }
+        
+        [self.inturnSpeakingList removeObject:userInfo];
     }
 }
 
+// 获取当前用户信息
 - (ZegoWerewolUserInfo *)getSelfUserInfo
 {
     for (ZegoWerewolUserInfo *userInfo in self.userList)
@@ -469,6 +493,7 @@
     return nil;
 }
 
+// 获取指定userId用户信息
 - (ZegoWerewolUserInfo *)getUserInfoByUserId:(NSString *)userId
 {
     for (ZegoWerewolUserInfo *userInfo in self.userList)
@@ -476,12 +501,14 @@
         if ([userInfo.userId isEqualToString:userId])
             return userInfo;
     }
-    
     return nil;
 }
 
+#pragma mark -- Publish
+
 - (void)doPublish
 {
+    // 获取当前用户的 userId
     ZegoWerewolUserInfo *userInfo = [self getSelfUserInfo];
     if (userInfo == nil)
         return;
@@ -513,7 +540,8 @@
     self.isSpeaking = NO;
 }
 
-#pragma mark InTurnSpeaking
+#pragma mark -- InTurnSpeaking
+
 - (void)updatePlayView:(NSString *)userId
 {
     for (ZegoWerewolUserInfo *userInfo in self.userList)
@@ -584,7 +612,8 @@
     [self arrangeNextSpeaker];
 }
 
-#pragma mark message
+#pragma mark -- Broadcast message
+
 - (void)broadAllowSpeaking:(NSString *)userId
 {
     if (userId.length == 0)
@@ -688,7 +717,7 @@
         
         self.tipsLabel.text = NSLocalizedString(@"当前模式:轮流说话", nil);
         self.speakingMode = kInTurnSpeakingMode;
-
+        
         [self arrangeNextSpeaker];
     }];
 }
@@ -769,7 +798,8 @@
     return [self answerRoomInfoAggreed:userId userName:userName];
 }
 
-#pragma mark Stream
+#pragma mark -- Stream
+
 - (void)playInSmallView:(ZegoWerewolUserInfo *)userInfo
 {
     if (userInfo.streamId.length != 0)
@@ -823,7 +853,8 @@
     self.currentSpeakingIndex = 0;
 }
 
-#pragma mark dispatch
+#pragma mark -- Dispatch
+
 - (void)arrangeNextSpeaker
 {
     if (self.anchorTimer)
@@ -836,16 +867,16 @@
     
     NSInteger minDelta = INT_MAX;
     NSUInteger index = 0;
-    for (ZegoWerewolUserInfo *userInfo in self.inturnSpekingList)
+    for (ZegoWerewolUserInfo *userInfo in self.inturnSpeakingList)
     {
         if (userInfo.index > self.currentSpeakingIndex && userInfo.index - self.currentSpeakingIndex < minDelta)
         {
             minDelta = userInfo.index - self.currentSpeakingIndex;
-            index = [self.inturnSpekingList indexOfObject:userInfo];
+            index = [self.inturnSpeakingList indexOfObject:userInfo];
         }
     }
     
-    ZegoWerewolUserInfo *userInfo = [self.inturnSpekingList objectAtIndex:index];
+    ZegoWerewolUserInfo *userInfo = [self.inturnSpeakingList objectAtIndex:index];
     self.currentSpeakingIndex = userInfo.index;
     self.currentSpeakingUserId = userInfo.userId;
     
@@ -862,7 +893,8 @@
     }
 }
 
-#pragma mark ZegoRoomDelegate
+#pragma mark - ZegoRoomDelegate
+
 - (void)onDisconnect:(int)errorCode roomID:(NSString *)roomID
 {
     NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"连接失败, error: %d", nil), errorCode];
@@ -976,7 +1008,8 @@
     
 }
 
-#pragma mark ZegoLivePlayerDelegate
+#pragma mark - ZegoLivePlayerDelegate
+
 - (void)onPlayStateUpdate:(int)stateCode streamID:(NSString *)streamID
 {
     NSLog(@"%s, streamID:%@", __func__, streamID);
@@ -1004,7 +1037,8 @@
     [self addLogString:logString];
 }
 
-#pragma mark ZegoLivePublishDelegate
+#pragma mark - ZegoLivePublishDelegate
+
 - (void)onPublishStateUpdate:(int)stateCode streamID:(NSString *)streamID streamInfo:(NSDictionary *)info
 {
     NSLog(@"%s, stream: %@", __func__, streamID);
@@ -1060,7 +1094,7 @@
     [self addStaticsInfo:YES stream:streamID fps:fps kbs:kbs];
 }
 
-#pragma mark IM Delegate
+#pragma mark - IM Delegate
 
 - (BOOL)isUserShouldDelete:(NSArray<ZegoUserState *> *)userList userId:(NSString *)userId
 {

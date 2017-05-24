@@ -21,13 +21,7 @@ BOOL g_useAlphaEnv = NO;
 BOOL g_useHardwareEncode = NO;
 BOOL g_useHardwareDecode = NO;
 #else
-
-#if defined(ZEGO_TEST_RTP3) || defined(ZEGO_TEST_RTP_INTEL)
-BOOL g_useHardwareEncode = NO;
-#else
 BOOL g_useHardwareEncode = YES;
-#endif
-
 BOOL g_useHardwareDecode = YES;
 #endif
 

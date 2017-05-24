@@ -1,5 +1,5 @@
 //
-//  ZegoMixStreamViewController.m
+//  ZegoMixStreamAnchorViewController.m
 //  LiveDemo3
 //
 //  Created by Strong on 16/9/9.
@@ -14,42 +14,32 @@
 
 @interface ZegoMixStreamAnchorViewController () <ZegoRoomDelegate, ZegoLivePublisherDelegate, ZegoLivePlayerDelegate, ZegoIMDelegate, ZegoLiveToolViewControllerDelegate>
 
-//IBOutlet
-@property (weak, nonatomic) IBOutlet UIView *playViewContainer;
+@property (nonatomic, weak) IBOutlet UIView *playViewContainer; // 播放 View Container
+@property (nonatomic, weak) UIButton *stopPublishButton;        // 停止直播 button
+@property (nonatomic, weak) UIButton *mutedButton;              // 静音 button
+@property (nonatomic, weak) UIButton *sharedButton;             // 分享 button
+@property (nonatomic, strong) UIColor *defaultButtonColor;      // 默认 button 颜色
+@property (nonatomic, strong) UIColor *disableButtonColor;      // 禁用 button 颜色
 
-@property (weak, nonatomic) ZegoLiveToolViewController *toolViewController;
-
-@property (weak, nonatomic) UIButton *stopPublishButton;
-@property (weak, nonatomic) UIButton *mutedButton;
-@property (nonatomic, weak) UIButton *sharedButton;
-
-@property (nonatomic, copy) NSString *streamID;
-@property (nonatomic, copy) NSString *mixStreamID;
-
-//正在观看房间里的其他直播
-@property (nonatomic, assign) BOOL isPlaying;
-
-//正在播放的streamList
-@property (nonatomic, strong) NSMutableArray *playStreamList;
-
-@property (nonatomic, strong) NSMutableDictionary *viewContainersDict;
-
-@property (nonatomic, assign) BOOL isPublishing;
-
-@property (nonatomic, strong) UIColor *defaultButtonColor;
-@property (nonatomic, strong) UIColor *disableButtonColor;
-
-@property (nonatomic, assign) int mixRequestSeq;
+@property (nonatomic, weak) ZegoLiveToolViewController *toolViewController;
 @property (nonatomic, strong) ZegoUser *mixRequestUser;
-@property (nonatomic, strong) NSMutableArray<ZegoMixStreamInfo*> *mixStreamConfig;
+@property (nonatomic, strong) NSMutableArray<ZegoMixStreamInfo*> *mixStreamConfig;  // 混流图层配置
 
+@property (nonatomic, copy) NSString *streamID;                 // 流 ID
+@property (nonatomic, copy) NSString *mixStreamID;              // 混流 ID
+@property (nonatomic, copy) NSString *roomID;                   // 房间 ID
 @property (nonatomic, copy) NSString *sharedHls;
 @property (nonatomic, copy) NSString *sharedRtmp;
-@property (nonatomic, copy) NSString *roomID;
+@property (nonatomic, assign) int mixRequestSeq;
+
+@property (nonatomic, assign) BOOL isPlaying;                   // 是否正在拉流
+@property (nonatomic, assign) BOOL isPublishing;                // 是否正在推流
+
+@property (nonatomic, strong) NSMutableArray *playStreamList;   // 正在播放的 streamList
+@property (nonatomic, strong) NSArray *mixPlayStreamList;
+@property (nonatomic, strong) NSMutableDictionary *viewContainersDict;  // 房间内的视图，key 为流 ID
 
 @property (nonatomic, assign) UIInterfaceOrientation orientation;
-
-@property (nonatomic, strong) NSArray *mixPlayStreamList;
 
 @end
 
@@ -59,7 +49,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     
     [self setupLiveKit];
     [self loginChatRoom];
@@ -512,7 +501,7 @@
     UIView *view = self.viewContainersDict[streamID];
     if (view)
         [self updateQuality:quality view:view];
-
+    
     [self addStaticsInfo:YES stream:streamID fps:fps kbs:kbs];
 }
 

@@ -132,7 +132,7 @@
 "说话结束" = "Stop Talking";
 "角色:%lu" = "Role:%lu";
 "正在系统同步..." = "Updating System...";
-"推流中止" = "Abort Updating";
+"推流中止" = "Stop Talking";
 "当前模式:自由说话" = "Mode:Free Speaking";
 "当前模式:轮流说话" = "Mode:In-Turn Speaking";
 "所有玩家都退出了" = "All Players are logout";

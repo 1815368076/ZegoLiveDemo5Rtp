@@ -30,6 +30,7 @@ ZEGO_EXTERN NSString *const kZegoFlvUrlListKey;         ///< flv 播放 url 列�
 
 ZEGO_EXTERN NSString *const kZegoMixStreamIDKey;        ///< 混流ID，值为 NSString
 ZEGO_EXTERN NSString *const kZegoMixStreamResolution;   ///< 混流输出大小，值为 NSValue
+ZEGO_EXTERN NSString *const kPublishCustomTarget;        ///< 自定义转推 rtmp 地址
 
 
 typedef enum
@@ -73,6 +74,14 @@ typedef void(^ZegoSnapshotCompletionBlock)(ZEGOImage* img);
 enum ZegoAPIModuleType
 {
     ZEGOAPI_MODULE_AUDIO            = 0x4 | 0x8,    ///< 音频采集播放设备
+};
+
+enum ZegoAPIAudioRecordMask
+{
+    ZEGOAPI_AUDIO_RECORD_NONE      = 0x0,  ///< 关闭音频录制
+    ZEGOAPI_AUDIO_RECORD_CAP       = 0x01, ///< 打开采集录制
+    ZEGOAPI_AUDIO_RECORD_RENDER    = 0x02, ///< 打开渲染录制
+    ZEGOAPI_AUDIO_RECORD_MIX       = 0x04  ///< 打开采集和渲染混音结果录制
 };
 
 #endif /* ZegoLiveRoomApiDefines_h */

@@ -102,6 +102,11 @@
 /// \return true 成功，false 失败
 - (bool)enableAudioRecord:(BOOL)enable;
 
+/// \brief 音频录制回调开关
+/// \param mask 启用音频源选择，参考 ZegoAPIAudioRecordMask
+/// \return true 成功，false 失败
+- (bool)enableSelectedAudioRecord:(unsigned int)mask;
+
 /// \brief 音频录制回调
 /// \param audioRecordDelegate 音频录制回调协议
 - (void)setAudioRecordDelegate:(id<ZegoLiveApiAudioRecordDelegate>)audioRecordDelegate;
@@ -165,7 +170,9 @@
 
 @protocol ZegoLiveApiAudioRecordDelegate <NSObject>
 
+@optional
 - (void)onAudioRecord:(NSData *)audioData sampleRate:(int)sampleRate numOfChannels:(int)numOfChannels bitDepth:(int)bitDepth;
+- (void)onAudioRecord:(NSData *)audioData sampleRate:(int)sampleRate numOfChannels:(int)numOfChannels bitDepth:(int)bitDepth type:(unsigned int)type;
 
 @end
 

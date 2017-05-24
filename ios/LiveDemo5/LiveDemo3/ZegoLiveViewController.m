@@ -49,7 +49,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
     
     self.useFrontCamera = YES;
     self.enableTorch = NO;
@@ -210,7 +209,6 @@
     return NO;
 }
 
-
 - (BOOL)setContainerConstraints:(UIView *)view containerView:(UIView *)containerView viewCount:(NSUInteger)viewCount
 {
     [self addPlayViewConstraints:view containerView:containerView viewIndex:viewCount];
@@ -297,6 +295,7 @@
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
+// 主播收到请求连麦的请求处理
 - (void)requestPublishAlert:(ZegoUser *)requestUser seq:(int)seq
 {
     NSString *message = [NSString stringWithFormat:NSLocalizedString(@"%@ 请求直播，是否允许", nil), requestUser.userName];
@@ -310,9 +309,13 @@
     }
     else
     {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@""
+                                                                                 message:message
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
         
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"拒绝", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"拒绝", nil)
+                                                               style:UIAlertActionStyleCancel
+                                                             handler:^(UIAlertAction * _Nonnull action) {
             [self sendRequestPublishRespond:NO seq:seq requestPublisher:requestUser];
             
             NSUInteger index = [self getWaitingRequestListIndex:seq];
@@ -321,7 +324,9 @@
             [self continueOtherRequest];
         }];
         
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"允许", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"允许", nil)
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * _Nonnull action) {
             [self sendRequestPublishRespond:YES seq:seq requestPublisher:requestUser];
             
             NSUInteger index = [self getWaitingRequestListIndex:seq];
@@ -339,7 +344,6 @@
         if (![self.presentedViewController isKindOfClass:[UIAlertController class]])
         {
             [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-            
             [self presentViewController:alertController animated:YES completion:nil];
         }
     }
@@ -354,15 +358,22 @@
     NSString *message = [NSString stringWithFormat:NSLocalizedString(@"%@ 不允许连麦", nil), fromUserName];
     if ([self isDeviceiOS7])
     {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+                                                            message:message
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil, nil];
         [alertView show];
     }
     else
     {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:message preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@""
+                                                                                 message:message
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
         
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-            
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK"
+                                                               style:UIAlertActionStyleCancel
+                                                             handler:^(UIAlertAction * _Nonnull action) {
             [self continueOtherRequest];
         }];
         
@@ -662,6 +673,8 @@
     return [formatter stringFromDate:[NSDate date]];
 }
 
+#pragma mark -- Monitor
+
 - (void)onUsage
 {
     float cpu = [[ZegoInstrument shareInstance] getCPUUsage];
@@ -677,6 +690,7 @@
     [fileHandle closeFile];
 }
 
+// 响应系统音频路径变更通知
 - (void)handleAudioRouteChanged:(NSNotification *)notification
 {
     NSInteger reason = [[notification.userInfo objectForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
@@ -696,6 +710,9 @@
     }
 }
 
+#pragma mark -- Handle view and constrnints
+
+// 设置预览
 - (void)enablePreview:(BOOL)enable LocalView:(UIView *)view
 {
     if (enable && view)
@@ -715,7 +732,6 @@
     [containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[firstView]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(firstView)]];
     [containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[firstView]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(firstView)]];
 }
-
 
 - (void)addPlayViewConstraints:(UIView *)view containerView:(UIView *)containerView viewIndex:(NSUInteger)viewIndex
 {
@@ -755,13 +771,6 @@
     }
 }
 
-
-
-
-
-
-
-
 - (void)onShowStaticsViewController:(UIGestureRecognizer *)gesture
 {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -772,10 +781,6 @@
     
     [self presentViewController:navigationController animated:YES completion:nil];
 }
-
-
-
-
 
 - (void)continueOtherRequest
 {
@@ -845,12 +850,6 @@
     return NSNotFound;
 }
 
-
-
-
-
-
-
 - (NSString *)getCurrentTime
 {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
@@ -858,12 +857,11 @@
     return [formatter stringFromDate:[NSDate date]];
 }
 
+// 处理分享URL中的特殊字符
 - (NSString *)encodeStringAddingEscape:(NSString *)urlString
 {
     return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)urlString, NULL, (CFStringRef)@"!*'();:@&=+$,/?%#[]", kCFStringEncodingUTF8));
 }
-
-
 
 - (void)enableAudioRecord:(BOOL)enable
 {
@@ -890,7 +888,6 @@
         }
     }
 }
-
 
 #pragma mark - ZegoAnchorOptionDelegate
 
@@ -1150,7 +1147,5 @@
     if (enableLoopback)
         [[ZegoDemoHelper api] setLoopbackVolume:50];
 }
-
-
 
 @end

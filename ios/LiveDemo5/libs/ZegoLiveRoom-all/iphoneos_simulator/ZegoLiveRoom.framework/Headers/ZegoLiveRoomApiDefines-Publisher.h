@@ -108,4 +108,9 @@ typedef enum : NSUInteger {
     ZEGOAPI_AUDIO_DEVICE_MODE_AUTO = 3
 } ZegoAPIAudioDeviceMode;
 
+typedef enum : NSUInteger {
+    ZEGOAPI_LATENCY_MODE_NORMAL = 0,    ///< 普通延迟模式
+    ZEGOAPI_LATENCY_MODE_LOW,           ///< 低延迟模式，*无法用于 RTMP 流*
+} ZegoAPILatencyMode;
+
 #endif /* ZegoLiveRoomApiDefines_Publisher_h */
