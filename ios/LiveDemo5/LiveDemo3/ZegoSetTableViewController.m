@@ -359,7 +359,7 @@
 
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 3 || indexPath.section == 5)
+    if (indexPath.section == 3 || indexPath.section == 4)
         return YES;
     
     if (indexPath.section == 0 && indexPath.row == 1)

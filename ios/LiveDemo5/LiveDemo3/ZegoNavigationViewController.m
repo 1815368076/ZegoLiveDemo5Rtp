@@ -15,6 +15,13 @@
 
 @implementation ZegoNavigationViewController
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+}
+
 - (BOOL)shouldAutorotate
 {
     if ([self.topViewController respondsToSelector:@selector(shouldAutorotate)])

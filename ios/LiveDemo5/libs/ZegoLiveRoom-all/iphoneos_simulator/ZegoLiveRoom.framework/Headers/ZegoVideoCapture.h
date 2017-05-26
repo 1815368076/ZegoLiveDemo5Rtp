@@ -13,6 +13,11 @@
 #import <AppKit/AppKit.h>
 #endif
 
+typedef NS_ENUM(NSInteger, ZegoVideoFillMode) {
+    ZegoVideoFillModeBlackBar,
+    ZegoVideoFillModeCrop,
+    ZegoVideoFillModeStretch,
+};
 
 @protocol ZegoVideoCaptureDelegate <NSObject>
 
@@ -30,6 +35,8 @@
 @protocol ZegoVideoCaptureClientDelegate <NSObject, ZegoVideoCaptureDelegate>
 - (void)destroy;
 - (void)onError:(nullable NSString*)reason;
+- (void)setFillMode:(ZegoVideoFillMode)mode;
+
 @end
 
 
