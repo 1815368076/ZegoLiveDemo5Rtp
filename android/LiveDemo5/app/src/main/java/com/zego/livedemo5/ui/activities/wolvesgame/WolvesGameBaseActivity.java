@@ -2,15 +2,12 @@ package com.zego.livedemo5.ui.activities.wolvesgame;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,7 +38,6 @@ public abstract class WolvesGameBaseActivity extends AbsBaseLiveActivity {
     static final protected String kSpeakingCommandKey = "command";
 
     static final protected String kSpeakingUserIdKey  = "userId";
-    static final protected String kSpeakingStreamKey  = "streamId";
 
     static final protected String kCurrentUserListKey = "currentUserList";
     static final protected String kNewUserKey         = "newUser";
@@ -55,26 +51,12 @@ public abstract class WolvesGameBaseActivity extends AbsBaseLiveActivity {
 
     static final protected String kUserCharacterKey   = "character";
 
+    /** 发信停止说话信令与停止推流之间的时间间隔，用于确保按停止说话按钮时，所有语音都能正常推送出去 */
     static final protected int kPostSpeakingInterval  = 2;
+    /** 开始说话后，设置结束说话倒计时。即轮流模式下允许单次说话的最长时间 */
     static final protected int kSpeakingTimerInterval = 60 + kPostSpeakingInterval;
-    static final protected int kAnchorTimerInterval   = 20 + kSpeakingTimerInterval;
-
-    protected class ZegoSpeakingCmd {
-        static final public int AllowSpeaking = 1;
-        static final public int StopSpeaking = 3;
-        static final public int FreeSpeaking = 4;
-        static final public int InTurnSpeaking = 5;
-
-        static final public int AskRoomInfo = 11;
-        static final public int AnswerRoomInfo = 12;
-        static final public int NewUserJoinRoom = 13;
-        static final public int UserLeaveRoom = 14;
-    }
-
-    protected class ZegoSpeakingMode {
-        static final public int FreeSpeakingMode = 1;
-        static final public int InTurnSpeakingMode = 2;
-    }
+    /** 轮流说话模式下，组织者（Host）用于设定某位说话者的最长时间，避免说话者异常离开导致游戏无法继续的情况 */
+    static final protected int kAnchorTimerInterval   = 5 + kSpeakingTimerInterval;
 
     @Bind(R.id.toolbar)
     public Toolbar toolBar;
@@ -182,7 +164,7 @@ public abstract class WolvesGameBaseActivity extends AbsBaseLiveActivity {
         private LinkedList<WolfInfo> mData;
         private ZegoLiveRoom zegoLiveRoom;
 
-        private int currentSpeakingMode = ZegoSpeakingMode.FreeSpeakingMode;
+        private int currentSpeakingMode = SpeakingMode.FreeSpeakingMode;
 
         RecyclerGridViewAdapter(Context context) {
             layoutInflater = LayoutInflater.from(context);
@@ -205,7 +187,7 @@ public abstract class WolvesGameBaseActivity extends AbsBaseLiveActivity {
             holder.name.setText(wolf.getUserName());
             holder.streamId = wolf.getStreamId();
             if (!TextUtils.isEmpty(holder.streamId)) {
-                if (currentSpeakingMode == ZegoSpeakingMode.FreeSpeakingMode) {
+                if (currentSpeakingMode == SpeakingMode.FreeSpeakingMode) {
                     String selfUserId = PreferenceUtil.getInstance().getUserID();
                     if (TextUtils.equals(selfUserId, wolf.getUserId())) {
                         zegoLiveRoom.setPreviewView(holder.headImg);

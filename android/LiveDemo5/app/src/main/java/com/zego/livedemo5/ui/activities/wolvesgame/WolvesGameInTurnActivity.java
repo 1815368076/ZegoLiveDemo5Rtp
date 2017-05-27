@@ -60,7 +60,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
 
     private LinkedList<WolfInfo> wolfMembers;
     /**
-     * @see ZegoSpeakingMode
+     * @see SpeakingMode
      */
     private int speakingMode;
     private boolean isUltraServer;
@@ -194,6 +194,16 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
         }
     }
 
+    private void bindStream2SpeakingHeaderViewAndShow(String streamId) {
+        mCurrentSpeakingHead.setTag(R.id.bundle_stream_id, streamId);
+        mCurrentSpeakingHead.setVisibility(View.VISIBLE);
+    }
+
+    private void unBindStreamFromSpeakingHeaderViewAndHide() {
+        mCurrentSpeakingHead.setVisibility(View.GONE);
+        mCurrentSpeakingHead.setTag(R.id.bundle_stream_id, null);
+    }
+
     private ZegoUser[] getCurrentMembers() {
         ZegoUser[] members = new ZegoUser[wolfMembers.size()];
         int index = 0;
@@ -209,7 +219,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
 
         JSONObject json = new JSONObject();
         try {
-            json.put(kSpeakingCommandKey, ZegoSpeakingCmd.StopSpeaking);
+            json.put(kSpeakingCommandKey, SpeakingCmd.StopSpeaking);
             json.put(kSpeakingUserIdKey, myId);
         } catch (JSONException e) {
 
@@ -228,9 +238,9 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
         isSpeaking = false;
         mBtnSpeaking.setText(R.string.start_speaking);
 
-        if (speakingMode == ZegoSpeakingMode.FreeSpeakingMode) {
+        if (speakingMode == SpeakingMode.FreeSpeakingMode) {
             mTextTips.setText(R.string.mode_free_speaking);
-        } else if (speakingMode == ZegoSpeakingMode.InTurnSpeakingMode) {
+        } else if (speakingMode == SpeakingMode.InTurnSpeakingMode) {
             mTextTips.setText(R.string.mode_in_turn_speaking);
             mBtnSpeaking.setEnabled(false);
         }
@@ -240,7 +250,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
 
         zegoLiveRoom.stopPreview();
         zegoLiveRoom.setPreviewView(null);
-        mCurrentSpeakingHead.setVisibility(View.GONE);
+        unBindStreamFromSpeakingHeaderViewAndHide();
 
         WolfInfo myInfo = getWolfById(PreferenceUtil.getInstance().getUserID());
         if (myInfo != null) {
@@ -248,7 +258,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
             mRecyclerAdapter.updateItem(myInfo);
         }
 
-        if (speakingMode == ZegoSpeakingMode.InTurnSpeakingMode) {
+        if (speakingMode == SpeakingMode.InTurnSpeakingMode) {
             reportStopSpeaking();
         }
     }
@@ -307,7 +317,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put(kSpeakingCommandKey, ZegoSpeakingCmd.AskRoomInfo);
+            jsonObject.put(kSpeakingCommandKey, SpeakingCmd.AskRoomInfo);
         } catch (JSONException e) {
 
         }
@@ -366,10 +376,10 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
         }
 
         if (myIndex > 1) {
-            if (speakingMode == ZegoSpeakingMode.FreeSpeakingMode) {    // 自由说话
+            if (speakingMode == SpeakingMode.FreeSpeakingMode) {    // 自由说话
                 mTextTips.setText(R.string.mode_free_speaking);
                 mBtnSpeaking.setEnabled(true);
-            } else if (speakingMode == ZegoSpeakingMode.InTurnSpeakingMode) {   // 正在游戏，等待下一局
+            } else if (speakingMode == SpeakingMode.InTurnSpeakingMode) {   // 正在游戏，等待下一局
                 mTextTips.setText(R.string.mode_in_turn_speaking_wait);
                 mBtnSpeaking.setEnabled(false);
             }
@@ -406,10 +416,17 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
             stopTalking();
         } else {
             WolfInfo wolf = getWolfById(userId);
-            if (wolf != null) {
-                wolf.setStreamId(null);
-                mRecyclerAdapter.updateItem(wolf);
+            if (wolf == null) return;
+
+            ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
+            zegoLiveRoom.stopPlayingStream(wolf.getStreamId());
+
+            if (speakingMode == SpeakingMode.InTurnSpeakingMode) {
+                unBindStreamFromSpeakingHeaderViewAndHide();
             }
+
+            wolf.setStreamId(null);
+            mRecyclerAdapter.updateItem(wolf);
         }
     }
 
@@ -471,7 +488,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
     }
 
     private void processInTurnSpeaking(JSONObject json) {
-        speakingMode = ZegoSpeakingMode.InTurnSpeakingMode;
+        speakingMode = SpeakingMode.InTurnSpeakingMode;
         mTextTips.setText(R.string.mode_in_turn_speaking);
         mBtnSpeaking.setEnabled(false);
 
@@ -483,13 +500,13 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
             mTextRole.setVisibility(View.VISIBLE);
         }
 
-        mRecyclerAdapter.setCurrentSpeakingMode(ZegoSpeakingMode.InTurnSpeakingMode);
+        mRecyclerAdapter.setCurrentSpeakingMode(SpeakingMode.InTurnSpeakingMode);
 
         stopCurrentMode();
     }
 
     private void processFreeSpeaking(JSONObject json) {
-        speakingMode = ZegoSpeakingMode.FreeSpeakingMode;
+        speakingMode = SpeakingMode.FreeSpeakingMode;
         mTextTips.setText(R.string.mode_free_speaking);
 
         mBtnSpeaking.setText(R.string.start_speaking);
@@ -497,20 +514,21 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
 
         mTextRole.setVisibility(View.INVISIBLE);
 
-        mRecyclerAdapter.setCurrentSpeakingMode(ZegoSpeakingMode.FreeSpeakingMode);
+        mRecyclerAdapter.setCurrentSpeakingMode(SpeakingMode.FreeSpeakingMode);
 
         stopCurrentMode();
     }
 
     private void handleStreamAdded(ZegoStreamInfo[] streamList, String roomId) {
         for (ZegoStreamInfo stream : streamList) {
+            recordLog("handleStreamAdded, streamId: %s, from user: %s", stream.streamID, stream.userID);
             WolfInfo wolf = getWolfById(stream.userID);
             if (wolf == null) continue;
 
             wolf.setStreamId(stream.streamID);
             mRecyclerAdapter.updateItem(wolf);
 
-            if (speakingMode == ZegoSpeakingMode.InTurnSpeakingMode) {
+            if (speakingMode == SpeakingMode.InTurnSpeakingMode) {
                 ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
                 if (isMe(stream.userID)) {
                     zegoLiveRoom.setPreviewViewMode(ZegoVideoViewMode.ScaleAspectFill);
@@ -520,29 +538,35 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
                     zegoLiveRoom.setViewMode(ZegoVideoViewMode.ScaleAspectFill, stream.streamID);
                     zegoLiveRoom.startPlayingStream(stream.streamID, mCurrentSpeakingHead);
                 }
-                mCurrentSpeakingHead.setVisibility(View.VISIBLE);
+                bindStream2SpeakingHeaderViewAndShow(stream.streamID);
             }
         }
     }
 
     private void handleStreamDeleted(ZegoStreamInfo[] streamList, String roomId) {
         for (ZegoStreamInfo stream : streamList) {
+            recordLog("handleStreamDeleted, streamId: %s, from user: %s", stream.streamID, stream.userID);
             WolfInfo wolf = getWolfById(stream.userID);
             if (wolf == null) continue;
 
             wolf.setStreamId(null);
             mRecyclerAdapter.updateItem(wolf);
 
-            if (speakingMode == ZegoSpeakingMode.InTurnSpeakingMode) {
+            if (speakingMode == SpeakingMode.InTurnSpeakingMode) {
 
                 ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
                 if (isMe(stream.userID)) {
                     zegoLiveRoom.setPreviewView(null);
                     zegoLiveRoom.stopPreview();
+                    unBindStreamFromSpeakingHeaderViewAndHide();
                 } else {
                     zegoLiveRoom.stopPlayingStream(stream.streamID);
+                    String bundleStreamId = (String)mCurrentSpeakingHead.getTag(R.id.bundle_stream_id);
+                    if (TextUtils.equals(bundleStreamId, stream.streamID)) {
+                        unBindStreamFromSpeakingHeaderViewAndHide();
+                    }
                 }
-                mCurrentSpeakingHead.setVisibility(View.GONE);
+
             }
         }
     }
@@ -582,8 +606,8 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
                 zegoLiveRoom.enableMic(true);
                 zegoLiveRoom.enableCamera(true);
 
-                if (speakingMode == ZegoSpeakingMode.InTurnSpeakingMode) {
-                    mCurrentSpeakingHead.setVisibility(View.VISIBLE);
+                if (speakingMode == SpeakingMode.InTurnSpeakingMode) {
+                    bindStream2SpeakingHeaderViewAndShow(streamId);
 
                     zegoLiveRoom.setPreviewView(mCurrentSpeakingHead);
                     zegoLiveRoom.setPreviewViewMode(ZegoVideoViewMode.ScaleAspectFill);
@@ -827,31 +851,31 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
             JSONObject json = (JSONObject) JsonUtil.safeDecodeFromString(content);
             int command = json.optInt(kSpeakingCommandKey, 0);
             switch (command) {
-                case ZegoSpeakingCmd.AnswerRoomInfo:
+                case SpeakingCmd.AnswerRoomInfo:
                     processAnswerRoomInfo(json);
                     break;
 
-                case ZegoSpeakingCmd.AllowSpeaking:
+                case SpeakingCmd.AllowSpeaking:
                     processAllowSpeaking(json);
                     break;
 
-                case ZegoSpeakingCmd.StopSpeaking:
+                case SpeakingCmd.StopSpeaking:
                     processStopSpeaking(json);
                     break;
 
-                case ZegoSpeakingCmd.NewUserJoinRoom:
+                case SpeakingCmd.NewUserJoinRoom:
                     processNewUserJoinRoom(json);
                     break;
 
-                case ZegoSpeakingCmd.UserLeaveRoom:
+                case SpeakingCmd.UserLeaveRoom:
                     processUserLeaveRoom(json);
                     break;
 
-                case ZegoSpeakingCmd.InTurnSpeaking:
+                case SpeakingCmd.InTurnSpeaking:
                     processInTurnSpeaking(json);
                     break;
 
-                case ZegoSpeakingCmd.FreeSpeaking:
+                case SpeakingCmd.FreeSpeaking:
                     processFreeSpeaking(json);
                     break;
 
