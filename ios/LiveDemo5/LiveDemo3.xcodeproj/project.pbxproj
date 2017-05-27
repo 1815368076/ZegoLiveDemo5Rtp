@@ -1405,7 +1405,7 @@
 				CODE_SIGN_ENTITLEMENTS = GameLive/GameLive.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: jiang ningbo (SQL7DB2NFY)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 3WR2G89LR2;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1432,7 +1432,7 @@
 				CODE_SIGN_ENTITLEMENTS = GameLive/GameLive.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: jiang ningbo (SQL7DB2NFY)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 3WR2G89LR2;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1468,7 +1468,7 @@
 				CODE_SIGN_ENTITLEMENTS = GameLive/GameLive.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: jiang ningbo (SQL7DB2NFY)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 3WR2G89LR2;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1495,7 +1495,7 @@
 				CODE_SIGN_ENTITLEMENTS = GameLive/GameLive.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: jiang ningbo (SQL7DB2NFY)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 3WR2G89LR2;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

@@ -104,8 +104,9 @@
 
 /// \brief 音频录制回调开关
 /// \param mask 启用音频源选择，参考 ZegoAPIAudioRecordMask
+/// \param sampleRate 采样率 8000, 16000, 22050, 24000, 32000, 44100, 48000
 /// \return true 成功，false 失败
-- (bool)enableSelectedAudioRecord:(unsigned int)mask;
+- (bool)enableSelectedAudioRecord:(unsigned int)mask sampleRate:(int)sampleRate;
 
 /// \brief 音频录制回调
 /// \param audioRecordDelegate 音频录制回调协议

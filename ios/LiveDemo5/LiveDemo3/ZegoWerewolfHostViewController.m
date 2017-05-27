@@ -98,6 +98,7 @@
     if (self.speakingTimer)
     {
         [self onSpeakingTimer];
+        [self reportStopSpeaking];
     }
     
     if (self.sendStopSpeakingTimer)
@@ -244,8 +245,17 @@
     {
         //正在推流
         [self stopPublish];
-        
-        [self updateSpeakingButton:YES];
+        if (self.speakingMode == kInTurnSpeakingMode)
+        {
+            [self stopTimer:self.speakingTimer];
+            [self reportStopSpeaking];
+            
+            [self updateSpeakingButton:NO];
+        }
+        else
+        {
+            [self updateSpeakingButton:YES];
+        }
         self.tipsLabel.text = NSLocalizedString(@"推流中止", nil);
     }
     else
@@ -255,6 +265,7 @@
         
         self.speakButton.enabled = NO;
         self.sendStopSpeakingTimer = [NSTimer scheduledTimerWithTimeInterval:kPostSpeakingInterval target:self selector:@selector(onStopSpeakingTimer) userInfo:nil repeats:NO];
+        [self reportStopSpeaking];
     }
 }
 
@@ -268,7 +279,7 @@
 {
     if (self.speakingMode == kInTurnSpeakingMode)
     {
-        [self onSpeakingTimer];
+        [self stopSpeakingTimer];
     }
     else if (self.speakingMode == kFreeSpeakingMode)
     {
@@ -573,6 +584,26 @@
     userInfo.videoView.backgroundColor = [UIColor colorWithWhite:0.667 alpha:0.5];
 }
 
+- (void)resetPlayView:(NSString *)userId
+{
+    ZegoWerewolUserInfo *userInfo = [self getUserInfoByUserId:userId];
+    if (userInfo == nil)
+        return;
+    
+    if ([userId isEqualToString:[ZegoSettings sharedInstance].userID])
+    {
+        [[ZegoDemoHelper api] setPreviewView:nil];
+        userInfo.streamId = nil;
+    }
+    else
+    {
+        [[ZegoDemoHelper api] updatePlayView:nil ofStream:userInfo.streamId];
+        userInfo.streamId = nil;
+    }
+    
+    userInfo.videoView.backgroundColor = [UIColor colorWithWhite:0.667 alpha:0.5];
+}
+
 - (void)onAnchorSpeaking
 {
     [self updateSpeakingButton:YES];
@@ -587,15 +618,20 @@
     [self broadAllowSpeaking:userInfo.userId];
 }
 
-- (void)onSpeakingTimer
+- (void)stopSpeakingTimer
 {
     [self stopTimer:self.speakingTimer];
     [self stopTimer:self.sendStopSpeakingTimer];
     
     [self resetPlayViewAndStop:[ZegoSettings sharedInstance].userID];
-    [self reportStopSpeaking];
     
     [self updateSpeakingButton:NO];
+}
+
+- (void)onSpeakingTimer
+{
+    [self stopSpeakingTimer];
+    [self reportStopSpeaking];
 }
 
 - (void)onAnchorTimer
@@ -981,7 +1017,7 @@
         if (userId.length == 0 || [[ZegoSettings sharedInstance].userID isEqualToString:userId])
             return;
         
-        [self resetPlayViewAndStop:userId];
+        [self resetPlayView:userId];
         
         //安排下一个人说话
         [self arrangeNextSpeaker];
