@@ -209,6 +209,36 @@
     return NO;
 }
 
+- (void)showPublishOption
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    ZegoAnchorOptionViewController *optionController = (ZegoAnchorOptionViewController *)[storyboard instantiateViewControllerWithIdentifier:@"anchorOptionID"];
+    
+    optionController.delegate = self;
+    
+    self.definesPresentationContext = YES;
+    if (![self isDeviceiOS7])
+        optionController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    else
+        optionController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    
+    optionController.view.backgroundColor = [UIColor clearColor];
+    [self presentViewController:optionController animated:YES completion:nil];
+}
+
+- (void)showLogViewController
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UINavigationController *navigationController = (UINavigationController *)[storyboard instantiateViewControllerWithIdentifier:@"logNavigationID"];
+    
+    ZegoLogTableViewController *logViewController = (ZegoLogTableViewController *)[navigationController.viewControllers firstObject];
+    logViewController.logArray = self.logArray;
+    
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+#pragma mark -- Handle constraints
+
 - (BOOL)setContainerConstraints:(UIView *)view containerView:(UIView *)containerView viewCount:(NSUInteger)viewCount
 {
     [self addPlayViewConstraints:view containerView:containerView viewIndex:viewCount];
@@ -267,32 +297,20 @@
     }];
 }
 
-- (void)showPublishOption
+#pragma mark -- Player request to join live
+
+- (void)onReceiveJoinLive:(NSString *)userId userName:(NSString *)userName seq:(int)seq
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    ZegoAnchorOptionViewController *optionController = (ZegoAnchorOptionViewController *)[storyboard instantiateViewControllerWithIdentifier:@"anchorOptionID"];
+    ZegoUser *requestUser = [ZegoUser new];
+    requestUser.userId = userId;
+    requestUser.userName = userName;
     
-    optionController.delegate = self;
-    
-    self.definesPresentationContext = YES;
-    if (![self isDeviceiOS7])
-        optionController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    else
-        optionController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    
-    optionController.view.backgroundColor = [UIColor clearColor];
-    [self presentViewController:optionController animated:YES completion:nil];
+    [self requestPublishAlert:requestUser seq:seq];
 }
 
-- (void)showLogViewController
+- (void)sendRequestPublishRespond:(BOOL)agreed seq:(int)seq requestPublisher:(ZegoUser *)requestUser
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    UINavigationController *navigationController = (UINavigationController *)[storyboard instantiateViewControllerWithIdentifier:@"logNavigationID"];
-    
-    ZegoLogTableViewController *logViewController = (ZegoLogTableViewController *)[navigationController.viewControllers firstObject];
-    logViewController.logArray = self.logArray;
-    
-    [self presentViewController:navigationController animated:YES completion:nil];
+    [[ZegoDemoHelper api] respondJoinLiveReq:seq result:(agreed == false)];
 }
 
 // 主播收到请求连麦的请求处理
@@ -383,23 +401,57 @@
     }
 }
 
-- (BOOL)shouldShowPublishAlert
-{
-    return YES;
-}
+#pragma mark -- Publisher invite player to join live
 
-- (void)onReceiveJoinLive:(NSString *)userId userName:(NSString *)userName seq:(int)seq
-{
+// 观众端处理收到的邀请连麦请求
+- (void)onReceiveRequestJoinLive:(NSString *)userId userName:(NSString *)userName seq:(int)seq {
     ZegoUser *requestUser = [ZegoUser new];
     requestUser.userId = userId;
     requestUser.userName = userName;
     
-    [self requestPublishAlert:requestUser seq:seq];
+    [self requestInvitePublishAlert:requestUser seq:seq];
 }
 
-- (void)sendRequestPublishRespond:(BOOL)agreed seq:(int)seq requestPublisher:(ZegoUser *)requestUser
+- (void)requestInvitePublishAlert:(ZegoUser *)requestUser seq:(int)seq
 {
-    [[ZegoDemoHelper api] respondJoinLiveReq:seq result:(agreed == false)];
+    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"%@ 请求直播，是否允许", nil), requestUser.userName];
+    if ([self isDeviceiOS7]) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:message delegate:self cancelButtonTitle:NSLocalizedString(@"拒绝", nil) otherButtonTitles:NSLocalizedString(@"允许", nil), nil];
+        NSDictionary *contextDictionary = @{@"Magic": @(seq), @"User": requestUser, @"AlertView": alertView};
+        if (self.requestAlertContextList.count == 0)
+            [alertView show];
+        [self.requestAlertContextList addObject:contextDictionary];
+    } else {
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@""
+                                                                                 message:message
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"拒绝", nil)
+                                                               style:UIAlertActionStyleCancel
+                                                             handler:^(UIAlertAction * _Nonnull action) {
+                                                                 [self sendInviteRequestRespond:NO seq:seq requestPublisher:requestUser];
+                                                             }];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"允许", nil)
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * _Nonnull action) {
+                                                             [self sendInviteRequestRespond:YES seq:seq requestPublisher:requestUser];
+                                                         }];
+        
+        [alertController addAction:cancelAction];
+        [alertController addAction:okAction];
+        
+        if (![self.presentedViewController isKindOfClass:[UIAlertController class]]) {
+            [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
+    }
+}
+
+
+- (BOOL)shouldShowPublishAlert
+{
+    return YES;
 }
 
 - (void)setIdelTimerDisable:(BOOL)disable

@@ -496,13 +496,13 @@
     }
 }
 
-- (void)onPublishQualityUpdate:(int)quality stream:(NSString *)streamID videoFPS:(double)fps videoBitrate:(double)kbs
+- (void)onPublishQualityUpdate:(NSString *)streamID quality:(ZegoApiPublishQuality)quality
 {
     UIView *view = self.viewContainersDict[streamID];
     if (view)
-        [self updateQuality:quality view:view];
+        [self updateQuality:quality.quality view:view];
     
-    [self addStaticsInfo:YES stream:streamID fps:fps kbs:kbs];
+    [self addStaticsInfo:YES stream:streamID fps:quality.fps kbs:quality.kbps];
 }
 
 - (void)onAuxCallback:(void *)pData dataLen:(int *)pDataLen sampleRate:(int *)pSampleRate channelCount:(int *)pChannelCount
@@ -575,13 +575,13 @@
     }
 }
 
-- (void)onPlayQualityUpdate:(int)quality stream:(NSString *)streamID videoFPS:(double)fps videoBitrate:(double)kbs
+- (void)onPlayQualityUpate:(NSString *)streamID quality:(ZegoApiPlayQuality)quality
 {
     UIView *view = self.viewContainersDict[streamID];
     if (view)
-        [self updateQuality:quality view:view];
+        [self updateQuality:quality.quality view:view];
     
-    [self addStaticsInfo:NO stream:streamID fps:fps kbs:kbs];
+    [self addStaticsInfo:NO stream:streamID fps:quality.fps kbs:quality.kbps];
 }
 
 - (void)onVideoSizeChangedTo:(CGSize)size ofStream:(NSString *)streamID

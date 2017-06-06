@@ -11,7 +11,6 @@
 #define kSpeakingCommandKey    @"command"
 
 #define kSpeakingUserIdKey     @"userId"
-#define kSpeakingStreamKey     @"streamId"
 
 #define kCurrentUserListKey    @"currentUserList"
 #define kNewUserKey            @"newUser"
@@ -27,7 +26,7 @@
 
 #define kPostSpeakingInterval   2
 #define kSpeakingTimerInterval      (60 + kPostSpeakingInterval)
-#define kAnchorTimerInterval        (20 + (kSpeakingTimerInterval))
+#define kAnchorTimerInterval        (5 + (kSpeakingTimerInterval))
 
 #define kStartSpeakingTitle NSLocalizedString(@"开始说话", nil)
 #define kStopSpeakingTitle  NSLocalizedString(@"说话结束", nil)
@@ -96,5 +95,9 @@ typedef NS_ENUM(NSUInteger, ZegoSpeakingMode) {
 //authority
 - (BOOL)checkVideoAuthorizationWithResult:(void (^)(BOOL granted))resultBlock;
 - (BOOL)checkAudioAuthorizationWithResult:(void (^)(BOOL granted))resultBlock;
+
+//count down timer
+- (void)startCountDownWithTime:(NSInteger)time fireBlock:(void (^)(int seconds))block;
+- (void)stopCountDownTimer;
 
 @end

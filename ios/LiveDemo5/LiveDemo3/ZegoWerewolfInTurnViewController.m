@@ -13,6 +13,7 @@
 @interface ZegoWerewolfInTurnViewController () <ZegoRoomDelegate, ZegoLivePublisherDelegate, ZegoLivePlayerDelegate, ZegoIMDelegate>
 
 @property (nonatomic, weak) IBOutlet UILabel *tipsLabel;
+@property (nonatomic, weak) IBOutlet UILabel *countDownLable;           //倒计时
 
 @property (nonatomic, copy) NSString* liveTitle;
 
@@ -31,6 +32,8 @@
 
 @property (nonatomic, assign) BOOL isUrtralServer;
 @property (nonatomic, assign) BOOL isSpeaking;
+
+@property (nonatomic, copy) NSString *currentSpeakingUserId;    // 当前说话用户 Id
 
 @end
 
@@ -65,6 +68,8 @@
     {
         [self notifyAnchorLogout];
     }
+    
+    [self.speakButton addObserver:self forKeyPath:@"enabled" options:NSKeyValueObservingOptionNew context:nil];
     
     [self setupLiveKit];
     [self loginChatRoom];
@@ -106,6 +111,8 @@
     [self.userList removeAllObjects];
     
     [[ZegoDemoHelper api] logoutRoom];
+    
+    [self.speakButton removeObserver:self forKeyPath:@"enabled"];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -592,7 +599,7 @@
 {
     if (self.userList.count == 0)
     {
-        //再信令到达前的流
+        //在信令到达前的流
         if (type == ZEGO_STREAM_ADD)
         {
             [self onStreamUpdatedBeforeLoginAdded:streamList];
@@ -639,7 +646,8 @@
         }
         else
         {
-            [self playInBigView:userInfo];
+            if ([userInfo.userId isEqualToString:self.currentSpeakingUserId])
+                [self playInBigView:userInfo];
         }
     }
 }
@@ -729,6 +737,7 @@
             self.speakingTimer = [NSTimer scheduledTimerWithTimeInterval:kSpeakingTimerInterval target:self selector:@selector(onSpeakingTimer) userInfo:nil repeats:NO];
         }
         
+        self.currentSpeakingUserId = userId;
         [self updatePlayView:userId];
     }
     else if (command == kStopSpeaking)
@@ -738,6 +747,7 @@
             return;
         
         //停止播放流的view
+        self.currentSpeakingUserId = nil;
         [self resetPlayView:userId];
     }
     else if (command == kAnswerRoomInfo)
@@ -866,9 +876,9 @@
     }
 }
 
-- (void)onPlayQualityUpdate:(int)quality stream:(NSString *)streamID videoFPS:(double)fps videoBitrate:(double)kbs
+- (void)onPlayQualityUpate:(NSString *)streamID quality:(ZegoApiPlayQuality)quality
 {
-    [self addStaticsInfo:NO stream:streamID fps:fps kbs:kbs];
+    [self addStaticsInfo:NO stream:streamID fps:quality.fps kbs:quality.kbps];
 }
 
 #pragma mark ZegoLivePublishDelegate
@@ -923,9 +933,9 @@
     }
 }
 
-- (void)onPublishQualityUpdate:(int)quality stream:(NSString *)streamID videoFPS:(double)fps videoBitrate:(double)kbs
+- (void)onPublishQualityUpdate:(NSString *)streamID quality:(ZegoApiPublishQuality)quality
 {
-    [self addStaticsInfo:YES stream:streamID fps:fps kbs:kbs];
+    [self addStaticsInfo:YES stream:streamID fps:quality.fps kbs:quality.kbps];
 }
 
 - (void)onVideoSizeChangedTo:(CGSize)size ofStream:(NSString *)streamID
@@ -960,6 +970,35 @@
         else if (state.updateFlag == ZEGO_USER_DELETE)
         {
             [self removeOldUser:state.userID];
+        }
+    }
+}
+
+#pragma mark observer
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"enabled"])
+    {
+        if (self.speakingMode == kFreeSpeakingMode)
+        {
+            self.countDownLable.hidden = YES;
+            return;
+        }
+        
+        BOOL isEnabled = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
+        if (isEnabled)
+        {
+            self.countDownLable.hidden = NO;
+            [self startCountDownWithTime:60 fireBlock:^(int seconds) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.countDownLable.text = [NSString stringWithFormat:@"%0.2d", seconds];
+                });
+            }];
+        }
+        else
+        {
+            self.countDownLable.hidden = YES;
+            [self stopCountDownTimer];
         }
     }
 }

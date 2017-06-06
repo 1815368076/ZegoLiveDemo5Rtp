@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vC3-pB-5Vb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vC3-pB-5Vb">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -1955,6 +1955,12 @@
                                     <action selector="onStartTalking:" destination="R8L-qi-xY6" eventType="touchUpInside" id="P59-DU-xOH"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="60" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hGr-H1-Okf">
+                                <rect key="frame" x="16" y="554" width="21" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="角色:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2bL-3C-RQQ">
                                 <rect key="frame" x="319.5" y="554" width="39.5" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -2006,13 +2012,16 @@
                             <constraint firstAttribute="trailingMargin" secondItem="h3u-Jx-VO6" secondAttribute="trailing" constant="72" id="iMU-lr-uIo"/>
                             <constraint firstAttribute="trailingMargin" secondItem="ZCn-TU-4OW" secondAttribute="trailing" id="nnL-u3-15x"/>
                             <constraint firstItem="8eg-jV-2F2" firstAttribute="top" secondItem="H8j-gQ-5z6" secondAttribute="top" constant="10" id="nuv-xi-Zbd"/>
+                            <constraint firstItem="hGr-H1-Okf" firstAttribute="centerY" secondItem="sdg-4A-Iug" secondAttribute="centerY" id="x8A-WW-2Am"/>
                             <constraint firstItem="sdg-4A-Iug" firstAttribute="centerX" secondItem="H8j-gQ-5z6" secondAttribute="centerX" id="xOf-mp-XPv"/>
+                            <constraint firstItem="hGr-H1-Okf" firstAttribute="leading" secondItem="H8j-gQ-5z6" secondAttribute="leadingMargin" id="yp4-d8-cOq"/>
                             <constraint firstItem="bwy-Dz-xIH" firstAttribute="top" secondItem="gBa-E7-6Ag" secondAttribute="bottom" constant="8" id="yp7-hK-1wT"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="bigPlayView" destination="h3u-Jx-VO6" id="v5S-dh-XJM"/>
                         <outlet property="characterLabel" destination="2bL-3C-RQQ" id="N6J-WO-Rjn"/>
+                        <outlet property="countDownLable" destination="hGr-H1-Okf" id="lUp-gA-ReG"/>
                         <outlet property="playViewContainer" destination="8eg-jV-2F2" id="Ihh-uj-fvO"/>
                         <outlet property="speakButton" destination="sdg-4A-Iug" id="dLC-dA-gGL"/>
                         <outlet property="tipsLabel" destination="hL9-Z3-0pd" id="xzn-W7-o8r"/>
@@ -2020,7 +2029,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b7v-Dc-2iJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4916" y="-1195"/>
+            <point key="canvasLocation" x="4916" y="-1195.0524737631185"/>
         </scene>
         <!--Zego Werewolf Host View Controller-->
         <scene sceneID="hAV-Ir-DNP">
@@ -2045,6 +2054,12 @@
                                 <rect key="frame" x="0.0" y="10" width="375" height="657"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </view>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="60" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M63-68-BC4">
+                                <rect key="frame" x="16" y="554" width="21" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rhv-a4-jqE">
                                 <rect key="frame" x="113" y="542" width="150" height="45"/>
                                 <color key="backgroundColor" name="secondarySelectedControlColor" catalog="System" colorSpace="catalog"/>
@@ -2108,6 +2123,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="wup-i3-9FW" firstAttribute="leading" secondItem="JX4-2B-aAm" secondAttribute="leadingMargin" constant="80" id="5Yw-xH-r03"/>
+                            <constraint firstItem="M63-68-BC4" firstAttribute="centerY" secondItem="rhv-a4-jqE" secondAttribute="centerY" id="6pM-Nu-wG4"/>
                             <constraint firstItem="z30-Ne-fJN" firstAttribute="centerX" secondItem="rhv-a4-jqE" secondAttribute="centerX" id="GIc-p3-Oii"/>
                             <constraint firstItem="rhv-a4-jqE" firstAttribute="top" secondItem="wup-i3-9FW" secondAttribute="bottom" constant="70" id="Gf0-dH-BfH"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Ssg-nV-mGa" secondAttribute="trailing" id="IQl-Dv-uMT"/>
@@ -2124,6 +2140,7 @@
                             <constraint firstItem="vnR-8k-j0C" firstAttribute="leading" secondItem="AgX-cp-GGS" secondAttribute="trailing" constant="20" id="fn4-Rv-BLG"/>
                             <constraint firstItem="GbH-eu-yTk" firstAttribute="top" secondItem="t5J-NQ-BT3" secondAttribute="bottom" id="h38-2W-pZ9"/>
                             <constraint firstItem="rhv-a4-jqE" firstAttribute="centerX" secondItem="JX4-2B-aAm" secondAttribute="centerX" id="ot2-z1-AyG"/>
+                            <constraint firstItem="M63-68-BC4" firstAttribute="leading" secondItem="JX4-2B-aAm" secondAttribute="leadingMargin" id="rDz-6O-GDa"/>
                             <constraint firstItem="GbH-eu-yTk" firstAttribute="top" secondItem="rhv-a4-jqE" secondAttribute="bottom" constant="80" id="s1j-Kg-Mdh"/>
                             <constraint firstItem="Qtr-iz-Cuf" firstAttribute="centerY" secondItem="vnR-8k-j0C" secondAttribute="centerY" id="sOY-Ap-UcL"/>
                             <constraint firstItem="d3o-XD-TnE" firstAttribute="centerY" secondItem="rhv-a4-jqE" secondAttribute="centerY" id="scf-kQ-IDj"/>
@@ -2133,6 +2150,7 @@
                     <connections>
                         <outlet property="bigPlayView" destination="wup-i3-9FW" id="rbL-yr-ncg"/>
                         <outlet property="characterLabel" destination="d3o-XD-TnE" id="ayG-Em-GPc"/>
+                        <outlet property="countDownLable" destination="M63-68-BC4" id="dZz-E5-Slq"/>
                         <outlet property="endInTurnSpeakButton" destination="Qtr-iz-Cuf" id="81T-kJ-MDr"/>
                         <outlet property="inTurnSpeakButton" destination="vnR-8k-j0C" id="AYo-Bs-f1g"/>
                         <outlet property="playViewContainer" destination="t5J-NQ-BT3" id="dUJ-jh-o5F"/>

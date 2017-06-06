@@ -16,6 +16,7 @@
 @property (nonatomic, weak) IBOutlet UIButton *inTurnSpeakButton;       // 轮流说话 button
 @property (nonatomic, weak) IBOutlet UIButton *endInTurnSpeakButton;    // 结束轮流说话 button
 @property (nonatomic, weak) IBOutlet UILabel *tipsLabel;                // 当前模式 label
+@property (nonatomic, weak) IBOutlet UILabel *countDownLable;           //倒计时
 
 @property (nonatomic, copy) NSString *roomID;                   // 房间 ID
 @property (nonatomic, strong) NSMutableArray<ZegoWerewolUserInfo *> *userList;           // 用户列表
@@ -71,6 +72,8 @@
     self.endInTurnSpeakButton.enabled = NO;
     self.inTurnSpeakButton.enabled = NO;
     
+    [self.speakButton addObserver:self forKeyPath:@"enabled" options:NSKeyValueObservingOptionNew context:nil];
+    
     [self setupLiveKit];
     [self loginChatRoom];
 }
@@ -111,6 +114,8 @@
     [self.userList removeAllObjects];
     
     [[ZegoDemoHelper api] logoutRoom];
+    
+    [self.speakButton removeObserver:self forKeyPath:@"enabled"];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -189,6 +194,8 @@
     [self.inturnSpeakingList removeAllObjects];
     self.inturnSpeakingList = nil;
     self.characterLabel.hidden = YES;
+    self.countDownLable.hidden = YES;
+    
     self.speakButton.enabled = NO;
     
     [self stopTimer:self.sendStopSpeakingTimer];
@@ -970,7 +977,8 @@
         }
         else
         {
-            [self playInBigView:userInfo];
+            if ([userInfo.userId isEqualToString:self.currentSpeakingUserId])
+                [self playInBigView:userInfo];
         }
     }
 }
@@ -1015,6 +1023,9 @@
         NSString *userId = dict[kSpeakingUserIdKey];
         
         if (userId.length == 0 || [[ZegoSettings sharedInstance].userID isEqualToString:userId])
+            return;
+        
+        if (![userId isEqualToString:self.currentSpeakingUserId])
             return;
         
         [self resetPlayView:userId];
@@ -1062,9 +1073,9 @@
     }
 }
 
-- (void)onPlayQualityUpdate:(int)quality stream:(NSString *)streamID videoFPS:(double)fps videoBitrate:(double)kbs
+- (void)onPlayQualityUpate:(NSString *)streamID quality:(ZegoApiPlayQuality)quality
 {
-    [self addStaticsInfo:NO stream:streamID fps:fps kbs:kbs];
+    [self addStaticsInfo:NO stream:streamID fps:quality.fps kbs:quality.kbps];
 }
 
 - (void)onVideoSizeChangedTo:(CGSize)size ofStream:(NSString *)streamID
@@ -1125,9 +1136,9 @@
     }
 }
 
-- (void)onPublishQualityUpdate:(int)quality stream:(NSString *)streamID videoFPS:(double)fps videoBitrate:(double)kbs
+- (void)onPublishQualityUpdate:(NSString *)streamID quality:(ZegoApiPublishQuality)quality
 {
-    [self addStaticsInfo:YES stream:streamID fps:fps kbs:kbs];
+    [self addStaticsInfo:YES stream:streamID fps:quality.fps kbs:quality.kbps];
 }
 
 #pragma mark - IM Delegate
@@ -1192,4 +1203,36 @@
     }
 }
 
+#pragma mark observer
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"enabled"])
+    {
+        if (self.speakingMode == kFreeSpeakingMode)
+        {
+            self.countDownLable.hidden = YES;
+            return;
+        }
+        
+        BOOL isEnabled = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
+        if (isEnabled)
+        {
+            self.countDownLable.hidden = NO;
+            [self startCountDownWithTime:60 fireBlock:^(int seconds) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.countDownLable.text = [NSString stringWithFormat:@"%0.2d", seconds];
+                });
+            }];
+        }
+        else
+        {
+            if (self.countDownLable.hidden == NO)
+            {
+                self.countDownLable.hidden = YES;
+                [self stopCountDownTimer];
+            }
+            
+        }
+    }
+}
 @end

@@ -703,13 +703,29 @@
     }
 }
 
-- (void)onPlayQualityUpdate:(int)quality stream:(NSString *)streamID videoFPS:(double)fps videoBitrate:(double)kbs
+- (void)onPlayQualityUpate:(NSString *)streamID quality:(ZegoApiPlayQuality)quality
 {
     UIView *view = self.viewContainersDict[streamID];
     if (view)
-        [self updateQuality:quality view:view];
+        [self updateQuality:quality.quality view:view];
     
-    [self addStaticsInfo:YES stream:streamID fps:fps kbs:kbs];
+    [self addStaticsInfo:NO stream:streamID fps:quality.fps kbs:quality.kbps];
+}
+
+// 观众端收到主播端的邀请连麦请求
+- (void)onInviteJoinLiveRequest:(int)seq fromUserID:(NSString *)userId fromUserName:(NSString *)userName roomID:(NSString *)roomID {
+    if (seq == 0 || userId.length == 0)
+        return;
+    
+    [self onReceiveRequestJoinLive:userId userName:userName seq:seq];
+}
+
+// 观众端响应邀请连麦请求
+- (void)sendInviteRequestRespond:(BOOL)agreed seq:(int)seq requestPublisher:(ZegoUser *)requestUser {
+    BOOL success = [[ZegoDemoHelper api] respondInviteJoinLiveReq:seq result:(agreed == false)];
+    if (success && agreed) {
+        [self createPublishStream];
+    }
 }
 
 #pragma mark - ZegoLivePublisherDelegate
@@ -777,13 +793,13 @@
     }
 }
 
-- (void)onPublishQualityUpdate:(int)quality stream:(NSString *)streamID videoFPS:(double)fps videoBitrate:(double)kbs
+- (void)onPublishQualityUpdate:(NSString *)streamID quality:(ZegoApiPublishQuality)quality
 {
     UIView *view = self.viewContainersDict[streamID];
     if (view)
-        [self updateQuality:quality view:view];
+        [self updateQuality:quality.quality view:view];
     
-    [self addStaticsInfo:YES stream:streamID fps:fps kbs:kbs];
+    [self addStaticsInfo:YES stream:streamID fps:quality.fps kbs:quality.kbps];
 }
 
 - (void)onAuxCallback:(void *)pData dataLen:(int *)pDataLen sampleRate:(int *)pSampleRate channelCount:(int *)pChannelCount

@@ -53,6 +53,7 @@
 // 设置主播配置
 - (void)setAnchorConfig:(UIView *)publishView;
 
+// 设备是否为 iOS7 系统
 - (BOOL)isDeviceiOS7;
 
 // 设置更新视图约束
@@ -75,6 +76,11 @@
 // 主播端响应连麦请求
 - (void)sendRequestPublishRespond:(BOOL)agreed seq:(int)seq requestPublisher:(ZegoUser *)requestUser;
 
+// 观众端处理收到的邀请连麦请求
+- (void)onReceiveRequestJoinLive:(NSString *)userId userName:(NSString *)userName seq:(int)seq;
+// 观众端响应邀请连麦请求
+- (void)sendInviteRequestRespond:(BOOL)agreed seq:(int)seq requestPublisher:(ZegoUser *)requestUser;
+
 - (void)setIdelTimerDisable:(BOOL)disable;
 
 // 电话监听处理函数
@@ -84,13 +90,13 @@
 // 更新直播质量
 - (void)updateQuality:(int)quality view:(UIView *)playerView;
 
-//混流时的回调实现
+// 混流时的回调实现
 - (void)auxCallback:(void *)pData dataLen:(int *)pDataLen sampleRate:(int *)pSampleRate channelCount:(int *)pChannelCount;
 
-//获取第一个view
+// 获取第一个view
 - (UIView *)getFirstViewInContainer:(UIView *)containerView;
 
-//分享到QQ
+// 分享到QQ
 - (void)shareToQQ:(NSString *)hls rtmp:(NSString *)rtmp bizToken:(NSString *)bizToken bizID:(NSString *)bizID streamID:(NSString *)streamID;
 
 - (NSString *)encodeDictionaryToJSON:(NSDictionary *)dictionary;
