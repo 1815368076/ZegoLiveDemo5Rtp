@@ -128,16 +128,46 @@ namespace ZEGO
             ZegoVideoViewModeScaleAspectFill = 1,   ///< 等比缩放填充整View，可能有部分被裁减
             ZegoVideoViewModeScaleToFill = 2,       ///< 填充整个View
         };
+        
+        struct ZegoPublishQuality
+        {
+            double fps;
+            double kbps;
+            int rtt;
+            int pktLostRate;                    ///< 丢包率: 0 ~ 255
+            
+            int quality;
+        };
+        
+        typedef ZegoPublishQuality ZegoPlayQuality;
     }
     
 #ifndef ZegoAVDefines_h
     namespace AV
     {
+        /// \brief SDK 事件通知
+        enum EventType
+        {
+            Play_BeginRetry = 1,        ///< 开始从事拉流
+            Play_RetrySuccess = 2,      ///< 重试拉流成功
+            
+            Publish_BeginRetry = 3,     ///< 开始重试推流
+            Publish_RetrySuccess = 4,   ///< 重试推流成功
+        };
+        
         struct EventInfo
         {
             unsigned int uiInfoCount;
             char* arrKeys[ZEGO_MAX_EVENT_INFO_COUNT];
             char* arrValues[ZEGO_MAX_EVENT_INFO_COUNT];
+        };
+        
+        enum ZegoVideoEncoderRateControlStrategy
+        {
+            ZEGO_RC_ABR,    ///< 恒定码率
+            ZEGO_RC_CBR,    ///< 恒定码率
+            ZEGO_RC_VBR,    ///< 恒定质量
+            ZEGO_RC_CRF,    ///< 恒定质量
         };
 
         enum AudioDeviceType
@@ -156,6 +186,14 @@ namespace ZEGO
         {
             Device_Added = 0,
             Device_Deleted,
+        };
+        
+        enum ZegoAVAPIAudioRecordMask
+        {
+            ZEGO_AUDIO_RECORD_NONE      = 0x0,  ///< 关闭音频录制
+            ZEGO_AUDIO_RECORD_CAP       = 0x01, ///< 打开采集录制
+            ZEGO_AUDIO_RECORD_RENDER    = 0x02, ///< 打开渲染录制
+            ZEGO_AUDIO_RECORD_MIX       = 0x04  ///< 打开采集和渲染混音结果录制
         };
     }
 #endif

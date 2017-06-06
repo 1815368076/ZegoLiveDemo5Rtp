@@ -10,6 +10,7 @@
 #define LiveRoomCallback_Publisher_h
 
 #include "./LiveRoomDefines-Publisher.h"
+#include "./LiveRoomDefines.h"
 
 namespace ZEGO
 {
@@ -38,7 +39,11 @@ namespace ZEGO
             /// \param[in] seq 请求 seq
             virtual void OnInviteJoinLiveResponse(int result, const char *pszFromUserId, const char *pszFromUserName, int seq) {}
             
+            virtual void OnEndJoinLive(int result, int seq, const char *pszRoomID) {}
+            
             virtual void OnPublishQulityUpdate(const char* pszStreamID, int quality, double videoFPS, double videoKBS) {}
+            
+            virtual void OnPublishQualityUpdate(const char* pszStreamID, ZegoPublishQuality publishQuality) {}
             
             virtual void OnCaptureVideoSizeChanged(int nWidth, int nHeight) {}
             

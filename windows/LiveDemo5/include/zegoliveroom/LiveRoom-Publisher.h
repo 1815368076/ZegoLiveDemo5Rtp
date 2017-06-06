@@ -46,6 +46,10 @@ namespace ZEGO
         /// \note 开播后流附加信息的更新，在房间的其他人会收到OnStreamExtraInfoUpdated通知
         ZEGO_API bool SetPublishStreamExtraInfo(const char *pszStreamExtraInfo);
         
+        /// \brief 自定义转推目的地
+        /// \param pszCustomPublishTarget 目的rmtp推流地址
+        ZEGO_API void SetCustomPublishTarget(const char *pszCustomPublishTarget);
+        
         /// \brief 开始直播
         /// \param[in] pszTitle 直播的名称
         /// \param[in] pszStreamID 流ID
@@ -67,12 +71,17 @@ namespace ZEGO
         /// \return true 成功，false 失败
         ZEGO_API bool RespondJoinLiveReq(int seq, int rspResult);
         
-        /// \breif 邀请连麦
+        /// \brief 邀请连麦
         /// \note 该用户会收到 OnInviteJoinLiveRequest 回调
         /// \param[in] pszUserID 欲邀请的用户 ID
         /// \return 请求 seq，正值为有效，等待 ILivePublisherCallback::OnInviteJoinLiveResponse 回调，否则失败
         ZEGO_API int InviteJoinLive(const char* pszUserID);
-        
+
+        /// \brief 结束连麦
+        /// \param[in] pszUserID 指定结束连麦的用户 ID
+        /// \return 请求seq，正值为有效，等待ILivePublisherCallback::OnEndJoinLive 回调
+        ZEGO_API int EndJoinLive(const char* pszUserID);
+
         /// \breif 设置混流数据配置
         /// \param[in] pszMixStreamID 混流ID
         /// \param[in] nMixVideoWidth 混流后视频的宽
@@ -254,6 +263,11 @@ namespace ZEGO
         /// \brief 设置回调, 接收媒体次要信息
         /// \param OnMediaSideCallback 回调函数指针,  buf 媒体数据,  dataLen 数据长度
         ZEGO_API void SetMediaSideCallback(void(*OnMediaSideCallback)(const unsigned char* buf, int dataLen));
+        
+        /// \brief 设置延迟模式
+        /// \param mode 延迟模式，默认 ZEGO_LATENCY_MODE_NORMAL
+        /// \note 在推流前调用
+        ZEGO_API void SetLatencyMode(AV::ZegoAVAPILatencyMode mode);
     }
 }
 #endif /* LiveRoom_Publisher_h */

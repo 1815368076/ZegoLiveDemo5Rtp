@@ -153,6 +153,11 @@ namespace ZEGO
         /// \param[in] deviceid 杨声器deviceid volume 音量 0 ~ 100
         ZEGO_API void SetSpeakerDeviceVolume(const char *deviceId, int volume);
 #endif // WIN32
+        
+        /// \brief 设置“音视频引擎状态通知”的回调
+        /// \param[in] pCB 回调对象指针
+        /// \return true 成功，false 失败
+        ZEGO_API bool SetAVEngineCallback(IAVEngineCallback* pCB);
 	}
 }
 

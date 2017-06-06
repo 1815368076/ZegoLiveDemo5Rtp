@@ -8,10 +8,10 @@
 #include "LiveRoom-Publisher.h"
 #include "zego_sdk_protocol.h"
 
+#if defined ZEGO_PROTOCOL_UDP
 
-#ifdef ZEGO_PROTOCOL_UDP
+static std::string g_strAppName = "Live5-UDP";
 static DWORD g_dwAppID2 = 1739272706;
-
 static BYTE g_bufSignKey2[] =
 {
     0x1e, 0xc3, 0xf8, 0x5c, 0xb2, 0xf2, 0x13, 0x70,
@@ -19,7 +19,22 @@ static BYTE g_bufSignKey2[] =
     0x7f, 0xa3, 0x3b, 0x9d, 0xef, 0xef, 0x2a, 0x85,
     0xe0, 0xc8, 0x99, 0xae, 0x82, 0xc0, 0xf6, 0xf8
 };
+
+#elif defined ZEGO_PROTOCOL_UDP_INTERNATIONAL
+
+static std::string g_strAppName = "Live5-INTERNATIONAL";
+static DWORD g_dwAppID2 = 3322882036;
+static BYTE g_bufSignKey2[] =
+{ 
+    0x5d, 0xe6, 0x83, 0xac, 0xa4, 0xe5, 0xad, 0x43,
+    0xe5, 0xea, 0xe3, 0x70, 0x6b, 0xe0, 0x77, 0xa4,
+    0x18, 0x79, 0x38, 0x31, 0x2e, 0xcc, 0x17, 0x19,
+    0x32, 0xd2, 0xfe, 0x22, 0x5b, 0x6b, 0x2b, 0x2f 
+};
+    
 #else
+
+static std::string g_strAppName = "LiveDemo5";
 static DWORD g_dwAppID2 = 1;
 static BYTE g_bufSignKey2[] =
 {
@@ -28,6 +43,7 @@ static BYTE g_bufSignKey2[] =
     0x41, 0xd4, 0xad, 0x83, 0x78, 0xf2, 0x59, 0x90,
     0xe0, 0xa4, 0x0c, 0x7f, 0xf4, 0x28, 0x41, 0xf7
 };
+
 #endif
 
 
@@ -41,6 +57,11 @@ LRESULT CALLBACK ZegoCommuExchangeWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
 	}
 
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+std::string CZegoBase::GetAppName()
+{
+    return g_strAppName;
 }
 
 CZegoBase::CZegoBase(void) : m_dwInitedMask(INIT_NONE)

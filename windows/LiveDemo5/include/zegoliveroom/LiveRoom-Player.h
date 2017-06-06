@@ -117,14 +117,23 @@ namespace ZEGO
         // * audio record
         
         /// \brief 音频录制回调开关
-        /// \param bEnable true 是否开启
+        /// \param uMask 启用音频源选择，参考 ZegoAVAPIAudioRecordMask
+        /// \param nSampleRate 采样率 8000, 16000, 22050, 24000, 32000, 44100, 48000
         /// \return true 成功，false 失败
-        ZEGO_API bool EnableAudioRecord(bool bEnable);
+        ZEGO_API bool EnableSelectedAudioRecord(unsigned int uMask, int nSampleRate = 44100);
         
         /// \brief 设置音频录制回调
         /// \param pCB 回调实现实例
         /// \return true 成功，false 失败
         ZEGO_API bool SetAudioRecordCallback(AV::IZegoAudioRecordCallback* pCB);
+        
+        
+        /// \brief 音频录制回调开关
+        /// \param bEnable true 是否开启
+        /// \return true 成功，false 失败
+        /// \param nSampleRate 采样率 8000, 16000, 22050, 24000, 32000, 44100, 48000
+        /// \note 已废弃，请使用 EnableSelectedAudioRecord
+        ZEGO_API bool EnableAudioRecord(bool bEnable, int nSampleRate = 44100);
     }
 }
 

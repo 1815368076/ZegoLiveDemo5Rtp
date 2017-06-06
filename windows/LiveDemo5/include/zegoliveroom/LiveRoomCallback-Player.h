@@ -9,6 +9,8 @@
 #ifndef LiveRoomCallback_Player_h
 #define LiveRoomCallback_Player_h
 
+#include "./LiveRoomDefines.h"
+
 namespace ZEGO
 {
     namespace LIVEROOM
@@ -28,6 +30,8 @@ namespace ZEGO
             /// \param[in] videoKBS 码率
             virtual void OnPlayQualityUpdate(const char* pszStreamID, int quality, double videoFPS, double videoKBS) {};
             
+            virtual void OnPlayQualityUpdate(const char* pszStreamID, ZegoPlayQuality playQuality) {};
+            
             /// \brief 收到请求连麦结果
             /// \param[in] result 结果
             /// \param[in] pszFromUserId 来源用户ID
@@ -35,7 +39,10 @@ namespace ZEGO
             /// \param[in] seq 请求 seq
             virtual void OnJoinLiveResponse(int result, const char* pszFromUserId, const char* pszFromUserName, int seq) {};
             
-            /// \breif 收到连麦邀请
+            /// \brief 收到结束连麦指令
+            virtual void OnRecvEndJoinLiveCommand(const char *pszFromUserId, const char* pszFromUserName, const char* pszRoomID) {};
+            
+            /// \brief 收到连麦邀请
             /// \param[in] seq 请求 seq
             /// \param[in] pszFromUserId 来源用户ID
             /// \param[in] pszFromUserName 来源用户名
@@ -69,7 +76,11 @@ namespace ZEGO
         class IZegoAudioRecordCallback
         {
         public:
-            virtual void OnAudioRecordCallback(const unsigned char *pData, int data_len, int sample_rate, int num_channels, int bit_depth) = 0;
+            virtual void OnAudioRecordCallback(const unsigned char *pData, int data_len, int sample_rate, int num_channels, int bit_depth, unsigned int type) {}
+            
+            /// \breif 音频录制回调
+            /// \note 已废弃，请使用带 type 的回调
+            virtual void OnAudioRecordCallback(const unsigned char *pData, int data_len, int sample_rate, int num_channels, int bit_depth) {}
         };
     }
 #endif

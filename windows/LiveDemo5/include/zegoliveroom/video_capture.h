@@ -147,12 +147,40 @@ namespace AVE {
         virtual void OnIncomingCapturedData(int texture_id, int width, int height, double reference_time_ms) = 0;
     };
     
+    enum VideoCodecType {
+        CODEC_TYPE_AVC_AVCC = 0,
+        CODEC_TYPE_AVC_ANNEXB = 1
+    };
+    
+    struct VideoCodecConfig {
+        VideoCodecConfig() : width(0), height(0), codec_type(CODEC_TYPE_AVC_AVCC) {
+        }
+        
+        int width;
+        int height;
+        VideoCodecType codec_type;
+    };
+    
+    class VideoCaptureEncodedFrameCallback {
+    public:
+        virtual void OnEncodedFrame(const char* data, int length,
+                                    const VideoCodecConfig& codec_config,
+                                    bool b_keyframe, double reference_time_ms) = 0;
+    };
+    
     enum VideoPixelBufferType {
         PIXEL_BUFFER_TYPE_UNKNOWN = 0,
         PIXEL_BUFFER_TYPE_MEM = 1 << 0,
         PIXEL_BUFFER_TYPE_CV_PIXEL_BUFFER = 1 << 1,
         PIXEL_BUFFER_TYPE_SURFACE_TEXTURE = 1 << 2,
         PIXEL_BUFFER_TYPE_GL_TEXTURE_2D = 1 << 3,
+        PIXEL_BUFFER_TYPE_ENCODED_FRAME = 1 << 4,
+    };
+    
+    enum VideoFillMode {
+        FILL_MODE_BLACKBAR,         // * maintain aspect ratio, adds black bars if needed
+        FILL_MODE_CROP,             // * crop video to fit view
+        FILL_MODE_STRETCH           // * stretch video to fit view
     };
     
     class VideoCaptureDeviceBase {
@@ -168,6 +196,8 @@ namespace AVE {
             virtual void OnError(const char* reason) = 0;
             
             virtual void* GetInterface() = 0;
+            
+            virtual void SetFillMode(int mode) = 0;
         };
         
     public:       

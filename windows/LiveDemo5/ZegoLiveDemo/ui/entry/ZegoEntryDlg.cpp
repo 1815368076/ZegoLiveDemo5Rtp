@@ -61,6 +61,10 @@ BOOL CZegoEntryDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+    CString strTile;
+    strTile.Format(_T("%s"), UTF8ToWString(theApp.GetBase().GetAppName().c_str()).c_str());
+    SetWindowText(strTile);
+
 	SetIcon(m_hIcon, TRUE);	// 设置大图标
 	SetIcon(m_hIcon, FALSE);	// 设置小图标
 

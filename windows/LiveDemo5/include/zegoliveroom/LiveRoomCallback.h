@@ -66,6 +66,15 @@ namespace ZEGO
             
             virtual ~IRoomCallback() {}
         };
+        
+        class IAVEngineCallback
+        {
+        public:
+            /// \brief 音视频引擎停止时回调
+            virtual void OnAVEngineStop() = 0;
+            
+            virtual ~IAVEngineCallback(){}
+        };
     }
     
 #ifndef ZegoAVCallback_h

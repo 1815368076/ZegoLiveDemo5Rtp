@@ -75,6 +75,12 @@ namespace ZEGO
             ZEGO_AUDIO_DEVICE_MODE_GENERAL = 2,
             ZEGO_AUDIO_DEVICE_MODE_AUTO = 3
         };
+        
+        enum ZegoAVAPILatencyMode
+        {
+            ZEGO_LATENCY_MODE_NORMAL = 0,   ///< 普通延迟模式
+            ZEGO_LATENCY_MODE_LOW,          ///< 低延迟模式，*无法用于 RTMP 流*
+        };
     }
 #endif
 }

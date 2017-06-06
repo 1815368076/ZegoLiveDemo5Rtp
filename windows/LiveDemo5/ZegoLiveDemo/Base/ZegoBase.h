@@ -17,6 +17,7 @@ public:
 
 	CZegoAVSignal& GetAVSignal(void);
     DWORD GetAppID(void);
+    std::string GetAppName();
 private:
 	typedef enum _INIT_MASK {
 		INIT_NONE	= 0,
