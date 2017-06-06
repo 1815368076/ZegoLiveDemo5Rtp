@@ -79,6 +79,11 @@ public class SingleAnchorPlayActivity extends BasePlayActivity {
             }
 
             @Override
+            public void onRecvEndJoinLiveCommand(String fromUserId, String fromUserName, String roomId) {
+
+            }
+
+            @Override
             public void onVideoSizeChangedTo(String streamID, int width, int height) {
                 handleVideoSizeChanged(streamID, width, height);
             }

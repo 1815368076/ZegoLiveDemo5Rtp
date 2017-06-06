@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
 import com.zego.livedemo5.constants.IntentExtra;
+import com.zego.livedemo5.utils.PreferenceUtil;
 import com.zego.livedemo5.utils.ShareUtils;
 import com.zego.livedemo5.utils.ZegoRoomUtil;
 import com.zego.zegoliveroom.ZegoLiveRoom;
@@ -154,9 +155,13 @@ public  class GameLiveActivity extends AppCompatActivity {
                         if (rtmpList != null && rtmpList.length > 0) {
                             mListUrls.add(rtmpList[0]);
                         }
+
+                        Log.i(TAG, "推流成功");
+                        Toast.makeText(GameLiveActivity.this, "推流成功", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Log.i(TAG, "sdk停止推流");
+                    Log.i(TAG, "推流失败");
+                    Toast.makeText(GameLiveActivity.this, "推流失败", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -175,7 +180,6 @@ public  class GameLiveActivity extends AppCompatActivity {
 
             @Override
             public void onCaptureVideoSizeChangedTo(int width, int height) {
-                Log.i(TAG, "onCaptureVideoSizeChangedTo");
             }
 
             @Override
@@ -186,15 +190,24 @@ public  class GameLiveActivity extends AppCompatActivity {
 
     private void startCapture(){
         ZegoAvConfig zegoAvConfig = ZegoApiManager.getInstance().getZegoAvConfig();
+        // 开始录屏
         mZegoLiveRoom.startScreenCapture(mMediaProjection, zegoAvConfig.getVideoEncodeResolutionWidth(),
                 zegoAvConfig.getVideoEncodeResolutionHeight());
 
+
+        // 开始推流
+        mPublishTitle = "Android录屏_" + PreferenceUtil.getInstance().getUserID();
         mPublishStreamID = ZegoRoomUtil.getPublishStreamID();
-        mZegoLiveRoom.startPublishing(mPublishTitle, mPublishStreamID, 0);
+        mZegoLiveRoom.startPublishing(mPublishStreamID, mPublishTitle, 0);
     }
 
     private void stopCapture(){
+
+        Toast.makeText(GameLiveActivity.this, "停止推流", Toast.LENGTH_SHORT).show();
+
+        // 停止录屏
         mZegoLiveRoom.stopScreenCapture();
+        // 停止推流
         mZegoLiveRoom.stopPublishing();
     }
 
@@ -205,28 +218,29 @@ public  class GameLiveActivity extends AppCompatActivity {
 
             mMediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
 
-            mRoomID = ZegoRoomUtil.getRoomID(ZegoRoomUtil.ROOM_TYPE_SINGLE);
+            mRoomID = ZegoRoomUtil.getRoomID(ZegoRoomUtil.ROOM_TYPE_GAME);
             mZegoLiveRoom.loginRoom(mRoomID, mPublishTitle, ZegoConstants.RoomRole.Anchor, new IZegoLoginCompletionCallback() {
                 @Override
                 public void onLoginCompletion(int stateCode, ZegoStreamInfo[] zegoStreamInfos) {
                     if(stateCode == 0){
 
-                        Log.i(TAG, "创建房间成功");
+                        Log.i(TAG, "登陆房间成功");
                         mIsRunning = true;
                         mStartBtn.setText("停止录屏");
                         mStartBtn.setEnabled(true);
 
                         startCapture();
                     }else {
-                        Log.i(TAG, "创建房间失败");
+                        Log.i(TAG, "登陆房间失败");
+                        Toast.makeText(GameLiveActivity.this, "登陆房间失败", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         }else {
             Log.i(TAG, "获取MediaProjection失败");
+            Toast.makeText(GameLiveActivity.this, "获取MediaProjection失败", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -240,6 +254,7 @@ public  class GameLiveActivity extends AppCompatActivity {
                     mZegoLiveRoom.setZegoLivePublisherCallback(null);
 
                     ZegoApiManager.getInstance().releaseSDK();
+                    // 设置直播模式为"摄像头模式"
                     mZegoLiveRoom.setLiveMode(ZegoLiveRoom.LIVE_MODE_CAMERA);
                     ZegoApiManager.getInstance().initSDK();
 

@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
-import com.zego.livedemo5.presenters.WolfInfo;
 import com.zego.livedemo5.ui.activities.LogListActivity;
 import com.zego.livedemo5.ui.activities.base.AbsBaseLiveActivity;
 import com.zego.livedemo5.utils.PreferenceUtil;
@@ -30,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.LinkedList;
+import java.util.Timer;
 
 import butterknife.Bind;
 
@@ -54,7 +54,7 @@ public abstract class WolvesGameBaseActivity extends AbsBaseLiveActivity {
     /** 发信停止说话信令与停止推流之间的时间间隔，用于确保按停止说话按钮时，所有语音都能正常推送出去 */
     static final protected int kPostSpeakingInterval  = 2;
     /** 开始说话后，设置结束说话倒计时。即轮流模式下允许单次说话的最长时间 */
-    static final protected int kSpeakingTimerInterval = 60 + kPostSpeakingInterval;
+    static final protected int kSpeakingTimerInterval = 60;
     /** 轮流说话模式下，组织者（Host）用于设定某位说话者的最长时间，避免说话者异常离开导致游戏无法继续的情况 */
     static final protected int kAnchorTimerInterval   = 5 + kSpeakingTimerInterval;
 
@@ -70,11 +70,15 @@ public abstract class WolvesGameBaseActivity extends AbsBaseLiveActivity {
     @Bind(R.id.txt_current_status)
     public TextView mTextTips;
 
-    @Bind(R.id.btn_start_or_stop_speaking)
-    public Button mBtnSpeaking;
 
     @Bind(R.id.wolf_role)
     public TextView mTextRole;
+
+    @Bind(R.id.wolf_timer_count)
+    public TextView mTimerView;
+
+    @Bind(R.id.btn_start_or_stop_speaking)
+    public Button mBtnSpeaking;
 
     @Bind(R.id.in_turn_speaking)
     public TextView mInTurnSpeaking;
@@ -83,6 +87,9 @@ public abstract class WolvesGameBaseActivity extends AbsBaseLiveActivity {
     public TextView mEndInTurnSpeaking;
 
     protected RecyclerGridViewAdapter mRecyclerAdapter;
+
+    /** 进入房间的所有成员列表 */
+    protected LinkedList<WolfInfo> allWolfMembers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +124,16 @@ public abstract class WolvesGameBaseActivity extends AbsBaseLiveActivity {
     @Override
     protected int getContentViewLayout() {
         return R.layout.activity_wolves_game;
+    }
+
+
+    /**
+     * 初始化子类中的变量.
+     */
+    @Override
+    protected void initVariables(Bundle savedInstanceState) {
+        allWolfMembers = new LinkedList<>();
+        mRecyclerAdapter = new RecyclerGridViewAdapter(this);
     }
 
     /**

@@ -102,6 +102,11 @@ public class ExternalRenderPlayActivity extends BasePlayActivity {
             }
 
             @Override
+            public void onRecvEndJoinLiveCommand(String fromUserId, String fromUserName, String roomId) {
+                handleEndJoinLiveCommand(fromUserId, fromUserName, roomId);
+            }
+
+            @Override
             public void onVideoSizeChangedTo(String streamID, int width, int height) {
                 handleVideoSizeChanged(streamID, width, height);
             }

@@ -57,6 +57,13 @@ public abstract class AbsBaseLiveActivity extends AppCompatActivity {
      */
     protected abstract void doBusiness(Bundle savedInstanceState);
 
+    /**
+     * Handler 处理类，当子类需要处理 mHandler 的消息时，可以重写此方法
+     * @return 处理
+     */
+    protected Handler.Callback getHandlerCallback() {
+        return null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +91,7 @@ public abstract class AbsBaseLiveActivity extends AppCompatActivity {
      */
     private void initBaseVariables() {
         mResources = getResources();
-        mHandler = new Handler();
+        mHandler = new Handler(getHandlerCallback());
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }

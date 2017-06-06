@@ -145,6 +145,11 @@ public class MixStreamPublishActivity extends BasePublishActivity {
             }
 
             @Override
+            public void onRecvEndJoinLiveCommand(String fromUserId, String fromUserName, String roomId) {
+
+            }
+
+            @Override
             public void onVideoSizeChangedTo(String streamID, int width, int height) {
                 handleVideoSizeChanged(streamID, width, height);
             }
@@ -298,7 +303,7 @@ public class MixStreamPublishActivity extends BasePublishActivity {
                 recordLog("混流失败...errorCode:" + errorCode);
             }
 
-            if(viewLivePublish != null && listUrls.size() == 2){
+            if(viewLivePublish != null && listUrls.size() >= 2){
                 recordLog("混流地址:" + listUrls.get(1));
                 viewLivePublish.setListShareUrls(listUrls);
 

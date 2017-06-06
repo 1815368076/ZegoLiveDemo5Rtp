@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.TextureView;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import com.zego.livedemo5.constants.IntentExtra;
 import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.callback.IZegoLivePlayerCallback;
 import com.zego.zegoliveroom.callback.IZegoLoginCompletionCallback;
+import com.zego.zegoliveroom.callback.IZegoRoomCallback;
 import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.constants.ZegoVideoViewMode;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
@@ -85,7 +87,8 @@ public class GameLivingPlayActivity extends AppCompatActivity {
                         startPlay();
                     }
                 }else {
-                    Log.i(TAG, "登陆间失败");
+                    Log.i(TAG, "登陆房间失败");
+                    Toast.makeText(GameLivingPlayActivity.this, "登陆房间失败", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -114,23 +117,69 @@ public class GameLivingPlayActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onRecvEndJoinLiveCommand(String fromUserId, String fromUserName, String roomId) {
+                Toast.makeText(GameLivingPlayActivity.this, String.format("onRecvEndJoinLiveCommand, from userId: %s, from userName: %s, roomId: %s", fromUserId, fromUserName, roomId), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
             public void onVideoSizeChangedTo(String streamID, int width, int height) {
-                Log.i("GameLivingPlayActivity", "onVideoSizeChangedTo");
+            }
+        });
+
+        mZegoLiveRoom.setZegoRoomCallback(new IZegoRoomCallback() {
+            @Override
+            public void onKickOut(int i, String s) {
+
+            }
+
+            @Override
+            public void onDisconnect(int i, String s) {
+
+            }
+
+            @Override
+            public void onStreamUpdated(int type, ZegoStreamInfo[] zegoStreamInfos, String s) {
+                if(zegoStreamInfos != null && zegoStreamInfos.length > 0){
+                    mPlayStreamID = zegoStreamInfos[0].streamID;
+                    if(type == ZegoConstants.StreamUpdateType.Added){
+                        startPlay();
+                    }else if(type == ZegoConstants.StreamUpdateType.Deleted){
+                        stopPlay();
+                    }
+                }
+            }
+
+            @Override
+            public void onStreamExtraInfoUpdated(ZegoStreamInfo[] zegoStreamInfos, String s) {
+
+            }
+
+            @Override
+            public void onRecvCustomCommand(String s, String s1, String s2, String s3) {
+
             }
         });
     }
 
 
     protected void startPlay() {
+        mTextureView.setVisibility(View.VISIBLE);
+        mTextureView.invalidate();
         mZegoLiveRoom.setViewMode(ZegoVideoViewMode.ScaleAspectFill, mPlayStreamID);
         mZegoLiveRoom.startPlayingStream(mPlayStreamID, mTextureView);
+    }
+
+    protected void stopPlay() {
+        mTextureView.invalidate();
+        mTextureView.setVisibility(View.INVISIBLE);
+        mZegoLiveRoom.stopPlayingStream(mPlayStreamID);
     }
 
     private void logout() {
         mZegoLiveRoom.updatePlayView(mPlayStreamID, null);
         mZegoLiveRoom.stopPlayingStream(mPlayStreamID);
-        mZegoLiveRoom.logoutRoom();
         mZegoLiveRoom.setZegoLivePlayerCallback(null);
+        mZegoLiveRoom.logoutRoom();
     }
 
     @Override

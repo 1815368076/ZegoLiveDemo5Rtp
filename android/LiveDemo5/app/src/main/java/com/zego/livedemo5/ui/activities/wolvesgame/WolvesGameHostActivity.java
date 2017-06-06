@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Surface;
@@ -14,7 +16,6 @@ import android.widget.ArrayAdapter;
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
 import com.zego.livedemo5.constants.IntentExtra;
-import com.zego.livedemo5.presenters.WolfInfo;
 import com.zego.livedemo5.utils.JsonUtil;
 import com.zego.livedemo5.utils.PreferenceUtil;
 import com.zego.livedemo5.utils.ZegoRoomUtil;
@@ -64,14 +65,45 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
     private int myCharacter;
 
     /**
-     * 房间里的所有成员
-     */
-    private LinkedList<WolfInfo> allWolfMembers;
-
-    /**
      * 当前参与游戏的人员列表
      */
     private LinkedList<WolfInfo> inGamingMembers;
+
+    private class MsgIds {
+        static final int UPDATE_COUNT_TIMER = 0x100;
+        static final int STOP_SPEAKING = 0x101;
+    }
+
+    private Handler.Callback mHandlerCallback = new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            switch (msg.what) {
+                case MsgIds.UPDATE_COUNT_TIMER: {
+                    mTimerView.setText(msg.arg1 + "s");
+                    if (msg.arg1 > 0) {
+                        if (msg.arg1 == kSpeakingTimerInterval) {
+                            mTimerView.setVisibility(View.VISIBLE);
+                        }
+
+                        Message newMsg = Message.obtain(msg);
+                        newMsg.arg1 = msg.arg1 - 1;
+                        mHandler.sendMessageDelayed(newMsg, 1000);
+                    } else {
+                        mTimerView.setVisibility(View.INVISIBLE);
+                        mHandler.sendEmptyMessage(MsgIds.STOP_SPEAKING);
+                    }
+                }
+                    break;
+
+                case MsgIds.STOP_SPEAKING: {
+                    stopTalking();
+                }
+                    break;
+
+            }
+            return false;
+        }
+    };
 
     public static void actionStart(Activity activity, String publishTitle, int appOrientation) {
         Intent intent = new Intent(activity, WolvesGameHostActivity.class);
@@ -85,8 +117,6 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        showSelectPublishWayDialog();
     }
 
     @Override
@@ -115,6 +145,7 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
     /**
      * 初始化从外部传递过来的数据.
      */
+    @Override
     protected void initExtraData(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             Intent intent = getIntent();
@@ -131,18 +162,25 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
     /**
      * 初始化子类中的变量.
      */
+    @Override
     protected void initVariables(Bundle savedInstanceState) {
-        allWolfMembers = new LinkedList<>();
-        inGamingMembers = new LinkedList<>();
-        mRecyclerAdapter = new RecyclerGridViewAdapter(this);
+        super.initVariables(savedInstanceState);
         currentSpeakingMode = SpeakingMode.FreeSpeakingMode;
+
+        inGamingMembers = new LinkedList<>();
     }
 
     /**
      * 加载数据.
      */
+    @Override
     protected void doBusiness(Bundle savedInstanceState) {
-        // nothing to do
+        showSelectPublishWayDialog();
+    }
+
+    @Override
+    protected Handler.Callback getHandlerCallback() {
+        return mHandlerCallback;
     }
 
     @OnClick({R.id.btn_start_or_stop_speaking, R.id.in_turn_speaking, R.id.end_in_turn_speaking})
@@ -168,7 +206,6 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
             json.put(kSpeakingCommandKey, SpeakingCmd.StopSpeaking);
             json.put(kSpeakingUserIdKey, PreferenceUtil.getInstance().getUserID());
         } catch (JSONException e) {
-
         }
 
         ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
@@ -249,18 +286,11 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
     }
 
     private void startTalking() {
+        mBtnSpeaking.setText(R.string.end_speaking);
         mTextTips.setText(R.string.mode_updating_system);
         ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
         zegoLiveRoom.enableMic(false);
         zegoLiveRoom.enableCamera(false);
-
-        // 每个人最多只允许说话 60s 时间
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // TODO stop speaking???
-            }
-        }, kSpeakingTimerInterval);
 
         doPublish(zegoLiveRoom);
     }
@@ -269,7 +299,6 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
         if (isSpeaking) {
             stopTalking();
         } else {
-            mBtnSpeaking.setText(R.string.end_speaking);
             startTalking();
         }
     }
@@ -440,11 +469,8 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
                 onBackPressed();
             }
         });
-        mHandler.postDelayed(new Runnable() {
-            public void run() {
-                dialogBuilder.create().show();
-            }
-        }, 100);
+
+        dialogBuilder.create().show();
     }
 
     private void _doBusiness() {
@@ -765,6 +791,9 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
                     zegoLiveRoom.setPreviewView(mCurrentSpeakingHead);
                     zegoLiveRoom.startPreview();
                     mCurrentSpeakingHead.setVisibility(View.VISIBLE);
+
+                    Message msg = Message.obtain(mHandler, MsgIds.UPDATE_COUNT_TIMER, kSpeakingTimerInterval, 0);  // 60S 倒计时开始(单次允许说话的最长时间)
+                    msg.sendToTarget();
                 }
             } else {
                 WolfInfo myInfo = getMyInfo();
@@ -881,6 +910,11 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
         @Override
         public void onInviteJoinLiveRequest(int seq, String fromUserId, String fromUserName, String roomId) {
             recordLog("收到连麦邀请, seq: %d; roomId: %s; fromUserId: %s; fromUserName: %s", seq, roomId, fromUserId, fromUserName);
+        }
+
+        @Override
+        public void onRecvEndJoinLiveCommand(String fromUserId, String fromUserName, String roomId) {
+            recordLog("onRecvEndJoinLiveCommand, from userId: %s, from userName: %s, roomId: %s", fromUserId, fromUserName, roomId);
         }
 
         /**

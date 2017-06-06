@@ -184,6 +184,18 @@ public abstract class BasePlayActivity extends BaseLiveActivity {
         });
     }
 
+
+    /**
+     * 响应结束连麦信令
+     * @param fromUserId
+     * @param fromUserName
+     * @param roomId
+     */
+    protected void handleEndJoinLiveCommand(String fromUserId, String fromUserName, String roomId) {
+        recordLog("handleEndJoinLiveCommand, from userId: %s, from userName: %s, roomId: %s", fromUserId, fromUserName, roomId);
+        stopPublish();
+    }
+
     /**
      * 推流成功.
      */
@@ -191,7 +203,7 @@ public abstract class BasePlayActivity extends BaseLiveActivity {
 
         ViewLive viewLivePublish = getViewLiveByStreamID(streamID);
         List<String> listUrls = getShareUrlList(info);
-        if (viewLivePublish != null && listUrls.size() > 0) {
+        if (viewLivePublish != null && listUrls.size() >= 2) {
             // 设置分享连接
             viewLivePublish.setListShareUrls(listUrls);
 

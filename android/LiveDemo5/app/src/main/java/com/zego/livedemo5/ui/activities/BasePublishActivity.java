@@ -17,8 +17,10 @@ import com.zego.livedemo5.constants.IntentExtra;
 import com.zego.livedemo5.ui.widgets.ViewLive;
 import com.zego.livedemo5.utils.PreferenceUtil;
 import com.zego.livedemo5.utils.ZegoRoomUtil;
+import com.zego.zegoliveroom.IZegoEndJoinLiveCallback;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,9 @@ import java.util.Map;
  */
 
 public abstract class BasePublishActivity extends BaseLiveActivity {
+
+    /** 已连麦用户 */
+    protected ArrayList<String> hasJoinedUsers = new ArrayList<>();
 
     @Override
     protected void initExtraData(Bundle savedInstanceState) {
@@ -72,6 +77,32 @@ public abstract class BasePublishActivity extends BaseLiveActivity {
         }
     }
 
+    @Override
+    protected void logout() {
+        for (final String userId : hasJoinedUsers) {
+            mZegoLiveRoom.endJoinLive(userId, new IZegoEndJoinLiveCallback() {
+                @Override
+                public void onEndJoinLive(int result, String roomId) {
+                    recordLog("onEndJoinLive, userId: %s, result: %d", userId, result);
+                }
+            });
+        }
+        hasJoinedUsers.clear();
+        super.logout();
+    }
+
+    /**
+     * 房间内用户删除流.
+     */
+    protected void handleStreamDeleted(final ZegoStreamInfo[] listStream, final String roomID) {
+        if (listStream != null && listStream.length > 0) {
+            for (int i = 0; i < listStream.length; i++) {
+                hasJoinedUsers.remove(listStream[i].userID);
+            }
+        }
+        super.handleStreamDeleted(listStream, roomID);
+    }
+
     /**
      * 主播登录房间成功.
      */
@@ -97,7 +128,7 @@ public abstract class BasePublishActivity extends BaseLiveActivity {
     /**
      * 响应连麦请求.
      */
-    protected void handleJoinLiveRequest(final int seq, String fromUserID, String fromUserName, String roomID) {
+    protected void handleJoinLiveRequest(final int seq, final String fromUserID, String fromUserName, String roomID) {
         // 有人请求连麦
         recordLog(getString(R.string.someone_is_requesting_to_broadcast, fromUserName));
         mDialogHandleRequestPublish = new AlertDialog.Builder(BasePublishActivity.this).setTitle(getString(R.string.hint))
@@ -106,6 +137,9 @@ public abstract class BasePublishActivity extends BaseLiveActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // 同意连麦请求
+                        if (!hasJoinedUsers.contains(fromUserID)) {
+                            hasJoinedUsers.add(fromUserID);
+                        }
                         mZegoLiveRoom.respondJoinLiveReq(seq, 0);
                         dialog.dismiss();
                     }
@@ -121,7 +155,6 @@ public abstract class BasePublishActivity extends BaseLiveActivity {
         mDialogHandleRequestPublish.show();
     }
 
-
     /**
      * 推流成功.
      */
@@ -129,7 +162,7 @@ public abstract class BasePublishActivity extends BaseLiveActivity {
 
         ViewLive viewLivePublish = getViewLiveByStreamID(streamID);
         List<String> listUrls = getShareUrlList(info);
-        if (viewLivePublish != null && listUrls.size() > 0) {
+        if (viewLivePublish != null && listUrls.size() >= 2) {
             // 设置分享连接
             viewLivePublish.setListShareUrls(listUrls);
 

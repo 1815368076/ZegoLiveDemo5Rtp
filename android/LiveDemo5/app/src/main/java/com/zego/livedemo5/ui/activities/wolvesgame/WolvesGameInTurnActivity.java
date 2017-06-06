@@ -22,7 +22,6 @@ import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
 import com.zego.livedemo5.constants.IntentExtra;
 import com.zego.livedemo5.presenters.RoomInfo;
-import com.zego.livedemo5.presenters.WolfInfo;
 import com.zego.livedemo5.utils.JsonUtil;
 import com.zego.livedemo5.utils.PreferenceUtil;
 import com.zego.livedemo5.utils.ZegoRoomUtil;
@@ -48,7 +47,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import butterknife.OnClick;
 
@@ -58,7 +56,6 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
     private String anchorId;
     private String anchorName;
 
-    private LinkedList<WolfInfo> wolfMembers;
     /**
      * @see SpeakingMode
      */
@@ -145,6 +142,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
     /**
      * 初始化从外部传递过来的数据.
      */
+    @Override
     protected void initExtraData(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             Intent intent = getIntent();
@@ -153,14 +151,6 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
             anchorId = intent.getStringExtra(IntentExtra.ANCHOR_ID);
             anchorName = intent.getStringExtra(IntentExtra.ANCHOR_NAME);
         }
-    }
-
-    /**
-     * 初始化子类中的变量.
-     */
-    protected void initVariables(Bundle savedInstanceState) {
-        wolfMembers = new LinkedList<>();
-        mRecyclerAdapter = new RecyclerGridViewAdapter(this);
     }
 
     @Override
@@ -173,6 +163,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
     /**
      * 加载数据.
      */
+    @Override
     protected void doBusiness(Bundle savedInstanceState) {
         ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
         zegoLiveRoom.setZegoRoomCallback(new ZegoRoomCallback());
@@ -205,9 +196,9 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
     }
 
     private ZegoUser[] getCurrentMembers() {
-        ZegoUser[] members = new ZegoUser[wolfMembers.size()];
+        ZegoUser[] members = new ZegoUser[allWolfMembers.size()];
         int index = 0;
-        for (WolfInfo wolf : wolfMembers) {
+        for (WolfInfo wolf : allWolfMembers) {
             members[index++] = wolf;
         }
         return members;
@@ -358,7 +349,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
         int myIndex = answerJson.optInt(kUserIndexKey, 0);
         WolfInfo myInfo = new WolfInfo(PreferenceUtil.getInstance().getUserID(), PreferenceUtil.getInstance().getUserName());
         myInfo.setIndex(myIndex);
-        wolfMembers.add(myInfo);
+        allWolfMembers.add(myInfo);
 
         JSONArray jsonUserList = answerJson.optJSONArray(kCurrentUserListKey);
         if (jsonUserList == null || jsonUserList.length() == 0) return;
@@ -372,7 +363,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
             String userName = jsonObject.optString(kUserNameKey);
             WolfInfo wolf = new WolfInfo(userId, userName);
             wolf.setIndex(userIndex);
-            wolfMembers.add(wolf);
+            allWolfMembers.add(wolf);
         }
 
         if (myIndex > 1) {
@@ -387,7 +378,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
 
             //TODO 创建Publish
 
-            mRecyclerAdapter.updateData(wolfMembers, true);
+            mRecyclerAdapter.updateData(allWolfMembers, true);
         } else {
             recordLog("主持人返回的座位号（%d）错误", myIndex);
         }
@@ -407,7 +398,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
             //TODO process speaking
         }
 
-        //TODO update wolfMembers status and update ui
+        //TODO update allWolfMembers status and update ui
     }
 
     private void processStopSpeaking(JSONObject json) {
@@ -438,8 +429,8 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
             int index = newUserJson.optInt(kUserIndexKey);
             WolfInfo newWolf = new WolfInfo(userId, userName);
             newWolf.setIndex(index);
-            wolfMembers.add(newWolf);
-//            mRecyclerAdapter.updateData(wolfMembers, true);
+            allWolfMembers.add(newWolf);
+//            mRecyclerAdapter.updateData(allWolfMembers, true);
             mRecyclerAdapter.insertItem(newWolf);
         }
 
@@ -447,17 +438,17 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
 
     private boolean removeMemberById(String userId) {
         boolean foundWolf = false;
-        for (WolfInfo wolf : wolfMembers) {
+        for (WolfInfo wolf : allWolfMembers) {
             if (userId.equals(wolf.getUserId())) {
                 foundWolf = true;
-                wolfMembers.remove(wolf);
+                allWolfMembers.remove(wolf);
 //                mRecyclerAdapter.deleteItem(wolf);
                 break;
             }
         }
 
         if (foundWolf) {
-            mRecyclerAdapter.updateData(wolfMembers, true);
+            mRecyclerAdapter.updateData(allWolfMembers, true);
         }
 
         return foundWolf;
@@ -472,7 +463,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
 
     private void stopCurrentMode() {
         ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-        for (WolfInfo wolf : wolfMembers) {
+        for (WolfInfo wolf : allWolfMembers) {
             if (wolf == null || TextUtils.isEmpty(wolf.getStreamId())) continue;
 
             if (isMe(wolf.getUserId())) {
@@ -572,7 +563,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
     }
 
     private WolfInfo getWolfById(String userId) {
-        for (WolfInfo wolf : wolfMembers) {
+        for (WolfInfo wolf : allWolfMembers) {
             if (userId.equals(wolf.getUserId())) {
                 return wolf;
             }
@@ -702,6 +693,10 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
 
         }
 
+        @Override
+        public void onRecvEndJoinLiveCommand(String fromUserId, String fromUserName, String roomId) {
+        }
+
         /**
          * 收到连麦邀请.
          *
@@ -811,7 +806,7 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
             recordLog("有流更新, type: %d; roomId: %s; streamCount: %d", type, roomId, listStream.length);
             if (listStream == null || listStream.length == 0 || TextUtils.isEmpty(roomId)) {
                 // 无效流信息，忽略
-            } else if (wolfMembers.size() == 0) {
+            } else if (allWolfMembers.size() == 0) {
                 // 信令到达前的流更新，暂存
 
             } else {
