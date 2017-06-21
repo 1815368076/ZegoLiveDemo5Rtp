@@ -89,7 +89,7 @@
 
 - (void)animationKeyFrameWithlayer:(CALayer *)layer
 {
-    CGFloat duration = 3 + arc4random()%5;
+    CGFloat duration = 3 + arc4random() % 5;
     CAKeyframeAnimation *positionAnimate = [CAKeyframeAnimation animationWithKeyPath:@"position"];
     positionAnimate.repeatCount = 1;
     positionAnimate.duration = duration;
@@ -99,8 +99,8 @@
     CGPoint position = CGPointMake(self.bounds.size.width/2.0, self.bounds.size.height);
     UIBezierPath *sPath = [UIBezierPath bezierPath];
     [sPath moveToPoint:position];
-    CGFloat sign = arc4random()%2 == 1 ? 1 : -1;
-    CGFloat controlPointValue = (arc4random()%50 + arc4random()%100) * sign;
+    CGFloat sign = arc4random() % 2 == 1 ? 1 : -1;
+    CGFloat controlPointValue = (arc4random() % 50 + arc4random() % 100) * sign;
     [sPath addCurveToPoint:CGPointMake(position.x, position.y - 300) controlPoint1:CGPointMake(position.x - controlPointValue, position.y - 150) controlPoint2:CGPointMake(position.x + controlPointValue, position.y - 150)];
     positionAnimate.path = sPath.CGPath;
     

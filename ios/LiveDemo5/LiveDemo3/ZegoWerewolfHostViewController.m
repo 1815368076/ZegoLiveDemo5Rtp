@@ -37,6 +37,8 @@
 @property (nonatomic, assign) BOOL isPublishing;                // 正在发布状态
 @property (nonatomic, assign) BOOL isSpeaking;                  // 正在讲话状态
 
+@property (nonatomic, assign) BOOL everPublishSuccess;            //不停止推流的情况下，只用发布一次
+
 @end
 
 @implementation ZegoWerewolfHostViewController
@@ -147,9 +149,6 @@
     
     self.speakButton.enabled = NO;
     
-    [self stopTimer:self.sendStopSpeakingTimer];
-    [self stopCurrentMode];
-    
     NSDictionary *characters = [self randomCharacter];
     [self broadInTurnSpeaking:characters];
 }
@@ -196,10 +195,15 @@
     self.characterLabel.hidden = YES;
     self.countDownLable.hidden = YES;
     
+    self.speakingMode = kFreeSpeakingMode;
     self.speakButton.enabled = NO;
     
+    if (self.dontStopPublishMode)
+        [self stopCurrentDontStopPublishMode];
+    else
+        [self stopCurrentMode];
+    
     [self stopTimer:self.sendStopSpeakingTimer];
-    [self stopCurrentMode];
     
     if (self.speakingTimer)
     {
@@ -214,13 +218,13 @@
     }
     
     self.currentSpeakingIndex = 0;
+    self.currentSpeakingUserId = nil;
     [self broadFreeSpeaking];
 }
 
 #pragma mark -- Talking
 
-// 开始说话
-- (void)startTalking
+- (void)startTalkingWithStopMode
 {
     self.tipsLabel.text = NSLocalizedString(@"正在系统同步...", nil);
     
@@ -234,7 +238,30 @@
     [self doPublish];
 }
 
-- (void)stopTalking
+- (void)startTalkingWithDontStopMode
+{
+    ZegoWerewolUserInfo *userInfo = [self getSelfUserInfo];
+    if (userInfo == nil)
+        return;
+    
+    //此信令主用用来更新界面
+    [self reportStartSpeaking];
+    
+    //出预览画面
+    [[ZegoDemoHelper api] enableMic:YES];
+    [[ZegoDemoHelper api] enableCamera:YES];
+    
+    if (self.speakingMode == kFreeSpeakingMode)
+        [[ZegoDemoHelper api] setPreviewView:userInfo.videoView];
+    else if (self.speakingMode == kInTurnSpeakingMode)
+        [[ZegoDemoHelper api] setPreviewView:self.bigPlayView];
+    
+    self.tipsLabel.text = NSLocalizedString(@"正在说话", nil);
+    
+    self.isSpeaking = YES;
+}
+
+- (void)stopTalkingWithStopMode
 {
     [[ZegoDemoHelper api] enableMic:NO];
     [[ZegoDemoHelper api] enableCamera:NO];
@@ -259,7 +286,7 @@
             
             [self updateSpeakingButton:NO];
         }
-        else
+        else if (self.speakingMode == kFreeSpeakingMode)
         {
             [self updateSpeakingButton:YES];
         }
@@ -274,6 +301,60 @@
         self.sendStopSpeakingTimer = [NSTimer scheduledTimerWithTimeInterval:kPostSpeakingInterval target:self selector:@selector(onStopSpeakingTimer) userInfo:nil repeats:NO];
         [self reportStopSpeaking];
     }
+}
+
+- (void)stopTalkingWithDontStopMode
+{
+    [[ZegoDemoHelper api] enableMic:NO];
+    [[ZegoDemoHelper api] enableCamera:NO];
+    [[ZegoDemoHelper api] setPreviewView:nil];
+    
+    ZegoWerewolUserInfo *userInfo = [self getSelfUserInfo];
+    if (userInfo == nil)
+        return;
+    
+    if (userInfo.streamId == nil)
+    {
+        //推流失败
+    }
+    else
+    {
+        if (self.speakingMode == kFreeSpeakingMode)
+            self.tipsLabel.text = NSLocalizedString(@"当前模式:自由说话", nil);
+        else if (self.speakingMode == kInTurnSpeakingMode)
+            self.tipsLabel.text = NSLocalizedString(@"当前模式:轮流说话", nil);
+        
+        if (self.speakingMode == kInTurnSpeakingMode)
+        {
+            [self stopTimer:self.speakingTimer];
+            [self updateSpeakingButton:NO];
+        }
+        else if (self.speakingMode == kFreeSpeakingMode)
+        {
+            [self updateSpeakingButton:YES];
+        }
+        
+        [self reportStopSpeaking];
+    }
+    
+    self.isSpeaking = NO;
+}
+
+// 开始说话
+- (void)startTalking
+{
+    if (self.dontStopPublishMode)
+        [self startTalkingWithDontStopMode];
+    else
+        [self startTalkingWithStopMode];
+}
+
+- (void)stopTalking
+{
+    if (self.dontStopPublishMode)
+        [self stopTalkingWithDontStopMode];
+    else
+        [self stopTalkingWithStopMode];
 }
 
 - (void)updateSpeakingButton:(BOOL)enable
@@ -353,6 +434,11 @@
                         [self createPublishView:userInfo];
                         [self.userList addObject:userInfo];
                         
+                        if (self.dontStopPublishMode)
+                        {
+                            [self doPublishNoStopPublishMode];
+                            self.isSpeaking = NO;
+                        }
                         self.speakButton.enabled = YES;     // 登录成功以后，才讲开始说话button enable
                         self.tipsLabel.text = NSLocalizedString(@"当前模式:自由说话", nil);
                     }
@@ -540,13 +626,22 @@
     [[ZegoDemoHelper api] startPreview];
     [[ZegoDemoHelper api] setPreviewView:nil];
     
-    bool b = [[ZegoDemoHelper api] startPublishing:userInfo.streamId title:self.liveTitle flag:self.isUrtralServer ? ZEGO_JOIN_PUBLISH : ZEGO_SINGLE_ANCHOR];
+    bool b = [[ZegoDemoHelper api] startPublishing:userInfo.streamId title:self.liveTitle flag:self.isUtralServer ? ZEGO_JOIN_PUBLISH : ZEGO_SINGLE_ANCHOR];
     if (b)
     {
         self.isPublishing = YES;
         self.isSpeaking = YES;
         [self addLogString:[NSString stringWithFormat:NSLocalizedString(@"开始直播，流ID:%@", nil), userInfo.streamId]];
     }
+}
+
+- (void)doPublishNoStopPublishMode
+{
+    //do publish
+    [[ZegoDemoHelper api] enableCamera:NO];
+    [[ZegoDemoHelper api] enableMic:NO];
+    
+    [self doPublish];
 }
 
 - (void)stopPublish
@@ -600,12 +695,14 @@
     if ([userId isEqualToString:[ZegoSettings sharedInstance].userID])
     {
         [[ZegoDemoHelper api] setPreviewView:nil];
-        userInfo.streamId = nil;
+        if (!self.dontStopPublishMode)
+            userInfo.streamId = nil;
     }
     else
     {
         [[ZegoDemoHelper api] updatePlayView:nil ofStream:userInfo.streamId];
-        userInfo.streamId = nil;
+        if (!self.dontStopPublishMode)
+            userInfo.streamId = nil;
     }
     
     userInfo.videoView.backgroundColor = [UIColor colorWithWhite:0.667 alpha:0.5];
@@ -630,7 +727,10 @@
     [self stopTimer:self.speakingTimer];
     [self stopTimer:self.sendStopSpeakingTimer];
     
-    [self resetPlayViewAndStop:[ZegoSettings sharedInstance].userID];
+    if (self.dontStopPublishMode)
+        [self resetPlayView:[ZegoSettings sharedInstance].userID];
+    else
+        [self resetPlayViewAndStop:[ZegoSettings sharedInstance].userID];
     
     [self updateSpeakingButton:NO];
 }
@@ -702,6 +802,22 @@
     }];
 }
 
+- (void)reportStartSpeaking
+{
+    ZegoWerewolUserInfo *userInfo = [self getSelfUserInfo];
+    if (userInfo == nil)
+        return;
+    
+    NSDictionary *dict = @{kSpeakingCommandKey: @(kStartSpeaking), kSpeakingUserIdKey: [ZegoSettings sharedInstance].userID};
+    NSString *content = [self encodeDictionaryToJSON:dict];
+    if (content == nil)
+        return;
+    
+    [[ZegoDemoHelper api] sendCustomCommand:[self getCurrentMemberList] content:content completion:^(int errorCode, NSString *roomID) {
+        [self addLogString:[NSString stringWithFormat:NSLocalizedString(@"开始说话", nil)]];
+    }];
+}
+
 - (void)reportNoRespondStopSpeaking:(NSString *)userId
 {
     if (userId.length == 0)
@@ -725,14 +841,12 @@
         return;
     
     [[ZegoDemoHelper api] sendCustomCommand:[self getCurrentMemberList] content:content completion:^(int errorCode, NSString *roomID) {
-        
         [self addLogString:[NSString stringWithFormat:@"Free Speaking"]];
         
         [self updateSpeakingButton:YES];
         self.inTurnSpeakButton.enabled = YES;
         self.endInTurnSpeakButton.enabled = NO;
         
-        self.speakingMode = kFreeSpeakingMode;
         self.tipsLabel.text = NSLocalizedString(@"当前模式:自由说话", nil);
     }];
 }
@@ -760,6 +874,12 @@
         
         self.tipsLabel.text = NSLocalizedString(@"当前模式:轮流说话", nil);
         self.speakingMode = kInTurnSpeakingMode;
+        
+        [self stopTimer:self.sendStopSpeakingTimer];
+        if (self.dontStopPublishMode)
+            [self stopCurrentDontStopPublishMode];
+        else
+            [self stopCurrentMode];
         
         [self arrangeNextSpeaker];
     }];
@@ -793,7 +913,7 @@
     if (userContent.count == 0)
         return;
     
-    NSDictionary *dict = @{kSpeakingCommandKey: @(kAnswerRoomInfo), kUserIndexKey: @(self.currentIndex), kSpeakingModeKey: @(self.speakingMode), kCurrentUserListKey: userContent, kServerModeIndexKey : @(self.isUrtralServer)};
+    NSDictionary *dict = @{kSpeakingCommandKey: @(kAnswerRoomInfo), kUserIndexKey: @(self.currentIndex), kSpeakingModeKey: @(self.speakingMode), kCurrentUserListKey: userContent, kServerModeIndexKey : @(self.isUtralServer), kDontStopPublishKey: @(self.dontStopPublishMode)};
     NSString *content = [self encodeDictionaryToJSON:dict];
     if (content == nil)
         return;
@@ -896,6 +1016,30 @@
     self.currentSpeakingIndex = 0;
 }
 
+- (void)stopCurrentDontStopPublishMode
+{
+    for (ZegoWerewolUserInfo *userInfo in self.userList)
+    {
+        if ([userInfo.userId isEqualToString:[ZegoSettings sharedInstance].userID])
+        {
+            [[ZegoDemoHelper api] enableCamera:NO];
+            [[ZegoDemoHelper api] enableMic:NO];
+            
+            [[ZegoDemoHelper api] setPreviewView:nil];
+            
+            self.isSpeaking = NO;
+        }
+        else
+        {
+            [[ZegoDemoHelper api] updatePlayView:nil ofStream:userInfo.streamId];
+        }
+        
+        userInfo.videoView.backgroundColor = [UIColor colorWithWhite:0.667 alpha:0.5];
+    }
+    
+    self.currentSpeakingIndex = 0;
+}
+
 #pragma mark -- Dispatch
 
 - (void)arrangeNextSpeaker
@@ -932,6 +1076,20 @@
     else
     {
         [self updatePlayView:userInfo.userId];
+        if (self.dontStopPublishMode)
+        {
+            for (ZegoWerewolUserInfo *info in self.userList)
+            {
+                if (![userInfo.userId isEqualToString:[ZegoSettings sharedInstance].userID])
+                    [[ZegoDemoHelper api] updatePlayView:nil ofStream:info.streamId];
+                
+                if ([info.userId isEqualToString:userInfo.userId])
+                {
+                    [[ZegoDemoHelper api] updatePlayView:self.bigPlayView ofStream:info.streamId];
+                }
+            }
+        }
+        
         [self broadAllowSpeaking:userInfo.userId];
     }
 }
@@ -1033,6 +1191,25 @@
         //安排下一个人说话
         [self arrangeNextSpeaker];
     }
+    else if (command == kStartSpeaking)
+    {
+        NSString *userId = dict[kSpeakingUserIdKey];
+        
+        if (userId.length == 0 || [[ZegoSettings sharedInstance].userID isEqualToString:userId])
+            return;
+        
+        ZegoWerewolUserInfo *userInfo = [self getUserInfoByUserId:userId];
+        if (userInfo == nil)
+            return;
+        
+        if (self.speakingMode == kInTurnSpeakingMode)
+        {
+            if ([userId isEqualToString:self.currentSpeakingUserId])
+                [[ZegoDemoHelper api] updatePlayView:self.bigPlayView ofStream:userInfo.streamId];
+        }
+        else if (self.speakingMode == kFreeSpeakingMode)
+            [[ZegoDemoHelper api] updatePlayView:userInfo.videoView ofStream:userInfo.streamId];
+    }
     else if (command == kAskRoomInfo)
     {
         //收到请求房间信息
@@ -1101,6 +1278,12 @@
         ZegoWerewolUserInfo *userInfo = [self getSelfUserInfo];
         if (userInfo == nil || ![userInfo.streamId isEqualToString:streamID])
             return;
+        
+        if (self.dontStopPublishMode)
+        {
+            self.everPublishSuccess = YES;
+            return;
+        }
         
         //出预览画面
         [[ZegoDemoHelper api] enableMic:YES];

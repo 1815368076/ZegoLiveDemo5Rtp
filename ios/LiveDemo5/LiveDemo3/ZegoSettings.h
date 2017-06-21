@@ -33,7 +33,4 @@
 
 - (UIViewController *)getViewControllerFromRoomInfo:(ZegoRoomInfo *)roomInfo;
 
-- (void)selectWolfMode:(NSUInteger)modeIndex;
-- (void)selectWolfResolution:(NSUInteger)resolutionIndex;
-
 @end

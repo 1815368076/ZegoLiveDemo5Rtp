@@ -147,7 +147,6 @@ NSString *kZegoDemoWolfLowDelayKey      = @"wolfLowDelay";
     }
 }
 
-
 - (BOOL)selectPresetQuality:(NSInteger)presetIndex {
     if (presetIndex >= self.presetVideoQualityList.count) {
         return NO;

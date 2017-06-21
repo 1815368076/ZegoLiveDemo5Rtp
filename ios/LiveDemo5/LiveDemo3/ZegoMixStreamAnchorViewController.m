@@ -23,7 +23,6 @@
 
 @property (nonatomic, weak) ZegoLiveToolViewController *toolViewController;
 @property (nonatomic, strong) ZegoUser *mixRequestUser;
-@property (nonatomic, strong) NSMutableArray<ZegoMixStreamInfo*> *mixStreamConfig;  // 混流图层配置
 
 @property (nonatomic, copy) NSString *streamID;                 // 流 ID
 @property (nonatomic, copy) NSString *mixStreamID;              // 混流 ID
@@ -35,11 +34,14 @@
 @property (nonatomic, assign) BOOL isPlaying;                   // 是否正在拉流
 @property (nonatomic, assign) BOOL isPublishing;                // 是否正在推流
 
-@property (nonatomic, strong) NSMutableArray *playStreamList;   // 正在播放的 streamList
+@property (nonatomic, strong) NSMutableArray<ZegoStream*> *playStreamList;   // 正在播放的 streamList
 @property (nonatomic, strong) NSArray *mixPlayStreamList;
 @property (nonatomic, strong) NSMutableDictionary *viewContainersDict;  // 房间内的视图，key 为流 ID
 
 @property (nonatomic, assign) UIInterfaceOrientation orientation;
+
+
+- (void)updateMixStream;
 
 @end
 
@@ -55,7 +57,6 @@
     
     _viewContainersDict = [[NSMutableDictionary alloc] initWithCapacity:self.maxStreamCount];
     _playStreamList = [[NSMutableArray alloc] init];
-    _mixStreamConfig = [[NSMutableArray alloc] init];
     
     for (UIViewController *viewController in self.childViewControllers)
     {
@@ -150,17 +151,12 @@
     
     self.viewContainersDict[self.streamID] = self.publishView;
     
-    // 获取主播端当前的编码配置（视频 >>> 分辨率）
-    CGSize videoSize = [ZegoSettings sharedInstance].currentConfig.videoEncodeResolution;
-    
-    // 设置混流信息
-    [[ZegoDemoHelper api] setMixStreamConfig:@{kZegoMixStreamIDKey: self.mixStreamID, // 指定混流id
-                                               kZegoMixStreamResolution: [NSValue valueWithCGSize:CGSizeMake(videoSize.width, videoSize.height)]}]; // 混流输出大小
-    
     // 发起推流
     bool b = [[ZegoDemoHelper api] startPublishing:self.streamID
                                              title:self.liveTitle
-                                              flag:ZEGO_MIX_STREAM];
+                                              flag:ZEGO_JOIN_PUBLISH];
+    
+    
     if (b)
     {
         [self addLogString:[NSString stringWithFormat:NSLocalizedString(@"开始直播，流ID:%@", nil), self.streamID]];
@@ -241,41 +237,8 @@
         NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"新增一条流, 流ID:%@", nil), streamID];
         [self addLogString:logString];
         
-        //更新布局
-        CGFloat height = [[ZegoSettings sharedInstance] currentConfig].videoEncodeResolution.height; // 主播设置的推流分辨率高
-        CGFloat width = [[ZegoSettings sharedInstance] currentConfig].videoEncodeResolution.width; // 主播设置的推流分辨率宽
-        
-        if (self.mixStreamConfig.count == 0)    // 主播流布局，占据整个画面
-        {
-            ZegoMixStreamInfo *info = [[ZegoMixStreamInfo alloc] init];
-            info.streamID = self.streamID;
-            info.top = 0;
-            info.left = 0;
-            info.bottom = height;
-            info.right = width;
-            [self.mixStreamConfig addObject:info];
-        }
-        
-        if (self.mixStreamConfig.count == 1) {  // 新增第1条流布局
-            ZegoMixStreamInfo *info = [[ZegoMixStreamInfo alloc] init];
-            info.streamID = streamID;
-            info.top = ceilf(height * 2 / 3);
-            info.left = ceilf(width * 2 / 3);   // 画面左上角坐标为（ceilf(width * 2 / 3), ceilf(height * 2 / 3))
-            info.bottom = height;
-            info.right = width; // 画面右下角坐标为（width, height)
-            [self.mixStreamConfig addObject:info];
-        } else if (self.mixStreamConfig.count == 2) {   // 新增第2条流布局
-            ZegoMixStreamInfo *info = [[ZegoMixStreamInfo alloc] init];
-            info.streamID = streamID;
-            info.top = ceilf(height * 2 / 3);
-            info.left = 0;
-            info.bottom = height;
-            info.right = ceilf(width / 3);
-            [self.mixStreamConfig addObject:info];
-        }
-        
         // 更新流布局配置
-        [[ZegoDemoHelper api] updateMixInputStreams:self.mixStreamConfig];
+        [self updateMixStream];
     }
     
     self.mutedButton.enabled = YES;
@@ -296,20 +259,10 @@
         
         NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"删除一条流, 流ID:%@", nil), streamID];
         [self addLogString:logString];
-        
-        // 删除变更流的配置
-        for (ZegoMixStreamInfo *info in self.mixStreamConfig)
-        {
-            if ([info.streamID isEqualToString:streamID])
-            {
-                [self.mixStreamConfig removeObject:info];
-                break;
-            }
-        }
-        
-        // 更新
-        [[ZegoDemoHelper api] updateMixInputStreams:self.mixStreamConfig];
     }
+    
+    // 更新混流配置
+    [self updateMixStream];
     
     if (self.playStreamList.count == 0)
     {
@@ -413,6 +366,71 @@
     self.isPlaying = NO;
 }
 
+- (void)updateMixStream
+{
+    ZegoCompleteMixStreamConfig *completeMixConfig = [ZegoCompleteMixStreamConfig new];
+    
+    completeMixConfig.outputStream = self.mixStreamID;
+    completeMixConfig.outputIsUrl = NO;
+    completeMixConfig.outputFps = [ZegoSettings sharedInstance].currentConfig.fps;
+    completeMixConfig.outputBitrate = [ZegoSettings sharedInstance].currentConfig.bitrate;
+    completeMixConfig.outputResolution = [ZegoSettings sharedInstance].currentConfig.videoEncodeResolution;
+    completeMixConfig.outputAudioConfig = 0;   // * default config
+    
+    [completeMixConfig.inputStreamList removeAllObjects];
+    
+    int height = [ZegoSettings sharedInstance].currentConfig.videoEncodeResolution.height;
+    int width = [ZegoSettings sharedInstance].currentConfig.videoEncodeResolution.width;
+    
+    if (self.isPublishing)
+    {
+        ZegoMixStreamInfo *info = [[ZegoMixStreamInfo alloc] init];
+        info.streamID = self.streamID;
+        info.top = 0;
+        info.left = 0;
+        info.bottom = height;
+        info.right = width;
+        
+        [completeMixConfig.inputStreamList addObject:info];
+    }
+    
+    for (NSInteger idx = 0; idx < self.playStreamList.count; ++idx)
+    {
+        ZegoMixStreamInfo *info = [[ZegoMixStreamInfo alloc] init];
+        info.streamID = self.playStreamList[idx].streamID;
+        
+        if (completeMixConfig.inputStreamList.count == 0)
+        {
+            info.top = 0;
+            info.left = 0;
+            info.bottom = height;
+            info.right = width;
+        }
+        else if (completeMixConfig.inputStreamList.count == 1)
+        {
+            // 新增第1条流布局
+            info.top = ceilf(height * 2 / 3);
+            info.left = ceilf(width * 2 / 3);   // 画面左上角坐标为（ceilf(width * 2 / 3), ceilf(height * 2 / 3))
+            info.bottom = height;
+            info.right = width; // 画面右下角坐标为（width, height)
+        }
+        else if (completeMixConfig.inputStreamList.count == 2)
+        {
+            // 新增第2条流布局
+            info.top = ceilf(height * 2 / 3);
+            info.left = 0;
+            info.bottom = height;
+            info.right = ceilf(width / 3);
+        }
+        
+        [completeMixConfig.inputStreamList addObject:info];
+    }
+    
+    static int seq = 0;
+    
+    [[ZegoDemoHelper api] mixStream:completeMixConfig seq:++seq];
+}
+
 #pragma mark -- Autorate
 
 - (BOOL)shouldAutorotate
@@ -438,6 +456,14 @@
 {
     NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"连接失败, error: %d", nil), errorCode];
     [self addLogString:logString];
+}
+
+- (void)onKickOut:(int)reason roomID:(NSString *)roomID
+{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:NSLocalizedString(@"被踢出房间", nil) delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+    [alertView show];
+    
+    [self onCloseButton:nil];
 }
 
 // 流信息更新回调
@@ -494,6 +520,8 @@
         [self removeStreamViewContainer:streamID];
         self.publishView = nil;
     }
+    
+    [self updateMixStream];
 }
 
 - (void)onPublishQualityUpdate:(NSString *)streamID quality:(ZegoApiPublishQuality)quality
@@ -521,7 +549,7 @@
 
 - (void)onMixStreamConfigUpdate:(int)errorCode mixStream:(NSString *)mixStreamID streamInfo:(NSDictionary *)info
 {
-    NSLog(@"%@, errorCode %d", mixStreamID, errorCode);
+    NSLog(@"%s, %@, errorCode %d, info: %@", __func__, mixStreamID, errorCode, info);
     
     if (errorCode != 0)
     {
@@ -690,7 +718,6 @@
 
 - (void)onSendLike
 {
-    //    [[ZegoDemoHelper api] likeAnchor:1 count:10];
     NSDictionary *likeDict = @{@"likeType": @(1), @"likeCount": @(10)};
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:likeDict options:0 error:nil];
     NSString *content = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];

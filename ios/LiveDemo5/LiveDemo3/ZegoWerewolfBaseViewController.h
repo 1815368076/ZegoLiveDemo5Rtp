@@ -21,10 +21,11 @@
 #define kSpeakingModeKey       @"roomMode"
 #define kUserIndexKey          @"userIndex"
 #define kServerModeIndexKey    @"urtralServer"
+#define kDontStopPublishKey    @"dontStopPublish"
 
 #define kUserCharacterKey      @"character"
 
-#define kPostSpeakingInterval   2
+#define kPostSpeakingInterval       2
 #define kSpeakingTimerInterval      (60 + kPostSpeakingInterval)
 #define kAnchorTimerInterval        (5 + (kSpeakingTimerInterval))
 
@@ -33,8 +34,9 @@
 
 typedef NS_ENUM (NSUInteger, ZegoSpeakingCmd) {
     kAllowSpeaking = 1,
-    //    kStartSpeaking = 2,
+    kStartSpeaking = 2,
     kStopSpeaking = 3,
+    
     kFreeSpeaking = 4,
     kInTurnSpeaking = 5,
     

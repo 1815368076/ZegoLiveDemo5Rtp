@@ -748,7 +748,8 @@
     NSInteger reason = [[notification.userInfo objectForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
     
     if (reason == AVAudioSessionRouteChangeReasonNewDeviceAvailable ||
-        reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable)
+        reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable ||
+        reason == AVAudioSessionRouteChangeReasonOverride)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
             [ZegoDemoHelper checkHeadSet];

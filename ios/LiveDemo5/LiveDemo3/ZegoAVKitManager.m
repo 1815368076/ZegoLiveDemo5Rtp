@@ -9,6 +9,8 @@
 #import "ZegoSettings.h"
 #import "ZegoVideoFilterDemo.h"
 
+#import <ZegoLiveRoom/ZegoLiveRoomApi-AudioIO.h>
+
 static ZegoLiveRoomApi *g_ZegoApi = nil;
 
 NSData *g_signKey = nil;
@@ -81,6 +83,11 @@ static __strong id<ZegoVideoFilterFactory> g_filterFactory = nullptr;
         
         [ZegoLiveRoomApi requireHardwareDecoder:g_useHardwareDecode];
         [ZegoLiveRoomApi requireHardwareEncoder:g_useHardwareEncode];
+        
+#if defined(ZEGO_TEST_RTP3) || defined(ZEGO_TEST_RTP_INTEL)
+        [g_ZegoApi enableTrafficControl:YES properties:ZEGOAPI_TRAFFIC_FPS | ZEGOAPI_TRAFFIC_RESOLUTION];
+#endif
+        
     }
     
     return g_ZegoApi;
@@ -95,7 +102,8 @@ static __strong id<ZegoVideoFilterFactory> g_filterFactory = nullptr;
     for (AVAudioSessionPortDescription *desc in route.outputs)
     {
         if ([desc.portType isEqualToString:AVAudioSessionPortHeadphones] ||
-            [desc.portType isEqualToString:AVAudioSessionPortBluetoothA2DP])
+            [desc.portType isEqualToString:AVAudioSessionPortBluetoothA2DP] ||
+            [desc.portType isEqualToString:AVAudioSessionPortBluetoothHFP])
         {
             g_useHeadSet = YES;
             return;
@@ -297,6 +305,19 @@ void prep_func(const short* inData, int inSamples, int sampleRate, short *outDat
     memcpy(outData, inData, inSamples * sizeof(short));
 }
 
+void prep2_func(const AVE::AudioFrame& inFrame, AVE::AudioFrame& outFrame)
+{
+    outFrame.frameType = inFrame.frameType;
+    outFrame.samples = inFrame.samples;
+    outFrame.bytesPerSample = inFrame.bytesPerSample;
+    outFrame.channels = inFrame.channels;
+    outFrame.sampleRate = inFrame.sampleRate;
+    outFrame.timeStamp = inFrame.timeStamp;
+    outFrame.configLen = inFrame.configLen;
+    outFrame.bufLen = inFrame.bufLen;
+    memcpy(outFrame.buffer, inFrame.buffer, inFrame.bufLen);
+}
+
 + (void)setEnableReverb:(bool)bEnable
 {
     if (g_enableReverb == bEnable)
@@ -305,13 +326,22 @@ void prep_func(const short* inData, int inSamples, int sampleRate, short *outDat
     g_enableReverb = bEnable;
     [self releaseApi];
     
+    AVE::ExtPrepSet set;
+    set.bEncode = false;
+    set.nChannel = 0;
+    set.nSamples = 0;
+    set.nSampleRate = 0;
+    
     if (bEnable)
     {
-        [ZegoLiveRoomApi setAudioPrep:&prep_func];
+        [ZegoLiveRoomApi setAudioPrep2:set dataCallback:prep2_func];
+//        [ZegoLiveRoomApi setAudioPrep:&prep_func];
     }
     else
     {
-        [ZegoLiveRoomApi setAudioPrep:nil];
+        [ZegoLiveRoomApi setAudioPrep2:set dataCallback:nil];
+        
+//        [ZegoLiveRoomApi setAudioPrep:nil];
     }
 }
 

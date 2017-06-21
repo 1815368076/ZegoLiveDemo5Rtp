@@ -87,6 +87,19 @@ enum ZegoAPIPublishFlag
 
 @end
 
+@interface ZegoCompleteMixStreamConfig : NSObject
+
+@property (copy) NSString *outputStream;
+@property BOOL outputIsUrl;
+@property int outputFps;
+@property int outputBitrate;
+@property CGSize outputResolution;
+@property int outputAudioConfig;
+
+@property (strong) NSMutableArray<ZegoMixStreamInfo*> *inputStreamList;
+
+@end
+
 /** 滤镜特性 */
 typedef enum : NSUInteger {
     ZEGO_FILTER_NONE        = 0,    /**< 不使用滤镜 */
@@ -124,5 +137,11 @@ typedef enum : NSUInteger {
     ZEGOAPI_LATENCY_MODE_NORMAL = 0,    ///< 普通延迟模式
     ZEGOAPI_LATENCY_MODE_LOW,           ///< 低延迟模式，*无法用于 RTMP 流*
 } ZegoAPILatencyMode;
+
+typedef enum : NSUInteger {
+    ZEGOAPI_TRAFFIC_NONE = 0,
+    ZEGOAPI_TRAFFIC_FPS = 1,                ///< 帧率
+    ZEGOAPI_TRAFFIC_RESOLUTION = 1 << 1,    ///< 分辨率
+} ZegoAPITrafficControlProperty;
 
 #endif /* ZegoLiveRoomApiDefines_Publisher_h */

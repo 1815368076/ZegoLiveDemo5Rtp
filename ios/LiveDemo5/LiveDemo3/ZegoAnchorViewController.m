@@ -156,6 +156,7 @@
     self.streamID = [ZegoDemoHelper getPublishStreamID];
 
     [[ZegoDemoHelper api] loginRoom:self.roomID roomName:self.liveTitle role:ZEGO_ANCHOR  withCompletionBlock:^(int errorCode, NSArray<ZegoStream *> *streamList) {
+        
         NSLog(@"%s, error: %d", __func__, errorCode);
         if (errorCode == 0)
         {
@@ -168,7 +169,8 @@
             NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录房间失败. error: %d", nil), errorCode];
             [self addLogString:logString];
         }
-    }];
+         
+     }];
     
     [self addLogString:[NSString stringWithFormat:NSLocalizedString(@"开始登录房间", nil)]];
 }
@@ -179,6 +181,14 @@
 {
     NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"连接失败, error: %d", nil), errorCode];
     [self addLogString:logString];
+}
+
+- (void)onKickOut:(int)reason roomID:(NSString *)roomID
+{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:NSLocalizedString(@"被踢出房间", nil) delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+    [alertView show];
+    
+    [self onCloseButton:nil];
 }
 
 #pragma mark - ZegoLivePublisherDelegate

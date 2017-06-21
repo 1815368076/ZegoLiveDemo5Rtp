@@ -13,6 +13,8 @@
 
 @property (nonatomic, copy) NSString* liveTitle;
 
-@property (nonatomic, assign) BOOL isUrtralServer;
+@property (nonatomic, assign) BOOL isUtralServer;
+
+@property (nonatomic, assign) BOOL dontStopPublishMode;
 
 @end

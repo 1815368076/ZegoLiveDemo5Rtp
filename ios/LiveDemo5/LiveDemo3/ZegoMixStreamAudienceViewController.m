@@ -551,6 +551,14 @@
     [self addLogString:logString];
 }
 
+- (void)onKickOut:(int)reason roomID:(NSString *)roomID
+{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:NSLocalizedString(@"被踢出房间", nil) delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+    [alertView show];
+    
+    [self onCloseButton:nil];
+}
+
 - (void)onStreamUpdated:(int)type streams:(NSArray<ZegoStream *> *)streamList roomID:(NSString *)roomID
 {
     if (!self.isPublishing && self.mixStreamList != nil)

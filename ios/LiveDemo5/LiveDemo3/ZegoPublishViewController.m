@@ -556,7 +556,8 @@
     ZegoWerewolfHostViewController *werewolfController = (ZegoWerewolfHostViewController *)[storyboard instantiateViewControllerWithIdentifier:@"werewolfInTurnHostID"];
     
     werewolfController.liveTitle = [self getLiveTitle];
-    werewolfController.isUrtralServer = lowDelay;
+    werewolfController.dontStopPublishMode = lowDelay;
+    werewolfController.isUtralServer = YES;
     
     [self stopPreview];
     

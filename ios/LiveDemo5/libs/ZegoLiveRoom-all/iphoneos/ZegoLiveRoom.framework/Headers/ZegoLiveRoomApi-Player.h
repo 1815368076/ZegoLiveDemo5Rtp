@@ -218,7 +218,7 @@
  设置回调, 接收媒体次要信息
 
  @param onMediaSideCallback 回调函数指针, buf 媒体数据, dataLen 数据长度
- @attention 观众端在此 API 设置的回调中获取主播端发送的次要信息（要求主播端开启发送媒体次要信息开关，并调用 [ZegoLiveRoomApi (Publisher) -sendMediaSideInfo:dataLen:bPacket:] 发送次要信息）
+ @attention 观众端在此 API 设置的回调中获取主播端发送的次要信息（要求主播端开启发送媒体次要信息开关，并调用 [ZegoLiveRoomApi (Publisher) -sendMediaSideInfo:dataLen:packet:] 发送次要信息）
  */
 - (void)setMediaSideCallback:(void(*)(const unsigned char* buf, int dataLen))onMediaSideCallback;
 

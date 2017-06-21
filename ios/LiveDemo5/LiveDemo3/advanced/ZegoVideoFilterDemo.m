@@ -264,7 +264,7 @@
 - (void)zego_allocateAndStart:(id<ZegoVideoFilterClient>) client {
     client_ = client;
     if ([client_ conformsToProtocol:@protocol(ZegoVideoBufferPool)]) {
-        buffer_pool_ = client;
+        buffer_pool_ = (id<ZegoVideoBufferPool>)client;
     }
     
     width_ = 0;
