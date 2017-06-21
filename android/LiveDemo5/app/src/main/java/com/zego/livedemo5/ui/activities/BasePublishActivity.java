@@ -17,7 +17,8 @@ import com.zego.livedemo5.constants.IntentExtra;
 import com.zego.livedemo5.ui.widgets.ViewLive;
 import com.zego.livedemo5.utils.PreferenceUtil;
 import com.zego.livedemo5.utils.ZegoRoomUtil;
-import com.zego.zegoliveroom.IZegoEndJoinLiveCallback;
+import com.zego.zegoliveroom.callback.IZegoEndJoinLiveCallback;
+import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
 
 import java.util.ArrayList;
@@ -140,14 +141,14 @@ public abstract class BasePublishActivity extends BaseLiveActivity {
                         if (!hasJoinedUsers.contains(fromUserID)) {
                             hasJoinedUsers.add(fromUserID);
                         }
-                        mZegoLiveRoom.respondJoinLiveReq(seq, 0);
+                        mZegoLiveRoom.respondJoinLiveReq(seq, ZegoConstants.ResultCode.YES);
                         dialog.dismiss();
                     }
                 }).setNegativeButton(getString(R.string.Deny), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // 拒绝连麦请求
-                        mZegoLiveRoom.respondJoinLiveReq(seq, -1);
+                        mZegoLiveRoom.respondJoinLiveReq(seq, ZegoConstants.ResultCode.NO);
                         dialog.dismiss();
                     }
                 }).create();

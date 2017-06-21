@@ -40,6 +40,7 @@ import com.zego.livedemo5.utils.ZegoRoomUtil;
 import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.callback.IZegoResponseCallback;
 import com.zego.zegoliveroom.constants.ZegoAvConfig;
+import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.constants.ZegoVideoViewMode;
 import com.zego.zegoliveroom.entity.AuxData;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
@@ -459,6 +460,10 @@ public abstract class BaseExternalRenderActivity extends AbsBaseLiveActivity {
         mZegoLiveRoom.setPreviewWaterMarkRect(rect);
         mZegoLiveRoom.setPublishWaterMarkRect(rect);
 
+        // 开启流量自动控制
+        int properties = ZegoConstants.ZegoTrafficControlProperty.ZEGOAPI_TRAFFIC_FPS
+                | ZegoConstants.ZegoTrafficControlProperty.ZEGOAPI_TRAFFIC_RESOLUTION;
+        mZegoLiveRoom.enableTrafficControl(properties, true);
 
         // 开始播放
         mZegoLiveRoom.setPreviewView(freeViewLive.getTextureView());

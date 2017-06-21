@@ -5,6 +5,7 @@ package com.zego.livedemo5.ui.activities.wolvesgame;
  */
 class SpeakingCmd {
     static final public int AllowSpeaking = 1;
+    static final public int StartSpeaking = 2;
     static final public int StopSpeaking = 3;
     static final public int FreeSpeaking = 4;
     static final public int InTurnSpeaking = 5;

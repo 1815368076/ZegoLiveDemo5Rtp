@@ -16,6 +16,7 @@ import com.zego.livedemo5.ui.widgets.ViewLive;
 import com.zego.livedemo5.utils.PreferenceUtil;
 import com.zego.livedemo5.utils.ZegoRoomUtil;
 import com.zego.zegoliveroom.callback.IZegoResponseCallback;
+import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
 
 import java.util.ArrayList;
@@ -152,7 +153,7 @@ public abstract class BasePlayActivity extends BaseLiveActivity {
         mZegoLiveRoom.requestJoinLive(new IZegoResponseCallback() {
             @Override
             public void onResponse(int result, String fromUserID, String fromUserName) {
-                if (result == 0) {
+                if (result == ZegoConstants.ResultCode.YES) {
                     // 连麦请求被通过
                     recordLog(getString(R.string.request_of_broadcast_has_been_allowed, MY_SELF));
 

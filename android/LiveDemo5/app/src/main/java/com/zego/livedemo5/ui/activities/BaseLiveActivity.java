@@ -154,7 +154,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
 
     protected abstract void initPublishConfigs();
 
-    protected abstract void initPlayConfgis(ViewLive viewLive, String streamID);
+    protected abstract void initPlayConfigs(ViewLive viewLive, String streamID);
 
     protected abstract void sendRoomMessage();
 
@@ -530,10 +530,16 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         mZegoLiveRoom.setPreviewWaterMarkRect(rect);
         mZegoLiveRoom.setPublishWaterMarkRect(rect);
 
+        // 开启流量自动控制
+        int properties = ZegoConstants.ZegoTrafficControlProperty.ZEGOAPI_TRAFFIC_FPS
+                | ZegoConstants.ZegoTrafficControlProperty.ZEGOAPI_TRAFFIC_RESOLUTION;
+        mZegoLiveRoom.enableTrafficControl(properties, true);
 
         // 开始播放
         mZegoLiveRoom.setPreviewView(freeViewLive.getTextureView());
         mZegoLiveRoom.startPreview();
+        mZegoLiveRoom.enableMic(mEnableMic);
+        mZegoLiveRoom.enableCamera(mEnableCamera);
         mZegoLiveRoom.startPublishing(mPublishStreamID, mPublishTitle, mPublishFlag);
         mZegoLiveRoom.setPreviewViewMode(ZegoVideoViewMode.ScaleAspectFill);
     }
@@ -624,7 +630,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         recordLog(MY_SELF + ": start play stream(" + streamID + ")");
 
         // 初始化拉流参数, 外部渲染模式使用
-        initPlayConfgis(freeViewLive, streamID);
+        initPlayConfigs(freeViewLive, streamID);
 
         // 播放
         mZegoLiveRoom.startPlayingStream(streamID, freeViewLive.getTextureView());

@@ -5,21 +5,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Surface;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.zego.livedemo5.R;
-import com.zego.livedemo5.ZegoApiManager;
 import com.zego.livedemo5.constants.IntentExtra;
 import com.zego.livedemo5.utils.JsonUtil;
 import com.zego.livedemo5.utils.PreferenceUtil;
 import com.zego.livedemo5.utils.ZegoRoomUtil;
-import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.callback.IZegoCustomCommandCallback;
 import com.zego.zegoliveroom.callback.IZegoLivePlayerCallback;
 import com.zego.zegoliveroom.callback.IZegoLivePublisherCallback;
@@ -30,6 +28,7 @@ import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.constants.ZegoIM;
 import com.zego.zegoliveroom.constants.ZegoVideoViewMode;
 import com.zego.zegoliveroom.entity.AuxData;
+import com.zego.zegoliveroom.entity.ZegoStreamQuality;
 import com.zego.zegoliveroom.entity.ZegoConversationMessage;
 import com.zego.zegoliveroom.entity.ZegoRoomMessage;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
@@ -40,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -48,20 +48,12 @@ import java.util.Random;
 import butterknife.OnClick;
 
 public class WolvesGameHostActivity extends WolvesGameBaseActivity {
-    private boolean isUltraServer;  // true: 使用自己的服务器进行推流(低延迟), false 使用CDN推流(低成本)
-    private String roomId;
-    private String roomName = "Wolves Game";
-    private int appOrientation = Surface.ROTATION_0;
-
-    private boolean mHasLoginRoom = false;
-
-    private int currentSpeakingMode;
+//    private int appOrientation = Surface.ROTATION_0;
 
     private int currentIndex;
     private int currentSpeakingIndex;
     private String currentSpeakingUserId;
-    private boolean isSpeaking;
-    private boolean isPublishing;
+
     private int myCharacter;
 
     /**
@@ -69,41 +61,7 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
      */
     private LinkedList<WolfInfo> inGamingMembers;
 
-    private class MsgIds {
-        static final int UPDATE_COUNT_TIMER = 0x100;
-        static final int STOP_SPEAKING = 0x101;
-    }
 
-    private Handler.Callback mHandlerCallback = new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what) {
-                case MsgIds.UPDATE_COUNT_TIMER: {
-                    mTimerView.setText(msg.arg1 + "s");
-                    if (msg.arg1 > 0) {
-                        if (msg.arg1 == kSpeakingTimerInterval) {
-                            mTimerView.setVisibility(View.VISIBLE);
-                        }
-
-                        Message newMsg = Message.obtain(msg);
-                        newMsg.arg1 = msg.arg1 - 1;
-                        mHandler.sendMessageDelayed(newMsg, 1000);
-                    } else {
-                        mTimerView.setVisibility(View.INVISIBLE);
-                        mHandler.sendEmptyMessage(MsgIds.STOP_SPEAKING);
-                    }
-                }
-                    break;
-
-                case MsgIds.STOP_SPEAKING: {
-                    stopTalking();
-                }
-                    break;
-
-            }
-            return false;
-        }
-    };
 
     public static void actionStart(Activity activity, String publishTitle, int appOrientation) {
         Intent intent = new Intent(activity, WolvesGameHostActivity.class);
@@ -128,13 +86,12 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
 
         stopCurrentMode();
 
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
         zegoLiveRoom.setZegoLivePublisherCallback(null);
         zegoLiveRoom.setZegoLivePlayerCallback(null);
         zegoLiveRoom.setZegoRoomCallback(null);
         zegoLiveRoom.setZegoIMCallback(null);
 
-        if (mHasLoginRoom) {
+        if (hasLoginRoom) {
             boolean logoutSuccess = zegoLiveRoom.logoutRoom();
             recordLog("退出房间成功？%s", logoutSuccess);
         }
@@ -155,7 +112,7 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
             } else {
                 roomName = publishTitle;
             }
-            appOrientation = intent.getIntExtra(IntentExtra.APP_ORIENTATION, Surface.ROTATION_0);
+//            appOrientation = intent.getIntExtra(IntentExtra.APP_ORIENTATION, Surface.ROTATION_0);
         }
     }
 
@@ -178,11 +135,6 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
         showSelectPublishWayDialog();
     }
 
-    @Override
-    protected Handler.Callback getHandlerCallback() {
-        return mHandlerCallback;
-    }
-
     @OnClick({R.id.btn_start_or_stop_speaking, R.id.in_turn_speaking, R.id.end_in_turn_speaking})
     public void onButtonClick(View view) {
         switch (view.getId()) {
@@ -191,130 +143,121 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
                 break;
 
             case R.id.in_turn_speaking:
-                onInTurnSpeaking();
+                onStartInTurnSpeakingMode();
                 break;
 
             case R.id.end_in_turn_speaking:
-                onEndInTurnSpeaking();
+                onEndInTurnSpeakingMode();
                 break;
         }
     }
 
-    private void reportStopSpeaking() {
+    /**
+     * @see WolvesGameBaseActivity#handleUIMessage(Message)
+     *
+     * @param msg
+     * @return
+     */
+    @Override
+    protected boolean handleUIMessage(Message msg) {
+        switch (msg.what) {
+            case MsgIds.STOP_SPEAKING_FOR_ME:
+                mTimerView.setVisibility(View.INVISIBLE);
+                stopTalking();
+                return true;
+
+            case MsgIds.NOTIFY_OTHER_STOP_SPEAKING:
+                String userId = (String) msg.obj;
+                reportStopSpeaking(userId, true);
+                return false;
+
+            default:
+                return super.handleUIMessage(msg);
+        }
+    }
+
+    private void sendStopSpeakingCommand(String userId, IZegoCustomCommandCallback callback) {
         JSONObject json = new JSONObject();
         try {
             json.put(kSpeakingCommandKey, SpeakingCmd.StopSpeaking);
-            json.put(kSpeakingUserIdKey, PreferenceUtil.getInstance().getUserID());
+            json.put(kSpeakingUserIdKey, userId);
         } catch (JSONException e) {
         }
 
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-        zegoLiveRoom.sendCustomCommand(getCurrentMembers(), json.toString(), new IZegoCustomCommandCallback() {
-            @Override
-            public void onSendCustomCommand(int i, String s) {
-                recordLog("结束说话");
+        zegoLiveRoom.sendCustomCommand(getCurrentMembers(), json.toString(), callback);
+    }
 
-                arrangeNextSpeaker();
+    private void reportStopSpeaking(final String userId, final boolean notifyNextSpeaker) {
+        sendStopSpeakingCommand(userId, new IZegoCustomCommandCallback() {
+            @Override
+            public void onSendCustomCommand(int errorCode, String roomId) {
+                recordLog("通知 %s 停止说话返回：%d", userId, errorCode);
+
+                if (notifyNextSpeaker) {
+                    arrangeNextSpeaker();
+                }
             }
         });
     }
 
     private void onStopSpeaking() {
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-        zegoLiveRoom.stopPublishing();
-
         mBtnSpeaking.setText(R.string.start_speaking);
         if (currentSpeakingMode == SpeakingMode.InTurnSpeakingMode) {
-            mCurrentSpeakingHead.setVisibility(View.GONE);
+            unBindStreamFromSpeakingHeaderViewAndHide();
 
-            mTextTips.setText(R.string.mode_in_turn_speaking);
             mBtnSpeaking.setEnabled(false);
-            reportStopSpeaking();
-        } else if (currentSpeakingMode == SpeakingMode.FreeSpeakingMode) {
-            mTextTips.setText(R.string.mode_free_speaking);
-            mBtnSpeaking.setEnabled(true);
-        }
+            mTextTips.setText(R.string.mode_in_turn_speaking);
 
-        WolfInfo myInfo = getMyInfo();
-        myInfo.setStreamId(null);
-        mRecyclerAdapter.updateItem(myInfo);
+            mHandler.removeMessages(MsgIds.UPDATE_COUNT_TIMER);
+            reportStopSpeaking(PreferenceUtil.getInstance().getUserID(), true);
+        } else {
+            mBtnSpeaking.setEnabled(true);
+            mTextTips.setText(R.string.mode_free_speaking);
+            reportStopSpeaking(PreferenceUtil.getInstance().getUserID(), false);
+        }
     }
 
     private void stopTalking() {
-        isSpeaking = false;
-
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-        zegoLiveRoom.enableMic(false);
-        zegoLiveRoom.enableCamera(false);
-        zegoLiveRoom.setPreviewView(null);
-
         WolfInfo myInfo = getMyInfo();
         if (myInfo == null) return;
 
-        if (TextUtils.isEmpty(myInfo.getStreamId())) {
-            zegoLiveRoom.stopPublishing();
-            mBtnSpeaking.setText(R.string.start_speaking);
-            mBtnSpeaking.setEnabled(true);
-            mTextTips.setText(R.string.tips_publish_stop);
-        } else {
-            mTextTips.setText(R.string.mode_updating_system);
-            mBtnSpeaking.setEnabled(false);
-
-            onStopSpeaking();
+        stopPublish();
+        if (currentPublishMode != PublishMode.Super_Low_Delay) {
+            myInfo.setStreamId(null);
         }
-    }
+        myInfo.setState(WolfInfo.SpeakingState.isIdle);
+        mRecyclerAdapter.updateItem(myInfo);
 
-    private void doPublish(ZegoLiveRoom zegoLiveRoom) {
-        WolfInfo wolf = getMyInfo();
-        if (wolf == null) return;
-
-        wolf.setStreamId(ZegoRoomUtil.getPublishStreamID());
-        zegoLiveRoom.setWaterMarkImagePath(null);
-        Rect zeroRect = new Rect(0, 0, 0, 0);
-        zegoLiveRoom.setPreviewWaterMarkRect(zeroRect);
-        zegoLiveRoom.setPublishWaterMarkRect(zeroRect);
-
-        zegoLiveRoom.startPreview();
-        zegoLiveRoom.setPreviewView(null);
-
-        boolean success = zegoLiveRoom.startPublishing(wolf.getStreamId(), roomName, isUltraServer ? ZegoConstants.PublishFlag.JoinPublish : ZegoConstants.PublishFlag.SingleAnchor);
-        if (success) {
-            isSpeaking = true;
-            isPublishing = true;
-            recordLog("开始直播，流Id: %s", wolf.getStreamId());
-        }
-    }
-
-    private void startTalking() {
-        mBtnSpeaking.setText(R.string.end_speaking);
-        mTextTips.setText(R.string.mode_updating_system);
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-        zegoLiveRoom.enableMic(false);
-        zegoLiveRoom.enableCamera(false);
-
-        doPublish(zegoLiveRoom);
+        onStopSpeaking();
     }
 
     private void onSpeakingButtonClick() {
         if (isSpeaking) {
+            mHandler.removeMessages(MsgIds.STOP_SPEAKING_FOR_ME);
             stopTalking();
         } else {
             startTalking();
         }
     }
 
-    private void stopPublish(ZegoLiveRoom zegoLiveRoom) {
+    private void stopPublish() {
         zegoLiveRoom.stopPreview();
         zegoLiveRoom.setPreviewView(null);
-        zegoLiveRoom.stopPublishing();
+        zegoLiveRoom.enableMic(false);
+        zegoLiveRoom.enableCamera(false);
+        if (currentPublishMode != PublishMode.Super_Low_Delay) {
+            zegoLiveRoom.stopPublishing();
+        }
 
         isSpeaking = false;
     }
 
-    private void stopPlay(ZegoLiveRoom zegoLiveRoom, String streamId) {
+    private void stopPlay(String streamId) {
         if (TextUtils.isEmpty(streamId)) return;
 
-        zegoLiveRoom.stopPlayingStream(streamId);
+//        if (currentPublishMode != PublishMode.Super_Low_Delay) {
+            zegoLiveRoom.stopPlayingStream(streamId);
+//        }
     }
 
     private HashMap<Integer, String> randomCharacter() {
@@ -337,7 +280,8 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
         return characters;
     }
 
-    private void broadInTurnSpeaking(HashMap<Integer, String> characters) {
+    private void sendStartInTurnSpeakingModeCommand(IZegoCustomCommandCallback callback) {
+        HashMap<Integer, String> characters = randomCharacter();
         JSONObject jsonCmd = new JSONObject();
         try {
             JSONObject jsonCharacters = new JSONObject();
@@ -350,8 +294,39 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
 
         }
 
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-        zegoLiveRoom.sendCustomCommand(getCurrentInGamingMembers(), jsonCmd.toString(), new IZegoCustomCommandCallback() {
+        zegoLiveRoom.sendCustomCommand(getCurrentInGamingMembers(), jsonCmd.toString(), callback);
+    }
+
+    private void stopCurrentMode() {
+        // stop current mode
+        for (WolfInfo wolf : allWolfMembers) {
+            if (wolf == null) continue;
+
+            String streamId = wolf.getStreamId();
+            if (TextUtils.isEmpty(streamId)) continue;
+
+            if (isMe(wolf.getUserId())) {
+                stopPublish();
+            } else {
+                stopPlay(streamId);
+            }
+
+            wolf.setState(WolfInfo.SpeakingState.isIdle);
+            if (currentPublishMode != PublishMode.Super_Low_Delay) {
+                wolf.setStreamId(null);
+            }
+            mRecyclerAdapter.updateItem(wolf);
+        }
+    }
+
+    private void onStartInTurnSpeakingMode() {
+        stopCurrentMode();
+
+        inGamingMembers.clear();
+        inGamingMembers.addAll(allWolfMembers);
+
+        mHandler.removeCallbacksAndMessages(null);
+        sendStartInTurnSpeakingModeCommand(new IZegoCustomCommandCallback() {
             @Override
             public void onSendCustomCommand(int errorCode, String roomId) {
                 recordLog("切换到轮流说话模式，errorCode: %d", errorCode);
@@ -366,41 +341,12 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
                     mEndInTurnSpeaking.setEnabled(true);
                     mTextTips.setText(R.string.mode_in_turn_speaking);
 
-                    mRecyclerAdapter.setCurrentSpeakingMode(SpeakingMode.InTurnSpeakingMode);
+                    mRecyclerAdapter.setSpeakingModeAndPublishMode(SpeakingMode.InTurnSpeakingMode, currentPublishMode);
 
                     arrangeNextSpeaker();
                 }
             }
         });
-    }
-
-    private void stopCurrentMode() {
-        // stop current mode
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-        for (WolfInfo wolf : allWolfMembers) {
-            if (wolf == null) continue;
-
-            String streamId = wolf.getStreamId();
-            if (TextUtils.isEmpty(streamId)) continue;
-
-            if (isMe(wolf.getUserId())) {
-                stopPublish(zegoLiveRoom);
-            } else {
-                stopPlay(zegoLiveRoom, streamId);
-            }
-
-            wolf.setStreamId(null);
-            mRecyclerAdapter.updateItem(wolf);
-        }
-    }
-
-    private void onInTurnSpeaking() {
-        stopCurrentMode();
-
-        inGamingMembers.clear();
-        inGamingMembers.addAll(allWolfMembers);
-        HashMap<Integer, String> characters = randomCharacter();
-        broadInTurnSpeaking(characters);
     }
 
     private void broadFreeSpeaking() {
@@ -410,7 +356,6 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
         } catch (JSONException e) {
 
         }
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
         zegoLiveRoom.sendCustomCommand(getCurrentMembers(), jsonCmd.toString(), new IZegoCustomCommandCallback() {
             @Override
             public void onSendCustomCommand(int errorCode, String roomId) {
@@ -420,16 +365,19 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
                 mBtnSpeaking.setEnabled(true);
                 mTextTips.setText(R.string.mode_free_speaking);
 
-                mRecyclerAdapter.setCurrentSpeakingMode(SpeakingMode.FreeSpeakingMode);
+                mRecyclerAdapter.setSpeakingModeAndPublishMode(SpeakingMode.FreeSpeakingMode, currentPublishMode);
             }
         });
     }
 
-    private void onEndInTurnSpeaking() {
+    private void onEndInTurnSpeakingMode() {
+        mHandler.removeCallbacksAndMessages(null);
+
         inGamingMembers.clear();
         mEndInTurnSpeaking.setEnabled(false);
         mInTurnSpeaking.setEnabled(true);
         mTextRole.setVisibility(View.INVISIBLE);
+        mTimerView.setVisibility(View.INVISIBLE);
         mBtnSpeaking.setEnabled(true);
 
         stopCurrentMode();
@@ -451,12 +399,12 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
-                            case 0: // PublishWay.Low_Delay
-                                isUltraServer = true;
+                            case 0:
+                                currentPublishMode = PublishMode.Super_Low_Delay;
                                 break;
 
-                            case 1: // PublishWay.Low_Cost
-                                isUltraServer = false;
+                            case 1:
+                                currentPublishMode = PublishMode.Low_Cost;
                                 break;
                         }
                         _doBusiness();
@@ -475,7 +423,6 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
 
     private void _doBusiness() {
         roomId = ZegoRoomUtil.getRoomID(ZegoRoomUtil.ROOM_TYPE_WOLF);
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
         zegoLiveRoom.setRoomConfig(false, true);
         zegoLiveRoom.setZegoLivePublisherCallback(new ZegoLivePublisherCallback());
         zegoLiveRoom.setZegoLivePlayerCallback(new ZegoLivePlayerCallback());
@@ -487,7 +434,7 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
                 if (isFinishing()) return;
 
                 if (errorCode == 0) {
-                    mHasLoginRoom = true;
+                    hasLoginRoom = true;
                     mTextTips.setText(R.string.tips_login_success);
                     recordLog("登录房间成功. roomId: " + roomId);
 
@@ -495,10 +442,16 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
                     WolfInfo wolf = new WolfInfo(PreferenceUtil.getInstance().getUserID(), PreferenceUtil.getInstance().getUserName());
                     wolf.setIndex(currentIndex);
                     allWolfMembers.add(wolf);
-                    mRecyclerAdapter.updateData(allWolfMembers, true);
+                    mRecyclerAdapter.updateData(allWolfMembers);
 
                     mBtnSpeaking.setEnabled(true);
                     mTextTips.setText(R.string.mode_free_speaking);
+
+                    if (currentPublishMode == PublishMode.Super_Low_Delay) {
+                        String streamId = publishWithoutPreview(roomName);
+                        WolfInfo myInfo = getMyInfo();
+                        myInfo.setStreamId(streamId);
+                    }
                 } else {
                     mTextTips.setText(getString(R.string.tips_login_failed, errorCode));
                     recordLog("登录房间失败. errorCode: " + errorCode);
@@ -511,16 +464,19 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
         WolfInfo wolf = getWolfById(userId);
         if (wolf == null) return;
 
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
         zegoLiveRoom.stopPlayingStream(wolf.getStreamId());
-
-        wolf.setStreamId(null);
+        wolf.setState(WolfInfo.SpeakingState.isIdle);
+        if (currentPublishMode != PublishMode.Super_Low_Delay) {
+            wolf.setStreamId(null);
+        }
         mRecyclerAdapter.updateItem(wolf);
+
+        if (currentSpeakingMode == SpeakingMode.InTurnSpeakingMode) {
+            unBindStreamFromSpeakingHeaderViewAndHide();
+        }
     }
 
-    private void broadAllowSpeaking(WolfInfo wolf) {
-        String userId = wolf.getUserId();
-        final String userName = wolf.getUserName();
+    private void sendAllowSpeakingCommand(String userId, IZegoCustomCommandCallback callback) {
         JSONObject json = new JSONObject();
         try {
             json.put(kSpeakingCommandKey, SpeakingCmd.AllowSpeaking);
@@ -529,18 +485,10 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
 
         }
 
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-        zegoLiveRoom.sendCustomCommand(getCurrentInGamingMembers(), json.toString(), new IZegoCustomCommandCallback() {
-            @Override
-            public void onSendCustomCommand(int errorCode, String roomId) {
-                recordLog("下一个说话的人(errorCode: %d)：%s", errorCode, userName);
-            }
-        });
+        zegoLiveRoom.sendCustomCommand(getCurrentMembers(), json.toString(), callback);
     }
 
     private void arrangeNextSpeaker() {
-        recordLog("当前说话的人: %d", currentSpeakingIndex);
-
         int index = 0;
         int minDelta = Integer.MAX_VALUE;
         for (WolfInfo wolf : inGamingMembers) {
@@ -555,7 +503,7 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
             return;
         }
 
-        WolfInfo wolf = inGamingMembers.get(index);
+        final WolfInfo wolf = inGamingMembers.get(index);
         currentSpeakingIndex = wolf.getIndex();
         currentSpeakingUserId = wolf.getUserId();
 
@@ -565,23 +513,100 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
             mBtnSpeaking.setText(R.string.start_speaking);
             mBtnSpeaking.setEnabled(true);
 
-            //TODO auto stop current state after 60s
+            mHandler.sendEmptyMessageDelayed(MsgIds.STOP_SPEAKING_FOR_ME, kSpeakingTimerInterval * 1000);  // 60s后不论有没有开始说话，都必须停止说话
         }
 
-        broadAllowSpeaking(wolf);
+        sendAllowSpeakingCommand(wolf.getUserId(), new IZegoCustomCommandCallback() {
+            @Override
+            public void onSendCustomCommand(int errorCode, String roomId) {
+                recordLog("发送允许指令返回：%d", errorCode);
+                if (errorCode == 0) {
+                    Message updateMsg = Message.obtain(mHandler, MsgIds.UPDATE_COUNT_TIMER, kSpeakingTimerInterval, 0);
+                    updateMsg.sendToTarget();
+
+                    String userId = wolf.getUserId();
+                    if (!isMe(userId)) {
+                        Message notifyMsg = Message.obtain(mHandler, MsgIds.NOTIFY_OTHER_STOP_SPEAKING, userId);
+                        mHandler.sendMessageDelayed(notifyMsg, kAnchorTimerInterval * 1000);
+                    }
+
+                    wolf.setState(WolfInfo.SpeakingState.allowSpeaking);
+                    mRecyclerAdapter.updateItem(wolf);
+                } else if (errorCode == -2) {
+                    Toast.makeText(WolvesGameHostActivity.this, "操作太频繁，延迟处理", Toast.LENGTH_LONG).show();
+                    final WeakReference<IZegoCustomCommandCallback> callbackRef = new WeakReference<IZegoCustomCommandCallback>(this);
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            IZegoCustomCommandCallback callback = callbackRef.get();
+                            if (callback == null) {
+                                Toast.makeText(WolvesGameHostActivity.this, "发送指令时出错)", Toast.LENGTH_LONG).show();
+                            } else{
+                                sendAllowSpeakingCommand(wolf.getUserId(), callbackRef.get());
+                            }
+                        }
+                    }, 5000);
+                } else {
+                    Toast.makeText(WolvesGameHostActivity.this, "发送指令时出错(err:" + errorCode + ")", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
-    private void answerRoomInfo(String userId, String userName) {
+    private void handleStopSpeakingCommand(JSONObject json) {
+        String userId = json.optString(kSpeakingUserIdKey);
+        if (isMe(userId)) return;
+
+        mHandler.removeMessages(MsgIds.UPDATE_COUNT_TIMER);
+        mHandler.removeMessages(MsgIds.NOTIFY_OTHER_STOP_SPEAKING);
+
+        resetPlayViewAndStop(userId);
+        if (currentSpeakingMode == SpeakingMode.InTurnSpeakingMode) {
+            arrangeNextSpeaker();
+        }
+    }
+
+    private void handleAnswerRoomInfoCommand(String userId, String userName) {
         removeOlderUser(userId, true);
 
         currentIndex ++;
 
+        ZegoUser zegoUser = new ZegoUser();
+        zegoUser.userID = userId;
+        zegoUser.userName = userName;
+        sendAnswerRoomInfoCommand(zegoUser, new IZegoCustomCommandCallback() {
+            @Override
+            public void onSendCustomCommand(int errorCode, String roomId) {
+                recordLog("回复新加入狼消息返回，errorCode: %d; roomId: %s", errorCode, roomId);
+            }
+        });
+
+        // 通知其他人有新狼加入
+        WolfInfo newWolf = new WolfInfo(zegoUser);
+        newWolf.setIndex(currentIndex);
+        sendNewUserJoinRoomCommand(newWolf, new IZegoCustomCommandCallback() {
+            @Override
+            public void onSendCustomCommand(int errorCode, String roomId) {
+                recordLog("通知新狼加入消息返回，errorCode: %d; roomId: %s", errorCode, roomId);
+            }
+        });
+
+        allWolfMembers.add(newWolf);
+        mRecyclerAdapter.insertItem(newWolf);
+
+        if (currentSpeakingMode == SpeakingMode.FreeSpeakingMode) {
+            mInTurnSpeaking.setEnabled(true);
+        }
+    }
+
+    private void sendAnswerRoomInfoCommand(ZegoUser toUser, IZegoCustomCommandCallback callback) {
         JSONObject cmdJson = new JSONObject();
         try {
             cmdJson.put(kSpeakingCommandKey, SpeakingCmd.AnswerRoomInfo);
             cmdJson.put(kUserIndexKey, currentIndex);
             cmdJson.put(kSpeakingModeKey, currentSpeakingMode);
-            cmdJson.put(kServerModeIndexKey, isUltraServer);
+            cmdJson.put(kServerModeIndexKey, currentPublishMode == PublishMode.Super_Low_Delay || currentPublishMode == PublishMode.Low_Delay);
+            cmdJson.put(kSuperLowDelayMode, currentPublishMode == PublishMode.Super_Low_Delay);
 
             JSONArray wolves = new JSONArray();
             for (WolfInfo wolf : allWolfMembers) {
@@ -590,46 +615,20 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
             }
             cmdJson.put(kCurrentUserListKey, wolves);
         } catch (JSONException e) {
-
         }
 
-        ZegoUser zegoUser = new ZegoUser();
-        zegoUser.userID = userId;
-        zegoUser.userName = userName;
-        ZegoApiManager.getInstance().getZegoLiveRoom().sendCustomCommand(new ZegoUser[] { zegoUser }, cmdJson.toString(), new IZegoCustomCommandCallback() {
+        zegoLiveRoom.sendCustomCommand(new ZegoUser[] { toUser }, cmdJson.toString(), callback);
+    }
 
-            @Override
-            public void onSendCustomCommand(int errorCode, String roomId) {
-                recordLog("回复新加入狼消息返回，errorCode: %d; roomId: %s", errorCode, roomId);
-            }
-        });
-
-        WolfInfo newWolf = new WolfInfo(zegoUser);
-        newWolf.setIndex(currentIndex);
-
-        // 通知其他人有新狼加入
+    private void sendNewUserJoinRoomCommand(WolfInfo newWolf, IZegoCustomCommandCallback callback) {
         JSONObject newUserJoinCmd = new JSONObject();
         try {
             newUserJoinCmd.put(kSpeakingCommandKey, SpeakingCmd.NewUserJoinRoom);
             newUserJoinCmd.put(kNewUserKey, encodeWolfInfo(newWolf));
         } catch (JSONException e) {
-
         }
 
-        ZegoApiManager.getInstance().getZegoLiveRoom().sendCustomCommand(getCurrentMembers(), newUserJoinCmd.toString(), new IZegoCustomCommandCallback() {
-            @Override
-            public void onSendCustomCommand(int errorCode, String roomId) {
-                recordLog("通知新狼加入消息返回，errorCode: %d; roomId: %s", errorCode, roomId);
-            }
-        });
-
-        allWolfMembers.add(newWolf);
-//        mRecyclerAdapter.updateData(allWolfMembers, true);
-        mRecyclerAdapter.insertItem(newWolf);
-
-        if (currentSpeakingMode == SpeakingMode.FreeSpeakingMode) {
-            mInTurnSpeaking.setEnabled(true);
-        }
+        zegoLiveRoom.sendCustomCommand(getCurrentMembers(), newUserJoinCmd.toString(), callback);
     }
 
     private void broadUserLeave(final String userId) {
@@ -641,7 +640,6 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
 
         }
 
-        ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
         zegoLiveRoom.sendCustomCommand(getCurrentMembers(), json.toString(), new IZegoCustomCommandCallback() {
             @Override
             public void onSendCustomCommand(int errorCode, String roomId) {
@@ -655,7 +653,7 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
         if (wolf == null) return;
 
         if (!TextUtils.isEmpty(wolf.getStreamId())) {
-            stopPlay(ZegoApiManager.getInstance().getZegoLiveRoom(), wolf.getStreamId());
+            stopPlay(wolf.getStreamId());
             wolf.setStreamId(null);
         }
 
@@ -687,15 +685,6 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
         }
     }
 
-    private ZegoUser[] getCurrentMembers() {
-        ZegoUser[] members = new ZegoUser[allWolfMembers.size()];
-        int index = 0;
-        for (WolfInfo wolf : allWolfMembers) {
-            members[index++] = wolf;
-        }
-        return members;
-    }
-
     private ZegoUser[] getCurrentInGamingMembers() {
         ZegoUser[] members = new ZegoUser[inGamingMembers.size()];
         int index = 0;
@@ -703,64 +692,6 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
             members[index++] = wolf;
         }
         return members;
-    }
-
-    private WolfInfo getWolfById(String userId) {
-        for (WolfInfo wolf : allWolfMembers) {
-            if (userId.equals(wolf.getUserId())) {
-                return wolf;
-            }
-        }
-        return null;
-    }
-
-    private WolfInfo getMyInfo() {
-        String userId = PreferenceUtil.getInstance().getUserID();
-        return getWolfById(userId);
-    }
-
-    private void handleStreamAdded(ZegoStreamInfo[] streamList, String roomId) {
-        for (ZegoStreamInfo stream : streamList) {
-            WolfInfo wolf = getWolfById(stream.userID);
-            if (wolf == null) continue;
-
-            wolf.setStreamId(stream.streamID);
-            mRecyclerAdapter.updateItem(wolf);
-
-            if (currentSpeakingMode == SpeakingMode.InTurnSpeakingMode) {
-                ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-                if (isMe(stream.userID)) {
-                    zegoLiveRoom.setPreviewView(mCurrentSpeakingHead);
-                    zegoLiveRoom.setPreviewViewMode(ZegoVideoViewMode.ScaleAspectFill);
-                    zegoLiveRoom.startPreview();
-                } else {
-                    zegoLiveRoom.setViewMode(ZegoVideoViewMode.ScaleAspectFill, stream.streamID);
-                    zegoLiveRoom.startPlayingStream(stream.streamID, mCurrentSpeakingHead);
-                }
-                mCurrentSpeakingHead.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    private void handleStreamDeleted(ZegoStreamInfo[] streamList, String roomId) {
-        for (ZegoStreamInfo stream : streamList) {
-            WolfInfo wolf = getWolfById(stream.userID);
-            if (wolf == null) continue;
-
-            wolf.setStreamId(null);
-            mRecyclerAdapter.updateItem(wolf);
-
-            if (currentSpeakingMode == SpeakingMode.InTurnSpeakingMode) {
-                ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-                if (isMe(stream.userID)) {
-                    zegoLiveRoom.setPreviewView(null);
-                    zegoLiveRoom.stopPreview();
-                } else {
-                    zegoLiveRoom.stopPlayingStream(stream.streamID);
-                }
-                mCurrentSpeakingHead.setVisibility(View.GONE);
-            }
-        }
     }
 
     private class ZegoLivePublisherCallback implements IZegoLivePublisherCallback {
@@ -774,31 +705,37 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
         @Override
         public void onPublishStateUpdate(int stateCode, String streamId, HashMap<String, Object> streamInfo) {
             recordLog("推流状态更新, stateCode: %d; streamId: %s; Stream: %s", stateCode, streamId, streamInfo);
-            isPublishing = false;
             if (stateCode == 0) {
-                mTextTips.setText(R.string.mode_update_system_success);
+                if (dontPreviewWhenPublishSuccess) {
+                    dontPreviewWhenPublishSuccess = false;
+                    return;
+                }
+
+                isSpeaking = true;
+                if (currentSpeakingIndex == SpeakingMode.FreeSpeakingMode) {
+                    mTextTips.setText(R.string.mode_update_system_success);
+                } else {
+                    mTextTips.setText(R.string.is_speaking);
+                }
 
                 WolfInfo myInfo = getMyInfo();
-                if (myInfo == null || !TextUtils.equals(myInfo.getStreamId(), streamId)) return;
+                if (myInfo == null) return;
 
-                myInfo.setStreamId(streamId);
-                ZegoLiveRoom zegoLiveRoom = ZegoApiManager.getInstance().getZegoLiveRoom();
-                zegoLiveRoom.enableMic(true);
-                zegoLiveRoom.enableCamera(true);
+                myInfo.setState(WolfInfo.SpeakingState.isSpeaking);
                 mRecyclerAdapter.updateItem(myInfo);
 
                 if (currentSpeakingMode == SpeakingMode.InTurnSpeakingMode) {
-                    zegoLiveRoom.setPreviewView(mCurrentSpeakingHead);
-                    zegoLiveRoom.startPreview();
-                    mCurrentSpeakingHead.setVisibility(View.VISIBLE);
+                    bindStream2SpeakingHeaderViewAndShow(streamId);
 
-                    Message msg = Message.obtain(mHandler, MsgIds.UPDATE_COUNT_TIMER, kSpeakingTimerInterval, 0);  // 60S 倒计时开始(单次允许说话的最长时间)
-                    msg.sendToTarget();
+                    zegoLiveRoom.setPreviewView(mCurrentSpeakingHead);
+                    zegoLiveRoom.setPreviewViewMode(ZegoVideoViewMode.ScaleAspectFill);
+                    zegoLiveRoom.startPreview();
                 }
             } else {
                 WolfInfo myInfo = getMyInfo();
                 if (myInfo == null || !TextUtils.equals(myInfo.getStreamId(), streamId)) return;
 
+                myInfo.setState(WolfInfo.SpeakingState.isIdle);
                 myInfo.setStreamId(null);
                 mTextTips.setText(R.string.mode_update_system_failed);
 
@@ -826,16 +763,8 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
             recordLog("收到连麦请求, seq: %d; roomId: %s; fromUserId: %s; fromUserName: %s", seq, roomId, fromUserId, fromUserName);
         }
 
-        /**
-         * 推流质量更新.
-         *
-         * @param streamId      流ID
-         * @param quality       0 ~ 3 分别对应优良中差
-         * @param videoFPS      帧率
-         * @param videoBitrate  码率
-         */
         @Override
-        public void onPublishQualityUpdate(String streamId, int quality, double videoFPS, double videoBitrate) {
+        public void onPublishQualityUpdate(String s, ZegoStreamQuality streamQuality) {
 
         }
 
@@ -886,16 +815,8 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
             recordLog("拉流状态更新, stateCode: %d; streamId: %s", stateCode, streamId);
         }
 
-        /**
-         * 推流质量更新.
-         *
-         * @param streamId      流ID
-         * @param quality       0 ~ 3 分别对应优良中差
-         * @param videoFPS      帧率
-         * @param videoBitrate  码率
-         */
         @Override
-        public void onPlayQualityUpdate(String streamId, int quality, double videoFPS, double videoBitrate) {
+        public void onPlayQualityUpdate(String s, ZegoStreamQuality streamQuality) {
 
         }
 
@@ -1052,17 +973,16 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
             int command = json.optInt(kSpeakingCommandKey, 0);
             switch (command) {
                 case SpeakingCmd.StopSpeaking: {
-                    String userId = json.optString(kSpeakingUserIdKey);
-                    if (isMe(userId)) return;
-
-                    resetPlayViewAndStop(userId);
-
-                    arrangeNextSpeaker();
+                    handleStopSpeakingCommand(json);
                 }
                     break;
 
+                case SpeakingCmd.StartSpeaking:
+                    handleStartSpeakingCommand(json);
+                    break;
+
                 case SpeakingCmd.AskRoomInfo: {
-                    answerRoomInfo(fromUserId, fromUserName);
+                    handleAnswerRoomInfoCommand(fromUserId, fromUserName);
                 }
                     break;
 

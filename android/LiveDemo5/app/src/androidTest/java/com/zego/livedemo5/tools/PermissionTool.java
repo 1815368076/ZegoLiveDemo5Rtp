@@ -8,6 +8,7 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 
 import static com.zego.livedemo5.tools.CommonTools.printLog;
+import static com.zego.livedemo5.tools.CommonTools.sleep;
 
 /**
  * Created by realuei on 2017/3/21.
@@ -47,6 +48,21 @@ public final class PermissionTool {
 
     private static void allowPermissionMeiZu() {
         clickAllowButtonInPermissionDialog("android.widget.Button", "android:id/button1");
+    }
+
+    public static void clickToGetPermission(int waitTime){
+        sleep(1000);
+        UiDevice uiDevice=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject button=uiDevice.findObject(new UiSelector().className("android.widget.Button").text("允许"));
+
+        if(button.waitForExists(waitTime*1000)){
+            try {
+                button.click();
+                clickToGetPermission(waitTime);
+            } catch (UiObjectNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static void clickAllowButtonInPermissionDialog(String btnClassName, String btnResId) {

@@ -99,6 +99,7 @@
 
     <string name="start_speaking">开始说话</string>
     <string name="end_speaking">结束说话</string>
+    <string name="is_speaking">正在说话</string>
     <string name="in_turn">轮流说话</string>
     <string name="end_in_turn">结束轮流说话</string>
     <string name="mode_free_speaking">当前模式：自由说话</string>
@@ -121,6 +122,7 @@
     <string name="tips_publish_failed">发布直播失败，errorCode: %1$d, streamId: %2$s</string>
     <string name="tips_publish_finish">发布直播结束，errorCode: %1$d, streamId: %2$s</string>
     <string name="tips_publish_stop">推流终止</string>
+    <string name="tips_over_max_play_channle_count">超出房间人数容纳上限</string>
 
 
 </resources>

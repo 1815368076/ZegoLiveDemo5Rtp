@@ -31,6 +31,7 @@ import com.zego.zegoliveroom.callback.IZegoLoginCompletionCallback;
 import com.zego.zegoliveroom.constants.ZegoAvConfig;
 import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.entity.AuxData;
+import com.zego.zegoliveroom.entity.ZegoStreamQuality;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
 
 import java.util.ArrayList;
@@ -170,7 +171,8 @@ public  class GameLiveActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPublishQualityUpdate(String streamID, int quality, double videoFPS, double videoBitrate) {
+            public void onPublishQualityUpdate(String s, ZegoStreamQuality streamQuality) {
+
             }
 
             @Override
@@ -194,6 +196,10 @@ public  class GameLiveActivity extends AppCompatActivity {
         mZegoLiveRoom.startScreenCapture(mMediaProjection, zegoAvConfig.getVideoEncodeResolutionWidth(),
                 zegoAvConfig.getVideoEncodeResolutionHeight());
 
+        // 开启流量自动控制
+        int properties = ZegoConstants.ZegoTrafficControlProperty.ZEGOAPI_TRAFFIC_FPS
+                | ZegoConstants.ZegoTrafficControlProperty.ZEGOAPI_TRAFFIC_RESOLUTION;
+        mZegoLiveRoom.enableTrafficControl(properties, true);
 
         // 开始推流
         mPublishTitle = "Android录屏_" + PreferenceUtil.getInstance().getUserID();

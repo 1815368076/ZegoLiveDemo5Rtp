@@ -101,6 +101,7 @@
 
     <string name="start_speaking">Start Speaking</string>
     <string name="end_speaking">End Speaking</string>
+    <string name="is_speaking">Speaking...</string>
     <string name="in_turn">In-Turn</string>
     <string name="end_in_turn">End In-Turn</string>
     <string name="mode_free_speaking">Mode: Free speaking</string>
@@ -123,5 +124,6 @@
     <string name="tips_publish_failed">Publish failed，errorCode: %1$d, streamId: %2$s</string>
     <string name="tips_publish_finish">Publish finish，errorCode: %1$d, streamId: %2$s</string>
     <string name="tips_publish_stop">Stop publish</string>
+    <string name="tips_over_max_play_channle_count">Over max play count</string>
 
 </resources>

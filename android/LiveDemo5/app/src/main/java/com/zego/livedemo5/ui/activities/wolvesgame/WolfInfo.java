@@ -9,7 +9,33 @@ import com.zego.zegoliveroom.entity.ZegoUser;
 public class WolfInfo extends ZegoUser {
     private String streamId;
     private int index;
-    private int role = -1;
+    private SpeakingState state = SpeakingState.isIdle;
+
+    public enum SpeakingState {
+        /** 清闲 */
+        isIdle(0),
+        /** 允许说话 */
+        allowSpeaking(1),
+        /** 正在说话 */
+        isSpeaking(2);
+
+        private int value = 0;
+
+        SpeakingState(int value) {
+            this.value = value;
+        }
+
+        public int intValue() {
+            return this.value;
+        }
+
+        static public SpeakingState valueOf(int value) {
+            if (value < SpeakingState.values().length) {
+                return SpeakingState.values()[value];
+            }
+            return isIdle;
+        }
+    }
 
     public WolfInfo(String userId, String userName) {
         this.userID = userId;
@@ -53,12 +79,12 @@ public class WolfInfo extends ZegoUser {
         this.index = index;
     }
 
-    public int getRole() {
-        return role;
+    public SpeakingState getState() {
+        return state;
     }
 
-    public void setRole(int role) {
-        this.role = role;
+    public void setState(SpeakingState state) {
+        this.state = state;
     }
 
     public void update(WolfInfo wolf) {
@@ -67,7 +93,7 @@ public class WolfInfo extends ZegoUser {
             this.userName = wolf.userName;
             this.streamId = wolf.streamId;
             this.index = wolf.index;
-            this.role = wolf.role;
+            this.state = wolf.state;
         }
     }
 

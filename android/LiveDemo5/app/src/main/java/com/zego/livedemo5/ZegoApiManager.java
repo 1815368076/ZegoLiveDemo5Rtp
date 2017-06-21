@@ -98,7 +98,7 @@ public class ZegoApiManager {
             ZegoLiveRoom.setVideoFilterFactory(videoFilterFactoryDemo);
         }
 
-        ZegoLiveRoom.enableAudioPrep(mEnableAudioPrep);
+//        ZegoLiveRoom.enableAudioPrep(mEnableAudioPrep);
     }
 
     private void initUserInfo(){

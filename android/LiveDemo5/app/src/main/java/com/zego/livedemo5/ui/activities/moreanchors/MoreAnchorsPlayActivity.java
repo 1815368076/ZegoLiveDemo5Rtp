@@ -18,6 +18,7 @@ import com.zego.zegoliveroom.callback.IZegoRoomCallback;
 import com.zego.zegoliveroom.callback.im.IZegoIMCallback;
 import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.entity.AuxData;
+import com.zego.zegoliveroom.entity.ZegoStreamQuality;
 import com.zego.zegoliveroom.entity.ZegoConversationMessage;
 import com.zego.zegoliveroom.entity.ZegoRoomMessage;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
@@ -77,9 +78,9 @@ public class MoreAnchorsPlayActivity extends BasePlayActivity {
             }
 
             @Override
-            public void onPublishQualityUpdate(String streamID, int quality, double videoFPS, double videoBitrate) {
+            public void onPublishQualityUpdate(String streamID, ZegoStreamQuality streamQuality) {
                 // 推流质量回调
-                handlePublishQualityUpdate(streamID, quality, videoFPS, videoBitrate);
+                handlePublishQualityUpdate(streamID, streamQuality.quality, streamQuality.videoFPS, streamQuality.videoBitrate);
             }
 
             @Override
@@ -110,9 +111,9 @@ public class MoreAnchorsPlayActivity extends BasePlayActivity {
             }
 
             @Override
-            public void  onPlayQualityUpdate(String streamID, int quality, double videoFPS, double videoBitrate) {
+            public void onPlayQualityUpdate(String streamID, ZegoStreamQuality streamQuality) {
                 // 拉流质量回调
-                handlePlayQualityUpdate(streamID, quality, videoFPS, videoBitrate);
+                handlePlayQualityUpdate(streamID, streamQuality.quality, streamQuality.videoFPS, streamQuality.videoBitrate);
             }
 
             @Override
@@ -208,7 +209,7 @@ public class MoreAnchorsPlayActivity extends BasePlayActivity {
     }
 
     @Override
-    protected void initPlayConfgis(ViewLive viewLive, String streamID) {
+    protected void initPlayConfigs(ViewLive viewLive, String streamID) {
 
     }
 
