@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.ToggleButton;
 
 
+import com.zego.livedemo5.MainActivity;
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
 import com.zego.livedemo5.ui.activities.gamelive.GameLiveActivity;
@@ -47,7 +48,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
  * Copyright © 2016 Zego. All rights reserved.
  * des:
  */
-public class PublishFragment extends AbsBaseFragment {
+public class PublishFragment extends AbsBaseFragment implements MainActivity.OnReInitSDKCallback {
 
     @Bind(R.id.tb_enable_front_cam)
     public ToggleButton tbEnableFrontCam;
@@ -77,7 +78,7 @@ public class PublishFragment extends AbsBaseFragment {
 
     private boolean mHasBeenCreated = false;
 
-    private boolean mIsVisiableToUser = false;
+    private boolean mIsVisibleToUser = false;
 
     private boolean mSpinnerOfBeautyInitialed = false;
 
@@ -183,7 +184,7 @@ public class PublishFragment extends AbsBaseFragment {
     public void onResume() {
         super.onResume();
         if (mHasBeenCreated) {
-            if (mIsVisiableToUser) {
+            if (mIsVisibleToUser) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -266,7 +267,7 @@ public class PublishFragment extends AbsBaseFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        mIsVisiableToUser = isVisibleToUser;
+        mIsVisibleToUser = isVisibleToUser;
         if (mHasBeenCreated) {
             if (isVisibleToUser) {
 
@@ -338,5 +339,26 @@ public class PublishFragment extends AbsBaseFragment {
         super.onConfigurationChanged(newConfig);
         stopPreview();
         startPreview();
+    }
+
+    /**
+     * @see MainActivity.OnReInitSDKCallback#onReInitSDK()
+     */
+    @Override
+    public void onReInitSDK() {
+        if (!mIsVisibleToUser) return;
+
+        // 6.0及以上的系统需要在运行时申请CAMERA RECORD_AUDIO权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(mParentActivity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(mParentActivity, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(mParentActivity, new String[]{
+                        Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, 101);
+            } else {
+                startPreview();
+            }
+        } else {
+            startPreview();
+        }
     }
 }

@@ -15,10 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.zego.livedemo5.BuildConfig;
 import com.zego.livedemo5.MainActivity;
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
+import com.zego.livedemo5.ZegoAppHelper;
 import com.zego.livedemo5.ui.activities.AboutZegoActivity;
 import com.zego.livedemo5.ui.activities.base.AbsBaseFragment;
 import com.zego.livedemo5.utils.PreferenceUtil;
@@ -76,8 +76,14 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
     @Bind(R.id.tb_modify_test_env)
     public ToggleButton tbTestEnv;
 
+    @Bind(R.id.sp_app_flavor)
+    public Spinner spAppFlavors;
+
     @Bind(R.id.et_appid)
     public EditText etAppID;
+
+    @Bind(R.id.ll_app_key)
+    public LinearLayout llAppKey;
 
     @Bind(R.id.et_appkey)
     public EditText etAppKey;
@@ -108,12 +114,12 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
 
     private int mCount = 0;
 
-    private long currentAppId;
-
     private final int[][] VIDEO_RESOLUTIONS = new int[][]{{320, 240}, {352, 288}, {640, 360},
             {640, 360}, {1280, 720}, {1920, 1080}};
 
     private boolean mNeedToReInitSDK = false;
+
+    private Runnable reInitTask;
 
     @Override
     protected int getContentViewLayout() {
@@ -128,7 +134,6 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
     @Override
     protected void initVariables() {
         mResolutionTexts = mResources.getStringArray(R.array.resolutions);
-        currentAppId = BuildConfig.APP_ID;
     }
 
     @Override
@@ -160,7 +165,6 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                spinnerResolutions.setSelection(5);
             }
 
             @Override
@@ -172,8 +176,8 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
         // 默认设置级别为"高"
         int defaultLevel = ZegoAvConfig.Level.High;
 
-        // 初始化分辨率, 默认为640x480
-        seekbarResolution.setMax(5);
+        // 初始化分辨率, 默认为 960 * 540
+        seekbarResolution.setMax(ZegoAvConfig.VIDEO_BITRATES.length - 1);
         seekbarResolution.setProgress(defaultLevel);
         seekbarResolution.setOnSeekBarChangeListener(seekBarChangeListener);
         tvResolution.setText(getString(R.string.resolution_prefix, mResolutionTexts[defaultLevel]));
@@ -184,8 +188,8 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
         seekBarFps.setOnSeekBarChangeListener(seekBarChangeListener);
         tvFps.setText(getString(R.string.fps_prefix, "15"));
 
-        // 初始化码率, 默认为600 * 1000
-        seekBarBitrate.setMax(1000000);
+        // 初始化码率, 默认为 1200 * 1000
+        seekBarBitrate.setMax(ZegoAvConfig.VIDEO_BITRATES[ZegoAvConfig.VIDEO_BITRATES.length - 1]);
         seekBarBitrate.setProgress(ZegoAvConfig.VIDEO_BITRATES[defaultLevel]);
         seekBarBitrate.setOnSeekBarChangeListener(seekBarChangeListener);
         tvBitrate.setText(getString(R.string.bitrate_prefix, "" + ZegoAvConfig.VIDEO_BITRATES[defaultLevel]));
@@ -194,7 +198,7 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
         spinnerResolutions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position <= ZegoAvConfig.Level.VeryHigh) {
+                if (position < ZegoAvConfig.VIDEO_BITRATES.length) {
                     int level = position;
                     seekbarResolution.setProgress(level);
                     // 预设级别中,帧率固定为"15"
@@ -217,17 +221,72 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
             }
         });
 
+        long appId = ZegoApiManager.getInstance().getAppID();
+        if (ZegoAppHelper.isUdpProduct(appId)) {
+            spAppFlavors.setSelection( 0 );
+        } else if (ZegoAppHelper.isRtmpProduct(appId)) {
+            spAppFlavors.setSelection( 1 );
+        } else if (ZegoAppHelper.isInternationalProduct(appId)) {
+            spAppFlavors.setSelection( 2 );
+        } else {
+            spAppFlavors.setSelection( 3 );
+        }
+        spAppFlavors.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            private String convertSignKey2String(byte[] signKey) {
+                StringBuilder buffer = new StringBuilder();
+                for (int b : signKey) {
+                    buffer.append("0x").append(Integer.toHexString((b & 0x000000FF) | 0xFFFFFF00).substring(6)).append(",");
+                }
+                buffer.setLength(buffer.length() - 1);
+                return buffer.toString();
+            }
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 3) {
+                    etAppID.setText("");
+                    etAppID.setEnabled(true);
+
+                    etAppKey.setText("");
+                    llAppKey.setVisibility(View.VISIBLE);
+                } else {
+                    long appId = 0;
+                    switch (position) {
+                        case 0:
+                            appId = ZegoAppHelper.UDP_APP_ID;
+                            break;
+                        case 1:
+                            appId = ZegoAppHelper.RTMP_APP_ID;
+                            break;
+                        case 2:
+                            appId = ZegoAppHelper.INTERNATIONAL_APP_ID;
+                            break;
+                    }
+
+                    etAppID.setEnabled(false);
+                    etAppID.setText(String.valueOf(appId));
+
+                    byte[] signKey = ZegoAppHelper.requestSignKey(appId);
+                    etAppKey.setText(convertSignKey2String(signKey));
+                    llAppKey.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         seekbarResolution.setEnabled(false);
         seekBarFps.setEnabled(false);
         seekBarBitrate.setEnabled(false);
-        etAppID.setText(String.valueOf(currentAppId));
     }
 
     @Override
     protected void loadData() {
 
     }
-
 
     @OnClick(R.id.tv_demo_version)
     public void showHideOperation() {
@@ -248,7 +307,7 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
     }
 
     @OnClick(R.id.tv_advanced)
-    public void showAdvaaced() {
+    public void showAdvanced() {
         llytHideOperation.setVisibility(View.VISIBLE);
         mHandler.post(new Runnable() {
             @Override
@@ -276,7 +335,10 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
     }
 
     @Override
-    public void onSetConfig() {
+    public int onSetConfig() {
+        if (reInitTask != null) {
+            ZegoAppHelper.removeTask(reInitTask);
+        }
 
         InputMethodManager imm = (InputMethodManager) mParentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mParentActivity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -299,6 +361,9 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
                 zegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.VeryHigh);
                 break;
             case 5:
+                zegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.SuperHigh);
+                break;
+            case 6:
                 // 自定义设置
                 zegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.High);
                 int progress = seekbarResolution.getProgress();
@@ -316,47 +381,56 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
         String newUserName = etUserName.getText().toString();
         if (!newUserName.equals(PreferenceUtil.getInstance().getUserName())) {
             PreferenceUtil.getInstance().setUserName(newUserName);
-            ZegoApiManager.getInstance().getZegoLiveRoom().setUser(PreferenceUtil.getInstance().getUserID(), newUserName);
             mNeedToReInitSDK = true;
         }
 
-        // 设置appID appKey
-        final String appID = etAppID.getText().toString().trim();
-        final String appKey = etAppKey.getText().toString().trim();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if ((!TextUtils.isEmpty(appID) && !TextUtils.isEmpty(appKey))) {
-                    // appID必须是数字
-                    if (!TextUtils.isDigitsOnly(appID)) {
-                        return;
-                    }
-                    // appKey长度必须等于32位
-                    String[] keys = appKey.split(",");
-                    if (keys.length != 32) {
-                        return;
-                    }
+        String strAppID = etAppID.getText().toString().trim();
+        String strSignKey = etAppKey.getText().toString().trim();
+        if (TextUtils.isEmpty(strAppID) || TextUtils.isEmpty(strSignKey)) {
+            Toast.makeText(mParentActivity, "AppId 或者 SignKey 格式非法", Toast.LENGTH_LONG).show();
+            return -1;
+        }
 
-                    currentAppId = Long.valueOf(appID);
-                    byte[] signKey = new byte[32];
-                    for (int i = 0; i < 32; i++) {
-                        int data = Integer.valueOf(keys[i].trim().replace("0x", ""), 16);
-                        signKey[i] = (byte) data;
-                    }
+        // appID必须是数字
+        if (!TextUtils.isDigitsOnly(strAppID)) {
+            Toast.makeText(mParentActivity, "AppId 格式非法", Toast.LENGTH_LONG).show();
+            etAppID.requestFocus();
+            return -1;
+        }
+        // appKey长度必须等于32位
+        String[] keys = strSignKey.split(",");
+        if (keys.length != 32) {
+            Toast.makeText(mParentActivity, "SignKey 格式非法", Toast.LENGTH_LONG).show();
+            etAppKey.requestFocus();
+            return -1;
+        }
 
-                    // 重新初始化sdk
+        final long newAppId = Long.valueOf(strAppID);
+        final byte[] newSignKey = new byte[32];
+        for (int i = 0; i < 32; i++) {
+            int data = Integer.valueOf(keys[i].trim().replace("0x", ""), 16);
+            newSignKey[i] = (byte) data;
+        }
+
+        if (newAppId != ZegoApiManager.getInstance().getAppID() && newSignKey != ZegoApiManager.getInstance().getSignKey()) {
+            mNeedToReInitSDK = true;
+        }
+
+        int returnValue = mNeedToReInitSDK ? 1 : 0;
+        if (mNeedToReInitSDK) {
+            mNeedToReInitSDK = false;
+
+            reInitTask = new Runnable() {
+                @Override
+                public void run() {
                     ZegoApiManager.getInstance().releaseSDK();
-                    ZegoApiManager.getInstance().reInitSDK(currentAppId, signKey);
-
-                } else if (mNeedToReInitSDK) {
-
-                    // 重新初始化sdk
-                    mNeedToReInitSDK = false;
-                    ZegoApiManager.getInstance().releaseSDK();
-                    ZegoApiManager.getInstance().initSDK();
+                    ZegoApiManager.getInstance().reInitSDK(newAppId, newSignKey);
                 }
-            }
-        }).start();
+            };
+            ZegoAppHelper.postTask(reInitTask);
+        }
+
+        return returnValue;
     }
 
     @OnCheckedChanged({R.id.tb_modify_test_env, R.id.tb_hardware_encode, R.id.tb_hardware_decode, R.id.tb_rate_control

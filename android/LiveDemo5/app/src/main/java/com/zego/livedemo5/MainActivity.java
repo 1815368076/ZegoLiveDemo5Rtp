@@ -88,6 +88,26 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
         mSetConfigsCallback = (OnSetConfigsCallback) getSupportFragmentManager().findFragmentById(R.id.setting_fragment);
 
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+
+            private CharSequence oldTitle;
+
+            private Runnable updateTitleTask = new Runnable() {
+                @Override
+                public void run() {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateTitle();
+
+                            for (int position = 0; position < mPagerAdapter.getCount(); position++) {
+                                Fragment fragment = mPagerAdapter.getItem(position);
+                                ((OnReInitSDKCallback)fragment).onReInitSDK();
+                            }
+                        }
+                    });
+                }
+            };
+
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
 
@@ -95,15 +115,25 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
 
             @Override
             public void onDrawerOpened(View drawerView) {
+                oldTitle = toolBar.getTitle();
                 toolBar.setTitle(getString(R.string.action_settings));
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                toolBar.setTitle(getString(R.string.app_name));
                 // 当侧边栏关闭时, set配置
-                if(mSetConfigsCallback != null){
-                    mSetConfigsCallback.onSetConfig();
+                if(mSetConfigsCallback == null) return;
+
+                int errorCode = mSetConfigsCallback.onSetConfig();
+                if (errorCode < 0) {
+                    drawerLayout.openDrawer(Gravity.LEFT);
+                } else if (errorCode > 0) {
+                    if (updateTitleTask != null) {
+                        ZegoAppHelper.removeTask(updateTitleTask);
+                    }
+                    ZegoAppHelper.postTask(updateTitleTask);
+                } else {
+                    toolBar.setTitle(oldTitle);
                 }
             }
 
@@ -114,7 +144,6 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
         });
 
         setSupportActionBar(toolBar);
-
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,9 +159,9 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
     @Override
     protected void initViews(Bundle savedInstanceState) {
         navigationBar.setNavigationBarListener(this);
+        navigationBar.selectTab(0);
 
         viewPager.setAdapter(mPagerAdapter);
-        navigationBar.selectTab(0);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -150,6 +179,8 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
 
             }
         });
+
+        updateTitle();
     }
 
     @Override
@@ -170,6 +201,12 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
             return false;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    private void updateTitle() {
+        long currentAppId = ZegoApiManager.getInstance().getAppID();
+        String title = ZegoAppHelper.getAppTitle(currentAppId, MainActivity.this);
+        toolBar.setTitle(title);
     }
 
     /**
@@ -228,7 +265,21 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public interface OnSetConfigsCallback{
-        void onSetConfig();
+    public interface OnSetConfigsCallback {
+
+        /**
+         * Setting 页面关闭时调用
+         *
+         * @return < 0: 数据格式非法; 0: 无修改或者不需要重新初始化SDK; > 0: 需要重新初始化 SDK
+         */
+        int onSetConfig();
+    }
+
+    public interface OnReInitSDKCallback {
+
+        /**
+         * 当重新 initSDK 时调用
+         */
+        void onReInitSDK();
     }
 }

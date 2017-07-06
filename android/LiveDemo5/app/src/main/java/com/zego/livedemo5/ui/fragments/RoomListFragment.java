@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 
+import com.zego.livedemo5.MainActivity;
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
 import com.zego.livedemo5.interfaces.OnUpdateRoomListListener;
@@ -32,7 +33,7 @@ import butterknife.Bind;
  * Copyright © 2016 Zego. All rights reserved.
  * des:
  */
-public class RoomListFragment extends AbsBaseFragment {
+public class RoomListFragment extends AbsBaseFragment implements MainActivity.OnReInitSDKCallback {
 
     @Bind(R.id.srl)
     public SwipeRefreshLayout swipeRefreshLayout;
@@ -171,5 +172,15 @@ public class RoomListFragment extends AbsBaseFragment {
                 BizLivePresenter.getInstance().getRoomList();
             }
         });
+    }
+
+    /**
+     * @see MainActivity.OnReInitSDKCallback#onReInitSDK()
+     */
+    @Override
+    public void onReInitSDK() {
+        mListRoom.clear();
+
+        BizLivePresenter.getInstance().getRoomList();
     }
 }

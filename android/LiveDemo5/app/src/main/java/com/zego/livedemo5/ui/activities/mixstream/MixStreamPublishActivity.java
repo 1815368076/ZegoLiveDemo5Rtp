@@ -20,6 +20,7 @@ import com.zego.zegoliveroom.callback.im.IZegoIMCallback;
 import com.zego.zegoliveroom.constants.ZegoAvConfig;
 import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.entity.AuxData;
+import com.zego.zegoliveroom.entity.ZegoCompleteMixStreamInfo;
 import com.zego.zegoliveroom.entity.ZegoStreamQuality;
 import com.zego.zegoliveroom.entity.ZegoConversationMessage;
 import com.zego.zegoliveroom.entity.ZegoMixStreamInfo;
@@ -211,6 +212,21 @@ public class MixStreamPublishActivity extends BasePublishActivity {
         });
     }
 
+    @Override
+    protected void handlePublishSuccMix(String streamID, HashMap<String, Object> info) {
+        super.handlePublishSucc(streamID);
+
+        ZegoMixStreamInfo mixStreamInfo = new ZegoMixStreamInfo();
+        mixStreamInfo.streamID = mPublishStreamID;
+        mixStreamInfo.top = 0;
+        mixStreamInfo.bottom = ZegoApiManager.getInstance().getZegoAvConfig().getVideoEncodeResolutionHeight();
+        mixStreamInfo.left = 0;
+        mixStreamInfo.right = ZegoApiManager.getInstance().getZegoAvConfig().getVideoEncodeResolutionWidth();
+        mMixStreamInfos.add(mixStreamInfo);
+
+        startMixStream();
+    }
+
     /**
      * 房间内用户创建流.
      */
@@ -223,16 +239,6 @@ public class MixStreamPublishActivity extends BasePublishActivity {
             for (ZegoStreamInfo streamInfo : listStream) {
                 recordLog(streamInfo.userName + ": onStreamAdd(" + streamInfo.streamID + ")");
                 startPlay(streamInfo.streamID);
-
-                if (mMixStreamInfos.size() == 0) {
-                    ZegoMixStreamInfo mixStreamInfo = new ZegoMixStreamInfo();
-                    mixStreamInfo.streamID = mPublishStreamID;
-                    mixStreamInfo.top = 0;
-                    mixStreamInfo.bottom = height;
-                    mixStreamInfo.left = 0;
-                    mixStreamInfo.right = width;
-                    mMixStreamInfos.add(mixStreamInfo);
-                }
 
                 if (mMixStreamInfos.size() == 1) {
                     ZegoMixStreamInfo mixStreamInfo = new ZegoMixStreamInfo();
@@ -254,13 +260,7 @@ public class MixStreamPublishActivity extends BasePublishActivity {
                 }
             }
 
-            int size = mMixStreamInfos.size();
-            ZegoMixStreamInfo[] infos = new ZegoMixStreamInfo[size];
-
-            for (int i = 0; i < size; i++) {
-                infos[i] = mMixStreamInfos.get(i);
-            }
-            mZegoLiveRoom.updateMixInputStreams(infos);
+            startMixStream();
         }
     }
 
@@ -281,30 +281,46 @@ public class MixStreamPublishActivity extends BasePublishActivity {
                 }
             }
 
-
-            // 更新混流信息
-            int size = mMixStreamInfos.size();
-            ZegoMixStreamInfo[] infos = new ZegoMixStreamInfo[size];
-
-            for (int i = 0; i < size; i++) {
-                infos[i] = mMixStreamInfos.get(i);
-            }
-            mZegoLiveRoom.updateMixInputStreams(infos);
+            startMixStream();
         }
     }
 
+    private int mixStreamRequestSeq = 1;
+    private void startMixStream() {
+        int size = mMixStreamInfos.size();
+        ZegoMixStreamInfo[] inputStreamList = new ZegoMixStreamInfo[size];
+
+        for (int i = 0; i < size; i++) {
+            inputStreamList[i] = mMixStreamInfos.get(i);
+        }
+
+        ZegoCompleteMixStreamInfo mixStreamConfig = new ZegoCompleteMixStreamInfo();
+        mixStreamConfig.inputStreamList = inputStreamList;
+        mixStreamConfig.outputStreamId = mMixStreamID;
+        mixStreamConfig.outputIsUrl = false;
+        mixStreamConfig.outputWidth = ZegoApiManager.getInstance().getZegoAvConfig().getVideoCaptureResolutionWidth();
+        mixStreamConfig.outputHeight = ZegoApiManager.getInstance().getZegoAvConfig().getVideoCaptureResolutionHeight();
+        mixStreamConfig.outputFps = 15;
+        mixStreamConfig.outputBitrate = 600 * 1000;
+        mZegoLiveRoom.mixStream(mixStreamConfig, mixStreamRequestSeq++);
+    }
+
     protected void handleMixStreamStateUpdate(int errorCode, String mixStreamID, HashMap<String, Object> streamInfo) {
+        int seq = -1;
+        if (streamInfo != null) {
+            seq = (int)streamInfo.get(ZegoConstants.StreamKey.MIX_CONFIG_SEQ);
+        }
         if (errorCode == 0) {
 
             ViewLive viewLivePublish = getViewLiveByStreamID(mPublishStreamID);
             List<String> listUrls = getShareUrlList(streamInfo);
 
             if(listUrls.size() == 0){
-                recordLog("混流失败...errorCode:" + errorCode);
+                recordLog("混流失败...errorCode: %d, seq: %d", errorCode, seq);
             }
 
             if(viewLivePublish != null && listUrls.size() >= 2){
-                recordLog("混流地址:" + listUrls.get(1));
+                recordLog("混流地址: %s; seq: %d", listUrls.get(1), seq);
                 viewLivePublish.setListShareUrls(listUrls);
 
                 // 将混流ID通知观众
@@ -313,12 +329,13 @@ public class MixStreamPublishActivity extends BasePublishActivity {
                 mapUrls.put(Constants.KEY_MIX_STREAM_ID, mixStreamID);
                 mapUrls.put(Constants.KEY_HLS, listUrls.get(0));
                 mapUrls.put(Constants.KEY_RTMP, listUrls.get(1));
+
                 Gson gson = new Gson();
                 String json = gson.toJson(mapUrls);
                 mZegoLiveRoom.updateStreamExtraInfo(json);
             }
         } else {
-            recordLog("混流失败...errorCode:" + errorCode);
+            recordLog("混流失败...errorCode: %d, seq: %d", errorCode, seq);
         }
 
         mRlytControlHeader.bringToFront();
@@ -348,13 +365,6 @@ public class MixStreamPublishActivity extends BasePublishActivity {
         // 混流模式
         mPublishFlag = ZegoConstants.PublishFlag.MixStream;
         mMixStreamID = "mix-" + mPublishStreamID;
-
-        // 混流配置
-        final Map<String, Object> mixStreamConfig = new HashMap<>();
-        mixStreamConfig.put(ZegoConstants.StreamKey.MIX_STREAM_ID, mMixStreamID);
-        mixStreamConfig.put(ZegoConstants.StreamKey.MIX_STREAM_WIDTH, ZegoApiManager.getInstance().getZegoAvConfig().getVideoCaptureResolutionWidth());
-        mixStreamConfig.put(ZegoConstants.StreamKey.MIX_STREAM_HEIGHT, ZegoApiManager.getInstance().getZegoAvConfig().getVideoCaptureResolutionHeight());
-        mZegoLiveRoom.setMixStreamConfig(mixStreamConfig);
     }
 
     @Override

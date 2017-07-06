@@ -3,12 +3,12 @@
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-    >
+            android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/dimen_5"
         android:background="@color/bg_white"
         android:gravity="center_horizontal"
         android:orientation="vertical">
@@ -17,7 +17,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_35"
-            android:layout_marginLeft="@dimen/dimen_5"
             android:layout_marginTop="@dimen/dimen_10"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -41,7 +40,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_45"
-            android:layout_marginLeft="@dimen/dimen_5"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -64,7 +62,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_45"
-            android:layout_marginLeft="@dimen/dimen_5"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -88,7 +85,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_50"
-            android:layout_marginLeft="@dimen/dimen_5"
             android:layout_marginTop="@dimen/dimen_10"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -104,7 +100,7 @@
                 android:id="@+id/sp_resolutions"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dimen_50"
-                android:layout_marginLeft="@dimen/dimen_10"
+                android:layout_marginLeft="@dimen/dimen_20"
                 android:entries="@array/resolution_types">
 
             </Spinner>
@@ -112,10 +108,8 @@
 
 
         <LinearLayout
-
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_50"
-            android:layout_marginLeft="@dimen/dimen_5"
             android:layout_marginTop="@dimen/dimen_15"
             android:gravity="center_vertical"
             android:orientation="vertical">
@@ -137,7 +131,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_50"
-            android:layout_marginLeft="@dimen/dimen_5"
             android:layout_marginTop="@dimen/dimen_10"
             android:gravity="center_vertical"
             android:orientation="vertical">
@@ -159,7 +152,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_50"
-            android:layout_marginLeft="@dimen/dimen_5"
             android:layout_marginTop="@dimen/dimen_10"
             android:gravity="center_vertical"
             android:orientation="vertical">
@@ -249,7 +241,6 @@
             android:id="@+id/llyt_hide_operation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_5"
             android:orientation="vertical">
 
             <LinearLayout
@@ -261,8 +252,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dimen_5"
-
                     android:text="@string/test_env"
                     android:textColor="@color/text_black"
                     android:textSize="@dimen/text_size_4"/>
@@ -277,31 +266,22 @@
                     />
             </LinearLayout>
 
-
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen_45"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
+                android:layout_height="@dimen/dimen_45">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dimen_5"
-
-                    android:text="@string/appid"
+                    android:text="@string/app_flavor"
                     android:textColor="@color/text_black"
                     android:textSize="@dimen/text_size_4"/>
 
-                <EditText
-                    android:id="@+id/et_appid"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="@dimen/dimen_10"
-                    android:inputType="number"
-                    android:textColor="@color/text_gray"
-                    android:textSize="@dimen/text_size_3"
-                    />
+                <Spinner
+                    android:id="@+id/sp_app_flavor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dimen_45"
+                    android:layout_marginLeft="@dimen/dimen_20"
+                    android:entries="@array/app_flavors" />
             </LinearLayout>
 
             <LinearLayout
@@ -311,9 +291,33 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/dimen_60"
                     android:layout_height="wrap_content"
+                    android:text="@string/appid"
+                    android:textColor="@color/text_black"
+                    android:textSize="@dimen/text_size_4"/>
+
+                <EditText
+                    android:id="@+id/et_appid"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_marginLeft="@dimen/dimen_5"
+                    android:inputType="number"
+                    android:textColor="@color/text_gray"
+                    android:textSize="@dimen/text_size_3"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_app_key"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_45"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/dimen_60"
+                    android:layout_height="wrap_content"
                     android:text="@string/appkey"
                     android:textColor="@color/text_black"
                     android:textSize="@dimen/text_size_4"/>
@@ -322,7 +326,7 @@
                     android:id="@+id/et_appkey"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="@dimen/dimen_10"
+                    android:layout_marginLeft="@dimen/dimen_5"
                     android:inputType="text"
                     android:textColor="@color/text_gray"
                     android:textSize="@dimen/text_size_3"
@@ -338,7 +342,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dimen_5"
                     android:text="@string/external_capture"
                     android:textColor="@color/text_black"
                     android:textSize="@dimen/text_size_4"/>
@@ -362,7 +365,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dimen_5"
                     android:text="@string/external_render"
                     android:textColor="@color/text_black"
                     android:textSize="@dimen/text_size_4"/>
@@ -386,7 +388,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dimen_5"
                     android:text="@string/external_filter"
                     android:textColor="@color/text_black"
                     android:textSize="@dimen/text_size_4"/>
@@ -410,7 +411,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dimen_5"
                     android:text="@string/hardware_encode"
                     android:textColor="@color/text_black"
                     android:textSize="@dimen/text_size_4"/>
@@ -434,7 +434,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dimen_5"
                     android:text="@string/hardware_decode"
                     android:textColor="@color/text_black"
                     android:textSize="@dimen/text_size_4"/>
@@ -458,7 +457,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dimen_5"
                     android:text="@string/rate_control"
                     android:textColor="@color/text_black"
                     android:textSize="@dimen/text_size_4"/>
@@ -483,7 +481,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dimen_5"
                 android:text="@string/preview_mirror"
                 android:textColor="@color/text_black"
                 android:textSize="@dimen/text_size_4"/>
@@ -507,7 +504,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dimen_5"
                 android:text="@string/capture_mirror"
                 android:textColor="@color/text_black"
                 android:textSize="@dimen/text_size_4"/>

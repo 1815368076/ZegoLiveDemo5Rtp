@@ -53,29 +53,6 @@ android {
         main {
             jniLibs.srcDirs = ['libs', 'bizlibs', 'zegovideofilterlibs']
         }
-
-        udp {
-            res.srcDirs = ["udp/res"]
-        }
-        international {
-            res.srcDirs = ["international/res"]
-        }
-    }
-
-    productFlavors {
-        international {
-            buildConfigField "long", "APP_ID", "3322882036L"
-            applicationIdSuffix ".international"
-            versionNameSuffix "-international"
-        }
-        udp {
-            buildConfigField "long", "APP_ID", "1739272706L"
-            applicationIdSuffix ".udp"
-            versionNameSuffix "-udp"
-        }
-        rtmp {
-            buildConfigField "long", "APP_ID", "1L"
-        }
     }
 }
 

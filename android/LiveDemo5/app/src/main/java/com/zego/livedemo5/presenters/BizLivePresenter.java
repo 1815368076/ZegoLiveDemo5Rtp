@@ -1,26 +1,17 @@
 package com.zego.livedemo5.presenters;
 
 
-import android.content.Context;
-import android.os.Handler;
-import android.text.TextUtils;
-import android.util.Log;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
-import com.google.gson.reflect.TypeToken;
 import com.zego.livedemo5.ZegoApiManager;
+import com.zego.livedemo5.ZegoAppHelper;
 import com.zego.livedemo5.ZegoApplication;
 import com.zego.livedemo5.interfaces.OnUpdateRoomListListener;
-import com.zego.livedemo5.utils.PreferenceUtil;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -76,13 +67,13 @@ public class BizLivePresenter {
                 RequestQueue mQueue = Volley.newRequestQueue(ZegoApplication.sApplicationContext);
                 long appID = ZegoApiManager.getInstance().getAppID();
                 // 区分国内环境与国际环境
-                String domain = ZegoApiManager.getInstance().isInternationalProduct(appID) ? "zegocloud.com" : "zego.im";
+                String domain = ZegoAppHelper.isInternationalProduct(appID) ? "zegocloud.com" : "zego.im";
                 String url = String.format("https://liveroom%d-api.%s/demo/roomlist?appid=%s", appID, domain, appID);
 
                 //  测试环境, 使用不同的url获取房间列表
                 if(ZegoApiManager.getInstance().isUseTestEvn()){
                     String testBase = "https://test2-liveroom-api.zego.im";
-                    if(ZegoApiManager.getInstance().isInternationalProduct(appID)){
+                    if(ZegoAppHelper.isInternationalProduct(appID)){
                         testBase = "https://test2-liveroom-api.zegocloud.com";
                     }
                     url = String.format("%s/demo/roomlist?appid=%s", testBase, appID);
