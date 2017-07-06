@@ -15,7 +15,8 @@ typedef enum {
     ZegoAVConfigPreset_Low      = 1,    /**< 低质量 */
     ZegoAVConfigPreset_Generic  = 2,    /**< 标准质量 */
     ZegoAVConfigPreset_High     = 3,    /**< 高质量，手机端直播建议使用High配置，效果最优 */
-    ZegoAVConfigPreset_Veryhigh = 4     /**< 超高质量 */
+    ZegoAVConfigPreset_Veryhigh = 4,    /**< 超高质量 */
+    ZegoAVConfigPreset_Superhigh = 5    /**< 极高质量 */
 } ZegoAVConfigPreset;
 
 /** 视频帧率 */
@@ -25,17 +26,17 @@ typedef enum {
     ZegoAVConfigVideoFps_Generic    = 15,   /**< 标准质量下的视频帧率 */
     ZegoAVConfigVideoFps_High       = 20,   /**< 高质量下的视频帧率 */
     ZegoAVConfigVideoFps_Veryhigh   = 25,   /**< 超高质量下的视频帧率 */
-    ZegoAVConfigVideoFps_Superhigh  = 30    /**< 超级高质量下的视频帧率 */
+    ZegoAVConfigVideoFps_Superhigh  = 30    /**< 极高质量下的视频帧率 */
 } ZegoAVConfigVideoFps;
 
 /** 视频码率 */
 typedef enum {
-    ZegoAVConfigVideoBitrate_Verylow    = 250*1000,  /**< 超低质量下的视频码率 */
-    ZegoAVConfigVideoBitrate_Low        = 300*1000,  /**< 低质量下的视频码率 */
-    ZegoAVConfigVideoBitrate_Generic    = 480*1000,  /**< 标准质量下的视频码率 */
-    ZegoAVConfigVideoBitrate_High       = 600*1000,  /**< 高质量下的视频码率 */
-    ZegoAVConfigVideoBitrate_Veryhigh   = 800*1000,  /**< 超高质量下的视频码率 */
-    ZegoAVConfigVideoBitrate_Superhigh  = 1000*1000  /**< 超级高质量下的视频码率 */
+    ZegoAVConfigVideoBitrate_Verylow    = 300*1000,  /**< 超低质量下的视频码率 */
+    ZegoAVConfigVideoBitrate_Low        = 400*1000,  /**< 低质量下的视频码率 */
+    ZegoAVConfigVideoBitrate_Generic    = 600*1000,  /**< 标准质量下的视频码率 */
+    ZegoAVConfigVideoBitrate_High       = 1200*1000, /**< 高质量下的视频码率 */
+    ZegoAVConfigVideoBitrate_Veryhigh   = 1500*1000, /**< 超高质量下的视频码率 */
+    ZegoAVConfigVideoBitrate_Superhigh  = 3000*1000  /**< 极高质量下的视频码率 */
 } ZegoAVConfigVideoBitrate;
 
 

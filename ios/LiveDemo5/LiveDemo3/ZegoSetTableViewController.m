@@ -88,27 +88,27 @@
 }
 
 - (IBAction)sliderDidChange:(id)sender {
+    // 手动变更slider数值后，presetPicker自动切换到自定义模式
     [self.presetPicker selectRow:[ZegoSettings sharedInstance].presetVideoQualityList.count - 1 inComponent:0 animated:YES];
     
     ZegoAVConfig *config = [ZegoSettings sharedInstance].currentConfig;
     
     if (sender == self.videoResolutionSlider) {
-        
         int v = (int)self.videoResolutionSlider.value;
         CGSize resolution = CGSizeMake(360, 640);
         switch (v)
         {
             case 0:
-                resolution = CGSizeMake(240, 320);
+                resolution = CGSizeMake(180, 320);
                 break;
             case 1:
-                resolution = CGSizeMake(288, 352);
+                resolution = CGSizeMake(270, 480);
                 break;
             case 2:
                 resolution = CGSizeMake(360, 640);
                 break;
             case 3:
-                resolution = CGSizeMake(480, 640);
+                resolution = CGSizeMake(540, 960);
                 break;
             case 4:
                 resolution = CGSizeMake(720, 1280);
@@ -122,7 +122,6 @@
         }
         config.videoEncodeResolution = resolution;
         config.videoCaptureResolution = resolution;
-        
     } else if (sender == self.videoFrameRateSlider) {
         int v = (int)self.videoFrameRateSlider.value;
         config.fps = v;
@@ -347,15 +346,15 @@
         case 320:
             self.videoResolutionSlider.value = 0;
             break;
-        case 352:
+        case 480:
+        case 352:   // 兼容老版本 288x352
             self.videoResolutionSlider.value = 1;
             break;
         case 640:
-            if (r.width == 360) {
-                self.videoResolutionSlider.value = 2;
-            } else {
-                self.videoResolutionSlider.value = 3;
-            }
+            self.videoResolutionSlider.value = 2;
+            break;
+        case 960:
+            self.videoResolutionSlider.value = 3;
             break;
         case 1280:
             self.videoResolutionSlider.value = 4;

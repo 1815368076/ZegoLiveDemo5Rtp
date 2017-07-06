@@ -85,7 +85,8 @@
 "低质量" = "Low";
 "标准质量" = "Standard";
 "高质量" = "High";
-"超高质量" = "Highest";
+"超高质量" = "VeryHigh";
+"极高质量" = "SuperHigh";
 "自定义" = "Customize";
 
 "加载中" = "Loading...";
