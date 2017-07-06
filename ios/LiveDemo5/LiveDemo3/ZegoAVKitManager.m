@@ -19,6 +19,9 @@ uint32_t g_appID = 0;
 BOOL g_useTestEnv = NO;
 BOOL g_useAlphaEnv = NO;
 
+// Demo 默认版本为 UDP
+ZegoAppType g_appType = ZegoAppTypeUDP;
+
 #if TARGET_OS_SIMULATOR
 BOOL g_useHardwareEncode = NO;
 BOOL g_useHardwareDecode = NO;
@@ -32,18 +35,11 @@ BOOL g_enableVideoRateControl = NO;
 BOOL g_useExternalCaptrue = NO;
 BOOL g_useExternalRender = NO;
 
-
 BOOL g_enableReverb = NO;
 
-#ifdef ZEGO_TEST_RTP_INTEL
-BOOL g_recordTime = YES;
-BOOL g_useInternationDomain = YES;
-BOOL g_useExternalFilter = YES;
-#else
 BOOL g_recordTime = NO;
 BOOL g_useInternationDomain = NO;
 BOOL g_useExternalFilter = NO;
-#endif
 
 BOOL g_useHeadSet = NO;
 
@@ -56,38 +52,47 @@ static __strong id<ZegoVideoFilterFactory> g_filterFactory = nullptr;
 @interface ZegoDemoHelper ()
 
 + (void)setupVideoCaptureDevice;
-+ (NSData *)zegoAppSignFromServer;
 
 @end
-
 
 @implementation ZegoDemoHelper
 
 + (ZegoLiveRoomApi *)api
 {
     if (g_ZegoApi == nil) {
+        
+        // 国际版，要开启计数、切换国际域名、开启外部滤镜
+        if (g_appType == ZegoAppTypeI18N) {
+            g_useInternationDomain = YES;
+        } else {
+            g_useInternationDomain = NO;
+        }
+        
         [ZegoLiveRoomApi setUseTestEnv:g_useTestEnv];
         [ZegoLiveRoomApi enableExternalRender:[self usingExternalRender]];
         
 #ifdef DEBUG
         [ZegoLiveRoomApi setVerbose:YES];
 #endif
-        
+    
         [self setupVideoCaptureDevice];
         [self setupVideoFilter];
-    
-        [ZegoLiveRoomApi setUserID:[ZegoSettings sharedInstance].userID userName:[ZegoSettings sharedInstance].userName];
-
-        NSData * appSign = [self zegoAppSignFromServer];
-        g_ZegoApi = [[ZegoLiveRoomApi alloc] initWithAppID:[self appID] appSignature:appSign];
         
+        [ZegoLiveRoomApi setUserID:[ZegoSettings sharedInstance].userID userName:[ZegoSettings sharedInstance].userName];
+        
+        if ([self appID] > 0) {    // 手动输入为空的情况下容错
+            NSData * appSign = [self zegoAppSignFromServer];
+            if (appSign) {
+                g_ZegoApi = [[ZegoLiveRoomApi alloc] initWithAppID:[self appID] appSignature:appSign];
+            }
+        }
+
         [ZegoLiveRoomApi requireHardwareDecoder:g_useHardwareDecode];
         [ZegoLiveRoomApi requireHardwareEncoder:g_useHardwareEncode];
         
-#if defined(ZEGO_TEST_RTP3) || defined(ZEGO_TEST_RTP_INTEL)
-        [g_ZegoApi enableTrafficControl:YES properties:ZEGOAPI_TRAFFIC_FPS | ZEGOAPI_TRAFFIC_RESOLUTION];
-#endif
-        
+        if (g_appType == ZegoAppTypeUDP || g_appType == ZegoAppTypeI18N) {
+            [g_ZegoApi enableTrafficControl:YES properties:ZEGOAPI_TRAFFIC_FPS | ZEGOAPI_TRAFFIC_RESOLUTION];
+        }
     }
     
     return g_ZegoApi;
@@ -382,6 +387,24 @@ void prep2_func(const AVE::AudioFrame& inFrame, AVE::AudioFrame& outFrame)
     return g_useInternationDomain;
 }
 
++ (void)setAppType:(ZegoAppType)type {
+    if (g_appType == type)
+        return;
+    
+    g_appType = type;
+    
+    [self releaseApi];
+    
+    // 临时兼容 SDK 的 Bug，立即初始化 api 对象
+    if ([self api] == nil) {
+        [self api];
+    }
+}
+
++ (ZegoAppType)appType {
+    return g_appType;
+}
+
 #pragma mark - private
 
 + (void)setupVideoCaptureDevice
@@ -424,44 +447,43 @@ void prep2_func(const AVE::AudioFrame& inFrame, AVE::AudioFrame& outFrame)
 
 + (uint32_t)appID
 {
-    if (g_appID != 0)
-    {
-        return g_appID;
-    }
-    else
-    {
-        
-#ifdef ZEGO_TEST_RTP3
-#warning "ZEGO_TEST_RTP3"
-        return 1739272706;  // * rtp
-#endif
-        
-#ifdef ZEGO_TEST_RTP_INTEL
-#warning "ZEGO_TEST_INTERNATIONAL"
-        return 3322882036;
-#endif
-        
-#warning "ZEGO_DEMO"
-        return 1;           // * demo
+    switch (g_appType) {
+        case ZegoAppTypeCustom:
+            if (g_appID != 0) {
+                return g_appID;
+            } else {
+                return 0;
+            }
+            break;
+        case ZegoAppTypeRTMP:
+            return 1;           // RTMP版
+            break;
+        case ZegoAppTypeUDP:
+            return 1739272706;  // UDP版
+            break;
+        case ZegoAppTypeI18N:
+            return 3322882036;  // 国际版
+            break;
     }
 }
 
+
 + (NSData *)zegoAppSignFromServer
 {
-    //!! Demo 把signKey先写到代码中
-    //!! 规范用法：这个signKey需要从server下发到App，避免在App中存储，防止盗用
+    //!! Demo 暂时把 signKey 硬编码到代码中，该用法不规范
+    //!! 规范用法：signKey 需要从 server 下发到 App，避免在 App 中存储，防止盗用
 
-    if ([self appID] == 1)
+    if (g_appType == ZegoAppTypeRTMP)
     {
         Byte signkey[] = {0x91, 0x93, 0xcc, 0x66, 0x2a, 0x1c, 0x0e, 0xc1, 0x35, 0xec, 0x71, 0xfb, 0x07, 0x19, 0x4b, 0x38, 0x41, 0xd4, 0xad, 0x83, 0x78, 0xf2, 0x59, 0x90, 0xe0, 0xa4, 0x0c, 0x7f, 0xf4, 0x28, 0x41, 0xf7};
         return [NSData dataWithBytes:signkey length:32];
     }
-    else if ([self appID] == 1739272706)
+    else if (g_appType == ZegoAppTypeUDP)
     {
         Byte signkey[] = {0x1e,0xc3,0xf8,0x5c,0xb2,0xf2,0x13,0x70,0x26,0x4e,0xb3,0x71,0xc8,0xc6,0x5c,0xa3,0x7f,0xa3,0x3b,0x9d,0xef,0xef,0x2a,0x85,0xe0,0xc8,0x99,0xae,0x82,0xc0,0xf6,0xf8};
         return [NSData dataWithBytes:signkey length:32];
     }
-    else if ([self appID] == 3322882036)
+    else if (g_appType == ZegoAppTypeI18N)
     {
         Byte signkey[] = {0x5d,0xe6,0x83,0xac,0xa4,0xe5,0xad,0x43,0xe5,0xea,0xe3,0x70,0x6b,0xe0,0x77,0xa4,0x18,0x79,0x38,0x31,0x2e,0xcc,0x17,0x19,0x32,0xd2,0xfe,0x22,0x5b,0x6b,0x2b,0x2f};
         return [NSData dataWithBytes:signkey length:32];

@@ -24,7 +24,7 @@ NSString *kZegoDemoVideoWitdhKey        = @"resolution-width";
 NSString *kZegoDemoVideoHeightKey       = @"resolution-height";
 NSString *kZegoDemoVideoFrameRateKey    = @"framerate";
 NSString *kZegoDemoVideoBitRateKey      = @"bitrate";
-NSString *kZeogDemoBeautifyFeatureKey = @"beautify_feature";
+NSString *kZeogDemoBeautifyFeatureKey   = @"beautify_feature";
 
 NSString *kZegoDemoWolfResolutionKey    = @"wolfResolution";
 NSString *kZegoDemoWolfModeKey          = @"wolfMode";
@@ -58,6 +58,11 @@ NSString *kZegoDemoWolfLowDelayKey      = @"wolfLowDelay";
                                     NSLocalizedString(@"超高质量", nil),
                                     NSLocalizedString(@"自定义", nil)];
         
+        _appTypeList = @[NSLocalizedString(@"自定义", nil),
+                         NSLocalizedString(@"RTMP版", nil),
+                         NSLocalizedString(@"UDP版", nil),
+                         NSLocalizedString(@"国际版", nil)];
+        
         [self loadConfig];
     }
     
@@ -72,7 +77,6 @@ NSString *kZegoDemoWolfLowDelayKey      = @"wolfLowDelay";
     
     return user;
 }
-
 
 - (NSString *)userID {
     if (_userID.length == 0) {
@@ -132,7 +136,6 @@ NSString *kZegoDemoWolfLowDelayKey      = @"wolfLowDelay";
     return _userName;
 }
 
-
 - (void)setUserName:(NSString *)userName {
     if ([_userName isEqualToString:userName]) {
         return;
@@ -161,14 +164,12 @@ NSString *kZegoDemoWolfLowDelayKey      = @"wolfLowDelay";
     return YES;
 }
 
-
 - (void)setCurrentConfig:(ZegoAVConfig *)currentConfig {
     _presetIndex = self.presetVideoQualityList.count - 1;
     _currentConfig = currentConfig;
     
     [self saveConfig];
 }
-
 
 - (CGSize)currentResolution {
     return [self.currentConfig videoEncodeResolution];
@@ -320,6 +321,7 @@ NSString *kZegoDemoWolfLowDelayKey      = @"wolfLowDelay";
         {
             ZegoAudienceViewController *audienceViewController = (ZegoAudienceViewController *)[storyboard instantiateViewControllerWithIdentifier:@"audienceID"];
             audienceViewController.roomID = roomID;
+            audienceViewController.streamIdList = [roomInfo.streamInfo copy];
             return audienceViewController;
         }
     }
@@ -327,12 +329,14 @@ NSString *kZegoDemoWolfLowDelayKey      = @"wolfLowDelay";
     {
         ZegoMoreAudienceViewController *audienceViewController = (ZegoMoreAudienceViewController *)[storyboard instantiateViewControllerWithIdentifier:@"moreAudienceID"];
         audienceViewController.roomID = roomID;
+        audienceViewController.streamIdList = [roomInfo.streamInfo copy];
         return audienceViewController;
     }
     else if (liveType == 3)
     {
         ZegoMixStreamAudienceViewController *audienceViewController = (ZegoMixStreamAudienceViewController *)[storyboard instantiateViewControllerWithIdentifier:@"mixStreamAudienceID"];
         audienceViewController.roomID = roomID;
+        audienceViewController.streamIdList = [roomInfo.streamInfo copy];
         return audienceViewController;
     }
     else if (liveType == 5)

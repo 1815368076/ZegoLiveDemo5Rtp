@@ -50,6 +50,9 @@
 //支持的最大流数量
 @property (nonatomic, assign, readonly) NSUInteger maxStreamCount;
 
+// getRoomList 时获取到的 streamId
+@property (nonatomic, copy) NSArray *streamIdList;
+
 // 设置主播配置
 - (void)setAnchorConfig:(UIView *)publishView;
 

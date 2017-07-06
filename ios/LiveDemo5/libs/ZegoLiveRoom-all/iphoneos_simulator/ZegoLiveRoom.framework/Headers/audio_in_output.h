@@ -39,7 +39,7 @@ namespace AVE
     {
         int frameType;              //refer to enum FrameType
         int samples;                //PCM:capture pcm samples at this input.  AAC:aac encode one frame need samples
-        int bytesPerSample;         //bytes per sample, only support 2 bytes per sample.
+        int bytesPerSample;         //bytes per sample = 2 * channels, current bit depth only support 16bit(2 bytes).
         int channels;               //channels, 1 or 2.
         int sampleRate;             //PCM: capture sample rate; AAC: encode sample rate. supported [16k/32k/44.1k/48k]
 		double timeStamp;			//time stamp, PCM: 0; AAC: 0 or encode timeStamp, if buffer data only contain special config fill 0.

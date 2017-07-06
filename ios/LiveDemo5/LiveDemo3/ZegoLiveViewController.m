@@ -41,6 +41,8 @@
 @property (nonatomic, assign) NSUInteger subViewHeight;
 @property (nonatomic, assign) NSUInteger subViewPerRow;
 
+@property (nonatomic, strong) NSMutableArray<ZegoStream *> *originStreamList;   // 直播秒开流列表
+
 @end
 
 @implementation ZegoLiveViewController

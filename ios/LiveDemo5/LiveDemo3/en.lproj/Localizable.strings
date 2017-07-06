@@ -158,3 +158,14 @@
 
 "正在说话" = "Talking";
 
+"自定义" = "Custom";
+"RTMP版" = "RTMP";
+"UDP版" = "UDP";
+"国际版" = "internationalization";
+"请重新输入！" = "Please Input Again!";
+"该字段不可为空" = "Input Should Not Be Empty";
+"请输入 AppID" = "Input AppID";
+"请输入 AppSign" = "Input AppSign";
+"AppSign 已设置" = "AppSign's Been Configured";
+"Demo已添加，无需设置" = "AppSign's Been Configured";
+

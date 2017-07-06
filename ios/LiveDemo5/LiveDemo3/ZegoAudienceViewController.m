@@ -25,6 +25,7 @@
 @property (nonatomic, weak) UIButton *sharedButton;
 
 @property (nonatomic, strong) NSMutableArray<ZegoStream *> *streamList;
+@property (nonatomic, strong) NSMutableArray<ZegoStream *> *originStreamList;   // 直播秒开流列表
 
 @property (nonatomic, assign) BOOL loginRoomSuccess;
 
@@ -66,6 +67,7 @@
     _viewContainersDict = [[NSMutableDictionary alloc] initWithCapacity:self.maxStreamCount];
     _videoSizeDict = [[NSMutableDictionary alloc] initWithCapacity:self.maxStreamCount];
     _streamID2SizeDict = [[NSMutableDictionary alloc] initWithCapacity:self.maxStreamCount];
+    _originStreamList = [[NSMutableArray alloc] initWithCapacity:self.maxStreamCount];
     
     [self setupLiveKit];
     [self loginRoom];
@@ -80,6 +82,8 @@
     self.sharedButton.enabled = NO;
     
     self.fullscreenButton.hidden = YES;
+    
+    [self playStreamEnteringRoom];
     
     if ([ZegoDemoHelper recordTime])
     {
@@ -142,8 +146,52 @@
                 }
             }
             
-            if (streamList.count != 0)
-                [self onStreamUpdateForAdd:streamList];
+//            if (streamList.count != 0)
+//                [self onStreamUpdateForAdd:streamList];
+            
+            // 更新流播放列表，包括新增流、删除流
+            NSMutableArray *newStreamList = [streamList mutableCopy];
+            for (int i = (int)newStreamList.count - 1; i >= 0; i--) {
+                for (int j = (int)self.originStreamList.count - 1; j >= 0; j--) {
+                    ZegoStream *new = newStreamList[i];
+                    ZegoStream *old = self.originStreamList[j];
+                    if ([new.streamID isEqualToString:old.streamID]) {
+                        [newStreamList removeObject:new];
+                        break;
+                    }
+                }
+            }
+            if (newStreamList.count) {
+                for (ZegoStream *stream in newStreamList) {
+                    NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录成功后新增流. 流ID: %@", nil), stream.streamID];
+                    [self addLogString:logString];
+                }
+                [self onStreamUpdateForAdd:newStreamList];
+            } else {
+                NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录成功后没有新增的流", nil)];
+                [self addLogString:logString];
+            }
+            
+            for (int i = (int)self.originStreamList.count - 1; i >= 0; i--) {
+                for (int j = (int)streamList.count - 1; j >= 0; j--) {
+                    ZegoStream *new = streamList[j];
+                    ZegoStream *old = self.originStreamList[i];
+                    if ([new.streamID isEqualToString:old.streamID]) {
+                        [self.originStreamList removeObject:old];
+                        break;
+                    }
+                }
+            }
+            if (self.originStreamList.count) {
+                for (ZegoStream *stream in self.originStreamList) {
+                    NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录成功后删除流. 流ID: %@", nil), stream.streamID];
+                    [self addLogString:logString];
+                }
+                [self onStreamUpdateForDelete:self.originStreamList];
+            } else {
+                NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录成功后没有删除的流", nil)];
+                [self addLogString:logString];
+            }
         }
         else
         {
@@ -151,12 +199,26 @@
             [self addLogString:logString];
             
             self.loginRoomSuccess = NO;
+            
+            [self onStreamUpdateForDelete:self.originStreamList];
             [self showNoLivesAlert];
         }
     }];
     
     NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"开始登录房间", nil)];
     [self addLogString:logString];
+}
+
+// 秒开播
+- (void)playStreamEnteringRoom {
+    for (NSString *streamId in self.streamIdList) {
+        ZegoStream *stream = [[ZegoStream alloc] init];
+        stream.streamID = streamId;
+        NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"直播观看秒开. 流ID: %@", nil), stream.streamID];
+        [self addLogString:logString];
+        [self.originStreamList addObject:stream];
+    }
+    [self onStreamUpdateForAdd:self.originStreamList];
 }
 
 #pragma mark - ZegoRoomDelegate

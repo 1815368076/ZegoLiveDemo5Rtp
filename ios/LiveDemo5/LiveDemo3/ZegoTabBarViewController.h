@@ -10,4 +10,6 @@
 
 @interface ZegoTabBarViewController : UITabBarController
 
+- (void)setViewControllersTitle:(NSString *)title;
+
 @end

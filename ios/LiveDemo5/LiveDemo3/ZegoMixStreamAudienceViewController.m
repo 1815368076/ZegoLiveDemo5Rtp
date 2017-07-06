@@ -25,6 +25,7 @@
 @property (nonatomic, weak) UIButton *sharedButton;
 
 @property (nonatomic, strong) NSMutableArray<ZegoStream *> *streamList; // 单流信息列表
+@property (nonatomic, strong) NSMutableArray<ZegoStream *> *originStreamList;   // 直播秒开流列表
 
 @property (nonatomic, assign) BOOL loginRoomSuccess;
 
@@ -79,6 +80,7 @@
     _videoSizeDict = [[NSMutableDictionary alloc] initWithCapacity:self.maxStreamCount];
     _streamID2SizeDict = [[NSMutableDictionary alloc] initWithCapacity:self.maxStreamCount];
     _mixStreamList = [[NSMutableArray alloc] initWithCapacity:self.maxStreamCount];
+    _originStreamList = [[NSMutableArray alloc] initWithCapacity:self.maxStreamCount];
     
     [self setupLiveKit];
     [self loginRoom];
@@ -92,6 +94,8 @@
     self.optionButton.enabled = NO;
     self.sharedButton.enabled = NO;
     self.fullscreenButton.hidden = YES;
+    
+    [self playStreamEnteringRoom];
     
     if ([ZegoDemoHelper recordTime])
     {
@@ -526,6 +530,10 @@
             [self addLogString:logString];
             
             self.loginRoomSuccess = YES;
+            
+            // 停止播放秒播中的单流，拉混流
+            [self onStreamUpdateForDelete:self.originStreamList];
+
             if (streamList.count != 0)
             {
                 [self playMixStream:streamList];
@@ -538,9 +546,23 @@
             [self addLogString:logString];
             
             self.loginRoomSuccess = NO;
+            
+            [self onStreamUpdateForDelete:self.originStreamList];
             [self showNoLivesAlert];
         }
     }];
+}
+
+// 秒开播
+- (void)playStreamEnteringRoom {
+    for (NSString *streamId in self.streamIdList) {
+        ZegoStream *stream = [[ZegoStream alloc] init];
+        stream.streamID = streamId;
+        NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"直播观看秒开. 流ID: %@", nil), stream.streamID];
+        [self addLogString:logString];
+        [self.originStreamList addObject:stream];
+    }
+    [self onStreamUpdateForAdd:self.originStreamList];
 }
 
 #pragma mark - ZegoRoomDelegate

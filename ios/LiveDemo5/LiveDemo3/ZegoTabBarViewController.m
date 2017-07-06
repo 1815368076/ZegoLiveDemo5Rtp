@@ -11,6 +11,7 @@
 #import "ZegoSettings.h"
 #import "ZegoPublishViewController.h"
 #import "ZegoRoomViewController.h"
+#import "ZegoAVKitManager.h"
 
 #import <TencentOpenAPI/QQApiInterface.h>
 #import <TencentOpenAPI/QQApiInterfaceObject.h>
@@ -25,6 +26,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self setBarButtonItemTitle];
+    
+    
+    NSString *title = [NSString stringWithFormat:@"ZEGO(%@)", [ZegoSettings sharedInstance].appTypeList[[ZegoDemoHelper appType]]];
+    [self setViewControllersTitle: NSLocalizedString(title, nil)];
     
     for (UIViewController *viewController in self.viewControllers)
     {
@@ -66,6 +71,11 @@
     [activityView startAnimating];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:activityView];
+}
+
+- (void)setViewControllersTitle:(NSString *)title
+{
+    self.navigationItem.title = title;
 }
 
 - (void)onRightBarButton:(id)sender

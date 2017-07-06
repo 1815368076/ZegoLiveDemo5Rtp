@@ -14,5 +14,6 @@
 @property (nonatomic, copy) NSString *anchorID;
 @property (nonatomic, copy) NSString *anchorName;
 @property (nonatomic, copy) NSString *roomName;
+@property (nonatomic, strong) NSMutableArray *streamInfo;   // stream_id 列表
 
 @end

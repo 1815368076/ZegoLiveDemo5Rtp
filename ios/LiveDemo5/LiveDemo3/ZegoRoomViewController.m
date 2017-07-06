@@ -127,6 +127,9 @@
             if ([self.delegate respondsToSelector:@selector(onRefreshRoomListFinished)])
                 [self.delegate onRefreshRoomListFinished];
             
+            
+            [self.roomList removeAllObjects];
+            
             if (error)
             {
                 NSLog(@"get live room error: %@", error);
@@ -170,6 +173,11 @@
                         info.anchorID = infoDict[@"anchor_id_name"];
                         info.anchorName = infoDict[@"anchor_nick_name"];
                         info.roomName = infoDict[@"room_name"];
+                        
+                        info.streamInfo = [[NSMutableArray alloc] initWithCapacity:1];
+                        for (NSDictionary *dict in infoDict[@"stream_info"]) {
+                            [info.streamInfo addObject:dict[@"stream_id"]];
+                        }
                         
                         [self.roomList addObject:info];
                     }

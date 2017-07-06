@@ -136,6 +136,7 @@ typedef enum : NSUInteger {
 typedef enum : NSUInteger {
     ZEGOAPI_LATENCY_MODE_NORMAL = 0,    ///< 普通延迟模式
     ZEGOAPI_LATENCY_MODE_LOW,           ///< 低延迟模式，*无法用于 RTMP 流*
+    ZEGOAPI_LATENCY_MODE_NORMAL2,       ///< 普通延迟模式，最高码率可达192K 
 } ZegoAPILatencyMode;
 
 typedef enum : NSUInteger {

@@ -20,6 +20,8 @@
 @property (nonatomic, copy) NSString *userID;
 @property (nonatomic, copy) NSString *userName;
 
+@property (nonatomic, readonly) NSArray *appTypeList;
+
 @property (readonly) NSArray *presetVideoQualityList;
 @property (nonatomic, strong) ZegoAVConfig *currentConfig;
 @property (readonly) NSInteger presetIndex;

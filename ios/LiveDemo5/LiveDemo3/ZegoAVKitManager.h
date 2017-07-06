@@ -21,10 +21,19 @@ typedef enum : NSUInteger {
     WerewolfInTurnRoom  = 5,
 } ZegoDemoRoomType;
 
+
+typedef enum : NSUInteger {
+    ZegoAppTypeCustom   = 0,    // 用户自定义
+    ZegoAppTypeRTMP     = 1,    // RTMP版
+    ZegoAppTypeUDP      = 2,    // UDP版
+    ZegoAppTypeI18N     = 3,    // 国际版
+} ZegoAppType;
+
 @interface ZegoDemoHelper : NSObject
 
 + (ZegoLiveRoomApi *)api;
 + (void)releaseApi;
++ (NSData *)zegoAppSignFromServer;
 
 + (void)setCustomAppID:(uint32_t)appid sign:(NSString *)sign;
 + (uint32_t)appID;
@@ -63,6 +72,10 @@ typedef enum : NSUInteger {
 
 + (void)setUsingInternationDomain:(bool)bUse;
 + (bool)usingInternationDomain;
+
++ (void)setAppType:(ZegoAppType)type;
++ (ZegoAppType)appType;
+
 
 #if TARGET_OS_SIMULATOR
 + (ZegoVideoCaptureFactory *)getVideoCaptureFactory;

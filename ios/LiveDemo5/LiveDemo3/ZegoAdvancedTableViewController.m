@@ -12,12 +12,6 @@
 
 @interface ZegoAdvancedTableViewController () <UITextFieldDelegate, UITextViewDelegate>
 
-@property (weak, nonatomic) IBOutlet UITextField *appID;
-@property (weak, nonatomic) IBOutlet UITextView *appSign;
-
-@property (weak, nonatomic) IBOutlet UISwitch *testEnvSwitch;
-@property (weak, nonatomic) IBOutlet UISwitch *internationalSwitch;
-
 @property (weak, nonatomic) IBOutlet UISwitch *captureSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *renderSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *filterSwitch;
@@ -38,16 +32,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self updateUIView];
-    
-    if ([ZegoDemoHelper appID] != 0) {
-        [self.appID setText:[NSString stringWithFormat:@"%u", [ZegoDemoHelper appID]]];
-    }
     
     UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onAlphaEnv:)];
     gesture.numberOfTapsRequired = 5;
@@ -72,21 +57,8 @@
     [super viewWillAppear:animated];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {    
-    if (self.appID.text.length > 0 && self.appSign.text.length > 0)
-    {
-        NSString *strAppID = self.appID.text;
-        NSUInteger appID = (NSUInteger)[strAppID longLongValue];
-        [ZegoDemoHelper setCustomAppID:(uint32_t)appID sign:self.appSign.text];
-    }
-    
-    [ZegoDemoHelper setUsingTestEnv:self.testEnvSwitch.on];
+- (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-}
-
-- (IBAction)toggleTestEnv:(id)sender {
-    UISwitch *s = (UISwitch *)sender;
-    [ZegoDemoHelper setUsingTestEnv:s.on];
 }
 
 - (IBAction)toggleCapture:(id)sender
@@ -148,8 +120,7 @@
 
 - (void)updateUIView
 {
-    self.testEnvSwitch.on = [ZegoDemoHelper usingTestEnv];
-    
+
 #if TARGET_OS_SIMULATOR
     self.captureSwitch.enabled = NO;
 #endif
@@ -165,22 +136,19 @@
     self.reverbSwitch.on = [ZegoDemoHelper reverbEnabled];
     
     self.timeSwitch.on = [ZegoDemoHelper recordTime];
-    
-    self.internationalSwitch.on = [ZegoDemoHelper usingInternationDomain];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    if (!self.appID.isEditing && ![self.appSign isFirstResponder])
-    {
-        [self.view endEditing:YES];
-    }
+    
 }
 
 - (void)onTapTableView:(UIGestureRecognizer *)gesture
 {
     [self.view endEditing:YES];
 }
+
+#pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
@@ -233,14 +201,5 @@
         self.tapGesture = nil;
     }
 }
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

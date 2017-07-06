@@ -44,6 +44,8 @@ ZEGO_EXTERN NSString *const kPublishCustomTarget;       /**< 自定义转推 RTM
 ZEGO_EXTERN NSString *const kZegoDeviceCameraName;      /**< 摄像头设备 */
 ZEGO_EXTERN NSString *const kZegoDeviceMicrophoneName;  /**< 麦克风设备 */
 
+ZEGO_EXTERN NSString *const kZegoConfigKeepAudioSesionActive;  /**< AudioSession相关配置信息的key, 值为 NSString */
+
 /** 成员角色 */
 typedef enum
 {

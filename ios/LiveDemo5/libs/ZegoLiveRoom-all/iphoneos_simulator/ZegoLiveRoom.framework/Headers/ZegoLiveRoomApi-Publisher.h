@@ -436,6 +436,7 @@
 
  @param enable 是否开启
  @return true 成功，false 失败
+ @note 默认关闭
  */
 - (bool)enableAGC:(bool)enable;
 

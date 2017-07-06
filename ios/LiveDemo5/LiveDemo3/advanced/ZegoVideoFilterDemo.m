@@ -10,6 +10,9 @@
 #import "ZegoLiveApi-utils.h"
 #import "ZegoAVKitManager.h"
 
+
+#pragma mark - ZegoVideoFilterDemo
+
 @interface ZegoVideoFilterDemo()
 @property (atomic) int pendingCount;
 
@@ -20,7 +23,7 @@
 @end
 
 @implementation ZegoVideoFilterDemo {
-    id<ZegoVideoFilterClient> client_;
+    id<ZegoVideoFilterClient> client_;      // SDK 创建的外部滤镜客户端，用于传递数据
     id<ZegoVideoBufferPool> buffer_pool_;
     
     dispatch_queue_t queue_;
@@ -34,6 +37,9 @@
     ZegoImageFilter* filter_;
 }
 
+#pragma mark -- ZegoVideoFilter Delgate
+
+// 初始化外部滤镜使用的资源
 - (void)zego_allocateAndStart:(id<ZegoVideoFilterClient>) client {
     client_ = client;
     if ([client_ conformsToProtocol:@protocol(ZegoVideoBufferPool)]) {
@@ -65,6 +71,7 @@
             [filter_ setCustomizedFilter:ZEGO_FILTER_CUSTOM_NONE];
             [filter_ enableBeautifying:ZEGO_FILTER_BEAUTIFY_POLISH | ZEGO_FILTER_BEAUTIFY_WHITEN];
             
+            // 展示计时器时，使用美颜
             [filter_ setPolishFactor:4.0];
             [filter_ setPolishStep:4.0];
             [filter_ setWhitenFactor:0.6];
@@ -75,6 +82,7 @@
 
 }
 
+// 停止并释放外部滤镜占用的资源
 - (void)zego_stopAndDeAllocate {
     dispatch_sync(queue_, ^ {
         [filter_ destroy];
@@ -96,6 +104,9 @@
     return ZegoVideoBufferTypeAsyncPixelBuffer;
 }
 
+#pragma mark -- ZegoVideoBufferPool Delegate
+
+// SDK 回调。从 App 获取 CVPixelBufferRef 对象，用于保存视频帧数据
 - (CVPixelBufferRef)dequeueInputBuffer:(int)width height:(int)height stride:(int)stride {
     // * 按需创建 CVPixelBufferPool
     if (width_ != width || height_ != height || stride_ != stride) {
@@ -129,6 +140,29 @@
     }
 }
 
+// SDK 回调。App 在此接口中获取 SDK 采集到的视频帧数据，并进行处理
+- (void)queueInputBuffer:(CVPixelBufferRef)pixel_buffer timestamp:(unsigned long long)timestamp_100n {
+    // * 采集到的图像数据通过这个传进来，这个点需要异步处理
+    dispatch_async(queue_, ^ {
+        // * 图像滤镜处理
+        if ([ZegoDemoHelper recordTime])
+        {
+            CVPixelBufferRef output = [filter_ render:pixel_buffer];
+            [self processRecordTime:output timestamp:timestamp_100n];
+        }
+        else
+        {
+            CVPixelBufferRef output = [filter_ render:pixel_buffer];
+            [self copyPixelBufferToPool:output timestamp:timestamp_100n];
+        }
+        
+        CVPixelBufferRelease(pixel_buffer);
+    });
+}
+
+#pragma mark -- Private method
+
+// App 处理采集到的视频帧数据。此处处理为：在原视频帧上添加倒计时水印
 - (void)processRecordTime:(CVPixelBufferRef)inputPixelBuffer timestamp:(unsigned long long)timestamp_100n
 {
     NSString *currentTime = [self.formatter stringFromDate:[NSDate date]];
@@ -145,6 +179,7 @@
 //    CIContext *context = [CIContext contextWithCGContext:UIGraphicsGetCurrentContext() options:nil];
     CIContext *context = [CIContext contextWithOptions:nil];
 
+    // 从 SDK 获取 CVPixelBufferRef 对象，用于存储 App 处理后的数据
     CVPixelBufferRef dst = [buffer_pool_ dequeueInputBuffer:imageWidth height:imageHeight stride:imageStride];
     if (dst)
     {
@@ -159,6 +194,7 @@
     
 }
 
+// App 将处理好的数据，传递回 SDK
 - (void)copyPixelBufferToPool:(CVPixelBufferRef)output timestamp:(unsigned long long)timestamp_100n
 {
     int imageWidth = 0;
@@ -184,26 +220,11 @@
     
     self.pendingCount = self.pendingCount - 1;
 }
-
-- (void)queueInputBuffer:(CVPixelBufferRef)pixel_buffer timestamp:(unsigned long long)timestamp_100n {
-    // * 采集到的图像数据通过这个传进来，这个点需要异步处理
-    dispatch_async(queue_, ^ {
-        // * 图像滤镜处理
-        if ([ZegoDemoHelper recordTime])
-        {
-            [self processRecordTime:pixel_buffer timestamp:timestamp_100n];
-        }
-        else
-        {
-            CVPixelBufferRef output = [filter_ render:pixel_buffer];
-            [self copyPixelBufferToPool:output timestamp:timestamp_100n];
-        }
-        
-        CVPixelBufferRelease(pixel_buffer);
-    });
-}
              
 @end
+
+
+#pragma mark - ZegoVideoFilterDemo2
 
 @implementation ZegoVideoFilterDemo2 {
     id<ZegoVideoFilterClient> client_;
@@ -243,6 +264,9 @@
 }
 
 @end
+
+
+#pragma mark - ZegoVideoFilterI420Demo
 
 @interface ZegoVideoFilterI420Demo()
 @property (atomic) int pendingCount;
@@ -436,6 +460,8 @@
 }
 
 @end
+
+#pragma mark - ZegoVideoFilterFactoryDemo
 
 @implementation ZegoVideoFilterFactoryDemo {
     id<ZegoVideoFilter> g_filter_;
