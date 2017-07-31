@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
-
 import com.zego.zegoliveroom.videofilter.ZegoVideoFilter;
 
 import java.nio.ByteBuffer;
@@ -162,6 +161,11 @@ public class VideoFilterMemDemo extends ZegoVideoFilter {
     @Override
     protected SurfaceTexture getSurfaceTexture() {
         return null;
+    }
+
+    @Override
+    protected void onProcessCallback(int textureId, int width, int height, long timestamp_100n) {
+
     }
 
     private void createPixelBufferPool(int count) {

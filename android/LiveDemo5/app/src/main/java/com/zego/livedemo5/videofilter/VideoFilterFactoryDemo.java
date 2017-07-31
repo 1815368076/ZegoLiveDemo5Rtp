@@ -23,7 +23,7 @@ public class VideoFilterFactoryDemo extends ZegoVideoFilterFactory {
                 mFilter = new VideoFilterHybridDemo();
                 break;
             case 3:
-                mFilter = new VideoFilterSurfaceTextureDemo2();
+                mFilter = new VideoFilterGlTexture2dDemo();
                 break;
             case 4:
                 mFilter = new VideoFilterSurfaceTextureDemo2();

@@ -90,4 +90,9 @@ public class VideoFilterSurfaceTextureDemo extends ZegoVideoFilter {
     protected SurfaceTexture getSurfaceTexture() {
         return mFilter.getInputSurfaceTexture();
     }
+
+    @Override
+    protected void onProcessCallback(int textureId, int width, int height, long timestamp_100n) {
+
+    }
 }

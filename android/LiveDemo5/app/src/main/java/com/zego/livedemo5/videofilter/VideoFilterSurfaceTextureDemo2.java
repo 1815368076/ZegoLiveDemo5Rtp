@@ -131,6 +131,9 @@ public class VideoFilterSurfaceTextureDemo2 extends ZegoVideoFilter implements S
                 return -1;
             }
 
+            mInputWidth = width;
+            mInputHeight = height;
+
             final SurfaceTexture surfaceTexture = mClient.getSurfaceTexture();
             final CountDownLatch barrier = new CountDownLatch(1);
             mHandler.post(new Runnable() {
@@ -162,6 +165,11 @@ public class VideoFilterSurfaceTextureDemo2 extends ZegoVideoFilter implements S
     @Override
     protected SurfaceTexture getSurfaceTexture() {
         return mInputSurfaceTexture;
+    }
+
+    @Override
+    protected void onProcessCallback(int textureId, int width, int height, long timestamp_100n) {
+
     }
 
     @Override

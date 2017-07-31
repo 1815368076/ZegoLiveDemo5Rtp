@@ -33,6 +33,7 @@ import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.entity.AuxData;
 import com.zego.zegoliveroom.entity.ZegoStreamQuality;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
+import com.zego.zegoliveroom.screencapture.ZegoScreenCaptureFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +61,8 @@ public  class GameLiveActivity extends AppCompatActivity {
     private MediaProjectionManager mMediaProjectionManager;
     private MediaProjection mMediaProjection;
     private List<String> mListUrls;
+
+    private ZegoScreenCaptureFactory mScreenCaptureFactory;
 
     public static void actionStart(Activity activity, String publishTitle, int appOrientation){
         Intent intent = new Intent(activity, GameLiveActivity.class);
@@ -125,7 +128,8 @@ public  class GameLiveActivity extends AppCompatActivity {
 
             ZegoApiManager.getInstance().releaseSDK();
             // 设置直播模式为"录屏模式"
-            mZegoLiveRoom.setLiveMode(ZegoLiveRoom.LIVE_MODE_SCREEN_CAPTURE);
+            mScreenCaptureFactory = new ZegoScreenCaptureFactory();
+            mZegoLiveRoom.setVideoCaptureFactory(mScreenCaptureFactory);
             ZegoApiManager.getInstance().initSDK();
 
             initCallback();
@@ -193,8 +197,12 @@ public  class GameLiveActivity extends AppCompatActivity {
     private void startCapture(){
         ZegoAvConfig zegoAvConfig = ZegoApiManager.getInstance().getZegoAvConfig();
         // 开始录屏
-        mZegoLiveRoom.startScreenCapture(mMediaProjection, zegoAvConfig.getVideoEncodeResolutionWidth(),
-                zegoAvConfig.getVideoEncodeResolutionHeight());
+        if (mScreenCaptureFactory != null) {
+            mScreenCaptureFactory.setMediaProjection(mMediaProjection);
+            mScreenCaptureFactory.setCaptureResolution(zegoAvConfig.getVideoEncodeResolutionWidth(),
+                    zegoAvConfig.getVideoEncodeResolutionHeight());
+            mZegoLiveRoom.setAudioDeviceMode(ZegoConstants.AudioDeviceMode.General);
+        }
 
         // 开启流量自动控制
         int properties = ZegoConstants.ZegoTrafficControlProperty.ZEGOAPI_TRAFFIC_FPS
@@ -212,7 +220,13 @@ public  class GameLiveActivity extends AppCompatActivity {
         Toast.makeText(GameLiveActivity.this, "停止推流", Toast.LENGTH_SHORT).show();
 
         // 停止录屏
-        mZegoLiveRoom.stopScreenCapture();
+        if (mScreenCaptureFactory != null) {
+            mScreenCaptureFactory.setMediaProjection(null);
+            mScreenCaptureFactory.setCaptureResolution(ZegoScreenCaptureFactory.DEFAULT_VIDEO_WIDTH,
+                    ZegoScreenCaptureFactory.DEFAULT_VIDEO_HEIGHT);
+            mZegoLiveRoom.setAudioDeviceMode(ZegoConstants.AudioDeviceMode.Communication);
+
+        }
         // 停止推流
         mZegoLiveRoom.stopPublishing();
     }
@@ -261,7 +275,8 @@ public  class GameLiveActivity extends AppCompatActivity {
 
                     ZegoApiManager.getInstance().releaseSDK();
                     // 设置直播模式为"摄像头模式"
-                    mZegoLiveRoom.setLiveMode(ZegoLiveRoom.LIVE_MODE_CAMERA);
+                    mZegoLiveRoom.setVideoCaptureFactory(null);
+                    mScreenCaptureFactory = null;
                     ZegoApiManager.getInstance().initSDK();
 
                     dialog.dismiss();

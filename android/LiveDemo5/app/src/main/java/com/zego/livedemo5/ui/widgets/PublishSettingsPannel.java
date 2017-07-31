@@ -31,6 +31,8 @@ public class PublishSettingsPannel extends LinearLayout {
 
     private ToggleButton mTbBackgroundMusic;
 
+    private ToggleButton mTbLoopback;
+
     private Spinner mSpBeauty;
 
     private Spinner mSpFilter;
@@ -112,6 +114,16 @@ public class PublishSettingsPannel extends LinearLayout {
             }
         });
 
+        mTbLoopback = (ToggleButton)mRootView.findViewById(R.id.tb_loopback);
+        mTbLoopback.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (mPublishSettingsCallback != null){
+                    mPublishSettingsCallback.onEnableLoopback(isChecked);
+                }
+            }
+        });
+
         mSpBeauty = (Spinner) mRootView.findViewById(R.id.sp_beauties);
         ArrayAdapter<String> beautyAdapter = new ArrayAdapter<>(context, R.layout.item_spinner, context.getResources().getStringArray(R.array.beauties));
         mSpBeauty.setAdapter(beautyAdapter);
@@ -152,7 +164,7 @@ public class PublishSettingsPannel extends LinearLayout {
     }
 
     public void initPublishSettings(boolean isEnableCamera, boolean isEnableFrontCam, boolean isEnableMic,
-                                    boolean isEnableTorch, boolean isEnableBackgroundMusic, int beauty, int filter){
+                                    boolean isEnableTorch, boolean isEnableBackgroundMusic, boolean isEnableLoopback, int beauty, int filter){
         if(isEnableFrontCam){
             mTbTorch.setEnabled(false);
         }
@@ -161,6 +173,7 @@ public class PublishSettingsPannel extends LinearLayout {
         mTbMic.setChecked(isEnableMic);
         mTbTorch.setChecked(isEnableTorch);
         mTbBackgroundMusic.setChecked(isEnableBackgroundMusic);
+        mTbLoopback.setChecked(isEnableLoopback);
         mSpBeauty.setSelection(beauty);
         mSpFilter.setSelection(filter);
     }
@@ -175,6 +188,7 @@ public class PublishSettingsPannel extends LinearLayout {
         void onEnableMic(boolean isEnable);
         void onEnableTorch(boolean isEnable);
         void onEnableBackgroundMusic(boolean isEnable);
+        void onEnableLoopback(boolean isEnable);
         void onSetBeauty(int beauty);
         void onSetFilter(int filter);
     }

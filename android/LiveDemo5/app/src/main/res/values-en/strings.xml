@@ -48,6 +48,7 @@
     <string name="camera">Camera</string>
     <string name="speaker">Speaker</string>
     <string name="background_music">Backgroud Music</string>
+    <string name="loopback">Loopback</string>
     <string name="mic">Microphone</string>
     <string name="flashlight">Flashlight</string>
     <string name="beauty">Beauty</string>

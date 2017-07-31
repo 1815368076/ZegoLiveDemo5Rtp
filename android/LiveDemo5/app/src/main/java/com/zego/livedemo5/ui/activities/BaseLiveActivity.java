@@ -107,6 +107,8 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
 
     protected boolean mEnableBackgroundMusic = false;
 
+    protected boolean mEnableLoopback = false;
+
     protected int mSelectedBeauty = 0;
 
     protected int mSelectedFilter = 0;
@@ -184,7 +186,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
     private void initSettingPannel() {
 
         mSettingsPannel = (PublishSettingsPannel) findViewById(R.id.publishSettingsPannel);
-        mSettingsPannel.initPublishSettings(mEnableCamera, mEnableFrontCam, mEnableMic, mEnableTorch, mEnableBackgroundMusic, mSelectedBeauty, mSelectedFilter);
+        mSettingsPannel.initPublishSettings(mEnableCamera, mEnableFrontCam, mEnableMic, mEnableTorch, mEnableBackgroundMusic, mEnableLoopback, mSelectedBeauty, mSelectedFilter);
         mSettingsPannel.setPublishSettingsCallback(new PublishSettingsPannel.PublishSettingsCallback() {
             @Override
             public void onEnableCamera(boolean isEnable) {
@@ -225,6 +227,12 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
                         mIsBackgroundMusic = null;
                     }
                 }
+            }
+
+            @Override
+            public void onEnableLoopback(boolean isEnable) {
+                mEnableLoopback = isEnable;
+                mZegoLiveRoom.enableLoopback(isEnable);
             }
 
             @Override
@@ -638,6 +646,9 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
     }
 
     protected void logout() {
+
+        mEnableLoopback = false;
+        mZegoLiveRoom.enableLoopback(false);
 
         if (mIsPublishing) {
             AlertDialog dialog = new AlertDialog.Builder(this).setMessage(getString(R.string.do_you_really_want_to_leave)).setTitle(getString(R.string.hint)).setPositiveButton(getString(R.string.Yes), new DialogInterface.OnClickListener() {
