@@ -52,8 +52,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.useFrontCamera = YES;
-    self.enableTorch = NO;
     self.beautifyFeature = [ZegoSettings sharedInstance].beautifyFeature;
     self.filter = ZEGO_FILTER_NONE;
     self.enableMicrophone = YES;

@@ -23,10 +23,10 @@ typedef enum : NSUInteger {
 
 
 typedef enum : NSUInteger {
-    ZegoAppTypeCustom   = 0,    // 用户自定义
+    ZegoAppTypeUDP      = 0,    // UDP版
     ZegoAppTypeRTMP     = 1,    // RTMP版
-    ZegoAppTypeUDP      = 2,    // UDP版
-    ZegoAppTypeI18N     = 3,    // 国际版
+    ZegoAppTypeI18N     = 2,    // 国际版
+    ZegoAppTypeCustom   = 3,    // 用户自定义
 } ZegoAppType;
 
 @interface ZegoDemoHelper : NSObject

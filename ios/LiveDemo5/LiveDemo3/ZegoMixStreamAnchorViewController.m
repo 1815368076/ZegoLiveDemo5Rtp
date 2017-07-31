@@ -154,8 +154,7 @@
     // 发起推流
     bool b = [[ZegoDemoHelper api] startPublishing:self.streamID
                                              title:self.liveTitle
-                                              flag:ZEGO_JOIN_PUBLISH];
-    
+                                              flag:ZEGO_MIX_STREAM];
     
     if (b)
     {
@@ -377,7 +376,7 @@
     completeMixConfig.outputResolution = [ZegoSettings sharedInstance].currentConfig.videoEncodeResolution;
     completeMixConfig.outputAudioConfig = 0;   // * default config
     
-    [completeMixConfig.inputStreamList removeAllObjects];
+//    [completeMixConfig.inputStreamList removeAllObjects];
     
     int height = [ZegoSettings sharedInstance].currentConfig.videoEncodeResolution.height;
     int width = [ZegoSettings sharedInstance].currentConfig.videoEncodeResolution.width;

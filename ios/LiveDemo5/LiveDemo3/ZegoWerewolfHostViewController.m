@@ -796,8 +796,10 @@
     [[ZegoDemoHelper api] sendCustomCommand:[self getCurrentMemberList] content:content completion:^(int errorCode, NSString *roomID) {
         [self addLogString:[NSString stringWithFormat:NSLocalizedString(@"结束说话", nil)]];
         
-        //主播说完了，下一个人
-        [self arrangeNextSpeaker];
+        if (self.speakingMode == kInTurnSpeakingMode) {
+            //主播说完了，下一个人
+            [self arrangeNextSpeaker];
+        }
         
     }];
 }
@@ -1183,13 +1185,17 @@
         if (userId.length == 0 || [[ZegoSettings sharedInstance].userID isEqualToString:userId])
             return;
         
-        if (![userId isEqualToString:self.currentSpeakingUserId])
+        
+        if (![userId isEqualToString:self.currentSpeakingUserId] && self.speakingMode == kInTurnSpeakingMode)
             return;
         
         [self resetPlayView:userId];
         
-        //安排下一个人说话
-        [self arrangeNextSpeaker];
+        if (self.speakingMode == kInTurnSpeakingMode) {
+            //安排下一个人说话
+            [self arrangeNextSpeaker];
+        }
+
     }
     else if (command == kStartSpeaking)
     {

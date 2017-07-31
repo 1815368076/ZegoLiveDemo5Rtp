@@ -900,7 +900,7 @@
         self.currentSpeakingUserId = nil;
         [self resetPlayView:userId];
         
-        if (self.isSpeaking)
+        if ([[ZegoSettings sharedInstance].userID isEqualToString:userId] && self.isSpeaking)
         {
             self.isSpeaking = NO;
             [self stopTimer:self.speakingTimer];

@@ -75,6 +75,12 @@
     [super viewWillDisappear:animated];
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIKeyboardWillHideNotification
+                                                  object:nil];
+}
+
 #pragma mark - Event response
 
 - (void)onTapTableView:(UIGestureRecognizer *)gesture
@@ -138,11 +144,11 @@
     if ([ZegoDemoHelper appType] == ZegoAppTypeCustom) {
         if (self.appIDText.text.length == 0 && self.appSignText.text.length == 0) {
             [ZegoDemoHelper setAppType:ZegoAppTypeUDP];
-            [self.appTypePicker selectRow:2 inComponent:0 animated:NO];
+            [self.appTypePicker selectRow:ZegoAppTypeUDP inComponent:0 animated:NO];
             [self loadAppID];
         } else if (self.appIDText.text.length != 0 && self.appSignText.text.length != 0) {
             NSString *strAppID = self.appIDText.text;
-            NSUInteger appID = (NSUInteger)[strAppID longLongValue];
+            uint32_t appID = (uint32_t)[strAppID longLongValue];
             [ZegoDemoHelper setCustomAppID:appID sign:self.appSignText.text];
         }
     }
@@ -282,33 +288,41 @@
 }
 
 - (void)loadAppID {
+    ZegoAppType type = [ZegoDemoHelper appType];
+    
+    // 导航栏标题随设置变化
+    NSString *title = [NSString stringWithFormat:@"ZEGO(%@)", [ZegoSettings sharedInstance].appTypeList[type]];
+    self.tabBarController.navigationItem.title =  NSLocalizedString(title, nil);
+    
     // 自定义的 APPID 来源于用户输入
-    if ([ZegoDemoHelper appType] == ZegoAppTypeCustom) {
-        self.appIDText.placeholder = NSLocalizedString(@"请输入 AppID", nil);
-        self.appIDText.clearButtonMode = UITextFieldViewModeWhileEditing;
-        self.appIDText.keyboardType = UIKeyboardTypeDefault;
-        self.appIDText.returnKeyType = UIReturnKeyDone;
-        self.appSignText.placeholder = NSLocalizedString(@"请输入 AppSign", nil);
-        self.appSignText.clearButtonMode = UITextFieldViewModeWhileEditing;
-        self.appSignText.keyboardType = UIKeyboardTypeASCIICapable;
-        self.appSignText.returnKeyType = UIReturnKeyDone;
-        
-        if ([ZegoDemoHelper appID] && [ZegoDemoHelper zegoAppSignFromServer]) {
+    uint32_t appID = [ZegoDemoHelper appID];
+    NSData *appSign = [ZegoDemoHelper zegoAppSignFromServer];
+    if (type == ZegoAppTypeCustom) {
+        if (appID && appSign) {
             self.appIDText.enabled = YES;
-            [self.appIDText setText:[NSString stringWithFormat:@"%u", [ZegoDemoHelper appID]]];
+            [self.appIDText setText:[NSString stringWithFormat:@"%u", appID]];
             
             self.appSignText.enabled = YES;
             [self.appSignText setText:NSLocalizedString(@"AppSign 已设置", nil)];
         } else {
-            self.appIDText.enabled = YES;
-            [self.appIDText setText:@""];
-            
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
             [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+            
+            self.appIDText.enabled = YES;
+            [self.appIDText setText:@""];
+            self.appIDText.placeholder = NSLocalizedString(@"请输入 AppID", nil);
+            self.appIDText.clearButtonMode = UITextFieldViewModeWhileEditing;
+            self.appIDText.keyboardType = UIKeyboardTypeDefault;
+            self.appIDText.returnKeyType = UIReturnKeyDone;
 
-            [self.appIDText becomeFirstResponder];
-
+            self.appSignText.placeholder = NSLocalizedString(@"请输入 AppSign", nil);
+            self.appSignText.clearButtonMode = UITextFieldViewModeWhileEditing;
+            self.appSignText.keyboardType = UIKeyboardTypeASCIICapable;
+            self.appSignText.returnKeyType = UIReturnKeyDone;
             self.appSignText.enabled = YES;
+            [self.appSignText setText:@""];
+            [self.appSignText becomeFirstResponder];
+            
         }
     } else {
         // 其他类型的 APPID 从本地加载
@@ -318,12 +332,9 @@
         self.appSignText.enabled = NO;
         
         self.appIDText.enabled = NO;
-        [self.appIDText setText:[NSString stringWithFormat:@"%u", [ZegoDemoHelper appID]]];
+        [self.appIDText setText:[NSString stringWithFormat:@"%u", appID]];
     }
-    
-    // 导航栏标题随设置变化
-    NSString *title = [NSString stringWithFormat:@"ZEGO(%@)", [ZegoSettings sharedInstance].appTypeList[[ZegoDemoHelper appType]]];
-    self.tabBarController.navigationItem.title =  NSLocalizedString(title, nil);
+
 }
 
 - (void)loadAccountSettings {
@@ -431,23 +442,7 @@
         
         NSLog(@"%s: %@", __func__, [ZegoSettings sharedInstance].appTypeList[row]);
 
-        switch (row) {
-            case 0:
-                [ZegoDemoHelper setAppType:ZegoAppTypeCustom];
-                break;
-            case 1:
-                [ZegoDemoHelper setAppType:ZegoAppTypeRTMP];
-                break;
-            case 2:
-                [ZegoDemoHelper setAppType:ZegoAppTypeUDP];
-                break;
-            case 3:
-                [ZegoDemoHelper setAppType:ZegoAppTypeI18N];
-                break;
-            default:
-                break;
-        }
-        
+        [ZegoDemoHelper setAppType:(ZegoAppType)row];
         [self loadAppID];
     }
     
@@ -500,13 +495,13 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    if (!self.userID.isEditing && !self.userName.isEditing) {
-        [self.view endEditing:YES];
-    }
-    
-    if (!self.appIDText.isEditing && ![self.appSignText isFirstResponder]) {
-        [self.view endEditing:YES];
-    }
+//    if (!self.userID.isEditing && !self.userName.isEditing) {
+//        [self.view endEditing:YES];
+//    }
+//    
+//    if (!self.appSignText.isEditing && ![self.appIDText isFirstResponder]) {
+//        [self.view endEditing:YES];
+//    }
 }
 
 #pragma mark - UITextField delegate
@@ -516,7 +511,6 @@
     if (textField.text.length != 0)
     {
         [textField resignFirstResponder];
-        self.tableView.scrollEnabled = YES;
         return YES;
     } else {
         [self showAlert:NSLocalizedString(@"请重新输入！", nil) message:NSLocalizedString(@"该字段不可为空", nil)];
