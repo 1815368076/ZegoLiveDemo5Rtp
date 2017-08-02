@@ -536,10 +536,10 @@
         //停止直播
         [self stopPublishing];
         
-        for (ZegoStream *stream in self.playStreamList)
-        {
-            [[ZegoDemoHelper api] endJoinLive:stream.userID completionBlock:nil];
-        }
+//        for (ZegoStream *stream in self.playStreamList)
+//        {
+//            [[ZegoDemoHelper api] endJoinLive:stream.userID completionBlock:nil];
+//        }
         
         [self.stopPublishButton setTitle:NSLocalizedString(@"开始直播", nil) forState:UIControlStateNormal];
         self.stopPublishButton.enabled = YES;
