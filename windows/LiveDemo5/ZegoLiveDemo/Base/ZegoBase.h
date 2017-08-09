@@ -4,6 +4,7 @@
 #include "ZegoSettingsModel.h"
 #include "SimpleIni.h"
 #include "ZegoSDKSignal.h"
+#include "audio_in_output.h"
 
 class CZegoBase
 {
@@ -18,6 +19,12 @@ public:
 	CZegoAVSignal& GetAVSignal(void);
     DWORD GetAppID(void);
     std::string GetAppName();
+    bool IsTestEnv();
+    bool IsGlobalVersion();
+
+private:
+    static void OnPrepData(const AVE::AudioFrame& inFrame, AVE::AudioFrame& outFrame);
+
 private:
 	typedef enum _INIT_MASK {
 		INIT_NONE	= 0,
@@ -28,6 +35,8 @@ private:
 
 	DWORD m_dwInitedMask;
 	std::string m_strLogPathUTF8;
+    bool m_bIsTestEnv = false;
+    bool m_bIsGlobalVersion = false;
 
 	HWND m_hCommuWnd;
 	CZegoAVSignal* m_pAVSignal;

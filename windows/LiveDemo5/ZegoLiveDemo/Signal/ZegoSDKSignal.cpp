@@ -213,3 +213,15 @@ void CZegoAVSignal::OnVideoDeviceStateChanged(AV::DeviceInfo *deviceInfo, AV::De
         m_sigVideoDeviceChanged(strDeviceId, strDeviceName, state);
     ZEGO_SWITCH_THREAD_ING
 }
+
+void CZegoAVSignal::OnAudioVolumeChanged(AV::AudioDeviceType deviceType, const char *deviceId, AV::VolumeType volumeType, unsigned int volume, bool bMuted)
+{
+    if (deviceId == nullptr)
+        return;
+
+    std::string strDeviceId = deviceId;
+
+    ZEGO_SWITCH_THREAD_PRE
+        m_sigAudioVolumeChanged(deviceType, strDeviceId, volumeType, volume, bMuted);
+    ZEGO_SWITCH_THREAD_ING
+}

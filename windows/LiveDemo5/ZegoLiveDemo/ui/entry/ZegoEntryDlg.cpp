@@ -235,8 +235,21 @@ void CZegoEntryDlg::AutoGetRoomInfoList(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent,
 
 void CZegoEntryDlg::PullRoomList()
 {
+    std::wstring domain = theApp.GetBase().IsGlobalVersion() ? _T("zegocloud.com") : _T("zego.im");
     CString cstrBaseUrl;
-    cstrBaseUrl.Format(_T("https://liveroom%u-api.zego.im/demo/roomlist?appid=%u"), theApp.GetBase().GetAppID(), theApp.GetBase().GetAppID());
+    cstrBaseUrl.Format(_T("https://liveroom%u-api.%s/demo/roomlist?appid=%u"), theApp.GetBase().GetAppID(), domain.c_str(), theApp.GetBase().GetAppID());
+    if (theApp.GetBase().IsTestEnv())
+    {
+        CString testDomain;
+        testDomain.Format(_T("%s"), _T("https://test2-liveroom-api.zego.im"));
+
+        if (theApp.GetBase().IsGlobalVersion())
+        {
+            testDomain.Format(_T("%s", _T("https://test2-liveroom-api.zegocloud.com")));
+        }
+
+        cstrBaseUrl.Format(_T("%s/demo/roomlist?appid=%u"), testDomain.GetString(), theApp.GetBase().GetAppID());
+    }
 
     CInternetSession session;
     CHttpFile *file = nullptr;

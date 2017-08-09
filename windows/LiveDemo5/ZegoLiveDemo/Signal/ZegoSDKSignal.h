@@ -33,6 +33,8 @@ public:
     ZEGO_MAKE_SIGNAL(JoinLiveResponse, 4, int, std::string, std::string, int);
     ZEGO_MAKE_SIGNAL(AudioDeviceChanged, 4, AV::AudioDeviceType, std::string, std::string, AV::DeviceState);
     ZEGO_MAKE_SIGNAL(VideoDeviceChanged, 3, std::string, std::string, AV::DeviceState);
+    ZEGO_MAKE_SIGNAL(AudioVolumeChanged, 5, AV::AudioDeviceType, std::string, AV::VolumeType, unsigned int, bool);
+
 protected:
 
     void OnLoginRoom(int errorCode, const char *pszRoomID, const LIVEROOM::ZegoStreamInfo *pStreamInfo, unsigned int streamCount);
@@ -71,6 +73,7 @@ protected:
 
     void OnAudioDeviceStateChanged(AV::AudioDeviceType deviceType, AV::DeviceInfo *deviceInfo, AV::DeviceState state);
     void OnVideoDeviceStateChanged(AV::DeviceInfo *deviceInfo, AV::DeviceState state);
+    void OnAudioVolumeChanged(AV::AudioDeviceType deviceTYpe, const char *deviceId, AV::VolumeType volumeType, unsigned int volume, bool bMuted);
     void OnDeviceError(const char* deviceName, int errorCode) {};
 
 private:

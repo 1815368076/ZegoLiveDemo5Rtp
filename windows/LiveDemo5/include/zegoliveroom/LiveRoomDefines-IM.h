@@ -15,16 +15,18 @@ namespace ZEGO
 {
     namespace LIVEROOM
     {
+        /** 用户更新类型 */
         enum ZegoUserUpdateType
         {
-            UPDATE_TOTAL = 1,
-            UPDATE_INCREASE,
+            UPDATE_TOTAL = 1,   /**< 全量更新 */
+            UPDATE_INCREASE,    /**< 增量更新 */
         };
         
+        /** 用户更新属性 */
         enum ZegoUserUpdateFlag
         {
-            USER_ADDED = 1,
-            USER_DELETED,
+            USER_ADDED = 1,     /**< 新增 */
+            USER_DELETED,       /**< 删除 */
         };
         
         struct ZegoUserInfo
@@ -58,27 +60,30 @@ namespace ZEGO
             char szUserName[ZEGO_MAX_COMMON_LEN];
         };
         
+        /** 消息类型 */
         enum ZegoMessageType
         {
-            Text = 1,
-            Picture,
-            File,
-            OtherType = 100,
+            Text = 1,           /**< 文字 */
+            Picture,            /**< 图片 */
+            File,               /**< 文件 */
+            OtherType = 100,    /**< 其他 */
         };
         
+        /** 消息优先级 */
         enum ZegoMessagePriority
         {
-            Default = 2,
-            High = 3,
+            Default = 2,        /**< 默认优先级 */
+            High = 3,           /**< 高优先级 */
         };
         
+        /** 消息类别 */
         enum ZegoMessageCategory
         {
-            Chat = 1,
-            System,
-            Like,
-            Gift,
-            OtherCategory = 100,
+            Chat = 1,           /**< 聊天 */
+            System,             /**< 系统 */
+            Like,               /**< 点赞 */
+            Gift,               /**< 送礼物 */
+            OtherCategory = 100,/**< 其他 */
         };
         
         struct ZegoRoomMessage

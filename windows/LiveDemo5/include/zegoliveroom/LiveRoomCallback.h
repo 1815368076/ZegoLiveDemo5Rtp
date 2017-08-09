@@ -17,51 +17,81 @@ namespace ZEGO
         class IRoomCallback
         {
         public:
-            /// \brief 登陆成功回调
-            /// \param[in] errorCode 错误码，0 为无错误
-            /// \param[in] pszRoomID 房间 ID
-            /// \param[in] pStreamInfo 直播流列表
-            /// \param[in] streamCount 直播流个数
+            /**
+             登录房间成功回调
+
+             @param errorCode 错误码，0 表示无错误
+             @param pszRoomID 房间 ID
+             @param pStreamInfo 直播流列表
+             @param streamCount 直播流个数
+             */
             virtual void OnLoginRoom(int errorCode, const char *pszRoomID, const ZegoStreamInfo *pStreamInfo, unsigned int streamCount) = 0;
-            
-            /// \brief 退出房间回调
-            /// \param[in] errorCode 错误码，0 位无错误
-            /// \param[in] pszRoomID 房间 ID
+
+            /**
+             退出房间回调
+
+             @param errorCode 错误码，0 表示无错误
+             @param pszRoomID 房间 ID
+             */
             virtual void OnLogoutRoom(int errorCode, const char *pszRoomID) {}
             
-            /// \brief 因为登陆抢占原因等被挤出房间
-            /// \param[in] reason 原因
-            /// \param[in] pszRoomID 房间 ID
+            /**
+             因为使用同一个 UserId 登录，用户被挤出聊天室
+
+             @param reason 原因
+             @param pszRoomID 房间 ID
+             @attention 可在该回调中处理用户被踢出房间后的下一步处理（例如报错、重新登录提示等）
+             */
             virtual void OnKickOut(int reason, const char *pszRoomID) = 0;
             
-            /// \brief 与 server 断开
-            /// \param[in] errorCode 错误码，0 位无错误
-            /// \param[in] pszRoomID 房间 ID
+            /**
+             与 server 断开通知
+
+             @param errorCode 错误码，0 表示无错误
+             @param roomID 房间 ID
+             @attention 建议开发者在此通知中进行重新登录、推/拉流、报错、友好性提示等其他恢复逻辑
+             @note 与 server 断开连接后，SDK 会进行重试，重试失败抛出此错误。请注意，此时 SDK 与服务器的所有连接均会断开
+             */
             virtual void OnDisconnect(int errorCode, const char *pszRoomID) = 0;
         
-            /// \brief 流信息更新
-            /// \param[in] type 更新类型
-            /// \param[in] pStreamInfo 直播流列表
-            /// \param[in] streamCount 直播流个数
-            /// \param[in] pszRoomID 房间 ID
+            /**
+             流信息更新
+
+             @param type 更新类型
+             @param pStreamInfo 直播流列表
+             @param streamCount 直播流个数
+             @param pszRoomID 房间 ID
+             @attention 房间内增加流、删除流，均会触发此更新
+             @note 建议对流增加和流删除分别采取不同的处理
+             */
             virtual void OnStreamUpdated(ZegoStreamUpdateType type, ZegoStreamInfo *pStreamInfo, unsigned int streamCount, const char *pszRoomID) = 0;
             
-            /// \brief 流附加信息更新
-            /// \param[in] pStreamInfo 附加信息更新的流列表
-            /// \param[in] streamCount 流个数
-            /// \param[in] pszRoomID 房间 ID
+            /**
+             流附加信息更新
+
+             @param pStreamInfo 附加信息更新的流列表
+             @param streamCount 流个数
+             @param pszRoomID 房间 ID
+             */
             virtual void OnStreamExtraInfoUpdated(ZegoStreamInfo *pStreamInfo, unsigned int streamCount, const char *pszRoomID) = 0;
             
-            /// \brief 发送自定义信令结果
-            /// \params[in] errorCode 错误码
-            /// \params[in] requestSeq 请求seq
+            /**
+             发送自定义信令结果
+
+             @param errorCode 错误码，0 表示无错误
+             @param requestSeq 请求 seq
+             @param pszRoomID 房间 ID
+             */
             virtual void OnCustomCommand(int errorCode, int requestSeq, const char *pszRoomID) = 0;
-            
-            /// \brief 收到自定义信令
-            /// \brief[in] seq 收到的信令seq
-            /// \brief[in] pszUserId 发送者UserId
-            /// \brief[in] pszUserName 发送者UserName
-            /// \brief[in] pszContent 收到的信令内容
+
+            /**
+             收到自定义信令
+
+             @param pszUserId 发送者 UserId
+             @param pszUserName 发送者 UserName
+             @param pszContent 收到的信令内容
+             @param pszRoomID 房间 ID
+             */
             virtual void OnRecvCustomCommand(const char *pszUserId, const char *pszUserName, const char *pszContent, const char *pszRoomID) = 0;
             
             virtual ~IRoomCallback() {}
@@ -70,7 +100,9 @@ namespace ZEGO
         class IAVEngineCallback
         {
         public:
-            /// \brief 音视频引擎停止时回调
+            /**
+             音视频引擎停止时回调
+             */
             virtual void OnAVEngineStop() = 0;
             
             virtual ~IAVEngineCallback(){}
@@ -83,6 +115,12 @@ namespace ZEGO
         class IZegoLiveEventCallback
         {
         public:
+            /**
+             AVKit 事件通知
+
+             @param event 事件
+             @param pInfo 信息
+             */
             virtual void OnAVKitEvent(int event, EventInfo* pInfo) = 0;
         };
         
@@ -90,9 +128,40 @@ namespace ZEGO
         {
         public:
 #ifdef WIN32
+            /**
+             音频设备状态变更
+
+             @param deviceType 设备类型
+             @param deviceInfo 设备信息
+             @param state 状态
+             */
             virtual void OnAudioDeviceStateChanged(AudioDeviceType deviceType, DeviceInfo *deviceInfo, DeviceState state) = 0;
+            
+            /**
+             视频设备状态变更
+
+             @param deviceInfo 设备信息
+             @param state 状态
+             */
             virtual void OnVideoDeviceStateChanged(DeviceInfo *deviceInfo, DeviceState state) = 0;
+            
+            /**
+             音频设备音量变更
+
+             @param deviceType 设备类型
+             @param deviceId 设备 Id
+             @param volumeType 音量类型
+             @param volume 音量值
+             @param bMuted 是否静音
+             */
+            virtual void OnAudioVolumeChanged(AudioDeviceType deviceType, const char *deviceId, VolumeType volumeType, unsigned int volume, bool bMuted) {}
 #endif
+            /**
+             设备错误
+
+             @param deviceName 设备名称
+             @param errorCode 错误码
+             */
             virtual void OnDeviceError(const char* deviceName, int errorCode) {}
         };
     }

@@ -87,6 +87,7 @@ protected:
     void OnJoinLiveResponse(int result, std::string fromUserID, std::string fromUserName, int seq);
     void OnAudioDeviceChanged(AV::AudioDeviceType deviceType, std::string strDeviceId, std::string strDeviceName, AV::DeviceState state);
     void OnVideoDeviceChanged(std::string strDeviceId, std::string strDeviceName, AV::DeviceState state);
+    void OnAudioVolumeChanged(AV::AudioDeviceType deviceType, std::string strDeviceId, AV::VolumeType volumeType, unsigned int volume, bool bMuted);
 
 private:
 	void BeginAux(void);
@@ -139,4 +140,5 @@ private:
     std::string m_strCurUserName;
     std::vector<std::string> m_vecAudioDeviceIDs;
     std::vector<std::string> m_vecVideoDeviceIDs;
+    std::string m_strDefaultSpeakerID;
 };

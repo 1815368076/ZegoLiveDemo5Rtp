@@ -6,7 +6,9 @@
 #include "LiveRoom-IM.h"
 #include "LiveRoom-Player.h"
 #include "LiveRoom-Publisher.h"
+#include "LiveRoomDefines-Publisher.h"
 #include "zego_sdk_protocol.h"
+
 
 #if defined ZEGO_PROTOCOL_UDP
 
@@ -22,6 +24,7 @@ static BYTE g_bufSignKey2[] =
 
 #elif defined ZEGO_PROTOCOL_UDP_INTERNATIONAL
 
+m_bIsGlobalVersion = true;
 static std::string g_strAppName = "Live5-INTERNATIONAL";
 static DWORD g_dwAppID2 = 3322882036;
 static BYTE g_bufSignKey2[] =
@@ -62,6 +65,16 @@ LRESULT CALLBACK ZegoCommuExchangeWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
 std::string CZegoBase::GetAppName()
 {
     return g_strAppName;
+}
+
+bool CZegoBase::IsTestEnv()
+{
+    return m_bIsTestEnv;
+}
+
+bool CZegoBase::IsGlobalVersion()
+{
+    return m_bIsGlobalVersion;
 }
 
 CZegoBase::CZegoBase(void) : m_dwInitedMask(INIT_NONE)
@@ -105,8 +118,20 @@ bool CZegoBase::InitAVSdk(SettingsPtr pCurSetting, std::string userID, std::stri
         LIVEROOM::SetUser(userID.c_str(), userName.c_str());
         // ToDo: 需要通过代码获取网络类型
         LIVEROOM::SetNetType(2);
+
+        AVE::ExtPrepSet set;
+        set.bEncode = false;
+        set.nChannel = 0;
+        set.nSampleRate = 0;
+        set.nSamples = 0;
+
+        LIVEROOM::SetAudioPrep2(&OnPrepData, set);
+
 		LIVEROOM::InitSDK(g_dwAppID2, g_bufSignKey2, 32);
 
+#if defined(ZEGO_PROTOCOL_UDP) || defined(ZEGO_PROTOCOL_UDP_INTERNATIONAL)
+        LIVEROOM::EnableTrafficControl(AV::ZEGO_TRAFFIC_FPS | AV::ZEGO_TRAFFIC_RESOLUTION, true);
+#endif
         LIVEROOM::SetLivePublisherCallback(m_pAVSignal);
         LIVEROOM::SetLivePlayerCallback(m_pAVSignal);
         LIVEROOM::SetRoomCallback(m_pAVSignal);
@@ -164,4 +189,17 @@ CZegoAVSignal& CZegoBase::GetAVSignal(void)
 DWORD CZegoBase::GetAppID(void)
 {
     return g_dwAppID2;
+}
+
+void CZegoBase::OnPrepData(const AVE::AudioFrame& inFrame, AVE::AudioFrame& outFrame)
+{
+    outFrame.frameType = inFrame.frameType;
+    outFrame.samples = inFrame.samples;
+    outFrame.bytesPerSample = inFrame.bytesPerSample;
+    outFrame.channels = inFrame.channels;
+    outFrame.sampleRate = inFrame.sampleRate;
+    outFrame.timeStamp = inFrame.timeStamp;
+    outFrame.configLen = inFrame.configLen;
+    outFrame.bufLen = inFrame.bufLen;
+    memcpy(outFrame.buffer, inFrame.buffer, inFrame.bufLen);
 }

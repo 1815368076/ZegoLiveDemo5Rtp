@@ -17,122 +17,193 @@ namespace ZEGO
 {
     namespace LIVEROOM
     {
-        /// \brief 获取 SDK 支持的最大同时播放流数
-        /// \return 最大支持播放流数
+        /**
+         获取 SDK 支持的最大同时播放流数
+
+         @return 最大支持播放流数
+         */
         ZEGO_API int GetMaxPlayChannelCount();
         
-        /// \brief 设置直播观众相关信息通知的回调
-        /// \param[in] pCB 回调对象指针
-        /// \return true 成功，false 失败
+        /**
+         设置直播观众相关信息通知的回调
+
+         @param pCB 回调对象指针
+         @return true 成功，false 失败
+         */
         ZEGO_API bool SetLivePlayerCallback(ILivePlayerCallback* pCB);
         
-        /// \brief 播放直播流
-        /// \param[in] pszStreamID 流 ID
-        /// \param[in] pView 用来渲染播放视频的视图
-        /// \param[in] pszParams 拉流参数
-        /// \return true 成功，等待 ILivePlayerCallback::OnPlayStateUpdate 回调，false 失败
+        /**
+         播放直播流
+
+         @param pszStreamID 流 ID
+         @param pView 用来渲染播放视频的视图
+         @param pszParams 拉流参数
+         @return true 成功，false 失败
+         @attetion 播放直播流调用此 API
+         @note 播放成功后，等待 ILivePlayerCallback::OnPlayStateUpdate 回调
+         */
         ZEGO_API bool StartPlayingStream(const char* pszStreamID, void* pView, const char* pszParams = 0);
-                
-        /// \brief 停止播放
-        /// \param[in] pszStreamID 流 ID
-        /// \return true 成功，false 失败
+
+        /**
+         停止播放流
+
+         @param pszStreamID 流 ID
+         @return true 成功，false 失败
+         */
         ZEGO_API bool StopPlayingStream(const char* pszStreamID);
         
-        /// \brief 申请连麦
-        /// \note 主播会收到 ILivePublisherCallback::OnJoinLiveRequest 回调
-        /// \return 请求 seq，正值为有效，等待 ILivePlayerCallback::OnJoinLiveResponse 回调，回调带回的 seq 与此函数返回值一致
+        /**
+         申请连麦
+
+         @return 请求 seq，正值为有效，等待 ILivePlayerCallback::OnJoinLiveResponse 回调，回调带回的 seq 与此函数返回值一致
+         @note 主播会收到 ILivePublisherCallback::OnJoinLiveRequest 回调
+         */
         ZEGO_API int RequestJoinLive();
         
-        /// \brief 回应连麦邀请
-        /// \note 主播会收到 OnInviteJoinLiveResponse 回调
-        /// \param[in] seq 回应的邀请 seq (通过 ILivePlayerCallback::OnInviteJoinLiveRequest 收到邀请)
-        /// \param[in] rspResult 回应，0 为同意
-        /// \return true 成功，false 失败
+        /**
+         回应连麦邀请
+
+         @param seq 回应的邀请 seq
+         @param rspResult 回应，0 表示同意
+         @return true 成功，false 失败
+         @attention 一般在 ILivePlayerCallback::OnInviteJoinLiveRequest 中收到邀请后，调用此 API 回应
+         */
         ZEGO_API bool RespondInviteJoinLiveReq(int seq, int rspResult);
         
         
         // * player config
         
-        /// \brief 硬件解码加速
-        /// \param bRequired 是否开启
-        /// \return true 成功，false 失败
+        /**
+         硬件解码
+
+         @param bRequired true 打开，false 关闭。默认 false
+         @return true 成功，false 失败
+         @attention 如果要打开，需要在拉流前设置
+         @note 打开硬编硬解开关需后台可控，避免碰到版本升级或者硬件升级时出现硬编硬解失败的问题
+         */
         ZEGO_API bool RequireHardwareDecoder(bool bRequired);
         
-        /// \brief 播放声音开关
-        /// \param bEnable 是否开启
-        /// \return true 成功，false 失败
+        /**
+         （声音输出）静音开关
+
+         @param bEnable true 不静音，false 静音。默认 true
+         @return true 成功，false 失败
+         @attention 设置为关闭后，默认扬声器和耳机均无声音输出
+         */
         ZEGO_API bool EnableSpeaker(bool bEnable);
-        
-        /// \brief 手机外放开关
-        /// \param bOn 是否开启，true 声音从外放播放
-        /// \return true 成功，false 失败
+
+        /**
+         默认扬声器开关
+
+         @param bOn true 打开，false 关闭。默认 true
+         @return true 成功，false 失败
+         @attention 设置为关闭后，扬声器无声音，耳机仍有声音输出
+         */
         ZEGO_API bool setBuiltInSpeakerOn(bool bOn);
         
-        /// \brief 设置播放音量
-        /// \param[in] volume 音量 0 ~ 100
-        ZEGO_API void SetPlayVolume(int volume);
+        /**
+         设置播放音量
+
+         @param volume 音量取值范围为(0, 100)，数值越大，音量越大。默认 100
+         @param pszStreamID 流ID, nullptr表示统一设置所有拉流的播放音量
+         @attention 直播时通过此 API 软件调整音量
+         */
+        ZEGO_API bool SetPlayVolume(int volume, const char* pszStreamID = nullptr);
         
-        /// \brief 获取当前播放视频的音量
-        /// \param[in] pszStreamID 流名
-        /// \return 对应视频的音量
+        /**
+         获取当前播放视频的音量
+
+         @param pszStreamID 播放流 ID
+         @return 视频的音量值
+         @attention 直播时通过此 API 获取当前音量。
+         */
         ZEGO_API float GetSoundLevel(const char* pszStreamID);
         
-        /// \breif 设置播放视频模式
-        /// \param[in] mode 模式
-        /// \param[in] pszStreamID 流名
-        /// \return true 成功，false 失败
+        /**
+         设置观看直播的 View 的模式
+
+         @param mode 模式
+         @param pszStreamID 播放流 ID
+         @return true 成功，false 失败
+         @attention 一般在流播放、流新增、全屏切换等其他流尺寸可能变化的场合时调用
+         */
         ZEGO_API bool SetViewMode(ZegoVideoViewMode mode, const char* pszStreamID);
         
-        /// \brief 截图
-        /// \param pszStreamID 流名
-        /// \return true 成功，通过回调 ILivePlayerCallback::OnSnapshot 返回结果，false 失败
+        /**
+         对观看直播视图进行截图
+
+         @param pszStreamID 流 ID
+         @return true 成功，false 失败
+         @attention 截图成功后，通过回调 ILivePlayerCallback::OnSnapshot 返回结果
+         */
         ZEGO_API bool TakeSnapshot(const char* pszStreamID);
         
         
         // * advanced config
         
-        /// \brief 设置播放渲染朝向
-        /// \param[in] nRotation 旋转角度(0/90/180/270)
-        /// \param[in] pszStreamID 流名
-        /// \return true 成功，false 失败
+        /**
+         设置播放渲染朝向
+
+         @param nRotation 逆时针旋转角度(0/90/180/270)。默认 0
+         @param pszStreamID 播放流 ID
+         @return true 成功，false 失败
+         @attention 一般用于全屏切换、旋转设备时调用，调整播放方向
+         */
         ZEGO_API bool SetViewRotation(int nRotation, const char* pszStreamID);
         
-        /// \brief 设置拉流质量监控周期
-        /// \param timeInMS 时间周期，单位为毫秒，取值范围：(500, 60000)
-        /// \return true 设置成功，否则失败
+        /**
+         设置拉流质量监控周期
+
+         @param timeInMS 时间周期，单位为毫秒，取值范围为(500, 60000)。默认为 3000
+         @return true 成功，false 失败
+         */
         ZEGO_API bool SetPlayQualityMonitorCycle(unsigned int timeInMS);
         
         
         // * external video render
         
-        /// \brief 设置是否使用外部视频渲染
-        /// \param bEnable 是否开启
+        /**
+         设置是否使用外部视频渲染
+
+         @param bEnable true 开启，false 不开启
+         */
         ZEGO_API void EnableExternalRender(bool bEnable);
         
-        /// \brief 设置外部渲染回调
-        /// \param pCB 回调实现实例
+        /**
+         设置外部渲染回调
+
+         @param pCB 回调实现实例
+         */
         ZEGO_API void SetExternalRenderCallback(IZegoVideoRenderCallback* pCB);
         
         
         // * audio record
         
-        /// \brief 音频录制回调开关
-        /// \param uMask 启用音频源选择，参考 ZegoAVAPIAudioRecordMask
-        /// \param nSampleRate 采样率 8000, 16000, 22050, 24000, 32000, 44100, 48000
-        /// \return true 成功，false 失败
+        /**
+         音频录制回调开关
+
+         @param uMask 启用音频源选择，参考 ZegoAVAPIAudioRecordMask
+         @param nSampleRate 采样率 8000, 16000, 22050, 24000, 32000, 44100, 48000
+         @return true 成功，false 失败
+         */
         ZEGO_API bool EnableSelectedAudioRecord(unsigned int uMask, int nSampleRate = 44100);
         
-        /// \brief 设置音频录制回调
-        /// \param pCB 回调实现实例
-        /// \return true 成功，false 失败
+        /**
+         设置音频录制回调
+
+         @param pCB 回调实现实例
+         @return true 成功，false 失败
+         */
         ZEGO_API bool SetAudioRecordCallback(AV::IZegoAudioRecordCallback* pCB);
         
-        
-        /// \brief 音频录制回调开关
-        /// \param bEnable true 是否开启
-        /// \return true 成功，false 失败
-        /// \param nSampleRate 采样率 8000, 16000, 22050, 24000, 32000, 44100, 48000
-        /// \note 已废弃，请使用 EnableSelectedAudioRecord
+        /**
+         音频录制回调开关
+
+         @param bEnable true 开启，false 不开启
+         @param nSampleRate 采样率
+         @return true 成功，false 失败
+         @warning 已废弃，请使用 EnableSelectedAudioRecord
+         */
         ZEGO_API bool EnableAudioRecord(bool bEnable, int nSampleRate = 44100);
     }
 }

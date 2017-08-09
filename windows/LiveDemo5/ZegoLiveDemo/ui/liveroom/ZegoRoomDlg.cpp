@@ -73,6 +73,7 @@ CZegoRoomDlg::CZegoRoomDlg(SettingsPtr curSettings, RoomPtr room, std::string cu
     GetAVSignal().OnRecvRoomMesge().connect(this, &CZegoRoomDlg::OnRecvRoomMessage);
     GetAVSignal().OnJoinLiveRequest().connect(this, &CZegoRoomDlg::OnJoinLiveRequest);
     GetAVSignal().OnJoinLiveResponse().connect(this, &CZegoRoomDlg::OnJoinLiveResponse);
+    GetAVSignal().OnAudioVolumeChanged().connect(this, &CZegoRoomDlg::OnAudioVolumeChanged);
 
 	m_pAuxData = NULL;
 	m_nAuxDataLen = 0;
@@ -266,6 +267,21 @@ void CZegoRoomDlg::EnumVideoAndAudioDevice()
     m_cbCurrentVideo.SetCurSel(nCBCurSel);
     LIVEROOM::FreeDeviceList(pDeviceList);
     pDeviceList = NULL;
+
+    char deviceId[512] = { 0 };
+    unsigned int length = 512;
+    LIVEROOM::GetDefaultAudioDeviceId(AV::AudioDevice_Output, deviceId, &length);
+    if (strlen(deviceId) != 0)
+    {
+        m_strDefaultSpeakerID = deviceId;
+        LIVEROOM::SetAudioVolumeNotify(AV::AudioDevice_Output, m_strDefaultSpeakerID.c_str());
+    }
+
+    LIVEROOM::SetSpeakerSimpleMute(m_strDefaultSpeakerID.c_str(), true);
+    
+    std::string micDeviceId = m_pAVSettings->GetMircophoneId();
+
+    LIVEROOM::SetAudioVolumeNotify(AV::AudioDevice_Input, micDeviceId.c_str());
 }
 
 
@@ -493,7 +509,7 @@ void CZegoRoomDlg::StartPublishStream()
 
         std::string streamID = m_strPublishStreamID + cdnFlag;
 
-        LIVEROOM::StartPublishing(m_pChatRoom->GetRoomName().c_str(), streamID.c_str(), 0, "");
+        LIVEROOM::StartPublishing(m_pChatRoom->GetRoomName().c_str(), m_strPublishStreamID.c_str(), 0, "");
     }
 }
 
@@ -838,7 +854,25 @@ void CZegoRoomDlg::OnVideoDeviceChanged(std::string strDeviceId, std::string str
     }
 }
 
+void CZegoRoomDlg::OnAudioVolumeChanged(AV::AudioDeviceType deviceType, std::string strDevcieId, AV::VolumeType volumeType, unsigned int volume, bool bMuted)
+{
+    CString deviceString;
+    if (deviceType == AV::AudioDevice_Input)
+        deviceString = _T("麦克风");
+    else if (deviceType == AV::AudioDevice_Output)
+        deviceString = _T("扬声器");
 
+    CString volumeString;
+    if (volumeType == AV::Volume_EndPoint)
+        volumeString = _T("设备");
+    else if (volumeType == AV::Volume_Simple)
+        volumeString = _T("App");
+
+    TCHAR buf[MAX_PATH] = { 0 };
+    _stprintf(buf, _T("%s %s volume: %d, mute: %d\n"), deviceString, volumeString, volume, bMuted);
+    OutputDebugString(buf);
+
+}
 //////////////////////////////////////////////////////////////////////////
 // 消息相关处理
 void CZegoRoomDlg::OnIdok()
