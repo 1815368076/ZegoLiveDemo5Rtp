@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zego.livedemo5.R;
+import com.zego.livedemo5.ui.activities.moreanchors.MoreAnchorsPublishActivity;
 import com.zego.livedemo5.utils.ShareUtils;
 import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.constants.ZegoVideoViewMode;
@@ -232,7 +233,12 @@ public class ViewLive extends RelativeLayout {
         // 交换view
         if (vlBigView.isPublishView()) {
             if (mZegoLiveRoom != null) {
-                mZegoLiveRoom.setPreviewView(mTextureView);
+                String streamID = vlBigView.getStreamID();
+                if (!TextUtils.isEmpty(streamID) && streamID.startsWith(MoreAnchorsPublishActivity.TAG_AUX)) {
+                    mZegoLiveRoom.setPreviewView(mTextureView, MoreAnchorsPublishActivity.AUX_CHANNEL_INDEX);
+                }else {
+                    mZegoLiveRoom.setPreviewView(mTextureView);
+                }
             }
         } else if (vlBigView.isPlayView()) {
             if (mZegoLiveRoom != null) {
@@ -243,7 +249,11 @@ public class ViewLive extends RelativeLayout {
         // 交换view
         if (isPublishView()) {
             if (mZegoLiveRoom != null) {
-                mZegoLiveRoom.setPreviewView(vlBigView.getTextureView());
+                if (!TextUtils.isEmpty(mStreamID) && mStreamID.startsWith(MoreAnchorsPublishActivity.TAG_AUX)){
+                    mZegoLiveRoom.setPreviewView(vlBigView.getTextureView(), MoreAnchorsPublishActivity.AUX_CHANNEL_INDEX);
+                }else {
+                    mZegoLiveRoom.setPreviewView(vlBigView.getTextureView());
+                }
             }
         } else if (isPlayView()) {
             if (mZegoLiveRoom != null) {

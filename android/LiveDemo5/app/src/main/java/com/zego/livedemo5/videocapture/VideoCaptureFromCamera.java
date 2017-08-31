@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 
-import com.zego.zegoliveroom.videocapture.ZegoVideoCaptureDevice;
+import com.zego.zegoavkit2.ZegoVideoCaptureDevice;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

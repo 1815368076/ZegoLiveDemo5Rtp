@@ -1,7 +1,7 @@
 package com.zego.livedemo5.videofilter;
 
-import com.zego.zegoliveroom.videofilter.ZegoVideoFilter;
-import com.zego.zegoliveroom.videofilter.ZegoVideoFilterFactory;
+import com.zego.zegoavkit2.videofilter.ZegoVideoFilter;
+import com.zego.zegoavkit2.videofilter.ZegoVideoFilterFactory;
 
 /**
  * Created by robotding on 16/12/3.

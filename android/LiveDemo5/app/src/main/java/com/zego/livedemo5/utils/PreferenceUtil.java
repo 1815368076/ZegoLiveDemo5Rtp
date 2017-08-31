@@ -2,8 +2,10 @@ package com.zego.livedemo5.utils;
 
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Base64;
 
+import com.zego.livedemo5.ZegoAppHelper;
 import com.zego.livedemo5.ZegoApplication;
 
 import java.io.ByteArrayInputStream;
@@ -29,6 +31,9 @@ public class PreferenceUtil {
     public static final String PREFERENCE_KEY_USER_ID = "PREFERENCE_KEY_USER_ID";
 
     public static final String PREFERENCE_KEY_USER_NAME = "PREFERENCE_KEY_USER_NAME";
+
+    private static final String Pref_key_App_Id = "zego_app_id";
+    private static final String Pref_key_App_Key = "zego_app_key";
 
 
     private SharedPreferences mSharedPreferences;
@@ -89,7 +94,6 @@ public class PreferenceUtil {
         return mSharedPreferences.getLong(key, defaultValue);
     }
 
-
     public void setUserID(String userID){
         setStringValue(PREFERENCE_KEY_USER_ID, userID);
     }
@@ -104,6 +108,31 @@ public class PreferenceUtil {
 
     public String getUserName(){
         return getStringValue(PREFERENCE_KEY_USER_NAME, null);
+    }
+
+    public void setAppId(long appId) {
+        setLongValue(Pref_key_App_Id, appId);
+    }
+
+    public long getAppId() {
+        return getLongValue(Pref_key_App_Id, -1);
+    }
+
+    public void setAppKey(byte[] signKey) {
+        String strSignKey = ZegoAppHelper.convertSignKey2String(signKey);
+        setStringValue(Pref_key_App_Key, strSignKey);
+    }
+
+    public byte[] getAppKey() {
+        String strSignKey = getStringValue(Pref_key_App_Key, null);
+        if (TextUtils.isEmpty(strSignKey)) {
+           return null;
+        }
+        try {
+            return ZegoAppHelper.parseSignKeyFromString(strSignKey);
+        } catch (NumberFormatException e) {
+        }
+        return null;
     }
 
     public Object getObjectFromString(String key){

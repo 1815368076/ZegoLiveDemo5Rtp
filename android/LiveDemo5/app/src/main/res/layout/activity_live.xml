@@ -352,6 +352,19 @@
                 android:visibility="invisible"
                 />
 
+            <TextView
+                android:id="@+id/tv_aux_publish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/tv_tag"
+                android:layout_below="@id/tv_play_mixstream"
+                android:layout_marginTop="@dimen/dimen_5"
+                android:text="@string/start_aux_publish"
+                android:textColor="@color/sl_btn"
+                android:textSize="@dimen/text_size_5"
+                android:visibility="gone"
+                />
+
         </RelativeLayout>
     </FrameLayout>
 

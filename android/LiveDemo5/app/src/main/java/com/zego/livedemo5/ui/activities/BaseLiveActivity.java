@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
+import com.zego.livedemo5.constants.Constants;
 import com.zego.livedemo5.ui.activities.base.AbsBaseLiveActivity;
 import com.zego.livedemo5.ui.adapters.CommentsAdapter;
 import com.zego.livedemo5.ui.widgets.PublishSettingsPannel;
@@ -374,22 +375,15 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
                         if (mHostHasBeenCalled) {
                             mHostHasBeenCalled = false;
                             recordLog(MY_SELF + ": call state idle");
-                            // 登陆频道
-                            for (ViewLive viewLive : mListViewLive) {
-                                if (viewLive.isPublishView()) {
-                                    startPublish();
-                                } else if (viewLive.isPlayView()) {
-                                    startPlay(viewLive.getStreamID());
-                                }
-                            }
+                            mZegoLiveRoom.resumeModule(ZegoConstants.ModuleType.AUDIO);
                         }
 
                         break;
                     case TelephonyManager.CALL_STATE_RINGING:
                         recordLog(MY_SELF + ": call state ringing");
                         mHostHasBeenCalled = true;
-                        // 来电停止发布与播放
-                        stopAllStream();
+                        // 来电，暂停音频模块
+                        mZegoLiveRoom.pauseModule(ZegoConstants.ModuleType.AUDIO);
                         break;
 
                     case TelephonyManager.CALL_STATE_OFFHOOK:
@@ -808,22 +802,27 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         LiveQualityLogger.write("publishStreamQuality:%d, streamId: %s, videoFPS: %.2f, videoBitrate: %.2fKb/s", quality, streamID, videoFPS, videoBitrate);
     }
 
-    protected AuxData handleAuxCallback(int dataLen) {
+    final static int AUX_DATA_CHANNEL_COUNT = 2;
+    final static int AUX_DATA_SAMPLE_RATE = 44100;
+    final static int AUX_DATA_LENGHT = AUX_DATA_SAMPLE_RATE * AUX_DATA_CHANNEL_COUNT * 2 / 50;
+
+    protected AuxData handleAuxCallback(int exceptDataLength) {
         // 开启伴奏后, sdk每20毫秒一次取数据
-        if (!mEnableBackgroundMusic || dataLen <= 0) {
+        if (!mEnableBackgroundMusic) {
             return null;
         }
 
         AuxData auxData = new AuxData();
-        auxData.dataBuf = new byte[dataLen];
+        auxData.dataBuf = new byte[AUX_DATA_LENGHT];
 
         try {
             AssetManager am = getAssets();
             if (mIsBackgroundMusic == null) {
+                // a.pcm 为用于混音的音频数据，其采样率为 44100，声道数为 2，位深 16
                 mIsBackgroundMusic = am.open("a.pcm");
             }
-            int len = mIsBackgroundMusic.read(auxData.dataBuf);
 
+            int len = mIsBackgroundMusic.read(auxData.dataBuf);
             if (len <= 0) {
                 // 歌曲播放完毕
                 mIsBackgroundMusic.close();
@@ -833,8 +832,8 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
             e.printStackTrace();
         }
 
-        auxData.channelCount = 2;
-        auxData.sampleRate = 44100;
+        auxData.channelCount = AUX_DATA_CHANNEL_COUNT;
+        auxData.sampleRate = AUX_DATA_SAMPLE_RATE;
 
 
         return auxData;
@@ -984,6 +983,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
             @Override
             public void onSendRoomMessage(int errorCode, String roomID, long messageID) {
                 if (errorCode == 0) {
+                    mEdtMessage.setText("");
                     recordLog(MY_SELF + ": 发送房间消息成功, roomID:" + roomID);
                 } else {
                     recordLog(MY_SELF + ": 发送房间消息失败, roomID:" + roomID + ", messageID:" + messageID);

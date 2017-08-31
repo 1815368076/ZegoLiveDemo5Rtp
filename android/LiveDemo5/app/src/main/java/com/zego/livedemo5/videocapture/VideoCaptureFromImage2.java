@@ -23,7 +23,7 @@ import android.view.View;
 import com.zego.livedemo5.videocapture.ve_gl.EglBase;
 import com.zego.livedemo5.videocapture.ve_gl.GlRectDrawer;
 import com.zego.livedemo5.videocapture.ve_gl.GlUtil;
-import com.zego.zegoliveroom.videocapture.ZegoVideoCaptureDevice;
+import com.zego.zegoavkit2.ZegoVideoCaptureDevice;
 
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;

@@ -2,8 +2,8 @@ package com.zego.livedemo5.videocapture;
 
 import android.content.Context;
 
-import com.zego.zegoliveroom.videocapture.ZegoVideoCaptureDevice;
-import com.zego.zegoliveroom.videocapture.ZegoVideoCaptureFactory;
+import com.zego.zegoavkit2.ZegoVideoCaptureDevice;
+import com.zego.zegoavkit2.ZegoVideoCaptureFactory;
 
 
 /**

@@ -5,9 +5,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
-
-import com.zego.zegoliveroom.videofilter.ZegoVideoFilter;
-
+import com.zego.zegoavkit2.videofilter.ZegoVideoFilter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
