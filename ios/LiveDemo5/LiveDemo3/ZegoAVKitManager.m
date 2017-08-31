@@ -132,7 +132,6 @@ static __strong id<ZegoVideoFilterFactory> g_filterFactory = nullptr;
 
 + (void)setCustomAppID:(uint32_t)appid sign:(NSString *)sign
 {
-//    g_appID = appid;
     NSData *d = ConvertStringToSign(sign);
     
     if (d.length == 32 && appid != 0)
@@ -140,12 +139,13 @@ static __strong id<ZegoVideoFilterFactory> g_filterFactory = nullptr;
 //        g_appID = appid;
 //        g_signKey = [[NSData alloc] initWithData:d];
         
-        // 本地持久化
+        // 持久化
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
         [ud setObject:@(appid) forKey:kZegoDemoAppIDKey];
         [ud setObject:sign forKey:kZegoDemoAppSignKey];
         
         g_ZegoApi = nil;
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:@"RoomInstanceClear" object:nil userInfo:nil];
     }
 }
@@ -478,9 +478,6 @@ void prep2_func(const AVE::AudioFrame& inFrame, AVE::AudioFrame& outFrame)
             }
         }
             break;
-        case ZegoAppTypeRTMP:
-            return 1;           // RTMP版
-            break;
         case ZegoAppTypeUDP:
             return 1739272706;  // UDP版
             break;
@@ -497,12 +494,14 @@ void prep2_func(const AVE::AudioFrame& inFrame, AVE::AudioFrame& outFrame)
     //!! 规范用法：signKey 需要从 server 下发到 App，避免在 App 中存储，防止盗用
 
     ZegoAppType type = [self appType];
-    if (type == ZegoAppTypeRTMP)
-    {
-        Byte signkey[] = {0x91, 0x93, 0xcc, 0x66, 0x2a, 0x1c, 0x0e, 0xc1, 0x35, 0xec, 0x71, 0xfb, 0x07, 0x19, 0x4b, 0x38, 0x41, 0xd4, 0xad, 0x83, 0x78, 0xf2, 0x59, 0x90, 0xe0, 0xa4, 0x0c, 0x7f, 0xf4, 0x28, 0x41, 0xf7};
-        return [NSData dataWithBytes:signkey length:32];
-    }
-    else if (type == ZegoAppTypeUDP)
+    
+//    if (type == ZegoAppTypeRTMP)
+//    {
+//        Byte signkey[] = {0x91, 0x93, 0xcc, 0x66, 0x2a, 0x1c, 0x0e, 0xc1, 0x35, 0xec, 0x71, 0xfb, 0x07, 0x19, 0x4b, 0x38, 0x41, 0xd4, 0xad, 0x83, 0x78, 0xf2, 0x59, 0x90, 0xe0, 0xa4, 0x0c, 0x7f, 0xf4, 0x28, 0x41, 0xf7};
+//        return [NSData dataWithBytes:signkey length:32];
+//    }
+//    else
+    if (type == ZegoAppTypeUDP)
     {
         Byte signkey[] = {0x1e,0xc3,0xf8,0x5c,0xb2 ,0xf2,0x13,0x70,0x26,0x4e,0xb3,0x71,0xc8,0xc6,0x5c,0xa3,0x7f,0xa3,0x3b,0x9d,0xef,0xef,0x2a,0x85,0xe0,0xc8,0x99,0xae,0x82,0xc0,0xf6,0xf8};
         return [NSData dataWithBytes:signkey length:32];
@@ -522,7 +521,18 @@ void prep2_func(const AVE::AudioFrame& inFrame, AVE::AudioFrame& outFrame)
         } else {
             return nil;
         }
-//        return g_signKey;
+    }
+}
+
++ (NSString *)customAppSign {
+    ZegoAppType type = [self appType];
+    if (type == ZegoAppTypeCustom) {
+        // 从本地持久化文件中加载
+        NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+        NSString *appSign = [ud objectForKey:kZegoDemoAppSignKey];
+        return appSign;
+    } else {
+        return nil;
     }
 }
 

@@ -160,7 +160,7 @@
         NSLog(@"%s, error: %d", __func__, errorCode);
         if (errorCode == 0)
         {
-            NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录房间成功. roomId %@", nil), self.roomID];
+            NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"登录房间成功. roomID: %@", nil), self.roomID];
             [self addLogString:logString];
             [self doPublish];
         }
@@ -246,11 +246,12 @@
 
 - (void)onPublishQualityUpdate:(NSString *)streamID quality:(ZegoApiPublishQuality)quality
 {
+    NSString *detail = [self addStaticsInfo:YES stream:streamID fps:quality.fps kbs:quality.kbps rtt:quality.rtt pktLostRate:quality.pktLostRate];
+    
     UIView *view = self.viewContainersDict[streamID];
     if (view)
-        [self updateQuality:quality.quality view:view];
-    
-    [self addStaticsInfo:YES stream:streamID fps:quality.fps kbs:quality.kbps];
+        [self updateQuality:quality.quality detail:detail onView:view];
+
 }
 
 - (void)onAuxCallback:(void *)pData dataLen:(int *)pDataLen sampleRate:(int *)pSampleRate channelCount:(int *)pChannelCount

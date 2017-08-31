@@ -39,7 +39,7 @@
 
 - (void)userDidCancelSetup {
     // Tell ReplayKit that the extension was cancelled by the user
-    [self.extensionContext cancelRequestWithError:[NSError errorWithDomain:@"YourAppDomain" code:-1     userInfo:nil]];
+    [self.extensionContext cancelRequestWithError:[NSError errorWithDomain:@"YourAppDomain" code:-1 userInfo:nil]];
 }
 
 - (IBAction)onStartLive:(id)sender

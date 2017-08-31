@@ -23,10 +23,9 @@ typedef enum : NSUInteger {
 
 
 typedef enum : NSUInteger {
-    ZegoAppTypeUDP      = 0,    // UDP版
-    ZegoAppTypeRTMP     = 1,    // RTMP版
-    ZegoAppTypeI18N     = 2,    // 国际版
-    ZegoAppTypeCustom   = 3,    // 用户自定义
+    ZegoAppTypeUDP      = 0,    // 国内版
+    ZegoAppTypeI18N     = 1,    // 国际版
+    ZegoAppTypeCustom   = 2,    // 自定义
 } ZegoAppType;
 
 @interface ZegoDemoHelper : NSObject
@@ -75,6 +74,8 @@ typedef enum : NSUInteger {
 
 + (void)setAppType:(ZegoAppType)type;
 + (ZegoAppType)appType;
+
++ (NSString *)customAppSign;
 
 
 #if TARGET_OS_SIMULATOR

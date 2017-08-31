@@ -270,6 +270,7 @@
     CGFloat height = config.videoEncodeResolution.height;
     CGFloat width = config.videoEncodeResolution.width;
     
+    // 如果开播前横屏，则切换视频采集分辨率的宽高
     if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
     {
         // * adjust width/height for landscape

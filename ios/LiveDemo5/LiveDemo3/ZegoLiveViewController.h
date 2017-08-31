@@ -84,6 +84,7 @@
 // 观众端响应邀请连麦请求
 - (void)sendInviteRequestRespond:(BOOL)agreed seq:(int)seq requestPublisher:(ZegoUser *)requestUser;
 
+// 保持屏幕常亮
 - (void)setIdelTimerDisable:(BOOL)disable;
 
 // 电话监听处理函数
@@ -91,7 +92,7 @@
 // 添加 log（可在日志界面更新）
 - (void)addLogString:(NSString *)logString;
 // 更新直播质量
-- (void)updateQuality:(int)quality view:(UIView *)playerView;
+- (void)updateQuality:(int)quality detail:(NSString *)detail onView:(UIView *)playerView;
 
 // 混流时的回调实现
 - (void)auxCallback:(void *)pData dataLen:(int *)pDataLen sampleRate:(int *)pSampleRate channelCount:(int *)pChannelCount;
@@ -105,7 +106,7 @@
 - (NSString *)encodeDictionaryToJSON:(NSDictionary *)dictionary;
 - (NSDictionary *)decodeJSONToDictionary:(NSString *)json;
 
-- (void)addStaticsInfo:(BOOL)publish stream:(NSString *)streamID fps:(double)fps kbs:(double)kbs;
+- (NSString *)addStaticsInfo:(BOOL)publish stream:(NSString *)streamID fps:(double)fps kbs:(double)kbs rtt:(int)rtt pktLostRate:(int)pktLostRate;
 
 @end
 

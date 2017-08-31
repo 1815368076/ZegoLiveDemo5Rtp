@@ -8,6 +8,19 @@
 
 #import "ZegoVideoCaptureFromImage.h"
 #import <sys/time.h>
+#import <OpenGLES/ES2/gl.h>
+#import <OpenGLES/ES2/glext.h>
+
+//
+// * ZEGO_DEMO_EXTERNAL_VIDEO_CAPTURE_DEVICE_OUTPUT_TYPE_CV_PIXCEL_BUFFER
+// *
+// * capture device output type:
+// * 1 use pixel buffer
+// * 0 use gl texture id.
+// *    WARNING: 1. may cause bad performance! 2. do not support simulator!
+//
+#define ZEGO_DEMO_EXTERNAL_VIDEO_CAPTURE_DEVICE_OUTPUT_TYPE_CV_PIXCEL_BUFFER    1
+
 
 @implementation ZegoVideoCaptureFromImage {
     struct {
@@ -26,19 +39,26 @@
     
     id<ZegoVideoCaptureClientDelegate> client_;
     
-    bool is_take_photo_;
+#if !ZEGO_DEMO_EXTERNAL_VIDEO_CAPTURE_DEVICE_OUTPUT_TYPE_CV_PIXCEL_BUFFER
+    EAGLContext *m_pGLContext;
+    CVOpenGLESTextureCacheRef m_pTexCache;
+#endif
 }
-
-#pragma mark - ZegoVideoCaptureDevice
 
 - (void)zego_allocateAndStart:(id<ZegoVideoCaptureClientDelegate>) client {
     client_ = client;
-    is_take_photo_ = false;
 }
 
 - (void)zego_stopAndDeAllocate {
     [client_ destroy];
     client_ = nil;
+    
+#if !ZEGO_DEMO_EXTERNAL_VIDEO_CAPTURE_DEVICE_OUTPUT_TYPE_CV_PIXCEL_BUFFER
+    if (m_pTexCache) {
+        CFRelease(m_pTexCache);
+        m_pTexCache = 0;
+    }
+#endif
 }
 
 NSTimer *g_fps_timer = nil;
@@ -83,6 +103,14 @@ static CVPixelBufferRef pb = NULL;
     return 0;
 }
 
+- (ZegoVideoCaptureDeviceOutputBufferType)zego_supportBufferType {
+#if ZEGO_DEMO_EXTERNAL_VIDEO_CAPTURE_DEVICE_OUTPUT_TYPE_CV_PIXCEL_BUFFER
+    return ZegoVideoCaptureDeviceOutputBufferTypeCVPixelBuffer;
+#else
+    return ZegoVideoCaptureDeviceOutputBufferTypeGlTexture2D;
+#endif
+}
+
 - (int)zego_setFrameRate:(int)framerate {
     // * no change
     if(m_oSettings.fps == framerate) {
@@ -101,8 +129,6 @@ static CVPixelBufferRef pb = NULL;
 }
 
 - (int)zego_setWidth:(int)width andHeight:(int)height {
-    // * not changed
-    // * little trick here: swap heigh and width
     if ((m_oSettings.height == height) && (m_oSettings.width == width)) {
         return 0;
     }
@@ -190,18 +216,41 @@ static CVPixelBufferRef pb = NULL;
     return bgraImageRef;
 }
 
-- (CVPixelBufferRef)pixelBufferFromCGImage:(CGImageRef)image {
+- (CVPixelBufferRef)createBGRAPixelBufferFromCGImage:(CGImageRef)image {
     
     int width = m_oSettings.width;
     int height = m_oSettings.height;
     
+    CVReturn status;
     CVPixelBufferRef pixelBuffer;
-    CVReturn status = CVPixelBufferCreate(kCFAllocatorDefault,
-                                          width,
-                                          height,
-                                          kCVPixelFormatType_32BGRA, // no support kCVPixelFormatType_32RGBA?
-                                          NULL,
-                                          &pixelBuffer);
+    
+    {
+        
+    // empty value for attr value.
+    CFDictionaryRef empty = CFDictionaryCreate(kCFAllocatorDefault,
+                                               NULL, NULL, 0,
+                                               &kCFTypeDictionaryKeyCallBacks,
+                                               &kCFTypeDictionaryValueCallBacks); // our empty IOSurface properties dictionary
+    
+    CFMutableDictionaryRef attrs = CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                                             1,
+                                                             &kCFTypeDictionaryKeyCallBacks,
+                                                             &kCFTypeDictionaryValueCallBacks);
+    
+    CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
+    CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
+    
+    
+    status = CVPixelBufferCreate(kCFAllocatorDefault,
+                                 width,
+                                 height,
+                                 kCVPixelFormatType_32BGRA, // no support kCVPixelFormatType_32RGBA?
+                                 attrs,
+                                 &pixelBuffer);
+    CFRelease(attrs);
+    CFRelease(empty);
+        
+    }
     
     if (status != kCVReturnSuccess) {
         return NULL;
@@ -219,17 +268,7 @@ static CVPixelBufferRef pb = NULL;
     color[3] = (currentTime * 4) % 0xFF;
     memset_pattern4(data, color, CVPixelBufferGetDataSize(pixelBuffer));
     
-    CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
     
-    CGContextRef context = CGBitmapContextCreate(data,
-                                                 width,
-                                                 height,
-                                                 8,
-                                                 CVPixelBufferGetBytesPerRow(pixelBuffer),
-                                                 rgbColorSpace,
-                                                 kCGImageAlphaNoneSkipLast);
-    
-    CGImageRef bgraImage = [self CreateBGRAImageFromRGBAImage:image];
     
     CGFloat imageWith = CGImageGetWidth(image);
     CGFloat imageHeight = CGImageGetHeight(image);
@@ -243,18 +282,57 @@ static CVPixelBufferRef pb = NULL;
         
         lastTime = currentTime;
     }
+
+    {
+    
+    CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
+        
+    CGContextRef context = CGBitmapContextCreate(data, width, height, 8,
+                                                 CVPixelBufferGetBytesPerRow(pixelBuffer),
+                                                 rgbColorSpace,
+                                                 kCGImageAlphaPremultipliedLast);
+        
+    CGImageRef bgraImage = [self CreateBGRAImageFromRGBAImage:image];
     
     CGContextDrawImage(context,
                        CGRectMake(origin.x, origin.y, CGImageGetWidth(image), CGImageGetHeight(image)),
                        bgraImage);
     
     CGImageRelease(bgraImage);
-    
-    CGColorSpaceRelease(rgbColorSpace);
     CGContextRelease(context);
+    CGColorSpaceRelease(rgbColorSpace);
+        
+    }
+    
     CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
     
     return pixelBuffer;
+}
+
+- (CVReturn)createNV12PixelBuffer:(CVPixelBufferRef *)ppixelBuffer width:(int)width height:(int)height{
+    CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault,
+                                       width, height,
+                                       kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+                                       nil, ppixelBuffer);
+    
+    err = CVPixelBufferLockBaseAddress(*ppixelBuffer, 0);
+    if (err != kCVReturnSuccess) {
+        return err;
+    }
+    
+    size_t plane_count = CVPixelBufferGetPlaneCount(*ppixelBuffer);
+    for (int i = 0; i < plane_count; i++) {
+        unsigned char* offset_dst = (unsigned char*)CVPixelBufferGetBaseAddressOfPlane(*ppixelBuffer, i);
+        int stride = (int)CVPixelBufferGetBytesPerRowOfPlane(*ppixelBuffer, i);
+        int height = (int)CVPixelBufferGetHeightOfPlane(*ppixelBuffer, i);
+        
+        static int i = 0;
+        memset(offset_dst, ++i % 128, stride * height);
+    }
+    
+    CVPixelBufferUnlockBaseAddress(*ppixelBuffer, 0);
+    
+    return err;
 }
 
 - (void)handleTick {
@@ -263,10 +341,9 @@ static CVPixelBufferRef pb = NULL;
         pb = NULL;
     }
     
-    if (!pb)
-    {
+    if (!pb) {
         UIImage *img = [UIImage imageNamed:@"zego.png"];
-        pb = [self pixelBufferFromCGImage:img.CGImage];
+        pb = [self createBGRAPixelBufferFromCGImage:img.CGImage];
         
         CGImageRef image = [self createCGImageFromCVPixelBuffer:pb];
         self.videoImage = [UIImage imageWithCGImage:image];
@@ -278,7 +355,47 @@ static CVPixelBufferRef pb = NULL;
     unsigned long long t = (unsigned long long)(tv_now.tv_sec) * 1000 + tv_now.tv_usec / 1000;
     
     CMTime pts = CMTimeMakeWithSeconds(t, 1000);
+    
+#if ZEGO_DEMO_EXTERNAL_VIDEO_CAPTURE_DEVICE_OUTPUT_TYPE_CV_PIXCEL_BUFFER
+    
     [client_ onIncomingCapturedData:pb withPresentationTimeStamp:pts];
+    
+#else
+    
+    if (!m_pGLContext) {
+        m_pGLContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    }
+    
+    EAGLContext *pOldGLContext = nil;
+    if([EAGLContext currentContext] != m_pGLContext) {
+        pOldGLContext = [EAGLContext currentContext];
+        [EAGLContext setCurrentContext:m_pGLContext];
+    }
+    
+    if (!m_pTexCache) {
+        CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, m_pGLContext, NULL, &m_pTexCache);
+    }
+    
+    CVOpenGLESTextureRef texture = NULL;
+    if ([self createTexture:&texture FromPixelBuffer:pb] == 0) {
+        [client_ onIncomingCapturedData:CVOpenGLESTextureGetName(texture)
+                                  width:(int)CVPixelBufferGetWidth(pb)
+                                 height:(int)CVPixelBufferGetHeight(pb)
+              withPresentationTimeStamp:pts];
+    }
+    
+    if (texture) {
+        glBindTexture(CVOpenGLESTextureGetTarget(texture), 0);
+        CFRelease(texture);
+        texture = nil;
+    }
+    
+    // * restore context
+    if (pOldGLContext != nil) {
+        [EAGLContext setCurrentContext:pOldGLContext];
+    }
+    
+#endif
 }
 
 - (CGImageRef)createCGImageFromCVPixelBuffer:(CVPixelBufferRef)pixels {
@@ -293,6 +410,43 @@ static CVPixelBufferRef pb = NULL;
     
     return videoImage;
 }
+
+#if !ZEGO_DEMO_EXTERNAL_VIDEO_CAPTURE_DEVICE_OUTPUT_TYPE_CV_PIXCEL_BUFFER
+- (int)createTexture:(CVOpenGLESTextureRef*)texture FromPixelBuffer:(CVPixelBufferRef)pixelBuffer {
+    int width = (int)CVPixelBufferGetWidth(pixelBuffer);
+    int height = (int)CVPixelBufferGetHeight(pixelBuffer);
+    
+    CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                                m_pTexCache,
+                                                                pixelBuffer,
+                                                                NULL,
+                                                                GL_TEXTURE_2D,
+                                                                GL_RGBA,
+                                                                (GLsizei)width,
+                                                                (GLsizei)height,
+                                                                GL_BGRA,
+                                                                GL_UNSIGNED_BYTE,
+                                                                0,
+                                                                texture);
+    if (err != kCVReturnSuccess) {
+        if (texture) {
+            CFRelease(*texture);
+        }
+        return -1;
+    }
+    
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(CVOpenGLESTextureGetTarget(*texture), CVOpenGLESTextureGetName(*texture));
+    
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    return 0;
+}
+#endif
 
 @end
 
@@ -312,8 +466,7 @@ static CVPixelBufferRef pb = NULL;
     
 }
 
-- (ZegoVideoCaptureFromImage *)getCaptureDevice
-{
+- (ZegoVideoCaptureFromImage *)getCaptureDevice {
     return g_device_;
 }
 
