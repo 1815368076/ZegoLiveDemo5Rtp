@@ -277,8 +277,8 @@ void CZegoEntryDlg::PullRoomList()
 
         file->Close();
         session.Close();
-        delete file;
-        file = nullptr;
+       //delete file;
+       //file = nullptr;
 
         // 解析房间列表
         ParseRoomList(strJson);

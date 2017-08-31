@@ -45,6 +45,16 @@ namespace ZEGO
         ZEGO_API bool StartPlayingStream(const char* pszStreamID, void* pView, const char* pszParams = 0);
 
         /**
+         更新播放视图
+         
+         @param pView 播放视图
+         @param pszStreamID 流 ID
+         @return true 成功，false 失败
+         @attention 调用 StartPlayingStream 播放流成功以后，如果要切换流播放 View 或者停止显示流画面，调用该 API 变更
+         */
+        ZEGO_API bool UpdatePlayView(void* pView, const char* pszStreamID);
+        
+        /**
          停止播放流
 
          @param pszStreamID 流 ID
@@ -108,7 +118,7 @@ namespace ZEGO
          @param pszStreamID 流ID, nullptr表示统一设置所有拉流的播放音量
          @attention 直播时通过此 API 软件调整音量
          */
-        ZEGO_API bool SetPlayVolume(int volume, const char* pszStreamID = nullptr);
+        ZEGO_API bool SetPlayVolume(int volume, const char* pszStreamID = 0);
         
         /**
          获取当前播放视频的音量
@@ -184,9 +194,10 @@ namespace ZEGO
 
          @param uMask 启用音频源选择，参考 ZegoAVAPIAudioRecordMask
          @param nSampleRate 采样率 8000, 16000, 22050, 24000, 32000, 44100, 48000
+         @param nChannels 声道数 1(单声道) 或 2(双声道)
          @return true 成功，false 失败
          */
-        ZEGO_API bool EnableSelectedAudioRecord(unsigned int uMask, int nSampleRate = 44100);
+        ZEGO_API bool EnableSelectedAudioRecord(unsigned int uMask, int nSampleRate = 44100, int nChannels = 1);
         
         /**
          设置音频录制回调

@@ -190,7 +190,7 @@ namespace ZEGO
          @param pszDeviceID 设备 ID
          @return true 成功，false 失败
          */
-        ZEGO_API bool SetVideoDevice(const char* pszDeviceID);
+        ZEGO_API bool SetVideoDevice(const char* pszDeviceID, AV::PublishChannelIndex idx = AV::PUBLISH_CHN_MAIN);
         
 #ifdef WIN32
         /**

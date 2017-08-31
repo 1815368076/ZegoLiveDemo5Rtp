@@ -277,7 +277,7 @@ void CZegoRoomDlg::EnumVideoAndAudioDevice()
         LIVEROOM::SetAudioVolumeNotify(AV::AudioDevice_Output, m_strDefaultSpeakerID.c_str());
     }
 
-    LIVEROOM::SetSpeakerSimpleMute(m_strDefaultSpeakerID.c_str(), true);
+//    LIVEROOM::SetSpeakerSimpleMute(m_strDefaultSpeakerID.c_str(), true);
     
     std::string micDeviceId = m_pAVSettings->GetMircophoneId();
 
@@ -389,13 +389,13 @@ void CZegoRoomDlg::OnBnClickedCheckMicrophone()
 
 void CZegoRoomDlg::OnBnClickedButtonAux()
 {
-	LONG lAuxStatus = GetWindowLong(m_btnAux.GetSafeHwnd(), GWL_USERDATA);
+	LONG lAuxStatus = GetWindowLongPtr(m_btnAux.GetSafeHwnd(), GWLP_USERDATA);
 	lAuxStatus == 0 ? BeginAux() : EndAux();
 }
 
 void CZegoRoomDlg::BeginAux(void)
 {
-	if (GetWindowLong(m_btnAux.GetSafeHwnd(), GWL_USERDATA) == 1)
+	if (GetWindowLongPtr(m_btnAux.GetSafeHwnd(), GWLP_USERDATA) == 1)
 	{
 		return;
 	}
@@ -441,13 +441,13 @@ void CZegoRoomDlg::BeginAux(void)
         LIVEROOM::EnableAux(TRUE);
 
 		m_btnAux.SetWindowText(_T("πÿ±’ªÏ“Ù"));
-		SetWindowLong(m_btnAux.GetSafeHwnd(), GWL_USERDATA, 1);
+		SetWindowLongPtr(m_btnAux.GetSafeHwnd(), GWLP_USERDATA, 1);
 	}
 }
 
 void CZegoRoomDlg::EndAux(void)
 {
-	if (GetWindowLong(m_btnAux.GetSafeHwnd(), GWL_USERDATA) == 0)
+	if (GetWindowLongPtr(m_btnAux.GetSafeHwnd(), GWLP_USERDATA) == 0)
 	{
 		return;
 	}
@@ -455,7 +455,7 @@ void CZegoRoomDlg::EndAux(void)
     LIVEROOM::EnableAux(FALSE);
 
 	m_btnAux.SetWindowText(_T("ø™∆ÙªÏ“Ù"));
-	SetWindowLong(m_btnAux.GetSafeHwnd(), GWL_USERDATA, 0);
+	SetWindowLongPtr(m_btnAux.GetSafeHwnd(), GWLP_USERDATA, 0);
 
 	delete[] m_pAuxData;
 	m_nAuxDataLen = 0;

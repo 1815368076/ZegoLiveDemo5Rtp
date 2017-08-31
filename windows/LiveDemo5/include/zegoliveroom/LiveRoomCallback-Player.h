@@ -109,38 +109,6 @@ namespace ZEGO
             virtual void OnVideoDataCallback(const unsigned char *pData, int dataLen, const char* pszStreamID, int width, int height, int strides[4]) = 0;
         };
     }
-    
-#ifndef ZegoAVCallback_h
-    namespace AV
-    {
-        class IZegoAudioRecordCallback
-        {
-        public:
-            /**
-             音频录制结果回调
-
-             @param pData SDK 录制的音频数据
-             @param data_len 数据长度
-             @param sample_rate 采样率，不固定，以当前值为准
-             @param num_channels 通道数量，单通道
-             @param bit_depth 位深度，16 bit
-             @param type 音频类型，参考 ZegoAVAPIAudioRecordMask
-             @attention 开启音频录制并设置成功代理对象后，用户调用此 API 获取 SDK 录制的音频数据。用户可自行对数据进行处理，例如：存储等
-             @note SDK 发送音频数据的周期为 20ms
-             @note 存储数据时注意取 sampleRate、numOfChannels、bitDepth 参数写包头信息
-             */
-            virtual void OnAudioRecordCallback(const unsigned char *pData, int data_len, int sample_rate, int num_channels, int bit_depth, unsigned int type) {}
-            
-            /**
-             音频录制回调
-
-             @warning Deprecated，请使用带 type 参数的 OnAudioRecordCallback 回调
-             */
-            virtual void OnAudioRecordCallback(const unsigned char *pData, int data_len, int sample_rate, int num_channels, int bit_depth) {}
-        };
-    }
-#endif
-    
 }
 
 

@@ -319,5 +319,13 @@ namespace AVE {
         virtual VideoFilter* Create() = 0;
         virtual void Destroy(VideoFilter *vf) = 0;
     };
+    
+    class Camera : public VideoCaptureDeviceBase, public SupportsVideoCapture {
+    public:
+        static Camera* Create();
+        static void Destroy(Camera* camera);
+        
+        virtual void SetDeviceId(const char* device_id) = 0;
+    };
 }
 #endif /* ZEGOVideoCapture_h */

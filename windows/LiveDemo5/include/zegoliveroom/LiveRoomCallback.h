@@ -108,64 +108,7 @@ namespace ZEGO
             virtual ~IAVEngineCallback(){}
         };
     }
-    
-#ifndef ZegoAVCallback_h
-    namespace AV
-    {
-        class IZegoLiveEventCallback
-        {
-        public:
-            /**
-             AVKit 事件通知
 
-             @param event 事件
-             @param pInfo 信息
-             */
-            virtual void OnAVKitEvent(int event, EventInfo* pInfo) = 0;
-        };
-        
-        class IZegoDeviceStateCallback
-        {
-        public:
-#ifdef WIN32
-            /**
-             音频设备状态变更
-
-             @param deviceType 设备类型
-             @param deviceInfo 设备信息
-             @param state 状态
-             */
-            virtual void OnAudioDeviceStateChanged(AudioDeviceType deviceType, DeviceInfo *deviceInfo, DeviceState state) = 0;
-            
-            /**
-             视频设备状态变更
-
-             @param deviceInfo 设备信息
-             @param state 状态
-             */
-            virtual void OnVideoDeviceStateChanged(DeviceInfo *deviceInfo, DeviceState state) = 0;
-            
-            /**
-             音频设备音量变更
-
-             @param deviceType 设备类型
-             @param deviceId 设备 Id
-             @param volumeType 音量类型
-             @param volume 音量值
-             @param bMuted 是否静音
-             */
-            virtual void OnAudioVolumeChanged(AudioDeviceType deviceType, const char *deviceId, VolumeType volumeType, unsigned int volume, bool bMuted) {}
-#endif
-            /**
-             设备错误
-
-             @param deviceName 设备名称
-             @param errorCode 错误码
-             */
-            virtual void OnDeviceError(const char* deviceName, int errorCode) {}
-        };
-    }
-#endif
 }
 
 #endif /* ZegoLiveRoomCallback_h */

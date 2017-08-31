@@ -35,7 +35,7 @@ namespace ZEGO
              @param sendSeq 发送消息 seq
              @param messageId 消息 Id
              */
-            virtual void OnSendRoomMessage(int errorCode, const char *pszRoomID, int sendSeq, unsigned long long messageId) = 0;
+            virtual void OnSendRoomMessage(int errorCode, const char *pszRoomID, int sendSeq, unsigned long long messageId) {}
             
             /**
              创建会话消息结果
@@ -45,7 +45,7 @@ namespace ZEGO
              @param sendSeq 消息 seq
              @param pszConversationID 会话 ID
              */
-            virtual void OnCreateConversation(int errorCode, const char *pszRoomID, int sendSeq, const char *pszConversationID) = 0;
+            virtual void OnCreateConversation(int errorCode, const char *pszRoomID, int sendSeq, const char *pszConversationID) {}
             
             /**
              获取会话信息结果
@@ -57,7 +57,7 @@ namespace ZEGO
              @param pMemberList 会话成员列表
              @param memberCount 会话成员数量
              */
-            virtual void OnGetConversationInfo(int errorCode, const char *pszRoomID, const char *pszConverID, ROOM::ZegoConverInfo *pConverInfo, ROOM::ZegoUser *pMemberList, unsigned int memberCount) = 0;
+            virtual void OnGetConversationInfo(int errorCode, const char *pszRoomID, const char *pszConverID, ROOM::ZegoConverInfo *pConverInfo, ROOM::ZegoUser *pMemberList, unsigned int memberCount) {}
            
             /**
              发送会话消息
@@ -68,7 +68,7 @@ namespace ZEGO
              @param sendSeq 消息 seq
              @param messageId 消息 Id
              */
-            virtual void OnSendConversationMessage(int errorCode, const char *pszRoomID, const char *pszConverID, int sendSeq, unsigned long long messageId) = 0;
+            virtual void OnSendConversationMessage(int errorCode, const char *pszRoomID, const char *pszConverID, int sendSeq, unsigned long long messageId) {}
             
             /**
              收到房间消息回调
@@ -77,7 +77,7 @@ namespace ZEGO
              @param messageCount 消息内容
              @param pszRoomID 房间 ID
              */
-            virtual void OnRecvRoomMessage(ROOM::ZegoRoomMessage *pMessageInfo, unsigned int messageCount, const char *pszRoomID) = 0;
+            virtual void OnRecvRoomMessage(ROOM::ZegoRoomMessage *pMessageInfo, unsigned int messageCount, const char *pszRoomID) {}
             
             /**
              收到会话消息
@@ -86,7 +86,7 @@ namespace ZEGO
              @param pszConversationID 会话 ID
              @param pszRoomID 房间 ID
              */
-            virtual void OnRecvConversationMessage(ROOM::ZegoConversationMessage *pMessageInfo, const char *pszConversationID, const char *pszRoomID) = 0;
+            virtual void OnRecvConversationMessage(ROOM::ZegoConversationMessage *pMessageInfo, const char *pszConversationID, const char *pszRoomID) {}
             
             virtual ~IIMCallback() {}
         };

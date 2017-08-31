@@ -53,7 +53,7 @@
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Dynamic</UseOfMfc>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -96,14 +96,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions);ZEGOAVKIT_IMPORT</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\include\zegoliveroom;rapidjson\;$(ProjectDir);model\;base\;signal\;ui\settings\;ui\entry\;ui\liveroom\;ui\;config\</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>zegoliveroom.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\libs\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\libs\x86\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <Midl>
@@ -120,13 +120,13 @@
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
     <PreBuildEvent>
-      <Command>if Exist   "$(ProjectDir)..\libs\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)..\bin\$(Configuration)\zegoliveroom.dll")
-if Exist   "$(ProjectDir)..\libs\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)\$(Configuration)\zegoliveroom.dll")
+      <Command>if Exist   "$(ProjectDir)..\libs\x86\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\x86\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)..\bin\x86\$(Configuration)\zegoliveroom.dll")
+if Exist   "$(ProjectDir)..\libs\x86\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\x86\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)\$(Configuration)\zegoliveroom.dll")
 
-if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.pcm"  "$(ProjectDir)..\bin\$(Configuration)\a.pcm")</Command>
+if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.pcm"  "$(ProjectDir)..\bin\x86\$(Configuration)\a.pcm")</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>if Exist  "$(ProjectDir)$(Configuration)\$(TargetName)$(TargetExt)" (echo F | xcopy  /Y  "$(ProjectDir)$(Configuration)\$(TargetName)$(TargetExt)" "$(ProjectDir)..\bin\$(Configuration)\$(TargetName)$(TargetExt)")
+      <Command>if Exist  "$(ProjectDir)$(Configuration)\$(TargetName)$(TargetExt)" (echo F | xcopy  /Y  "$(ProjectDir)$(Configuration)\$(TargetName)$(TargetExt)" "$(ProjectDir)..\bin\x86\$(Configuration)\$(TargetName)$(TargetExt)")
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -135,11 +135,16 @@ if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.p
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions);ZEGOAVKIT_IMPORT</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\include\zegoliveroom;rapidjson\;$(ProjectDir);model\;base\;signal\;ui\settings\;ui\entry\;ui\liveroom\;ui\;config\</AdditionalIncludeDirectories>
+      <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\libs\x64\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>zegoliveroom.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -151,6 +156,15 @@ if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.p
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>if Exist   "$(ProjectDir)..\libs\x64\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\x64\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)..\bin\x64\$(Configuration)\zegoliveroom.dll")
+if Exist   "$(ProjectDir)..\libs\x64\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\x64\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)\x64\$(Configuration)\zegoliveroom.dll")
+
+if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.pcm"  "$(ProjectDir)..\bin\x64\$(Configuration)\a.pcm")</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>if Exist  "$(ProjectDir)x64\$(Configuration)\$(TargetName)$(TargetExt)" (echo F | xcopy  /Y  "$(ProjectDir)x64\$(Configuration)\$(TargetName)$(TargetExt)" "$(ProjectDir)..\bin\x64\$(Configuration)\$(TargetName)$(TargetExt)")</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -170,7 +184,7 @@ if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.p
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>zegoliveroom.lib</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\libs\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\libs\x86\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -183,13 +197,13 @@ if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.p
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PreBuildEvent>
-      <Command>if Exist   "$(ProjectDir)..\libs\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)..\bin\$(Configuration)\zegoliveroom.dll")
-if Exist   "$(ProjectDir)..\libs\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)\$(Configuration)\zegoliveroom.dll")
+      <Command>if Exist   "$(ProjectDir)..\libs\x86\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\x86\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)..\bin\x86\$(Configuration)\zegoliveroom.dll")
+if Exist   "$(ProjectDir)..\libs\x86\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\x86\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)\$(Configuration)\zegoliveroom.dll")
 
-if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.pcm"  "$(ProjectDir)..\bin\$(Configuration)\a.pcm")</Command>
+if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.pcm"  "$(ProjectDir)..\bin\x86\$(Configuration)\a.pcm")</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>if Exist  "$(ProjectDir)$(Configuration)\$(TargetName)$(TargetExt)" (echo F | xcopy  /Y  "$(ProjectDir)$(Configuration)\$(TargetName)$(TargetExt)" "$(ProjectDir)..\bin\$(Configuration)\$(TargetName)$(TargetExt)")
+      <Command>if Exist  "$(ProjectDir)$(Configuration)\$(TargetName)$(TargetExt)" (echo F | xcopy  /Y  "$(ProjectDir)$(Configuration)\$(TargetName)$(TargetExt)" "$(ProjectDir)..\bin\x86\$(Configuration)\$(TargetName)$(TargetExt)")
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -197,16 +211,21 @@ if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.p
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions);ZEGOAVKIT_IMPORT</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\include\zegoliveroom;rapidjson\;$(ProjectDir);model\;base\;signal\;ui\settings\;ui\entry\;ui\liveroom\;ui\;config\</AdditionalIncludeDirectories>
+      <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\libs\x64\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>zegoliveroom.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -218,6 +237,15 @@ if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.p
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>if Exist   "$(ProjectDir)..\libs\x64\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\x64\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)..\bin\x64\$(Configuration)\zegoliveroom.dll")
+if Exist   "$(ProjectDir)..\libs\x64\$(Configuration)\zegoliveroom.dll" (echo F | xcopy  /Y   "$(ProjectDir)..\libs\x64\$(Configuration)\zegoliveroom.dll"  "$(ProjectDir)\x64\$(Configuration)\zegoliveroom.dll")
+
+if Exist   "$(ProjectDir)\res\a.pcm" (echo F | xcopy  /Y   "$(ProjectDir)res\a.pcm"  "$(ProjectDir)..\bin\x64\$(Configuration)\a.pcm")</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>if Exist  "$(ProjectDir)x64\$(Configuration)\$(TargetName)$(TargetExt)" (echo F | xcopy  /Y  "$(ProjectDir)x64\$(Configuration)\$(TargetName)$(TargetExt)" "$(ProjectDir)..\bin\x64\$(Configuration)\$(TargetName)$(TargetExt)")</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

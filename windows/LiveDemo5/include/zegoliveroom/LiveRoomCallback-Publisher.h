@@ -84,12 +84,16 @@ namespace ZEGO
              */
             virtual void OnCaptureVideoSizeChanged(int nWidth, int nHeight) {}
             
+            virtual void OnCaptureVideoSizeChanged(AV::PublishChannelIndex index, int nWidth, int nHegith) {}
+            
             /**
              预览截图
 
              @param pImage 截图结果
              */
             virtual void OnPreviewSnapshot(void *pImage) {}
+            
+            virtual void OnPreviewSnapshot(AV::PublishChannelIndex index, void *pImage) {}
             
             /**
              混音数据输入回调
