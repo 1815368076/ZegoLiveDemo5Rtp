@@ -14,6 +14,7 @@
 #import <MessageUI/MessageUI.h>
 #import <SafariServices/SFSafariViewController.h>
 #import <SSZipArchive/SSZipArchive.h>
+#import "ZegoShareLogViewController.h"
 
 @interface ZegoSetTableViewController () <UITextFieldDelegate, MFMailComposeViewControllerDelegate>
 
@@ -56,7 +57,7 @@
     [self.tableView addGestureRecognizer:longPressGesture];
     
     // 发送日志邮件彩蛋
-    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(sendEmail)];
+    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(shareLogFile)];
     gesture.numberOfTapsRequired = 5;
     [self.tableView addGestureRecognizer:gesture];
 
@@ -411,6 +412,10 @@
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [alertView show];
     }
+}
+
+- (void)shareLogFile {
+    [self performSegueWithIdentifier:@"uploadLogIdentifier" sender:nil];
 }
 
 - (void)sendEmail {
