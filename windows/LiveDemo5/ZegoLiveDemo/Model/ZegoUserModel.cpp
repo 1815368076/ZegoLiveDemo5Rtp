@@ -1,32 +1,32 @@
-#include "stdafx.h"
-#include "ZegoUserModel.h"
+﻿#include "ZegoUserModel.h"
 
-CZegoUserModel::CZegoUserModel(const std::wstring& userId, const std::wstring& userName, bool isCurUser/*= false*/) :
-    m_strUserId(userId),
-    m_strUserName(userName),
-    m_bCurrentUser(isCurUser)
+QZegoUserModel::QZegoUserModel(const QString &userId, const QString &userName, bool isCurUser) :
+m_strUserId(userId),
+m_strUserName(userName),
+m_bCurrentUser(isCurUser)
 {
-    m_bPrimary = m_strUserId.find(_T("_primary")) != std::string::npos;
+	m_bPrimary = m_strUserId.indexOf(QStringLiteral("_primary")) != std::string::npos;
 }
 
-CZegoUserModel::~CZegoUserModel() {}
+QZegoUserModel::~QZegoUserModel(){}
 
-bool CZegoUserModel::IsCurrentUser(void)
+bool QZegoUserModel::isCurrnetUser(void)
 {
-    return m_bCurrentUser;
+	return m_bCurrentUser;
 }
 
-std::wstring CZegoUserModel::GetUserId(void)
+QString QZegoUserModel::getUserId(void)
 {
-    return m_strUserId;
+	return m_strUserId;
 }
 
-std::wstring CZegoUserModel::GetUserName(void)
+QString QZegoUserModel::getUserName(void)
 {
-    return m_strUserName;
+	return m_strUserName;
 }
 
-bool CZegoUserModel::IsPrimary(void)
+bool QZegoUserModel::isPrimary(void)
 {
-    return m_bPrimary;
+	return m_bPrimary;
 }
+

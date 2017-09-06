@@ -1,59 +1,58 @@
-#include "stdafx.h"
-#include "ZegoStreamModel.h"
+﻿#include "ZegoStreamModel.h"
 
-CZegoStreamModel::CZegoStreamModel(const std::string& streamID, const std::string& userID, const std::string& userName, const std::string& extraInfo, bool curUser):
-	m_strStreamID(streamID), m_strUserID(userID), m_strUserName(userName), m_strExtraInfo(extraInfo), m_bCurUserCreated(curUser)
+QZegoStreamModel::QZegoStreamModel(const QString &streamId, const QString &userId, const QString &userName, const QString &extraInfo, bool isCurUser) :
+m_strStreamId(streamId), m_strUserId(userId), m_strUserName(userName), m_strExtraInfo(extraInfo), m_bCurUserCreated(isCurUser)
 {
 	m_nPlayViewId = -1;
 }
 
-CZegoStreamModel::CZegoStreamModel(const CZegoStreamModel& otherStream)
+QZegoStreamModel::QZegoStreamModel(const QZegoStreamModel &otherStream)
 {
-	m_strStreamID = otherStream.m_strStreamID;
-	m_strUserID = otherStream.m_strUserID;
+	m_strStreamId = otherStream.m_strStreamId;
+	m_strUserId = otherStream.m_strUserId;
 	m_strUserName = otherStream.m_strUserName;
-    m_strExtraInfo = otherStream.m_strExtraInfo;
+	m_strExtraInfo = otherStream.m_strExtraInfo;
 	m_nPlayViewId = otherStream.m_nPlayViewId;
 	m_bCurUserCreated = otherStream.m_bCurUserCreated;
 	m_bPrimary = otherStream.m_bPrimary;
 }
 
-std::string CZegoStreamModel::GetStreamID(void)
+QString QZegoStreamModel::getStreamId(void)
 {
-	return m_strStreamID;
+	return m_strStreamId;
 }
 
-std::string CZegoStreamModel::GetUserID(void)
+QString QZegoStreamModel::getUserId(void)
 {
-	return m_strUserID;
+	return m_strUserId;
 }
 
-std::string CZegoStreamModel::GetUserName(void)
+QString QZegoStreamModel::getUserName(void)
 {
 	return m_strUserName;
 }
 
-std::string CZegoStreamModel::GetExtraInfo(void)
+QString QZegoStreamModel::getExtraInfo(void)
 {
-    return m_strExtraInfo;
+	return m_strExtraInfo;
 }
 
-void CZegoStreamModel::SetPlayView(int viewId)
+void QZegoStreamModel::setPlayView(int viewId)
 {
 	m_nPlayViewId = viewId;
 }
 
-int CZegoStreamModel::GetPlayView(void)
+int QZegoStreamModel::getPlayView(void)
 {
 	return m_nPlayViewId;
 }
-
-bool CZegoStreamModel::IsPlaying(void)
+//m_nPlayView大于0代表已经在直播
+bool QZegoStreamModel::isPlaying(void)
 {
 	return m_nPlayViewId >= 0;
 }
 
-bool CZegoStreamModel::IsCurUserCreated(void)
+bool QZegoStreamModel::isCurUserCreated(void)
 {
 	return m_bCurUserCreated;
 }

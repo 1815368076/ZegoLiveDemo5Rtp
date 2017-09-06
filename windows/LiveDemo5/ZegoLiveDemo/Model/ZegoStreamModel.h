@@ -1,40 +1,39 @@
-#pragma once
+﻿#pragma once
 
-#include <string>
-#include <vector>
-#include <memory>
+#include <QObject>
+#include <QVector>
 
-class CZegoStreamModel
+class QZegoStreamModel
 {
-public:
-	CZegoStreamModel(const std::string& streamID, const std::string& userID, const std::string& userName, const std::string& extraInfo, bool curUser = false);
-	CZegoStreamModel(const CZegoStreamModel& otherStream);
+public :
+	QZegoStreamModel(const QString &streamId, const QString &userId, const QString &userName, const QString &extraInfo, bool isCurUser = false);
+	QZegoStreamModel(const QZegoStreamModel &otherStream);
 
-public:
-	std::string GetStreamID(void);
-	std::string GetUserID(void);
-	std::string GetUserName(void);
-    std::string GetExtraInfo(void);
+public : 
+	//获取相关信息
+	QString getStreamId(void);
+	QString getUserId(void);
+	QString getUserName(void);
+	QString getExtraInfo(void);
+	void setPlayView(int viewId);
+	int getPlayView(void);
+	bool isPlaying(void);
 
-	void SetPlayView(int viewId);
-	int GetPlayView(void);
-	bool IsPlaying(void);
+	bool isCurUserCreated(void);
 
-	bool IsCurUserCreated(void);
+	QVector<QString> m_vecRtmpUrls;
+	QVector<QString> m_vecFlvUrls;
+	QVector<QString> m_vecHlsUrls;
 
-	std::vector<std::string> m_vecRtmpUrls;
-	std::vector<std::string> m_vecFlvUrls;
-	std::vector<std::string> m_vecHlsUrls;
-
-private:
-	std::string m_strStreamID;
-    std::string m_strUserID;
-	std::string m_strUserName;
-    std::string m_strExtraInfo;
+private :
+	QString m_strStreamId;
+	QString m_strUserId;
+	QString m_strUserName;
+	QString m_strExtraInfo;
 
 	int m_nPlayViewId;
 	bool m_bCurUserCreated;
 	bool m_bPrimary;
 };
 
-using StreamPtr = std::shared_ptr<CZegoStreamModel>;
+using StreamPtr = QSharedPointer < QZegoStreamModel > ;

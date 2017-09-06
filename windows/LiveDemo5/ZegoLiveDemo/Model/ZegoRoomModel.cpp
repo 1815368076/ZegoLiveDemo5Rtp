@@ -1,130 +1,131 @@
-#include "stdafx.h"
-#include <algorithm>
-#include "ZegoRoomModel.h"
-#include "ZegoUtility.h"
+﻿#include "ZegoRoomModel.h"
 
-CZegoRoomModel::CZegoRoomModel(std::string& roomID, std::string& roomName, std::string& anchorID, std::string& anchorName) 
-    : m_strRoomID(roomID), m_strRoomName(roomName), m_strAnchorID(anchorID), m_strAnchorName(anchorName)
-{ 
-}
-
-CZegoRoomModel::~CZegoRoomModel(void) 
+QZegoRoomModel::QZegoRoomModel(QString &roomId, QString &roomName, QString &anchorId, QString &anchorName)
+	: m_strRoomId(roomId), m_strRoomName(roomName), m_strAnchorId(anchorId), m_strAnchorName(anchorName)
 {
-    m_vStreamList.clear();
+
 }
 
-
-std::string CZegoRoomModel::GetRoomID(void)
+QZegoRoomModel::~QZegoRoomModel(void)
 {
-	return m_strRoomID;
+	m_vStreamList.clear();
 }
 
-std::string CZegoRoomModel::GetRoomName(void)
+void QZegoRoomModel::setRoomId(const QString &roomId)
+{
+	m_strRoomId = roomId;
+}
+
+QString QZegoRoomModel::getRoomId(void)
+{
+	return m_strRoomId;
+}
+
+void QZegoRoomModel::setRoomName(const QString &roomName)
+{
+	m_strRoomName = roomName;
+}
+
+QString QZegoRoomModel::getRoomName(void)
 {
 	return m_strRoomName;
 }
 
-void CZegoRoomModel::SetRoomID(const std::string& roomID)
+void QZegoRoomModel::setAnchorId(const QString &anchorId)
 {
-	m_strRoomID = roomID;
+	m_strAnchorId = anchorId;
 }
 
-void CZegoRoomModel::SetRoomName(const std::string& roomName)
+QString QZegoRoomModel::getAnchorId(void)
 {
-    m_strRoomName = roomName;
+	return m_strAnchorId;
 }
 
-void CZegoRoomModel::SetAnchorID(const std::string& anchorID)
+void QZegoRoomModel::setAnchorName(const QString &anchorName)
 {
-    m_strAnchorID = anchorID;
+	m_strAnchorName = anchorName;
 }
 
-std::string CZegoRoomModel::GetAnchorID(void)
+QString QZegoRoomModel::getAnchorName(void)
 {
-    return m_strAnchorID;
+	return m_strAnchorName;
 }
 
-void CZegoRoomModel::SetAnchorName(const std::string& anchorName)
-{
-    m_strAnchorName = anchorName;
-}
-
-std::string CZegoRoomModel::GetAnchorName(void)
-{
-    return m_strAnchorName;
-}
-
-void CZegoRoomModel::SetCreatedTime(unsigned int time)
+void QZegoRoomModel::setCreatedTime(unsigned int time)
 {
 	m_uCreatedTime = time;
 }
 
-unsigned int CZegoRoomModel::GetCreatedTime(void)
+unsigned int QZegoRoomModel::getCreatedTime(void)
 {
 	return m_uCreatedTime;
 }
 
-void CZegoRoomModel::SetLivesCount(unsigned int count)
+void QZegoRoomModel::setLivesCount(unsigned int count)
 {
 	m_uLivesCount = count;
 }
 
-unsigned int CZegoRoomModel::GetLivesCount(void)
+unsigned int QZegoRoomModel::getLivesCount(void)
 {
 	return m_uLivesCount;
 }
 
-void CZegoRoomModel::AddStream(StreamPtr stream)
+void QZegoRoomModel::addStream(StreamPtr stream)
 {
-    if (stream == nullptr) { return; }
+	if (stream == nullptr) { return; }
 
-    std::string strStreamID = stream->GetStreamID();
+	QString strStreamID = stream->getStreamId();
 
-    auto iter = std::find_if(m_vStreamList.begin(), m_vStreamList.end(),
-        [&strStreamID](const StreamPtr& elem) { return elem->GetStreamID() == strStreamID; });
+	for (auto iter : m_vStreamList)
+	{
+		if (iter->getStreamId() == strStreamID)
+			return;
+	}
 
-    if (iter == m_vStreamList.end())
-    {
-        m_vStreamList.push_back(stream);
-    }
+	m_vStreamList.push_back(stream);
 }
 
-StreamPtr CZegoRoomModel::RemoveStream(const std::string& strStreamID)
+StreamPtr QZegoRoomModel::removeStream(const QString& streamId)
 {
-    StreamPtr pStream(nullptr);
+	StreamPtr pStream(nullptr);
 
-    auto iter = std::find_if(m_vStreamList.begin(), m_vStreamList.end(),
-        [&strStreamID](const StreamPtr& elem) { return elem->GetStreamID() == strStreamID; });
+	for (int i = 0; i < m_vStreamList.size(); ++i)
+	{
+		if (m_vStreamList.at(i)->getStreamId() == streamId)
+		{
+			pStream = m_vStreamList.takeAt(i);
+			break;
+		}
 
-    if (iter != m_vStreamList.end())
-    {
-        pStream = *iter;
-        m_vStreamList.erase(iter);
-    }
+	}
 
-    return pStream;
+	return pStream;
 }
 
-int CZegoRoomModel::GetStreamCount(void)
+QVector<StreamPtr> QZegoRoomModel::getStreamList()
 {
-    return m_vStreamList.size();
+	return m_vStreamList;
 }
 
-StreamPtr CZegoRoomModel::GetStreamByID(const std::string& streamID)
+int QZegoRoomModel::getStreamCount(void)
 {
-
-    auto iter = std::find_if(m_vStreamList.begin(), m_vStreamList.end(),
-        [&streamID](const StreamPtr& elem) {return elem->GetStreamID() == streamID; });
-
-    if (iter != m_vStreamList.end())
-    {
-        return *iter;
-    }
-
-    return nullptr;
+	return m_vStreamList.size();
 }
 
-std::vector<StreamPtr> CZegoRoomModel::GetStreamList(void)
+StreamPtr QZegoRoomModel::getStreamById(const QString &streamId)
 {
-    return m_vStreamList;
+	
+	for (int i = 0; i < m_vStreamList.size(); ++i)
+	{
+		
+		if (m_vStreamList[i]->getStreamId() == streamId)
+		{
+			return m_vStreamList[i];
+		}
+
+	}
+
+	return StreamPtr();
+
 }

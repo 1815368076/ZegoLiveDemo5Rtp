@@ -1,227 +1,264 @@
-#include "stdafx.h"
-#include "ZegoSDKSignal.h"
-#include "ZegoUtility.h"
+﻿#include "ZegoSDKSignal.h"
+#include <QMetaType>
+#include <QDebug>
 
-CZegoAVSignal::CZegoAVSignal()
+QZegoAVSignal::QZegoAVSignal()
 {
-	m_hCommWnd = ::FindWindow(ZegoCommWndClassName, ZegoCommWndName);
+	qRegisterMetaType< QVector<StreamPtr> >("QVector<StreamPtr>");
+	qRegisterMetaType< QVector<RoomMsgPtr> >("QVector<RoomMsgPtr>");
+	qRegisterMetaType<StreamPtr>("StreamPtr");
+	qRegisterMetaType<LIVEROOM::ZegoStreamUpdateType>("LIVEROOM::ZegoStreamUpdateType");
+	qRegisterMetaType<LIVEROOM::ZegoUserInfo>("LIVEROOM::ZegoUserInfo");
+	qRegisterMetaType<LIVEROOM::ZegoUserUpdateType>("LIVEROOM::ZegoUserUpdateType");
+	qRegisterMetaType< QVector<QString> >(" QVector<QString> ");
+	qRegisterMetaType< QVector<int> >(" QVector<int> ");
+	qRegisterMetaType<AV::ZegoMixStreamResult>("AV::ZegoMixStreamResult");
+	qRegisterMetaType< AV::AudioDeviceType >("AV::AudioDeviceType");
+	qRegisterMetaType< AV::DeviceState >("AV::DeviceState");
 }
 
-CZegoAVSignal::~CZegoAVSignal()
+QZegoAVSignal::~QZegoAVSignal()
 {
+
 }
 
-void CZegoAVSignal::OnLoginRoom(int errorCode, const char *pszRoomID, const LIVEROOM::ZegoStreamInfo *pStreamInfo, unsigned int streamCount)
+void QZegoAVSignal::OnLoginRoom(int errorCode, const char *pszRoomID, const LIVEROOM::ZegoStreamInfo *pStreamInfo, unsigned int streamCount)
 {
-    std::string strRoomID = pszRoomID ? pszRoomID : "";
+	QString strRoomID = pszRoomID ? pszRoomID : "";
 
-    std::vector<StreamPtr> vStreamList;
-    for (int i = 0; i < streamCount; i++)
-    {
-        LIVEROOM::ZegoStreamInfo zegoStreamInfo = pStreamInfo[i];
-        StreamPtr pStream(new CZegoStreamModel(zegoStreamInfo.szStreamId, zegoStreamInfo.szUserId, zegoStreamInfo.szUserName, zegoStreamInfo.szExtraInfo));
-        vStreamList.push_back(pStream);
-    }
+	QVector<StreamPtr> vStreamList;
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigLoginRoom(errorCode, strRoomID, vStreamList);
-    ZEGO_SWITCH_THREAD_ING
+	for (int i = 0; i < streamCount; i++)
+	{
+		LIVEROOM::ZegoStreamInfo zegoStreamInfo = pStreamInfo[i];
+		StreamPtr pStream(new QZegoStreamModel(zegoStreamInfo.szStreamId, zegoStreamInfo.szUserId, zegoStreamInfo.szUserName, zegoStreamInfo.szExtraInfo));
+		vStreamList.push_back(pStream);
+	}
+
+	emit sigLoginRoom(errorCode, strRoomID, vStreamList);
+	
 }
 
-void CZegoAVSignal::OnLogoutRoom(int errorCode, const char *pszRoomID)
+void QZegoAVSignal::OnLogoutRoom(int errorCode, const char *pszRoomID)
 {
-    std::string strRoomID = pszRoomID ? pszRoomID : "";
+	QString strRoomID = pszRoomID ? pszRoomID : "";
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigLogoutRoom(errorCode, strRoomID);
-    ZEGO_SWITCH_THREAD_ING
+	emit sigLogoutRoom(errorCode, strRoomID);
+	
 }
 
-void CZegoAVSignal::OnDisconnect(int errorCode, const char *pszRoomID)
+void QZegoAVSignal::OnDisconnect(int errorCode, const char *pszRoomID)
 {
-    std::string strRoomID = pszRoomID ? pszRoomID : "";
+	QString strRoomID = pszRoomID ? pszRoomID : "";
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigDisconnect(errorCode, strRoomID);
-    ZEGO_SWITCH_THREAD_ING
+	emit sigDisconnect(errorCode, strRoomID);
+	
 }
 
-void CZegoAVSignal::OnKickOut(int reason, const char *pszRoomID)
+void QZegoAVSignal::OnKickOut(int reason, const char *pszRoomID)
 {
-    std::string strRoomID = pszRoomID ? pszRoomID : "";
+	QString strRoomID = pszRoomID ? pszRoomID : "";
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigKickOut(reason, strRoomID);
-    ZEGO_SWITCH_THREAD_ING
+	emit sigKickOut(reason, strRoomID);
+	
 }
 
-void CZegoAVSignal::OnSendRoomMessage(int errorCode, const char *pszRoomID, int sendSeq, unsigned long long messageId)
+void QZegoAVSignal::OnSendRoomMessage(int errorCode, const char *pszRoomID, int sendSeq, unsigned long long messageId)
 {
-    std::string strRoomID = pszRoomID ? pszRoomID : "";
+	QString strRoomID = pszRoomID ? pszRoomID : "";
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigSendRoomMessage(errorCode, strRoomID, sendSeq, messageId);
-    ZEGO_SWITCH_THREAD_ING
+	emit sigSendRoomMessage(errorCode, strRoomID, sendSeq, messageId);
+	
 }
 
-void CZegoAVSignal::OnRecvRoomMessage(ROOM::ZegoRoomMessage *pMessageInfo, unsigned int messageCount, const char *pszRoomID)
+void QZegoAVSignal::OnRecvRoomMessage(ROOM::ZegoRoomMessage *pMessageInfo, unsigned int messageCount, const char *pszRoomID)
 {
-    if (pMessageInfo == nullptr || messageCount == 0)
-    {
-        return;
-    }
+	if (pMessageInfo == nullptr || messageCount == 0)
+	{
+		return;
+	}
 
-    std::string strRoomID = pszRoomID ? pszRoomID : "";
+	QString strRoomID = pszRoomID ? pszRoomID : "";
 
-    std::vector<RoomMsgPtr> vRoomMsgList;
-    for (int i = 0; i < messageCount; i++)
-    {
-        ROOM::ZegoRoomMessage zegoRoomMessage = pMessageInfo[i];
-        RoomMsgPtr pRoomMsg(new CZegoRoomMsgModel(zegoRoomMessage.szUserId, zegoRoomMessage.szUserName, 
-            zegoRoomMessage.szContent, zegoRoomMessage.messageId, zegoRoomMessage.type, zegoRoomMessage.priority, zegoRoomMessage.category));
-        vRoomMsgList.push_back(pRoomMsg);
-    }
+	QVector<RoomMsgPtr> vRoomMsgList;
+	for (int i = 0; i < messageCount; i++)
+	{
+		ROOM::ZegoRoomMessage zegoRoomMessage = pMessageInfo[i];
+		RoomMsgPtr pRoomMsg(new QZegoRoomMsgModel(zegoRoomMessage.szUserId, zegoRoomMessage.szUserName,
+			zegoRoomMessage.szContent, zegoRoomMessage.messageId, zegoRoomMessage.type, zegoRoomMessage.priority, zegoRoomMessage.category));
+		vRoomMsgList.push_back(pRoomMsg);
+	}
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigRecvRoomMesge(strRoomID, vRoomMsgList);
-    ZEGO_SWITCH_THREAD_ING
+	emit sigRecvRoomMessage(strRoomID, vRoomMsgList);
+	
 }
 
-void CZegoAVSignal::OnStreamUpdated(LIVEROOM::ZegoStreamUpdateType type, LIVEROOM::ZegoStreamInfo *pStreamInfo, unsigned int streamCount, const char *pszRoomID)
+void QZegoAVSignal::OnStreamUpdated(LIVEROOM::ZegoStreamUpdateType type, LIVEROOM::ZegoStreamInfo *pStreamInfo, unsigned int streamCount, const char *pszRoomID)
 {
-    if (pStreamInfo == nullptr || streamCount == 0)
-    {
-        return;
-    }
+	if (pStreamInfo == nullptr || streamCount == 0)
+	{
+		return;
+	}
 
-    std::string strRoomID = pszRoomID ? pszRoomID: "";
+	QString strRoomID = pszRoomID ? pszRoomID : "";
 
-    std::vector<StreamPtr> vStreamList;
-    for (int i = 0; i < streamCount; i++)
-    {
-        LIVEROOM::ZegoStreamInfo zegoStreamInfo = pStreamInfo[i];
-        StreamPtr pStream(new CZegoStreamModel(zegoStreamInfo.szStreamId, zegoStreamInfo.szUserId, zegoStreamInfo.szUserName, zegoStreamInfo.szExtraInfo));
-        vStreamList.push_back(pStream);
-    }
+	QVector<StreamPtr> vStreamList;
+	for (int i = 0; i < streamCount; i++)
+	{
+		LIVEROOM::ZegoStreamInfo zegoStreamInfo = pStreamInfo[i];
+		StreamPtr pStream(new QZegoStreamModel(zegoStreamInfo.szStreamId, zegoStreamInfo.szUserId, zegoStreamInfo.szUserName, zegoStreamInfo.szExtraInfo));
+		vStreamList.push_back(pStream);
+	}
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigStreamUpdated(strRoomID, vStreamList, type);
-    ZEGO_SWITCH_THREAD_ING
+	emit sigStreamUpdated(strRoomID, vStreamList, type);
+	
 }
 
-void CZegoAVSignal::OnPublishStateUpdate(int stateCode, const char* pszStreamID, const LIVEROOM::ZegoPublishingStreamInfo& oStreamInfo)
+void QZegoAVSignal::OnPublishStateUpdate(int stateCode, const char* pszStreamID, const LIVEROOM::ZegoPublishingStreamInfo& oStreamInfo)
 {
-    std::string strStreamID = pszStreamID ? pszStreamID : "";
 
-    StreamPtr pStream(new CZegoStreamModel(strStreamID, "", "", "", true));
+	QString strStreamID = pszStreamID ? pszStreamID : "";
 
-    for (unsigned int i = 0; i < oStreamInfo.uiRtmpURLCount; i++)
-    {
-        pStream->m_vecRtmpUrls.push_back(oStreamInfo.arrRtmpURLs[i]);
-    }
+	StreamPtr pStream(new QZegoStreamModel(strStreamID, "", "", "", true));
 
-    for (unsigned int i = 0; i < oStreamInfo.uiFlvURLCount; i++)
-    {
-        pStream->m_vecFlvUrls.push_back(oStreamInfo.arrFlvURLs[i]);
-    }
+	for (unsigned int i = 0; i < oStreamInfo.uiRtmpURLCount; i++)
+	{
+		pStream->m_vecRtmpUrls.push_back(oStreamInfo.arrRtmpURLs[i]);
+	}
 
-    for (unsigned int i = 0; i < oStreamInfo.uiHlsURLCount; i++)
-    {
-        pStream->m_vecHlsUrls.push_back(oStreamInfo.arrHlsURLs[i]);
-    }
+	for (unsigned int i = 0; i < oStreamInfo.uiFlvURLCount; i++)
+	{
+		pStream->m_vecFlvUrls.push_back(oStreamInfo.arrFlvURLs[i]);
+	}
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigPublishStateUpdate(stateCode, strStreamID, pStream);
-    ZEGO_SWITCH_THREAD_ING
+	for (unsigned int i = 0; i < oStreamInfo.uiHlsURLCount; i++)
+	{
+		pStream->m_vecHlsUrls.push_back(oStreamInfo.arrHlsURLs[i]);
+	}
+
+	emit sigPublishStateUpdate(stateCode, strStreamID, pStream);
+	
 }
 
-void CZegoAVSignal::OnPlayStateUpdate(int stateCode, const char* pszStreamID)
+void QZegoAVSignal::OnPlayStateUpdate(int stateCode, const char* pszStreamID)
 {
-    std::string strStreamID = pszStreamID ? pszStreamID : "";
+	QString strStreamID = pszStreamID ? pszStreamID : "";
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigPlayStateUpdate(stateCode, strStreamID);
-    ZEGO_SWITCH_THREAD_ING
+	emit sigPlayStateUpdate(stateCode, strStreamID);
+	
 }
 
-void CZegoAVSignal::OnPublishQulityUpdate(const char* pszStreamID, int quality, double videoFPS, double videoKBS)
+void QZegoAVSignal::OnPublishQulityUpdate(const char* pszStreamID, int quality, double videoFPS, double videoKBS)
 {
-    std::string strStreamID = pszStreamID ? pszStreamID : "";
-    
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigPublishQulityUpdate(strStreamID, quality, videoFPS, videoKBS);
-    ZEGO_SWITCH_THREAD_ING
+	QString strStreamID = pszStreamID ? pszStreamID : "";
+	//去掉StreamId后面CDN的地址
+	//int index = strStreamID.indexOf("?");
+	//strStreamID = strStreamID.left(index);
+	
+	emit sigPublishQualityUpdate(strStreamID, quality, videoFPS, videoKBS);
+	
 }
 
-void CZegoAVSignal::OnPlayQualityUpdate(const char* pszStreamID, int quality, double videoFPS, double videoKBS)
+void QZegoAVSignal::OnPlayQualityUpdate(const char* pszStreamID, int quality, double videoFPS, double videoKBS)
 {
-    std::string strStreamID = pszStreamID ? pszStreamID : "";
+	QString strStreamID = pszStreamID ? pszStreamID : "";
+	//去掉StreamId后面CDN的地址
+	//int index = strStreamID.indexOf("?");
+	//strStreamID = strStreamID.left(index);
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigPlayQualityUpdate(strStreamID, quality, videoFPS, videoKBS);
-    ZEGO_SWITCH_THREAD_ING
+	emit sigPlayQualityUpdate(strStreamID, quality, videoFPS, videoKBS);
+	
 }
 
-void CZegoAVSignal::OnAuxCallback(unsigned char *pData, int *pDataLen, int *pSampleRate, int *pNumChannels)
+void QZegoAVSignal::OnAuxCallback(unsigned char *pData, int *pDataLen, int *pSampleRate, int *pNumChannels)
 {
-    m_sigAuxInput(pData, pDataLen, pSampleRate, pNumChannels);
+	int pDataLenValue = *pDataLen;
+	//qDebug() << "pdataLen = " << *pDataLen;
+	emit sigAuxInput(pData, pDataLen, pDataLenValue, pSampleRate, pNumChannels);
 }
 
-void CZegoAVSignal::OnJoinLiveRequest(int seq, const char *pszFromUserId, const char *pszFromUserName, const char *pszRoomID) 
+void QZegoAVSignal::OnJoinLiveRequest(int seq, const char *pszFromUserId, const char *pszFromUserName, const char *pszRoomID)
 {
-    std::string strFromUserID = pszFromUserId ? pszFromUserId : "";
-    std::string strFromUserName = pszFromUserName ? pszFromUserName : "";
-    std::string strRoomID = pszRoomID ? pszRoomID : "";
+	QString strFromUserID = pszFromUserId ? pszFromUserId : "";
+	QString strFromUserName = pszFromUserName ? pszFromUserName : "";
+	QString strRoomID = pszRoomID ? pszRoomID : "";
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigJoinLiveRequest(seq, strFromUserID, strFromUserName, strRoomID);
-    ZEGO_SWITCH_THREAD_ING
+	emit sigJoinLiveRequest(seq, strFromUserID, strFromUserName, strRoomID);
+
 }
 
-void CZegoAVSignal::OnJoinLiveResponse(int result, const char* pszFromUserId, const char* pszFromUserName, int seq)
+void QZegoAVSignal::OnJoinLiveResponse(int result, const char* pszFromUserId, const char* pszFromUserName, int seq)
 {
-    std::string strFromUserID = pszFromUserId ? pszFromUserId : "";
-    std::string strFromUserName = pszFromUserName ? pszFromUserName : "";
+	QString strFromUserID = pszFromUserId ? pszFromUserId : "";
+	QString strFromUserName = pszFromUserName ? pszFromUserName : "";
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigJoinLiveResponse(result, strFromUserID, strFromUserName, seq);
-    ZEGO_SWITCH_THREAD_ING
+    emit sigJoinLiveResponse(result, strFromUserID, strFromUserName, seq);
+	
 }
 
-void CZegoAVSignal::OnAudioDeviceStateChanged(AV::AudioDeviceType deviceType, AV::DeviceInfo *deviceInfo, AV::DeviceState state) 
+void QZegoAVSignal::OnAudioDeviceStateChanged(AV::AudioDeviceType deviceType, AV::DeviceInfo *deviceInfo, AV::DeviceState state)
 {
-    if (deviceInfo == nullptr)
-        return;
+	if (deviceInfo == nullptr)
+		return;
 
-    std::string strDeviceId = deviceInfo->szDeviceId;
-    std::string strDeviceName = deviceInfo->szDeviceName;
+	qDebug() << "audioDevice " << state;
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigAudioDeviceChanged(deviceType, strDeviceId, strDeviceName, state);
-    ZEGO_SWITCH_THREAD_ING
+	QString strDeviceId = deviceInfo->szDeviceId;
+	QString strDeviceName = deviceInfo->szDeviceName;
+
+	emit sigAudioDeviceChanged(deviceType, strDeviceId, strDeviceName, state);
+
 }
 
-void CZegoAVSignal::OnVideoDeviceStateChanged(AV::DeviceInfo *deviceInfo, AV::DeviceState state)
+void QZegoAVSignal::OnVideoDeviceStateChanged(AV::DeviceInfo *deviceInfo, AV::DeviceState state)
 {
-    if (deviceInfo == nullptr)
-        return;
+	if (deviceInfo == nullptr)
+		return;
 
-    std::string strDeviceId = deviceInfo->szDeviceId;
-    std::string strDeviceName = deviceInfo->szDeviceName;
+	qDebug() << "videoDevice " << state;
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigVideoDeviceChanged(strDeviceId, strDeviceName, state);
-    ZEGO_SWITCH_THREAD_ING
+	QString strDeviceId = deviceInfo->szDeviceId;
+	QString strDeviceName = deviceInfo->szDeviceName;
+
+	emit sigVideoDeviceChanged(strDeviceId, strDeviceName, state);
+	
 }
 
-void CZegoAVSignal::OnAudioVolumeChanged(AV::AudioDeviceType deviceType, const char *deviceId, AV::VolumeType volumeType, unsigned int volume, bool bMuted)
+void QZegoAVSignal::OnUserUpdate(const LIVEROOM::ZegoUserInfo *pUserInfo, unsigned int userCount, LIVEROOM::ZegoUserUpdateType type)
 {
-    if (deviceId == nullptr)
-        return;
+	QVector<QString> userIDs;
+	QVector<QString> userNames;
+	QVector<int> userFlags;
+	QVector<int> userRoles;
 
-    std::string strDeviceId = deviceId;
+	for (int i = 0; i < userCount; i++)
+	{
+		QString strUserId = pUserInfo[i].szUserId;
+		QString strUserName = pUserInfo[i].szUserName;
+		userIDs.push_back(strUserId);
+		userNames.push_back(strUserName);
+		userFlags.push_back(pUserInfo[i].udapteFlag);
+		userRoles.push_back(pUserInfo[i].role);
+	}
 
-    ZEGO_SWITCH_THREAD_PRE
-        m_sigAudioVolumeChanged(deviceType, strDeviceId, volumeType, volume, bMuted);
-    ZEGO_SWITCH_THREAD_ING
+	emit sigUserUpdate(userIDs, userNames, userFlags, userRoles, userCount, type);
+}
+
+void QZegoAVSignal::OnMixStream(const AV::ZegoMixStreamResult& result, const char* pszMixStreamID, int seq)
+{
+	unsigned int errorCode = result.uiErrorCode;
+	QString mixStreamID = pszMixStreamID ? pszMixStreamID : "";
+	QString hlsUrl = result.oStreamInfo.arrHlsURLs[0];
+	QString rtmpUrl = result.oStreamInfo.arrRtmpURLs[0];
+
+	emit sigMixStream(errorCode, hlsUrl, rtmpUrl, mixStreamID, seq);
+}
+
+void QZegoAVSignal::OnRecvEndJoinLiveCommand(const char* pszFromUserId, const char* pszFromUserName, const char *pszRoomID)
+{
+	QString userId = pszFromUserId;
+	QString userName = pszFromUserName;
+	QString roomId = pszRoomID;
+	
+	emit sigRecvEndJoinLiveCommand(userId, userName, roomId);
 }

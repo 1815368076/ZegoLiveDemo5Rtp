@@ -1,49 +1,53 @@
-#pragma once
+﻿#pragma once
 
-#include <vector>
-#include <deque>
-#include <memory>
+#include <QObject>
+#include <QVector>
+#include <QSharedPointer>
 #include "ZegoUserModel.h"
 #include "ZegoStreamModel.h"
 
-class CZegoRoomModel
+class QZegoRoomModel
 {
-public:
-	CZegoRoomModel() { m_strRoomID = nullptr; m_strRoomName = nullptr; }
-	CZegoRoomModel(std::string& roomID, std::string& roomName, std::string& anchorID, std::string& anchorName);
-	~CZegoRoomModel();
+public :
+	QZegoRoomModel() { m_strRoomId = nullptr; m_strRoomName = nullptr; }
+	QZegoRoomModel(QString &roomId, QString &roomName, QString &anchorId, QString &anchorName);
+	~QZegoRoomModel();
 
-public:
-    void SetRoomID(const std::string& roomID);
-    std::string GetRoomID(void);
-	void SetRoomName(const std::string& roomName);
-    std::string GetRoomName(void);
+public :
+	void setRoomId(const QString &roomId);
+	QString getRoomId(void);
 
-    void SetAnchorID(const std::string& anchorID);
-    std::string GetAnchorID(void);
-    void SetAnchorName(const std::string& anchorName);
-    std::string GetAnchorName(void);
+	void setRoomName(const QString &roomName);
+	QString getRoomName(void);
 
-	void SetCreatedTime(unsigned int time);
-	unsigned int GetCreatedTime(void);
-	void SetLivesCount(unsigned int count);
-	unsigned int GetLivesCount(void);
+	void setAnchorId(const QString &anchorId);
+	QString getAnchorId(void);
 
-    void AddStream(StreamPtr stream);
-    StreamPtr RemoveStream(const std::string& streamID);
-    int GetStreamCount(void);
-    StreamPtr GetStreamByID(const std::string& streamID);
-    std::vector<StreamPtr> GetStreamList(void);
-private:
-    std::string m_strRoomID;
-	std::string m_strRoomName;
-    std::string m_strAnchorID;
-    std::string m_strAnchorName;
+	void setAnchorName(const QString &anchoName);
+	QString getAnchorName(void);
 
-	std::vector<StreamPtr> m_vStreamList;
+	void setCreatedTime(unsigned int time);
+	unsigned int getCreatedTime(void);
+
+	void setLivesCount(unsigned int count);
+	unsigned int getLivesCount(void);
+
+	void addStream(StreamPtr stream);
+	StreamPtr removeStream(const QString &streamId);
+	int getStreamCount(void);
+	StreamPtr getStreamById(const QString &streamId);
+	QVector<StreamPtr> getStreamList(void);
+
+private :
+	QString m_strRoomId;
+	QString m_strRoomName;
+	QString m_strAnchorId;
+	QString m_strAnchorName;
+
+	QVector<StreamPtr> m_vStreamList;
 
 	unsigned int m_uCreatedTime;
 	unsigned int m_uLivesCount;
 };
 
-using RoomPtr = std::shared_ptr<CZegoRoomModel>;
+using RoomPtr = QSharedPointer < QZegoRoomModel > ;

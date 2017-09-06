@@ -194,6 +194,9 @@ namespace ZEGO
             ZegoMixStreamConfig* pInputStreamList;      /**< 混流输入流列表 */
             int nInputStreamCount;                      /**< 混流输入流列表个数 */
             
+            const unsigned char * pUserData;            /**< 用户自定义数据 */
+            int nLenOfUserData;                         /**< 用户自定义数据的长度 */
+            
             ZegoCompleteMixStreamConfig ()
             : bOutputIsUrl(false)
             , nOutputFps(0)
@@ -203,6 +206,8 @@ namespace ZEGO
             , nOutputAudioConfig(0)
             , pInputStreamList(0)
             , nInputStreamCount(0)
+            , pUserData(0)
+            , nLenOfUserData(0)
             {
                 szOutputStream[0] = '\0';
             }
