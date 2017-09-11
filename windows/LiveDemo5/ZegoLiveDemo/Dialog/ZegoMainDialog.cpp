@@ -277,12 +277,24 @@ void ZegoMainDialog::initRoomList()
 	//点击item时去除虚线框
 	ui.m_roomList->setItemDelegate(new NoFocusFrameDelegate(this));
 
-	QFile qssFile("Resources/RoomListVerticalScrollBar.qss");
-	qssFile.open(QFile::ReadOnly);
-	if (qssFile.isOpen()){
-		ui.m_roomList->verticalScrollBar()->setStyleSheet(qssFile.readAll());
-		qssFile.close();
-	}
+	ui.m_roomList->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
+	                                                  "background: transparent;"
+                                                      "width: 9px;"
+                                                      "margin: 0px 0px 2px 0px;}"
+                                                      "QScrollBar::handle:vertical{"
+                                                      "background: rgb(195, 195, 195);"
+	                                                  "min-height: 20px;"
+	                                                  "border-radius: 3px;}"
+		                                              "QScrollBar::handle:vertical:hover{"
+	                                                  "background:rgba(0, 0, 0, 30%);}"
+			                                          "QScrollBar::add-line:vertical{"
+		                                              "height: 0px;"
+		                                              "subcontrol-position: bottom;"
+		                                              "subcontrol-origin: margin; }"
+			                                          "QScrollBar::sub-line:vertical{"
+		                                              "height: 0px;"
+			                                          "subcontrol-position: top;"
+			                                          "subcontrol-origin: margin; }");
 	
 }
 
