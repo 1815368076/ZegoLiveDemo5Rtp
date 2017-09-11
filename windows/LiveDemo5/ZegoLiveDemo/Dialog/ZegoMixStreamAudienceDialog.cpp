@@ -75,7 +75,7 @@ ZegoMixStreamAudienceDialog::ZegoMixStreamAudienceDialog(SettingsPtr curSettings
 	//设置混流回调初始值
 	m_mixStreamRequestSeq = 1;
 
-
+	gridLayout = new QGridLayout;
 }
 
 ZegoMixStreamAudienceDialog::~ZegoMixStreamAudienceDialog()
@@ -117,20 +117,7 @@ void ZegoMixStreamAudienceDialog::initDialog()
 	//剩余能用的AVView
 	for (int i = MAX_VIEW_COUNT; i >= 0; i--)
 		m_avaliableView.push_front(i);
-	//先写死，以后优化
-	AVViews.push_back(ui.m_avLiveView);
-	AVViews.push_back(ui.m_avLiveView2);
-	AVViews.push_back(ui.m_avLiveView3);
-	AVViews.push_back(ui.m_avLiveView4);
-	AVViews.push_back(ui.m_avLiveView5);
-	AVViews.push_back(ui.m_avLiveView6);
-	AVViews.push_back(ui.m_avLiveView7);
-	AVViews.push_back(ui.m_avLiveView8);
-	AVViews.push_back(ui.m_avLiveView9);
-	AVViews.push_back(ui.m_avLiveView10);
-	AVViews.push_back(ui.m_avLiveView11);
-	AVViews.push_back(ui.m_avLiveView12);
-
+	
 	//拉流成功前不能分享、请求连麦
 	ui.m_bShare->setEnabled(false);
 	ui.m_bRequestJoinLive->setEnabled(false);
@@ -166,14 +153,13 @@ void ZegoMixStreamAudienceDialog::StartPublishStream()
 
 	if (m_avaliableView.size() > 0)
 	{
-		//int nIndex = m_avaliableView.top();
-		//m_avaliableView.pop();
 		int nIndex = takeLeastAvaliableViewIndex();
 		pPublishStream->setPlayView(nIndex);
+		addAVView(nIndex);
 		qDebug() << "publish nIndex = " << nIndex <<"publish stream id is "<<pPublishStream->getStreamId();
 		//配置View
 
-		LIVEROOM::SetPreviewView((void *)AVViews[nIndex]->winId());
+		LIVEROOM::SetPreviewView((void *)AVViews.last()->winId());
 		LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill);
 		LIVEROOM::StartPreview();
 
@@ -187,6 +173,16 @@ void ZegoMixStreamAudienceDialog::StartPublishStream()
 void ZegoMixStreamAudienceDialog::StopPublishStream(const QString& streamID)
 {
 	if (streamID.size() == 0){ return; }
+
+	StreamPtr curStream;
+	for (auto stream : m_pChatRoom->getStreamList())
+	{
+		if (streamID == stream->getStreamId())
+			curStream = stream;
+	}
+
+	qDebug() << "stop publish view index = " << curStream->getPlayView();
+	removeAVView(curStream->getPlayView());
 
 	LIVEROOM::SetPreviewView(nullptr);
 	LIVEROOM::StopPreview();
@@ -210,10 +206,11 @@ void ZegoMixStreamAudienceDialog::StartPlayStream(StreamPtr stream)
 		qDebug() << "playStream nIndex = " << nIndex << "play stream id is "<< stream->getStreamId();
 		//m_avaliableView.pop();
 		stream->setPlayView(nIndex);
+		addAVView(nIndex);
 
 		//配置View
 		LIVEROOM::SetViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill, stream->getStreamId().toStdString().c_str());
-		LIVEROOM::StartPlayingStream(stream->getStreamId().toStdString().c_str(), (void *)AVViews[nIndex]->winId());
+		LIVEROOM::StartPlayingStream(stream->getStreamId().toStdString().c_str(), (void *)AVViews.last()->winId());
 	}
 }
 
@@ -221,6 +218,16 @@ void ZegoMixStreamAudienceDialog::StopPlayStream(const QString& streamID)
 {
 	if (streamID.size() == 0) { return; }
 
+	StreamPtr curStream;
+	for (auto stream : m_pChatRoom->getStreamList())
+	{
+		if (streamID == stream->getStreamId())
+			curStream = stream;
+	}
+
+	qDebug() << "stop play view index = " << curStream->getPlayView();
+
+	removeAVView(curStream->getPlayView());
 	LIVEROOM::StopPlayingStream(streamID.toStdString().c_str());
 
 	StreamPtr pStream = m_pChatRoom->removeStream(streamID);
@@ -258,6 +265,7 @@ void ZegoMixStreamAudienceDialog::GetOut()
 	delete m_cbMircoPhoneModel;
 	delete m_cbCameraModel;
 	delete timer;
+	delete gridLayout;
 }
 
 void ZegoMixStreamAudienceDialog::initComboBox()
@@ -366,6 +374,80 @@ int ZegoMixStreamAudienceDialog::takeLeastAvaliableViewIndex()
 
 	m_avaliableView.takeAt(minIndex);
 	return min;
+}
+
+void ZegoMixStreamAudienceDialog::initAVView(QZegoAVView *view)
+{
+	view->setMinimumSize(QSize(240, 0));
+	view->setStyleSheet(QLatin1String("border: none;\n"
+		"background-color: #383838;"));
+}
+
+void ZegoMixStreamAudienceDialog::addAVView(int addViewIndex)
+{
+	QZegoAVView *newAVView = new QZegoAVView;
+	initAVView(newAVView);
+	newAVView->setViewIndex(addViewIndex);
+	AVViews.push_back(newAVView);
+
+	updateViewLayout(AVViews.size());
+}
+
+void ZegoMixStreamAudienceDialog::removeAVView(int removeViewIndex)
+{
+	int viewIndex = -1;
+	for (int i = 0; i < AVViews.size(); i++)
+	{
+		if (AVViews[i]->getViewIndex() == removeViewIndex)
+		{
+			viewIndex = i;
+			break;
+		}
+	}
+
+	QZegoAVView *popView = AVViews.takeAt(viewIndex);
+	popView->deleteLater();
+
+	updateViewLayout(AVViews.size());
+}
+
+void ZegoMixStreamAudienceDialog::updateViewLayout(int viewCount)
+{
+
+	for (int i = 0; i < viewCount; i++)
+		gridLayout->removeWidget(AVViews[i]);
+
+	gridLayout->deleteLater();
+
+	gridLayout = new QGridLayout();
+	gridLayout->setSpacing(0);
+	gridLayout->setSizeConstraint(QLayout::SetDefaultConstraint);
+	ui.zoneLiveViewHorizontalLayout->addLayout(gridLayout);
+
+	for (int i = 0; i < viewCount; i++)
+	{
+		int row, col;
+		if (viewCount >= 1 && viewCount <= 4)
+		{
+			row = i / 2;
+			col = i % 2;
+		}
+		else if (viewCount >= 5 && viewCount <= 9)
+		{
+			row = i / 3;
+			col = i % 3;
+		}
+		else if (viewCount >= 10 && viewCount <= 12)
+		{
+			row = i / 4;
+			col = i % 4;
+		}
+		qDebug() << "current row = " << row << " col = " << col;
+		gridLayout->addWidget(AVViews[i], row, col, 1, 1);
+		gridLayout->setRowStretch(row, 1);
+		gridLayout->setColumnStretch(col, 1);
+	}
+
 }
 
 void ZegoMixStreamAudienceDialog::FreeAVView(StreamPtr stream)
@@ -550,7 +632,7 @@ void ZegoMixStreamAudienceDialog::StopPlayMixStream(QVector<StreamPtr> vStreamLi
 	{
 		if (stream->getStreamId() == m_anchorStreamInfo->getStreamId())
 		{
-
+			removeAVView(m_anchorStreamInfo->getPlayView());
 			LIVEROOM::StopPlayingStream(m_anchorMixStreamID.toStdString().c_str());
 			StreamPtr pStream = m_pChatRoom->removeStream(stream->getStreamId());
 			FreeAVView(pStream);
@@ -563,11 +645,7 @@ void ZegoMixStreamAudienceDialog::StopPlayMixStream(QVector<StreamPtr> vStreamLi
 void ZegoMixStreamAudienceDialog::StartPlayMixStream(StreamPtr streamInfo)
 {
 	qDebug() << "startPlayMixStream!";
-	/*if (isStreamExisted(mixStreamID, streamList))
-	{
-	QMessageBox::information(this, QStringLiteral("提示"), QStringLiteral("流已存在"));
-	return;
-	}*/
+	
 	if (streamInfo == nullptr) { return; }
 
 	m_pChatRoom->addStream(streamInfo);
@@ -577,16 +655,16 @@ void ZegoMixStreamAudienceDialog::StartPlayMixStream(StreamPtr streamInfo)
 
 	if (m_avaliableView.size() > 0)
 	{
-		//int nIndex = m_avaliableView.top();
+		
 		int nIndex = takeLeastAvaliableViewIndex();
 		qDebug() << "playMixStream index = " << nIndex;
 
-		//m_avaliableView.pop();
 		streamInfo->setPlayView(nIndex);
+		addAVView(nIndex);
 
 		//配置View
 		LIVEROOM::SetViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill, m_anchorMixStreamID.toStdString().c_str());
-		LIVEROOM::StartPlayingStream(m_anchorMixStreamID.toStdString().c_str(), (void *)AVViews[nIndex]->winId());
+		LIVEROOM::StartPlayingStream(m_anchorMixStreamID.toStdString().c_str(), (void *)AVViews.last()->winId());
 	}
 
 }
@@ -770,7 +848,8 @@ void ZegoMixStreamAudienceDialog::OnStreamUpdated(const QString& roomId, QVector
 	
 	//在混流模式下，有流更新时需要作混流处理(合并/删除)
 	//观众看别人增减流,观众段需要变化房间的流列表
-	if (!m_bIsPublishing && m_mixStreamList.size() > 0){
+	if (!m_bIsPublishing && m_mixStreamList.size() > 0)
+	{
 		if (type == LIVEROOM::ZegoStreamUpdateType::StreamAdded)
 		{
 			for (auto stream : vStreamList)
@@ -794,7 +873,29 @@ void ZegoMixStreamAudienceDialog::OnStreamUpdated(const QString& roomId, QVector
 			StopPlayMixStream(vStreamList);
 		}
 	}
+	else if (m_bIsPublishing)
+	{
+		if (type == LIVEROOM::ZegoStreamUpdateType::StreamAdded)
+		{
+			for (auto stream : vStreamList)
+			{
+				if (isStreamExisted(stream->getStreamId()))
+					continue;
 
+				StartPlayStream(stream);
+			}
+		}
+		else if (type == LIVEROOM::ZegoStreamUpdateType::StreamDeleted)
+		{
+			for (int i = 0; i < vStreamList.size(); i++)
+			{
+				if (!isStreamExisted(vStreamList[i]->getStreamId()))
+					continue;
+
+				StopPlayStream(vStreamList[i]->getStreamId());
+			}
+		}
+	}
 		
 }
 

@@ -16,6 +16,7 @@
 #include <QVariantMap>
 #include <QJsonObject>
 #include <QFileDialog>
+#include <QGridLayout>
 #include "ui_ZegoLiveRoomDialog.h"
 #include "ZegoSettingsModel.h"
 #include "ZegoRoomModel.h"
@@ -175,6 +176,7 @@ private:
 	//保留当前第一主播的流信息
 	StreamPtr m_anchorStreamInfo;
 
+	QZegoAVView *m_mainLiveView;
 };
 
 #endif

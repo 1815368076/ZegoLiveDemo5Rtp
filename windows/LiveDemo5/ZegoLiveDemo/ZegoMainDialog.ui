@@ -156,7 +156,7 @@
          <enum>Qt::ClickFocus</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton{
+         <string notr="true">QPushButton:!hover{
     border: 1px solid #0e88eb;
     background-color: #0e88eb;
 }
@@ -201,7 +201,7 @@ QPushButton:hover:pressed{
          <enum>Qt::ClickFocus</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton{
+         <string notr="true">QPushButton:!hover{
     border: 1px solid #0e88eb;
     background-color: #0e88eb;
 }
@@ -246,7 +246,7 @@ QPushButton:hover:pressed{
          <enum>Qt::ClickFocus</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton{
+         <string notr="true">QPushButton:!hover{
     border: 1px solid #0e88eb;
     background-color: #0e88eb;
 }
@@ -580,9 +580,7 @@ QPushButton:hover:pressed{
                <enum>Qt::ClickFocus</enum>
               </property>
               <property name="styleSheet">
-               <string notr="true"> QPushButton:!hover#m_bSingleMode, 
- QPushButton:!hover#m_bMixMode, 
- QPushButton:!hover#m_bMultiMode{
+               <string notr="true"> QPushButton:!hover{
      font-family: 微软雅黑;
      font-size: 16px;
      border: 1px solid #b2b2b2;
@@ -591,9 +589,7 @@ QPushButton:hover:pressed{
      color: #e6e6e6;
  }
 
- QPushButton:hover#m_bSingleMode, 
- QPushButton:hover#m_bMixMode, 
- QPushButton:hover#m_bMultiMode{
+ QPushButton:hover{
      font-family: 微软雅黑;
      font-size: 16px;
      border: 1px solid #0e88eb;
@@ -602,13 +598,18 @@ QPushButton:hover:pressed{
      color: #0e88eb;   
  }
 
- QPushButton:checked#m_bSingleMode, 
- QPushButton:checked#m_bMixMode, 
- QPushButton:checked#m_bMultiMode{
+ QPushButton:checked{
      border: 1px solid #0e88eb;
      border-radius: 2px;
      background-color: #0e88eb;
      color: #ffffff;  
+ }
+
+ QPushButton:!enabled{
+     border: 1px solid #111111;
+     border-radius: 2px;
+     background-color: #343841;
+     color: #111111;  
  }</string>
               </property>
               <property name="text">
@@ -640,9 +641,7 @@ QPushButton:hover:pressed{
                <enum>Qt::DefaultContextMenu</enum>
               </property>
               <property name="styleSheet">
-               <string notr="true"> QPushButton:!hover#m_bSingleMode, 
- QPushButton:!hover#m_bMixMode, 
- QPushButton:!hover#m_bMultiMode{
+               <string notr="true"> QPushButton:!hover{
      font-family: 微软雅黑;
      font-size: 16px;
      border: 1px solid #b2b2b2;
@@ -651,9 +650,7 @@ QPushButton:hover:pressed{
      color: #e6e6e6;
  }
 
- QPushButton:hover#m_bSingleMode, 
- QPushButton:hover#m_bMixMode, 
- QPushButton:hover#m_bMultiMode{
+ QPushButton:hover{
      font-family: 微软雅黑;
      font-size: 16px;
      border: 1px solid #0e88eb;
@@ -662,13 +659,18 @@ QPushButton:hover:pressed{
      color: #0e88eb;   
  }
 
- QPushButton:checked#m_bSingleMode, 
- QPushButton:checked#m_bMixMode, 
- QPushButton:checked#m_bMultiMode{
+ QPushButton:checked{
      border: 1px solid #0e88eb;
      border-radius: 2px;
      background-color: #0e88eb;
      color: #ffffff;  
+ }
+
+ QPushButton:!enabled{
+     border: 1px solid #111111;
+     border-radius: 2px;
+     background-color: #343841;
+     color: #111111;  
  }</string>
               </property>
               <property name="text">
@@ -703,9 +705,7 @@ QPushButton:hover:pressed{
                <enum>Qt::ClickFocus</enum>
               </property>
               <property name="styleSheet">
-               <string notr="true"> QPushButton:!hover#m_bSingleMode, 
- QPushButton:!hover#m_bMixMode, 
- QPushButton:!hover#m_bMultiMode{
+               <string notr="true"> QPushButton:!hover{
      font-family: 微软雅黑;
      font-size: 16px;
      border: 1px solid #b2b2b2;
@@ -714,9 +714,7 @@ QPushButton:hover:pressed{
      color: #e6e6e6;
  }
 
- QPushButton:hover#m_bSingleMode, 
- QPushButton:hover#m_bMixMode, 
- QPushButton:hover#m_bMultiMode{
+ QPushButton:hover{
      font-family: 微软雅黑;
      font-size: 16px;
      border: 1px solid #0e88eb;
@@ -725,13 +723,18 @@ QPushButton:hover:pressed{
      color: #0e88eb;   
  }
 
- QPushButton:checked#m_bSingleMode, 
- QPushButton:checked#m_bMixMode, 
- QPushButton:checked#m_bMultiMode{
+ QPushButton:checked{
      border: 1px solid #0e88eb;
      border-radius: 2px;
      background-color: #0e88eb;
      color: #ffffff;  
+ }
+
+ QPushButton:!enabled{
+     border: 1px solid #111111;
+     border-radius: 2px;
+     background-color: #343841;
+     color: #111111;  
  }</string>
               </property>
               <property name="text">
@@ -801,7 +804,7 @@ QPushButton:hover:pressed{
            <enum>Qt::StrongFocus</enum>
           </property>
           <property name="styleSheet">
-           <string notr="true">QPushButton:!hover#m_bCreateRoom{
+           <string notr="true">QPushButton:!hover{
      font-family: 微软雅黑;
      font-size: 18px;
      border: 1px solid #343841;
@@ -809,7 +812,7 @@ QPushButton:hover:pressed{
      color: #e6e6e6;
  }
 
- QPushButton:hover:!pressed#m_bCreateRoom{
+ QPushButton:hover:!pressed{
      font-family: 微软雅黑;
      font-size: 18px;
      border: 1px solid #343841;
@@ -817,7 +820,7 @@ QPushButton:hover:pressed{
      color: #0e88eb;
  }
 
- QPushButton:hover:pressed#m_bCreateRoom{
+ QPushButton:hover:pressed{
      font-family: 微软雅黑;
      font-size: 18px;
      border: 1px solid #343841;
@@ -1028,6 +1031,7 @@ QTableView:item:selected{
      background-color: #0e88eb;
      color: #ffffff;
 }
+
 QHeaderView{
      font-size: 14px;
      font-family: 微软雅黑;

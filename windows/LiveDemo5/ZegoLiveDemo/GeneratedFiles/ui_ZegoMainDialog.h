@@ -323,7 +323,7 @@ public:
         m_bJumpToNet->setMaximumSize(QSize(40, 40));
         m_bJumpToNet->setCursor(QCursor(Qt::WhatsThisCursor));
         m_bJumpToNet->setFocusPolicy(Qt::ClickFocus);
-        m_bJumpToNet->setStyleSheet(QLatin1String("QPushButton{\n"
+        m_bJumpToNet->setStyleSheet(QLatin1String("QPushButton:!hover{\n"
 "    border: 1px solid #0e88eb;\n"
 "    background-color: #0e88eb;\n"
 "}\n"
@@ -349,7 +349,7 @@ public:
         m_bMin->setMinimumSize(QSize(40, 40));
         m_bMin->setMaximumSize(QSize(40, 40));
         m_bMin->setFocusPolicy(Qt::ClickFocus);
-        m_bMin->setStyleSheet(QLatin1String("QPushButton{\n"
+        m_bMin->setStyleSheet(QLatin1String("QPushButton:!hover{\n"
 "    border: 1px solid #0e88eb;\n"
 "    background-color: #0e88eb;\n"
 "}\n"
@@ -375,7 +375,7 @@ public:
         m_bClose->setMinimumSize(QSize(50, 40));
         m_bClose->setMaximumSize(QSize(50, 40));
         m_bClose->setFocusPolicy(Qt::ClickFocus);
-        m_bClose->setStyleSheet(QLatin1String("QPushButton{\n"
+        m_bClose->setStyleSheet(QLatin1String("QPushButton:!hover{\n"
 "    border: 1px solid #0e88eb;\n"
 "    background-color: #0e88eb;\n"
 "}\n"
@@ -531,9 +531,7 @@ public:
         m_bMixMode->setMinimumSize(QSize(0, 50));
         m_bMixMode->setMaximumSize(QSize(16777215, 50));
         m_bMixMode->setFocusPolicy(Qt::ClickFocus);
-        m_bMixMode->setStyleSheet(QString::fromUtf8(" QPushButton:!hover#m_bSingleMode, \n"
-" QPushButton:!hover#m_bMixMode, \n"
-" QPushButton:!hover#m_bMultiMode{\n"
+        m_bMixMode->setStyleSheet(QString::fromUtf8(" QPushButton:!hover{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 16px;\n"
 "     border: 1px solid #b2b2b2;\n"
@@ -542,9 +540,7 @@ public:
 "     color: #e6e6e6;\n"
 " }\n"
 "\n"
-" QPushButton:hover#m_bSingleMode, \n"
-" QPushButton:hover#m_bMixMode, \n"
-" QPushButton:hover#m_bMultiMode{\n"
+" QPushButton:hover{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 16px;\n"
 "     border: 1px solid #0e88eb;\n"
@@ -553,13 +549,18 @@ public:
 "     color: #0e88eb;   \n"
 " }\n"
 "\n"
-" QPushButton:checked#m_bSingleMode, \n"
-" QPushButton:checked#m_bMixMode, \n"
-" QPushButton:checked#m_bMultiMode{\n"
+" QPushButton:checked{\n"
 "     border: 1px solid #0e88eb;\n"
 "     border-radius: 2px;\n"
 "     background-color: #0e88eb;\n"
 "     color: #ffffff;  \n"
+" }\n"
+"\n"
+" QPushButton:!enabled{\n"
+"     border: 1px solid #111111;\n"
+"     border-radius: 2px;\n"
+"     background-color: #343841;\n"
+"     color: #111111;  \n"
 " }"));
         m_bMixMode->setCheckable(true);
 
@@ -571,9 +572,7 @@ public:
         m_bSingleMode->setMaximumSize(QSize(16777215, 50));
         m_bSingleMode->setFocusPolicy(Qt::ClickFocus);
         m_bSingleMode->setContextMenuPolicy(Qt::DefaultContextMenu);
-        m_bSingleMode->setStyleSheet(QString::fromUtf8(" QPushButton:!hover#m_bSingleMode, \n"
-" QPushButton:!hover#m_bMixMode, \n"
-" QPushButton:!hover#m_bMultiMode{\n"
+        m_bSingleMode->setStyleSheet(QString::fromUtf8(" QPushButton:!hover{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 16px;\n"
 "     border: 1px solid #b2b2b2;\n"
@@ -582,9 +581,7 @@ public:
 "     color: #e6e6e6;\n"
 " }\n"
 "\n"
-" QPushButton:hover#m_bSingleMode, \n"
-" QPushButton:hover#m_bMixMode, \n"
-" QPushButton:hover#m_bMultiMode{\n"
+" QPushButton:hover{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 16px;\n"
 "     border: 1px solid #0e88eb;\n"
@@ -593,13 +590,18 @@ public:
 "     color: #0e88eb;   \n"
 " }\n"
 "\n"
-" QPushButton:checked#m_bSingleMode, \n"
-" QPushButton:checked#m_bMixMode, \n"
-" QPushButton:checked#m_bMultiMode{\n"
+" QPushButton:checked{\n"
 "     border: 1px solid #0e88eb;\n"
 "     border-radius: 2px;\n"
 "     background-color: #0e88eb;\n"
 "     color: #ffffff;  \n"
+" }\n"
+"\n"
+" QPushButton:!enabled{\n"
+"     border: 1px solid #111111;\n"
+"     border-radius: 2px;\n"
+"     background-color: #343841;\n"
+"     color: #111111;  \n"
 " }"));
         m_bSingleMode->setCheckable(true);
         m_bSingleMode->setAutoDefault(true);
@@ -611,9 +613,7 @@ public:
         m_bMultiMode->setMinimumSize(QSize(0, 50));
         m_bMultiMode->setMaximumSize(QSize(16777215, 50));
         m_bMultiMode->setFocusPolicy(Qt::ClickFocus);
-        m_bMultiMode->setStyleSheet(QString::fromUtf8(" QPushButton:!hover#m_bSingleMode, \n"
-" QPushButton:!hover#m_bMixMode, \n"
-" QPushButton:!hover#m_bMultiMode{\n"
+        m_bMultiMode->setStyleSheet(QString::fromUtf8(" QPushButton:!hover{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 16px;\n"
 "     border: 1px solid #b2b2b2;\n"
@@ -622,9 +622,7 @@ public:
 "     color: #e6e6e6;\n"
 " }\n"
 "\n"
-" QPushButton:hover#m_bSingleMode, \n"
-" QPushButton:hover#m_bMixMode, \n"
-" QPushButton:hover#m_bMultiMode{\n"
+" QPushButton:hover{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 16px;\n"
 "     border: 1px solid #0e88eb;\n"
@@ -633,13 +631,18 @@ public:
 "     color: #0e88eb;   \n"
 " }\n"
 "\n"
-" QPushButton:checked#m_bSingleMode, \n"
-" QPushButton:checked#m_bMixMode, \n"
-" QPushButton:checked#m_bMultiMode{\n"
+" QPushButton:checked{\n"
 "     border: 1px solid #0e88eb;\n"
 "     border-radius: 2px;\n"
 "     background-color: #0e88eb;\n"
 "     color: #ffffff;  \n"
+" }\n"
+"\n"
+" QPushButton:!enabled{\n"
+"     border: 1px solid #111111;\n"
+"     border-radius: 2px;\n"
+"     background-color: #343841;\n"
+"     color: #111111;  \n"
 " }"));
         m_bMultiMode->setCheckable(true);
 
@@ -672,7 +675,7 @@ public:
         m_bCreateRoom->setMinimumSize(QSize(0, 60));
         m_bCreateRoom->setMaximumSize(QSize(16777215, 60));
         m_bCreateRoom->setFocusPolicy(Qt::StrongFocus);
-        m_bCreateRoom->setStyleSheet(QString::fromUtf8("QPushButton:!hover#m_bCreateRoom{\n"
+        m_bCreateRoom->setStyleSheet(QString::fromUtf8("QPushButton:!hover{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 18px;\n"
 "     border: 1px solid #343841;\n"
@@ -680,7 +683,7 @@ public:
 "     color: #e6e6e6;\n"
 " }\n"
 "\n"
-" QPushButton:hover:!pressed#m_bCreateRoom{\n"
+" QPushButton:hover:!pressed{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 18px;\n"
 "     border: 1px solid #343841;\n"
@@ -688,7 +691,7 @@ public:
 "     color: #0e88eb;\n"
 " }\n"
 "\n"
-" QPushButton:hover:pressed#m_bCreateRoom{\n"
+" QPushButton:hover:pressed{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 18px;\n"
 "     border: 1px solid #343841;\n"
@@ -799,6 +802,7 @@ public:
 "     background-color: #0e88eb;\n"
 "     color: #ffffff;\n"
 "}\n"
+"\n"
 "QHeaderView{\n"
 "     font-size: 14px;\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"

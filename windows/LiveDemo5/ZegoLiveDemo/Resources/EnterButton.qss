@@ -1,5 +1,5 @@
 QPushButton:!hover{
-    font-family: Î¢ÈíÑÅºÚ;
+     font-family: Î¢ÈíÑÅºÚ;
      font-size: 14px;
      border: 1px solid #0e88eb;
      border-radius: 2px;
@@ -10,7 +10,7 @@ QPushButton:!hover{
 }
 
 QPushButton:hover{
-    font-family: Î¢ÈíÑÅºÚ;
+     font-family: Î¢ÈíÑÅºÚ;
      font-size: 14px;
      border: 1px solid #0d80de;
      border-radius: 2px;

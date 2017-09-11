@@ -71,7 +71,17 @@ ZegoSingleAnchorDialog::ZegoSingleAnchorDialog(SettingsPtr curSettings, RoomPtr 
 
 	this->setWindowFlags(Qt::FramelessWindowHint);//去掉标题栏 
 
+	QGridLayout *gridLayout = new QGridLayout();
+	gridLayout->setSpacing(0);
+	gridLayout->setSizeConstraint(QLayout::SetDefaultConstraint);
+	ui.zoneLiveViewHorizontalLayout->addLayout(gridLayout);
 
+	//单主播模式单画面设置
+	m_mainLiveView = new QZegoAVView;
+	m_mainLiveView->setMinimumSize(QSize(960, 540));
+	m_mainLiveView->setStyleSheet(QLatin1String("border: none;\n"
+		"background-color: #383838;"));
+	gridLayout->addWidget(m_mainLiveView, 0, 0, 1, 1);
 }
 
 ZegoSingleAnchorDialog::~ZegoSingleAnchorDialog()
@@ -113,19 +123,7 @@ void ZegoSingleAnchorDialog::initDialog()
 	for (int i = MAX_VIEW_COUNT; i >= 0; i--)
 		m_avaliableView.push_front(i);
 
-	//先写死，以后优化成动态生成
-	AVViews.push_back(ui.m_avLiveView);
-	AVViews.push_back(ui.m_avLiveView2);
-	AVViews.push_back(ui.m_avLiveView3);
-	AVViews.push_back(ui.m_avLiveView4);
-	AVViews.push_back(ui.m_avLiveView5);
-	AVViews.push_back(ui.m_avLiveView6);
-	AVViews.push_back(ui.m_avLiveView7);
-	AVViews.push_back(ui.m_avLiveView8);
-	AVViews.push_back(ui.m_avLiveView9);
-	AVViews.push_back(ui.m_avLiveView10);
-	AVViews.push_back(ui.m_avLiveView11);
-	AVViews.push_back(ui.m_avLiveView12);
+	AVViews.push_back(m_mainLiveView);
 
 	//推流成功前不能开混音、声音采集、分享、停止直播
 	ui.m_bAux->setEnabled(false);
@@ -203,6 +201,7 @@ void ZegoSingleAnchorDialog::StartPublishStream()
 
 			SurfaceMerge::UpdateSurface(itemList, 2);
 			AVViews[nIndex]->setSurfaceMergeView(true);
+			AVViews[nIndex]->setSurfaceMergeItemRect(itemWin, itemCam);
 			SurfaceMerge::SetRenderView((void *)AVViews[nIndex]->winId());
 
 			delete []itemList;

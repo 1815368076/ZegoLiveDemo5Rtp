@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1349</width>
-    <height>764</height>
+    <width>1283</width>
+    <height>723</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -264,17 +264,23 @@ QPushButton:hover:pressed{
      </property>
      <item>
       <widget class="QWidget" name="m_zoneLiveView" native="true">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
        </property>
        <property name="styleSheet">
         <string notr="true">background-color: #ffffff;
 border: none;</string>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <layout class="QHBoxLayout" name="zoneLiveViewHorizontalLayout">
         <property name="spacing">
          <number>0</number>
         </property>
@@ -290,183 +296,6 @@ border: none;</string>
         <property name="bottomMargin">
          <number>0</number>
         </property>
-        <item>
-         <layout class="QGridLayout" name="gridLayout">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <item row="3" column="0">
-           <widget class="QZegoAVView" name="m_avLiveView5">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QZegoAVView" name="m_avLiveView9">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3">
-           <widget class="QZegoAVView" name="m_avLiveView4">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QZegoAVView" name="m_avLiveView">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838
-;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QZegoAVView" name="m_avLiveView7">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="3">
-           <widget class="QZegoAVView" name="m_avLiveView12">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QZegoAVView" name="m_avLiveView6">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="3">
-           <widget class="QZegoAVView" name="m_avLiveView8">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QZegoAVView" name="m_avLiveView2">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2" rowspan="2">
-           <widget class="QZegoAVView" name="m_avLiveView3">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QZegoAVView" name="m_avLiveView11">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QZegoAVView" name="m_avLiveView10">
-            <property name="minimumSize">
-             <size>
-              <width>240</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border: none;
-background-color: #383838
-;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
        </layout>
       </widget>
      </item>
@@ -635,9 +464,8 @@ background-color: #e6e6e6;</string>
 font-family: 微软雅黑;
 font-size: 14px;
 color: #666666;
-padding-left: 14px;
-
 padding-top: 5px;
+padding-left: 14px;
 }
 
 QListView::item{
@@ -1764,7 +1592,7 @@ QPushButton:enabled:hover:pressed{
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>220</width>
+              <width>200</width>
               <height>20</height>
              </size>
             </property>
@@ -2085,11 +1913,6 @@ color: #ffffff;
    <class>MircoPhoneButton</class>
    <extends>QPushButton</extends>
    <header>ZegoMircophone.h</header>
-  </customwidget>
-  <customwidget>
-   <class>QZegoAVView</class>
-   <extends>QGraphicsView</extends>
-   <header>ZegoAVView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

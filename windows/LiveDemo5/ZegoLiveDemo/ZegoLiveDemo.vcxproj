@@ -615,7 +615,6 @@ if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\open
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="EnterButton.qss" />
     <None Include="QComboBox.qss" />
     <CustomBuild Include="ZegoLiveRoomDialog.ui">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
@@ -673,6 +672,7 @@ if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\open
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
       <SubType>Designer</SubType>
     </CustomBuild>
+    <None Include="Resources\EnterButton.qss" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\images\refresh.png">

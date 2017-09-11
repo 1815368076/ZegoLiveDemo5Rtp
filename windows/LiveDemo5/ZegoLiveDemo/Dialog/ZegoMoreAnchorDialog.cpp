@@ -71,6 +71,9 @@ ZegoMoreAnchorDialog::ZegoMoreAnchorDialog(SettingsPtr curSettings, RoomPtr room
 	this->setWindowFlags(Qt::FramelessWindowHint);//去掉标题栏 
 
 	ui.m_edInput->installEventFilter(this);
+
+	//初始化网格布局
+	gridLayout = new QGridLayout();
 }
 
 ZegoMoreAnchorDialog::~ZegoMoreAnchorDialog()
@@ -111,20 +114,7 @@ void ZegoMoreAnchorDialog::initDialog()
 	//剩余能用的AVView
 	for (int i = MAX_VIEW_COUNT; i >= 0; i--)
 		m_avaliableView.push_front(i);
-	//先写死，以后优化
-	AVViews.push_back(ui.m_avLiveView);
-	AVViews.push_back(ui.m_avLiveView2);
-	AVViews.push_back(ui.m_avLiveView3);
-	AVViews.push_back(ui.m_avLiveView4);
-	AVViews.push_back(ui.m_avLiveView5);
-	AVViews.push_back(ui.m_avLiveView6);
-	AVViews.push_back(ui.m_avLiveView7);
-	AVViews.push_back(ui.m_avLiveView8);
-	AVViews.push_back(ui.m_avLiveView9);
-	AVViews.push_back(ui.m_avLiveView10);
-	AVViews.push_back(ui.m_avLiveView11);
-	AVViews.push_back(ui.m_avLiveView12);
-
+	
 	//推流成功前不能开混音、声音采集、分享、停止直播
 	ui.m_bAux->setEnabled(false);
 	ui.m_bCapture->setEnabled(false);
@@ -164,56 +154,17 @@ void ZegoMoreAnchorDialog::StartPublishStream()
 
 		int nIndex = takeLeastAvaliableViewIndex();
 		pPublishStream->setPlayView(nIndex);
+		addAVView(nIndex);
 		qDebug() << "publish nIndex = " << nIndex << "publish stream id is" << pPublishStream->getStreamId();
-		 if (m_pAVSettings->GetSurfaceMerge())
-		{
-			int cx = m_pAVSettings->GetResolution().cx;
-			int cy = m_pAVSettings->GetResolution().cy;
-
-			SurfaceMerge::SetFPS(m_pAVSettings->GetFps());
-			SurfaceMerge::SetCursorVisible(true);
-			SurfaceMerge::SetSurfaceSize(cx, cy);
-
-			SurfaceMerge::ZegoCaptureItem *itemList = new SurfaceMerge::ZegoCaptureItem[2];
-
-			SurfaceMerge::ZegoCaptureItem itemCam;
-			strcpy(itemCam.captureSource.deviceId, m_pAVSettings->GetCameraId().toStdString().c_str());
-			itemCam.captureType = SurfaceMerge::CaptureType::Camera;
-			itemCam.position = { cx - cx / 6, cy - cy / 6, cx / 6, cy / 6 };  //摄像头默认置于右下角
-
-			unsigned int count = 0;
-			SurfaceMerge::ScreenItem *screenList = SurfaceMerge::EnumScreenList(count);
-			SurfaceMerge::ZegoCaptureItem itemWin;
-			for (int i = 0; i < count; i++)
-			{
-				if (screenList[i].bPrimary)
-				{
-					strcpy(itemWin.captureSource.screenName, screenList[i].szName);
-					break;
-				}
-			}
-
-			itemWin.captureType = SurfaceMerge::CaptureType::Screen;
-			itemWin.position = { 0, 0, cx, cy };
-			itemList[0] = itemCam;
-			itemList[1] = itemWin;
-
-			SurfaceMerge::UpdateSurface(itemList, 2);
-			AVViews[nIndex]->setSurfaceMergeView(true);
-			SurfaceMerge::SetRenderView((void *)AVViews[nIndex]->winId());
-
-			delete[]itemList;
-			SurfaceMerge::FreeScreenList(screenList);
-		}
-		else
-		{
-			//配置View
-			LIVEROOM::SetPreviewView((void *)AVViews[nIndex]->winId());
-			LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill);
-			LIVEROOM::StartPreview();
-		}
+		
+		//配置View
+		LIVEROOM::SetPreviewView((void *)AVViews.last()->winId());
+		LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill);
+		LIVEROOM::StartPreview();
+		
 
 		QString streamID = m_strPublishStreamID;
+		m_anchorStreamInfo = pPublishStream;
 		qDebug() << "start publishing!";
 		LIVEROOM::StartPublishing(m_pChatRoom->getRoomName().toStdString().c_str(), streamID.toStdString().c_str(), LIVEROOM::ZEGO_JOIN_PUBLISH, "");
 		m_bIsPublishing = true;
@@ -224,17 +175,12 @@ void ZegoMoreAnchorDialog::StopPublishStream(const QString& streamID)
 {
 	if (streamID.size() == 0){ return; }
 
-	if (m_pAVSettings->GetSurfaceMerge())
-	{
-		SurfaceMerge::SetRenderView(nullptr);
-		SurfaceMerge::UpdateSurface(nullptr, 0);
-	}
-	else
-	{
-		LIVEROOM::SetPreviewView(nullptr);
-		LIVEROOM::StopPreview();
-	}
-
+	
+	LIVEROOM::SetPreviewView(nullptr);
+	LIVEROOM::StopPreview();
+	
+	qDebug() << "stop publish view index = " << m_anchorStreamInfo->getPlayView();
+	removeAVView(m_anchorStreamInfo->getPlayView());
 	LIVEROOM::StopPublishing();
 	m_bIsPublishing = false;
 
@@ -250,15 +196,13 @@ void ZegoMoreAnchorDialog::StartPlayStream(StreamPtr stream)
 
 	if (m_avaliableView.size() > 0)
 	{
-		//int nIndex = m_avaliableView.top();
 		int nIndex = takeLeastAvaliableViewIndex();
 		qDebug() << "playStream nIndex = " << nIndex <<" play stream id is "<<stream->getStreamId();
-		//m_avaliableView.pop();
 		stream->setPlayView(nIndex);
-
+		addAVView(nIndex);
 		//配置View
 		LIVEROOM::SetViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill, stream->getStreamId().toStdString().c_str());
-		LIVEROOM::StartPlayingStream(stream->getStreamId().toStdString().c_str(), (void *)AVViews[nIndex]->winId());
+		LIVEROOM::StartPlayingStream(stream->getStreamId().toStdString().c_str(), (void *)AVViews.last()->winId());
 	}
 }
 
@@ -266,6 +210,16 @@ void ZegoMoreAnchorDialog::StopPlayStream(const QString& streamID)
 {
 	if (streamID.size() == 0) { return; }
 
+	StreamPtr curStream;
+	for (auto stream : m_pChatRoom->getStreamList())
+	{
+		if (streamID == stream->getStreamId())
+			curStream = stream;
+	}
+
+	qDebug() << "stop play view index = " << curStream->getPlayView();
+
+	removeAVView(curStream->getPlayView());
 	LIVEROOM::StopPlayingStream(streamID.toStdString().c_str());
 
 	StreamPtr pStream = m_pChatRoom->removeStream(streamID);
@@ -303,6 +257,7 @@ void ZegoMoreAnchorDialog::GetOut()
 	delete m_cbMircoPhoneModel;
 	delete m_cbCameraModel;
 	delete timer;
+	delete gridLayout;
 }
 
 void ZegoMoreAnchorDialog::initComboBox()
@@ -411,6 +366,80 @@ int ZegoMoreAnchorDialog::takeLeastAvaliableViewIndex()
 
 	m_avaliableView.takeAt(minIndex);
 	return min;
+}
+
+void ZegoMoreAnchorDialog::initAVView(QZegoAVView *view)
+{
+	view->setMinimumSize(QSize(240, 0));
+	view->setStyleSheet(QLatin1String("border: none;\n"
+		"background-color: #383838;"));
+}
+
+void ZegoMoreAnchorDialog::addAVView(int addViewIndex)
+{
+	QZegoAVView *newAVView = new QZegoAVView;
+	initAVView(newAVView);
+	newAVView->setViewIndex(addViewIndex);
+	AVViews.push_back(newAVView);
+
+	updateViewLayout(AVViews.size());
+}
+
+void ZegoMoreAnchorDialog::removeAVView(int removeViewIndex)
+{
+	int viewIndex = -1;
+	for (int i = 0; i < AVViews.size(); i++)
+	{
+		if (AVViews[i]->getViewIndex() == removeViewIndex)
+		{
+			viewIndex = i;
+			break;
+		}
+	}
+
+	QZegoAVView *popView = AVViews.takeAt(viewIndex);
+	popView->deleteLater();
+
+	updateViewLayout(AVViews.size());
+}
+
+void ZegoMoreAnchorDialog::updateViewLayout(int viewCount)
+{
+	
+	for (int i = 0; i < viewCount; i++)
+		gridLayout->removeWidget(AVViews[i]);
+
+	gridLayout->deleteLater();
+
+	gridLayout = new QGridLayout();
+	gridLayout->setSpacing(0);
+	gridLayout->setSizeConstraint(QLayout::SetDefaultConstraint);
+	ui.zoneLiveViewHorizontalLayout->addLayout(gridLayout);
+
+	for (int i = 0; i < viewCount; i++)
+	{
+		int row, col;
+		if (viewCount >= 1 && viewCount <= 4)
+		{
+			row = i / 2;
+			col = i % 2;
+		}
+		else if (viewCount >= 5 && viewCount <= 9)
+		{
+			row = i / 3;
+			col = i % 3;
+		}
+		else if (viewCount >= 10 && viewCount <= 12)
+		{
+			row = i / 4;
+			col = i % 4;
+		}
+		qDebug() << "current row = " << row << " col = " << col;
+		gridLayout->addWidget(AVViews[i], row, col, 1, 1);
+	    gridLayout->setRowStretch(row, 1);
+		gridLayout->setColumnStretch(col, 1);
+	}
+	
 }
 
 void ZegoMoreAnchorDialog::FreeAVView(StreamPtr stream)
@@ -636,7 +665,7 @@ void ZegoMoreAnchorDialog::OnPublishStateUpdate(int stateCode, const QString& st
 		if (streamInfo != nullptr)
 		{
 			
-			m_anchorStreamInfo = streamInfo;
+			//m_anchorStreamInfo = streamInfo;
 			sharedHlsUrl = streamInfo->m_vecHlsUrls[0];
 			sharedRtmpUrl = streamInfo->m_vecRtmpUrls[0];
 			

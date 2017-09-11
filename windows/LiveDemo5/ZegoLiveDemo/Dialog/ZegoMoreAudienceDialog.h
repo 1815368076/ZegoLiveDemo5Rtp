@@ -120,7 +120,13 @@ private:
 	void roomMemberAdd(QString userName);
 	void roomMemberDelete(QString userName);
 
+	//view布局函数
 	int takeLeastAvaliableViewIndex();
+	void initAVView(QZegoAVView *view);
+	void addAVView(int addViewIndex);
+	void removeAVView(int removeViewIndex);
+	void updateViewLayout(int viewCount);
+
 private:
 	Ui::ZegoLiveRoomDialog ui;
 
@@ -183,6 +189,8 @@ private:
 	//保留当前第一主播的流信息
 	StreamPtr m_anchorStreamInfo;
 
+	//view的网格动态布局
+	QGridLayout *gridLayout;
 };
 
 #endif

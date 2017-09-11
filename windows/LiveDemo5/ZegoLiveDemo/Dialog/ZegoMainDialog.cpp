@@ -277,24 +277,12 @@ void ZegoMainDialog::initRoomList()
 	//点击item时去除虚线框
 	ui.m_roomList->setItemDelegate(new NoFocusFrameDelegate(this));
 
-	ui.m_roomList->verticalScrollBar()->setStyleSheet("QScrollBar:vertical {"
-		                                            "background:transparent;"
-                                                    "width:9px;"
-                                                    "margin: 0px 0px 2px 0px;}"
-                                                    "QScrollBar::handle:vertical{"
-													"background: rgb(195, 195, 195);"
-	                                                "min-height: 20px;"
-	                                                "border-radius: 3px; }"
-                                                    "QScrollBar::handle:vertical:hover{"
-                                                    "background:rgba(0, 0, 0, 30 % );}"
-                                                    "QScrollBar::add-line:vertical{"
-                                                    "height: 0px;"
-	                                                "subcontrol-position: bottom;"
-	                                                "subcontrol-origin: margin;}"
-                                                    "QScrollBar::sub-line:vertical{"
-                                                    "height: 0px;"
-	                                                "subcontrol-position: top;"
-	                                                "subcontrol-origin: margin;}");
+	QFile qssFile("Resources/RoomListVerticalScrollBar.qss");
+	qssFile.open(QFile::ReadOnly);
+	if (qssFile.isOpen()){
+		ui.m_roomList->verticalScrollBar()->setStyleSheet(qssFile.readAll());
+		qssFile.close();
+	}
 	
 }
 
@@ -671,7 +659,6 @@ void ZegoMainDialog::OnButtonModeSheetChange(int id)
 {
 	QPushButton *button = (QPushButton *)m_modeButtonGroup->button(id);
 
-	
 	if (button->isChecked())
 	{
 		
@@ -1123,6 +1110,28 @@ void ZegoMainDialog::OnButoonSwitchSurfaceMerge()
 		qDebug() << "SurfaceMerge unChecked!";
 		m_isUseSurfaceMerge = false;
 
+	}
+
+	if (m_isUseSurfaceMerge)
+	{
+		ui.m_bMultiMode->setEnabled(false);
+		ui.m_bMixMode->setEnabled(false);
+
+		//只有单主播模式下可以开启屏幕推流
+		if (!(m_curMode == LIVEROOM::ZEGO_SINGLE_ANCHOR))
+		{
+			ui.m_bMultiMode->setChecked(false);
+			ui.m_bMixMode->setChecked(false);
+			ui.m_bSingleMode->setChecked(true);
+			m_curMode = LIVEROOM::ZEGO_SINGLE_ANCHOR;
+
+		}
+	}
+	else
+	{
+		//恢复模式按钮
+		ui.m_bMultiMode->setEnabled(true);
+		ui.m_bMixMode->setEnabled(true);
 	}
 
 	ui.m_switchSurfaceMerge->setEnabled(false);

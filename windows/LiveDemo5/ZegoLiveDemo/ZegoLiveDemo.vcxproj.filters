@@ -347,7 +347,7 @@
     <None Include="QComboBox.qss">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="EnterButton.qss">
+    <None Include="Resources\EnterButton.qss">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

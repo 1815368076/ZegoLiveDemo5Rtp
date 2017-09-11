@@ -17,7 +17,6 @@
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QFormLayout>
 #include <QtWidgets/QFrame>
-#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
@@ -28,7 +27,6 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include "ZegoAVView.h"
 #include "ZegoMircophone.h"
 
 QT_BEGIN_NAMESPACE
@@ -46,20 +44,7 @@ public:
     QPushButton *m_bClose;
     QHBoxLayout *horizontalLayout1;
     QWidget *m_zoneLiveView;
-    QHBoxLayout *horizontalLayout_3;
-    QGridLayout *gridLayout;
-    QZegoAVView *m_avLiveView5;
-    QZegoAVView *m_avLiveView9;
-    QZegoAVView *m_avLiveView4;
-    QZegoAVView *m_avLiveView;
-    QZegoAVView *m_avLiveView7;
-    QZegoAVView *m_avLiveView12;
-    QZegoAVView *m_avLiveView6;
-    QZegoAVView *m_avLiveView8;
-    QZegoAVView *m_avLiveView2;
-    QZegoAVView *m_avLiveView3;
-    QZegoAVView *m_avLiveView11;
-    QZegoAVView *m_avLiveView10;
+    QHBoxLayout *zoneLiveViewHorizontalLayout;
     QFrame *m_lineBetweenViewAndList;
     QWidget *m_zoneCommonAndUserList;
     QVBoxLayout *verticalLayout_2;
@@ -129,7 +114,7 @@ public:
     {
         if (ZegoLiveRoomDialog->objectName().isEmpty())
             ZegoLiveRoomDialog->setObjectName(QStringLiteral("ZegoLiveRoomDialog"));
-        ZegoLiveRoomDialog->resize(1349, 764);
+        ZegoLiveRoomDialog->resize(1283, 723);
         ZegoLiveRoomDialog->setStyleSheet(QStringLiteral("border: none;"));
         verticalLayout = new QVBoxLayout(ZegoLiveRoomDialog);
         verticalLayout->setSpacing(0);
@@ -263,121 +248,16 @@ public:
         horizontalLayout1->setObjectName(QStringLiteral("horizontalLayout1"));
         m_zoneLiveView = new QWidget(ZegoLiveRoomDialog);
         m_zoneLiveView->setObjectName(QStringLiteral("m_zoneLiveView"));
-        QSizePolicy sizePolicy2(QSizePolicy::Minimum, QSizePolicy::Minimum);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(m_zoneLiveView->sizePolicy().hasHeightForWidth());
-        m_zoneLiveView->setSizePolicy(sizePolicy2);
+        m_zoneLiveView->setEnabled(true);
+        sizePolicy.setHeightForWidth(m_zoneLiveView->sizePolicy().hasHeightForWidth());
+        m_zoneLiveView->setSizePolicy(sizePolicy);
+        m_zoneLiveView->setAutoFillBackground(false);
         m_zoneLiveView->setStyleSheet(QLatin1String("background-color: #ffffff;\n"
 "border: none;"));
-        horizontalLayout_3 = new QHBoxLayout(m_zoneLiveView);
-        horizontalLayout_3->setSpacing(0);
-        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
-        horizontalLayout_3->setContentsMargins(0, 0, 0, 0);
-        gridLayout = new QGridLayout();
-        gridLayout->setSpacing(0);
-        gridLayout->setObjectName(QStringLiteral("gridLayout"));
-        m_avLiveView5 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView5->setObjectName(QStringLiteral("m_avLiveView5"));
-        m_avLiveView5->setMinimumSize(QSize(240, 0));
-        m_avLiveView5->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838;"));
-
-        gridLayout->addWidget(m_avLiveView5, 3, 0, 1, 1);
-
-        m_avLiveView9 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView9->setObjectName(QStringLiteral("m_avLiveView9"));
-        m_avLiveView9->setMinimumSize(QSize(240, 0));
-        m_avLiveView9->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838;"));
-
-        gridLayout->addWidget(m_avLiveView9, 4, 0, 1, 1);
-
-        m_avLiveView4 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView4->setObjectName(QStringLiteral("m_avLiveView4"));
-        m_avLiveView4->setMinimumSize(QSize(240, 0));
-        m_avLiveView4->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838;"));
-
-        gridLayout->addWidget(m_avLiveView4, 1, 3, 1, 1);
-
-        m_avLiveView = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView->setObjectName(QStringLiteral("m_avLiveView"));
-        m_avLiveView->setMinimumSize(QSize(240, 0));
-        m_avLiveView->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838\n"
-";"));
-
-        gridLayout->addWidget(m_avLiveView, 1, 0, 1, 1);
-
-        m_avLiveView7 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView7->setObjectName(QStringLiteral("m_avLiveView7"));
-        m_avLiveView7->setMinimumSize(QSize(240, 0));
-        m_avLiveView7->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838;"));
-
-        gridLayout->addWidget(m_avLiveView7, 3, 2, 1, 1);
-
-        m_avLiveView12 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView12->setObjectName(QStringLiteral("m_avLiveView12"));
-        m_avLiveView12->setMinimumSize(QSize(240, 0));
-        m_avLiveView12->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838;"));
-
-        gridLayout->addWidget(m_avLiveView12, 4, 3, 1, 1);
-
-        m_avLiveView6 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView6->setObjectName(QStringLiteral("m_avLiveView6"));
-        m_avLiveView6->setMinimumSize(QSize(240, 0));
-        m_avLiveView6->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838;"));
-
-        gridLayout->addWidget(m_avLiveView6, 3, 1, 1, 1);
-
-        m_avLiveView8 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView8->setObjectName(QStringLiteral("m_avLiveView8"));
-        m_avLiveView8->setMinimumSize(QSize(240, 0));
-        m_avLiveView8->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838;"));
-
-        gridLayout->addWidget(m_avLiveView8, 3, 3, 1, 1);
-
-        m_avLiveView2 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView2->setObjectName(QStringLiteral("m_avLiveView2"));
-        m_avLiveView2->setMinimumSize(QSize(240, 0));
-        m_avLiveView2->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838;"));
-
-        gridLayout->addWidget(m_avLiveView2, 1, 1, 1, 1);
-
-        m_avLiveView3 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView3->setObjectName(QStringLiteral("m_avLiveView3"));
-        m_avLiveView3->setMinimumSize(QSize(240, 0));
-        m_avLiveView3->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838;"));
-
-        gridLayout->addWidget(m_avLiveView3, 0, 2, 2, 1);
-
-        m_avLiveView11 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView11->setObjectName(QStringLiteral("m_avLiveView11"));
-        m_avLiveView11->setMinimumSize(QSize(240, 0));
-        m_avLiveView11->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838;"));
-
-        gridLayout->addWidget(m_avLiveView11, 4, 2, 1, 1);
-
-        m_avLiveView10 = new QZegoAVView(m_zoneLiveView);
-        m_avLiveView10->setObjectName(QStringLiteral("m_avLiveView10"));
-        m_avLiveView10->setMinimumSize(QSize(240, 0));
-        m_avLiveView10->setStyleSheet(QLatin1String("border: none;\n"
-"background-color: #383838\n"
-";"));
-
-        gridLayout->addWidget(m_avLiveView10, 4, 1, 1, 1);
-
-
-        horizontalLayout_3->addLayout(gridLayout);
-
+        zoneLiveViewHorizontalLayout = new QHBoxLayout(m_zoneLiveView);
+        zoneLiveViewHorizontalLayout->setSpacing(0);
+        zoneLiveViewHorizontalLayout->setObjectName(QStringLiteral("zoneLiveViewHorizontalLayout"));
+        zoneLiveViewHorizontalLayout->setContentsMargins(0, 0, 0, 0);
 
         horizontalLayout1->addWidget(m_zoneLiveView);
 
@@ -394,6 +274,9 @@ public:
 
         m_zoneCommonAndUserList = new QWidget(ZegoLiveRoomDialog);
         m_zoneCommonAndUserList->setObjectName(QStringLiteral("m_zoneCommonAndUserList"));
+        QSizePolicy sizePolicy2(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(m_zoneCommonAndUserList->sizePolicy().hasHeightForWidth());
         m_zoneCommonAndUserList->setSizePolicy(sizePolicy2);
         m_zoneCommonAndUserList->setMinimumSize(QSize(320, 0));
@@ -462,9 +345,8 @@ public:
 "font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "font-size: 14px;\n"
 "color: #666666;\n"
-"padding-left: 14px;\n"
-"\n"
 "padding-top: 5px;\n"
+"padding-left: 14px;\n"
 "}\n"
 "\n"
 "QListView::item{\n"
@@ -1131,7 +1013,7 @@ public:
 
         horizontalLayout_6->addLayout(verticalLayout_6);
 
-        horizontalSpacer_4 = new QSpacerItem(220, 20, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+        horizontalSpacer_4 = new QSpacerItem(200, 20, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
         horizontalLayout_6->addItem(horizontalSpacer_4);
 
