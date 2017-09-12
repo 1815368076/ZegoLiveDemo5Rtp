@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_ZegoMainDialog_t {
-    QByteArrayData data[37];
-    char stringdata0[642];
+    QByteArrayData data[38];
+    char stringdata0[670];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -65,7 +65,8 @@ QT_MOC_LITERAL(32, 562, 19), // "OnSwitchVideoDevice"
 QT_MOC_LITERAL(33, 582, 19), // "OnSaveVideoSettings"
 QT_MOC_LITERAL(34, 602, 11), // "SettingsPtr"
 QT_MOC_LITERAL(35, 614, 8), // "settings"
-QT_MOC_LITERAL(36, 623, 18) // "OnClickTitleButton"
+QT_MOC_LITERAL(36, 623, 27), // "OnComboBoxAppVersionChanged"
+QT_MOC_LITERAL(37, 651, 18) // "OnClickTitleButton"
 
     },
     "ZegoMainDialog\0OnAudioDeviceChanged\0"
@@ -85,7 +86,8 @@ QT_MOC_LITERAL(36, 623, 18) // "OnClickTitleButton"
     "writeJsonData\0QNetworkReply*\0reply\0"
     "OnSwitchAudioDevice\0OnSwitchVideoDevice\0"
     "OnSaveVideoSettings\0SettingsPtr\0"
-    "settings\0OnClickTitleButton"
+    "settings\0OnComboBoxAppVersionChanged\0"
+    "OnClickTitleButton"
 };
 #undef QT_MOC_LITERAL
 
@@ -95,7 +97,7 @@ static const uint qt_meta_data_ZegoMainDialog[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      23,   14, // methods
+      24,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -103,29 +105,30 @@ static const uint qt_meta_data_ZegoMainDialog[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    4,  129,    2, 0x09 /* Protected */,
-       9,    3,  138,    2, 0x09 /* Protected */,
-      10,    1,  145,    2, 0x0a /* Public */,
-      12,    1,  148,    2, 0x0a /* Public */,
-      13,    1,  151,    2, 0x0a /* Public */,
-      15,    0,  154,    2, 0x0a /* Public */,
-      16,    0,  155,    2, 0x0a /* Public */,
-      17,    0,  156,    2, 0x0a /* Public */,
-      18,    0,  157,    2, 0x0a /* Public */,
-      19,    0,  158,    2, 0x0a /* Public */,
-      20,    0,  159,    2, 0x0a /* Public */,
-      21,    0,  160,    2, 0x0a /* Public */,
-      22,    0,  161,    2, 0x0a /* Public */,
-      23,    0,  162,    2, 0x0a /* Public */,
-      24,    0,  163,    2, 0x0a /* Public */,
-      25,    0,  164,    2, 0x0a /* Public */,
-      26,    0,  165,    2, 0x0a /* Public */,
-      27,    0,  166,    2, 0x0a /* Public */,
-      28,    1,  167,    2, 0x0a /* Public */,
-      31,    1,  170,    2, 0x0a /* Public */,
-      32,    1,  173,    2, 0x0a /* Public */,
-      33,    1,  176,    2, 0x0a /* Public */,
-      36,    0,  179,    2, 0x08 /* Private */,
+       1,    4,  134,    2, 0x09 /* Protected */,
+       9,    3,  143,    2, 0x09 /* Protected */,
+      10,    1,  150,    2, 0x0a /* Public */,
+      12,    1,  153,    2, 0x0a /* Public */,
+      13,    1,  156,    2, 0x0a /* Public */,
+      15,    0,  159,    2, 0x0a /* Public */,
+      16,    0,  160,    2, 0x0a /* Public */,
+      17,    0,  161,    2, 0x0a /* Public */,
+      18,    0,  162,    2, 0x0a /* Public */,
+      19,    0,  163,    2, 0x0a /* Public */,
+      20,    0,  164,    2, 0x0a /* Public */,
+      21,    0,  165,    2, 0x0a /* Public */,
+      22,    0,  166,    2, 0x0a /* Public */,
+      23,    0,  167,    2, 0x0a /* Public */,
+      24,    0,  168,    2, 0x0a /* Public */,
+      25,    0,  169,    2, 0x0a /* Public */,
+      26,    0,  170,    2, 0x0a /* Public */,
+      27,    0,  171,    2, 0x0a /* Public */,
+      28,    1,  172,    2, 0x0a /* Public */,
+      31,    1,  175,    2, 0x0a /* Public */,
+      32,    1,  178,    2, 0x0a /* Public */,
+      33,    1,  181,    2, 0x0a /* Public */,
+      36,    1,  184,    2, 0x0a /* Public */,
+      37,    0,  187,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void, 0x80000000 | 3, QMetaType::QString, QMetaType::QString, 0x80000000 | 7,    4,    5,    6,    8,
@@ -150,6 +153,7 @@ static const uint qt_meta_data_ZegoMainDialog[] = {
     QMetaType::Void, QMetaType::Int,   11,
     QMetaType::Void, QMetaType::Int,   11,
     QMetaType::Void, 0x80000000 | 34,   35,
+    QMetaType::Void, QMetaType::Int,   11,
     QMetaType::Void,
 
        0        // eod
@@ -183,7 +187,8 @@ void ZegoMainDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 19: _t->OnSwitchAudioDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 20: _t->OnSwitchVideoDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 21: _t->OnSaveVideoSettings((*reinterpret_cast< SettingsPtr(*)>(_a[1]))); break;
-        case 22: _t->OnClickTitleButton(); break;
+        case 22: _t->OnComboBoxAppVersionChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 23: _t->OnClickTitleButton(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -225,13 +230,13 @@ int ZegoMainDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 23)
+        if (_id < 24)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 23;
+        _id -= 24;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 23)
+        if (_id < 24)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 23;
+        _id -= 24;
     }
     return _id;
 }

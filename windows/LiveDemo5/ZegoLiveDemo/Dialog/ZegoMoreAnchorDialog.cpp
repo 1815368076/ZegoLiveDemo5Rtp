@@ -626,6 +626,7 @@ void ZegoMoreAnchorDialog::OnLoginRoom(int errorCode, const QString& strRoomID, 
 	{
 		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("登陆房间失败"));
 		OnClose();
+		return;
 	}
 
 	//加入房间列表

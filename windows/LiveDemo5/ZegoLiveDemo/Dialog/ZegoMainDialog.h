@@ -68,6 +68,8 @@ public slots:
 	void OnSwitchVideoDevice(int id);
 	void OnSaveVideoSettings(SettingsPtr settings);
 
+	void OnComboBoxAppVersionChanged(int id);
+
 protected:
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void mouseMoveEvent(QMouseEvent *e);

@@ -6,6 +6,14 @@
 #include "ZegoVideoCaptureFactoryDemo.h"
 #include "ZegoVideoFilterFactoryDemo.h"
 
+//demo版本的枚举类型
+typedef enum _Version
+{
+	ZEGO_PROTOCOL_UDP = 0,
+	ZEGO_PROTOCOL_UDP_INTERNATIONAL = 1,
+	ZEGO_PROTOCOL_CUSTOM = 2
+}Version;
+
 class QZegoBase
 {
 public :
@@ -21,6 +29,9 @@ public :
 	void setUseSurfaceMerge(bool isSurface);
 	QZegoAVSignal* GetAVSignal(void);
 	unsigned long GetAppID(void);
+	unsigned char* GetAppSign();
+	void setKey(int pKey);
+	int getKey();
 
 private :
 	typedef enum _INIT_MASK {
@@ -40,6 +51,12 @@ private :
 	bool isVideoFilter = false;
 	//是否使用截屏推流
 	bool isSurfaceMerge = false;
+
+	//appid、appsign默认为UDP版本
+	int key = Version::ZEGO_PROTOCOL_UDP;
+
+	QVector <unsigned int> appIDs;
+	QVector <unsigned char *> appSigns;
 
 	QZegoAVSignal* m_pAVSignal;
 	//外部采集工厂对象

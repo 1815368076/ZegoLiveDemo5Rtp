@@ -7,10 +7,10 @@
 #include "ZegoSurfaceMerge.h"
 #include <QDebug>
 
-#define  ZEGO_PROTOCOL_UDP
-#ifdef ZEGO_PROTOCOL_UDP
-static unsigned long g_dwAppID2 = 1739272706;
-static unsigned char g_bufSignKey2[] =
+//#define  ZEGO_PROTOCOL_UDP
+//#ifdef ZEGO_PROTOCOL_UDP
+static unsigned long g_dwAppID_Udp = 1739272706;
+static unsigned char g_bufSignKey_Udp[] =
 {
 	0x1e, 0xc3, 0xf8, 0x5c, 0xb2, 0xf2, 0x13, 0x70,
 	0x26, 0x4e, 0xb3, 0x71, 0xc8, 0xc6, 0x5c, 0xa3,
@@ -18,9 +18,9 @@ static unsigned char g_bufSignKey2[] =
 	0xe0, 0xc8, 0x99, 0xae, 0x82, 0xc0, 0xf6, 0xf8
 };
 
-#elif defined ZEGO_PROTOCOL_UDP_INTERNATIONAL
-static unsigned long g_dwAppID2 = 3322882036;
-static unsigned cha g_bufSignKey2[] =
+//#elif defined ZEGO_PROTOCOL_UDP_INTERNATIONAL
+static unsigned long g_dwAppID_International = 3322882036;
+static unsigned char g_bufSignKey_International[] =
 { 
 	0x5d, 0xe6, 0x83, 0xac, 0xa4, 0xe5, 0xad, 0x43,
 	0xe5, 0xea, 0xe3, 0x70, 0x6b, 0xe0, 0x77, 0xa4,
@@ -28,21 +28,27 @@ static unsigned cha g_bufSignKey2[] =
 	0x32, 0xd2, 0xfe, 0x22, 0x5b, 0x6b, 0x2b, 0x2f 
 };
 
-#else
-static unsigned long g_dwAppID2 = 1;
+//#else
+/*static unsigned long g_dwAppID2 = 1;
 static unsigned char g_bufSignKey2[] =
 {
 	0x91, 0x93, 0xcc, 0x66, 0x2a, 0x1c, 0x0e, 0xc1,
 	0x35, 0xec, 0x71, 0xfb, 0x07, 0x19, 0x4b, 0x38,
 	0x41, 0xd4, 0xad, 0x83, 0x78, 0xf2, 0x59, 0x90,
 	0xe0, 0xa4, 0x0c, 0x7f, 0xf4, 0x28, 0x41, 0xf7
-};
-#endif
+};*/
+//#endif
 
 QZegoBase::QZegoBase(void) : m_dwInitedMask(INIT_NONE)
 {
 	//日志存放的路径
 	m_strLogPathUTF8 = "ZegoLog/";
+
+	appIDs.push_back(g_dwAppID_Udp);
+	appIDs.push_back(g_dwAppID_International);
+
+	appSigns.push_back(g_bufSignKey_Udp);
+	appSigns.push_back(g_bufSignKey_International);
 
 	m_pAVSignal = new QZegoAVSignal;
 
@@ -103,7 +109,7 @@ bool QZegoBase::InitAVSDK(SettingsPtr pCurSetting, QString userID, QString userN
 		LIVEROOM::SetIMCallback(m_pAVSignal);
 		LIVEROOM::SetDeviceStateCallback(m_pAVSignal);
 
-		LIVEROOM::InitSDK(g_dwAppID2, g_bufSignKey2, 32);
+		LIVEROOM::InitSDK(appIDs[key], appSigns[key], 32);
 	}
 
 	LIVEROOM::EnableAux(false);
@@ -165,7 +171,23 @@ QZegoAVSignal* QZegoBase::GetAVSignal(void)
 
 unsigned long QZegoBase::GetAppID(void)
 {
-	return g_dwAppID2;
+	return appIDs[key];
+}
+
+unsigned char* QZegoBase::GetAppSign()
+{
+	return appSigns[key];
+}
+
+void QZegoBase::setKey(int pKey)
+{
+	key = pKey;
+
+}
+
+int QZegoBase::getKey()
+{
+	return key;
 }
 
 void QZegoBase::setTestEnv(bool isTest)

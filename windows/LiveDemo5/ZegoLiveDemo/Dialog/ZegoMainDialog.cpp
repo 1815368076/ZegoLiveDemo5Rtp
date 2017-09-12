@@ -44,13 +44,16 @@ ZegoMainDialog::ZegoMainDialog(QWidget *parent)
 	//设备变更（改变）
 	connect(ui.m_cbMircoPhone, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSwitchAudioDevice(int)));
 	connect(ui.m_cbCamera, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSwitchVideoDevice(int)));
+	//app版本变更
+	connect(ui.m_cbAppVersion, SIGNAL(currentIndexChanged(int)), this, SLOT(OnComboBoxAppVersionChanged(int)));
 
 	this->setWindowFlags(Qt::FramelessWindowHint);//去掉标题栏 
 
 	ui.m_edRoomName->installEventFilter(this);
 	ui.m_strEdUserId->installEventFilter(this);
 	ui.m_strEdUserName->installEventFilter(this);
-
+	ui.m_strEdAPPID->installEventFilter(this);
+	ui.m_strEdAPPSign->installEventFilter(this);
 }
 
 ZegoMainDialog::~ZegoMainDialog()
@@ -101,15 +104,26 @@ void ZegoMainDialog::initDialog()
 		isVideoCustom = false;
 
 	//高级设置app版本为UDP,RTMP，国际版时，不用设置appid和appsign，默认为UDP
-	m_versionMode = 0;
+	m_versionMode = Version::ZEGO_PROTOCOL_UDP;
 
-	if (m_versionMode >= 0 && m_versionMode <= 2)
+	if (m_versionMode == Version::ZEGO_PROTOCOL_UDP || m_versionMode == Version::ZEGO_PROTOCOL_UDP_INTERNATIONAL)
 	{
 		ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
-		ui.m_strEdAPPSign->setText(QStringLiteral("demo已设置"));
+		ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
 		ui.m_strEdAPPID->setEnabled(false);
 		ui.m_strEdAPPSign->setEnabled(false);
 	}
+	else if (m_versionMode == Version::ZEGO_PROTOCOL_CUSTOM)
+	{
+		ui.m_strEdAPPID->setText(QStringLiteral(""));
+		ui.m_strEdAPPSign->setText(QStringLiteral(""));
+	}
+
+	//初始化app版本的ComboBox
+	ui.m_cbAppVersion->addItem(QStringLiteral("国内版"));
+	ui.m_cbAppVersion->addItem(QStringLiteral("国际版"));
+	ui.m_cbAppVersion->addItem(QStringLiteral("自定义"));
+	ui.m_cbAppVersion->setCurrentIndex(theApp.GetBase().getKey());
 
 	SettingsPtr pCurSettings = m_userConfig.GetVideoSettings();
 
@@ -125,7 +139,8 @@ void ZegoMainDialog::initDialog()
 		//是否使用截屏推流,默认不使用
 		pCurSettings->SetSurfaceMerge(m_isUseSurfaceMerge);
 	}
-
+	//app版本
+	ui.m_lbTitle->setText(QStringLiteral("ZegoLiveDemo(%1)").arg(ui.m_cbAppVersion->currentText()));
 	//sdk版本号
 	ui.m_lbTitleVersion->setText(QStringLiteral("版本: %1").arg(QString(QLatin1String(LIVEROOM::GetSDKVersion()))));
 	//pull房间列表
@@ -304,6 +319,16 @@ void ZegoMainDialog::PullRoomList()
 	ui.m_progIndicator->startAnimation();
 	//先清空上次的房间列表
 	m_roomListModel->removeRows(0, m_roomListModel->rowCount());
+	//暂时禁用app版本的选择
+	ui.m_cbAppVersion->setEnabled(false);
+	//自定义APP版本的房间列表为空
+	if (m_versionMode == Version::ZEGO_PROTOCOL_CUSTOM && ui.m_strEdAPPID->text().isEmpty() && ui.m_strEdAPPSign->text().isEmpty())
+	{
+		ui.m_progIndicator->stopAnimation();
+		//恢复app版本的选择
+		ui.m_cbAppVersion->setEnabled(true);
+		return;
+	}
 
 	QString cstrBaseUrl;
 	if (!m_isUseTestEnv) //非测试环境
@@ -335,6 +360,8 @@ void ZegoMainDialog::writeJsonData(QNetworkReply *reply)
 	}
 	else{
 		reply->deleteLater();
+		qDebug() << "appID and appSign error!";
+		return;
 	}
 
 	//解析房间列表
@@ -457,6 +484,8 @@ void ZegoMainDialog::RefreshRoomList(QVector<RoomPtr> roomList)
 	}
 	//停止转菊花
 	ui.m_progIndicator->stopAnimation();
+	//恢复app版本按钮
+	ui.m_cbAppVersion->setEnabled(true);
 }
 
 void ZegoMainDialog::addModeButtonGroup()
@@ -877,12 +906,42 @@ void ZegoMainDialog::OnButtonClickedPublish()
 		return;
 	}
 
+	if (ui.m_strEdAPPID->text() == QStringLiteral(""))
+	{
+		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppID不能为空"));
+		return;
+	}
+
+	if (ui.m_strEdAPPSign->text() == QStringLiteral(""))
+	{
+		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppSign不能为空"));
+		return;
+	}
+
 	m_userConfig.SetUserRole(true);
 	m_userConfig.SetUserId(m_strEdUserId);
 	m_userConfig.SetUserName(m_strEdUserName);
 
 	QString strUserId = m_userConfig.GetUserId();
 	QString strUserName = m_userConfig.GetUserName();
+
+	if (m_versionMode == Version::ZEGO_PROTOCOL_CUSTOM)
+	{
+		unsigned long appId = ui.m_strEdAPPID->text().toUInt();
+		QString strAppSign = ui.m_strEdAPPSign->text();
+		unsigned char *appSign = new unsigned char[32];
+		for (int i = 0; i < 32; i++)
+			appSign[i] = strAppSign.at(i).unicode();
+
+		LIVEROOM::UnInitSDK();
+		if (!LIVEROOM::InitSDK(appId, appSign, 32))
+		{
+			QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("初始化SDK失败"));
+			return;
+		}
+
+	}
+
 	//更新用户信息
 	LIVEROOM::SetUser(strUserId.toStdString().c_str(), strUserName.toStdString().c_str());
 
@@ -1239,6 +1298,37 @@ void ZegoMainDialog::OnSaveVideoSettings(SettingsPtr settings)
 	ui.m_cbCamera->setCurrentIndex(index);
 }
 
+void ZegoMainDialog::OnComboBoxAppVersionChanged(int id)
+{
+	ui.m_cbAppVersion->setCurrentIndex(id);
+
+	if (id == ZEGO_PROTOCOL_UDP || id == ZEGO_PROTOCOL_UDP_INTERNATIONAL){
+
+		theApp.GetBase().setKey(id);
+		ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
+		ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
+		ui.m_strEdAPPID->setEnabled(false);
+		ui.m_strEdAPPSign->setEnabled(false);
+
+		theApp.GetBase().UninitAVSDK();
+		theApp.GetBase().InitAVSDK(m_userConfig.GetVideoSettings(), m_strEdUserId, m_strEdUserName);
+	}
+	else
+	{
+		ui.m_strEdAPPID->setText(QStringLiteral(""));
+		ui.m_strEdAPPSign->setText(QStringLiteral(""));
+		ui.m_strEdAPPID->setEnabled(true);
+		ui.m_strEdAPPSign->setEnabled(true);
+		ui.m_strEdAPPID->setFocus();
+	}
+
+	m_versionMode = (Version)id;
+	//标题
+	ui.m_lbTitle->setText(QStringLiteral("ZegoLiveDemo(%1)").arg(ui.m_cbAppVersion->currentText()));
+	//刷新房间列表
+	PullRoomList();
+}
+
 void ZegoMainDialog::OnButtonUploadLog()
 {
 	LIVEROOM::UploadLog();
@@ -1316,6 +1406,19 @@ bool ZegoMainDialog::eventFilter(QObject *target, QEvent *event)
 			QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 			if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
 			{
+				//appId为空的话，转回UDP
+				if (ui.m_strEdAPPID->text().isEmpty())
+				{
+					QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppID不能为空"));
+					theApp.GetBase().setKey(Version::ZEGO_PROTOCOL_UDP);
+					ui.m_cbAppVersion->setCurrentIndex(Version::ZEGO_PROTOCOL_UDP);
+					ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
+					ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
+					ui.m_strEdAPPID->clearFocus();
+					ui.m_strEdAPPID->setEnabled(false);
+					ui.m_strEdAPPSign->setEnabled(false);
+					
+				}
 				ui.m_strEdAPPID->clearFocus();
 				return true;
 			}
@@ -1326,15 +1429,60 @@ bool ZegoMainDialog::eventFilter(QObject *target, QEvent *event)
 				return true;
 			}
 		}
+		/*else if (event->type() == QEvent::FocusOut)
+		{
+			// appId为空的话，转回UDP
+				if (ui.m_strEdAPPID->text().isEmpty())
+				{
+				QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppID不能为空"));
+				theApp.GetBase().setKey(Version::ZEGO_PROTOCOL_UDP);
+				ui.m_cbAppVersion->setCurrentIndex(Version::ZEGO_PROTOCOL_UDP);
+				ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
+				ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
+				ui.m_strEdAPPID->clearFocus();
+				ui.m_strEdAPPID->setEnabled(false);
+				ui.m_strEdAPPSign->setEnabled(false);
+
+				}
+			ui.m_strEdAPPID->clearFocus();
+			return true;
+		}*/
 	}
 	else if (target == ui.m_strEdAPPSign){
 		if (event->type() == QEvent::KeyPress) {
 			QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 			if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Tab){
+				if (ui.m_strEdAPPSign->text().isEmpty())
+				{
+					QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppSign不能为空"));
+					theApp.GetBase().setKey(Version::ZEGO_PROTOCOL_UDP);
+					ui.m_cbAppVersion->setCurrentIndex(Version::ZEGO_PROTOCOL_UDP);
+					ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
+					ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
+					ui.m_strEdAPPSign->clearFocus();
+					ui.m_strEdAPPID->setEnabled(false);
+					ui.m_strEdAPPSign->setEnabled(false);
+				}
 				ui.m_strEdAPPSign->clearFocus();
 				return true;
 			}
 		}
+		/*else if (event->type() == QEvent::FocusOut)
+		{
+			if (ui.m_strEdAPPSign->text().isEmpty())
+			{
+				QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppSign不能为空"));
+				theApp.GetBase().setKey(Version::ZEGO_PROTOCOL_UDP);
+				ui.m_cbAppVersion->setCurrentIndex(Version::ZEGO_PROTOCOL_UDP);
+				ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
+				ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
+				ui.m_strEdAPPSign->clearFocus();
+				ui.m_strEdAPPID->setEnabled(false);
+				ui.m_strEdAPPSign->setEnabled(false);
+			}
+			ui.m_strEdAPPSign->clearFocus();
+			return true;
+		}*/
 	}
 
 	return QDialog::eventFilter(target, event);

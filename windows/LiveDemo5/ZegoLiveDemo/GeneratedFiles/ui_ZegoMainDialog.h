@@ -144,6 +144,8 @@ public:
     QSpacerItem *horizontalSpacer_9;
     QPushButton *m_switchSurfaceMerge;
     QSpacerItem *verticalSpacer_23;
+    QComboBox *m_cbAppVersion;
+    QSpacerItem *verticalSpacer_20;
     QFormLayout *formLayout_5;
     QLabel *m_lbAPPID;
     QLineEdit *m_strEdAPPID;
@@ -259,7 +261,7 @@ public:
     {
         if (ZegoMainDialog->objectName().isEmpty())
             ZegoMainDialog->setObjectName(QStringLiteral("ZegoMainDialog"));
-        ZegoMainDialog->resize(934, 623);
+        ZegoMainDialog->resize(934, 653);
         ZegoMainDialog->setStyleSheet(QStringLiteral("background-color: #ffffff;"));
         verticalLayout_6 = new QVBoxLayout(ZegoMainDialog);
         verticalLayout_6->setSpacing(0);
@@ -281,8 +283,8 @@ public:
         horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
         m_lbTitle = new QLabel(m_zoneTitle);
         m_lbTitle->setObjectName(QStringLiteral("m_lbTitle"));
-        m_lbTitle->setMinimumSize(QSize(117, 0));
-        m_lbTitle->setMaximumSize(QSize(117, 16777215));
+        m_lbTitle->setMinimumSize(QSize(175, 0));
+        m_lbTitle->setMaximumSize(QSize(175, 16777215));
         m_lbTitle->setStyleSheet(QString::fromUtf8("QLabel{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "	 font-size: 16px;\n"
@@ -838,8 +840,8 @@ public:
 
         m_zoneSettings = new QWidget(ZegoMainDialog);
         m_zoneSettings->setObjectName(QStringLiteral("m_zoneSettings"));
-        m_zoneSettings->setMinimumSize(QSize(650, 228));
-        m_zoneSettings->setMaximumSize(QSize(16777215, 228));
+        m_zoneSettings->setMinimumSize(QSize(650, 258));
+        m_zoneSettings->setMaximumSize(QSize(16777215, 238));
         m_zoneSettings->setStyleSheet(QLatin1String("QWidget{\n"
 "    background-color: #ffffff;\n"
 " }"));
@@ -1603,7 +1605,7 @@ public:
         verticalLayout_17->setSpacing(0);
         verticalLayout_17->setObjectName(QStringLiteral("verticalLayout_17"));
         verticalLayout_17->setContentsMargins(-1, -1, -1, 0);
-        verticalSpacer_21 = new QSpacerItem(18, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
+        verticalSpacer_21 = new QSpacerItem(18, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
 
         verticalLayout_17->addItem(verticalSpacer_21);
 
@@ -1619,7 +1621,7 @@ public:
 
         verticalLayout_17->addWidget(m_lbEnvironment);
 
-        verticalSpacer_22 = new QSpacerItem(18, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
+        verticalSpacer_22 = new QSpacerItem(18, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
 
         verticalLayout_17->addItem(verticalSpacer_22);
 
@@ -1705,6 +1707,94 @@ public:
 
         verticalLayout_17->addItem(verticalSpacer_23);
 
+        m_cbAppVersion = new QComboBox(m_tabExtraSettings);
+        m_cbAppVersion->setObjectName(QStringLiteral("m_cbAppVersion"));
+        m_cbAppVersion->setStyleSheet(QString::fromUtf8("  QComboBox{\n"
+"     padding-left: 10px;\n"
+" }\n"
+"\n"
+" QComboBox:!enabled{\n"
+"    border: 1px solid #e6e6e6;\n"
+"    border-radius: 2px;\n"
+"    font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"    font-size: 16px;\n"
+"	background-color: #fafafa;\n"
+"	color: #cccccc;\n"
+" }\n"
+"\n"
+" QComboBox:enabled:!hover{\n"
+"    border: 1px solid #e6e6e6;\n"
+"    border-radius: 2px;\n"
+"    font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"    font-size: 16px;\n"
+"	background-color: #fafafa;\n"
+"	color: #666666;\n"
+"}\n"
+"QComboBox:enabled:hover{\n"
+"     border: 1px solid #0e88eb;\n"
+"     border-radius: 2px;\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 16px;\n"
+"	 background-color: #fafafa;\n"
+"	 color: #666666;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down{\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 20px;\n"
+" \n"
+"    border-left-width: 1px;\n"
+"\n"
+"    border-top-right-radius: 2px; /* same rad"
+                        "ius as the QComboBox */\n"
+"    border-bottom-right-radius: 2px;\n"
+"\n"
+" }\n"
+"\n"
+" QComboBox::down-arrow{\n"
+"\n"
+"     border-image: url(:/Resources/images/down_arrow.png);\n"
+" }\n"
+"\n"
+" \n"
+"  QComboBox QAbstractItemView{\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"     border: 1px solid #0e88eb;\n"
+"	 background-color: #ffffff;\n"
+"	 border-radius: 2px;\n"
+"	 \n"
+"  }\n"
+"\n"
+" QComboBox QAbstractItemView::item{\n"
+"     \n"
+"     height: 32px;\n"
+"	 font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"	 color: #666666;\n"
+"	 background-color: #ffffff;\n"
+"	 padding-left: 10px;\n"
+"	 padding-right: 10px;\n"
+" }\n"
+"\n"
+" QComboBox QAbstractItemView::item:hover{\n"
+"     \n"
+"     height: 32px;\n"
+"	 font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"	 color: #ffffff;\n"
+"	 background-color: #0e88eb;\n"
+"	 padding-left: 10px;\n"
+"	 padding-right: 10px;\n"
+" }"));
+
+        verticalLayout_17->addWidget(m_cbAppVersion);
+
+        verticalSpacer_20 = new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
+
+        verticalLayout_17->addItem(verticalSpacer_20);
+
         formLayout_5 = new QFormLayout();
         formLayout_5->setSpacing(6);
         formLayout_5->setObjectName(QStringLiteral("formLayout_5"));
@@ -1722,8 +1812,8 @@ public:
 
         m_strEdAPPID = new QLineEdit(m_tabExtraSettings);
         m_strEdAPPID->setObjectName(QStringLiteral("m_strEdAPPID"));
-        m_strEdAPPID->setMinimumSize(QSize(120, 32));
-        m_strEdAPPID->setMaximumSize(QSize(120, 32));
+        m_strEdAPPID->setMinimumSize(QSize(145, 32));
+        m_strEdAPPID->setMaximumSize(QSize(145, 32));
         m_strEdAPPID->setFocusPolicy(Qt::ClickFocus);
         m_strEdAPPID->setStyleSheet(QString::fromUtf8("QLineEdit{\n"
 "     padding-left: 10px;\n"
@@ -1760,7 +1850,7 @@ public:
 
         verticalLayout_17->addLayout(formLayout_5);
 
-        verticalSpacer_24 = new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
+        verticalSpacer_24 = new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
 
         verticalLayout_17->addItem(verticalSpacer_24);
 
@@ -1781,8 +1871,8 @@ public:
 
         m_strEdAPPSign = new QLineEdit(m_tabExtraSettings);
         m_strEdAPPSign->setObjectName(QStringLiteral("m_strEdAPPSign"));
-        m_strEdAPPSign->setMinimumSize(QSize(120, 32));
-        m_strEdAPPSign->setMaximumSize(QSize(120, 32));
+        m_strEdAPPSign->setMinimumSize(QSize(145, 32));
+        m_strEdAPPSign->setMaximumSize(QSize(145, 32));
         m_strEdAPPSign->setFocusPolicy(Qt::ClickFocus);
         m_strEdAPPSign->setStyleSheet(QString::fromUtf8("QLineEdit{\n"
 "     padding-left: 10px;\n"
@@ -2840,7 +2930,7 @@ public:
         retranslateUi(ZegoMainDialog);
 
         m_bSingleMode->setDefault(false);
-        m_tabSettings->setCurrentIndex(2);
+        m_tabSettings->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(ZegoMainDialog);
@@ -2849,7 +2939,7 @@ public:
     void retranslateUi(QDialog *ZegoMainDialog)
     {
         ZegoMainDialog->setWindowTitle(QApplication::translate("ZegoMainDialog", "ZegoLiveDemo", Q_NULLPTR));
-        m_lbTitle->setText(QApplication::translate("ZegoMainDialog", "ZegoLiveDemo", Q_NULLPTR));
+        m_lbTitle->setText(QApplication::translate("ZegoMainDialog", "ZegoLiveDemo(\345\233\275\345\206\205\347\211\210)", Q_NULLPTR));
         m_lbTitleVersion->setText(QApplication::translate("ZegoMainDialog", "\347\211\210\346\234\254:1.0.0.2", Q_NULLPTR));
         m_bJumpToNet->setText(QString());
         m_bMin->setText(QString());
