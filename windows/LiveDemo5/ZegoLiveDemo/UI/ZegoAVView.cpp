@@ -37,11 +37,13 @@ bool QZegoAVView::getSurfaceMergeView()
 	return isSurfaceMergeView;
 }
 
+#ifdef WIN32
 void QZegoAVView::setSurfaceMergeItemRect(SurfaceMerge::ZegoCaptureItem _screen,
 	SurfaceMerge::ZegoCaptureItem _camera)
 {
 	scene->setSurfaceMergeItemRect(_screen, _camera);
 }
+#endif
 
 void QZegoAVView::setViewIndex(int index)
 {
@@ -124,6 +126,7 @@ QZegoAVScene::~QZegoAVScene()
 
 }
 
+#ifdef WIN32
 void QZegoAVScene::setSurfaceMergeItemRect(ZEGO::SurfaceMerge::ZegoCaptureItem _screen,
 	ZEGO::SurfaceMerge::ZegoCaptureItem _camera)
 {
@@ -211,3 +214,4 @@ void QZegoAVScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	isMousePressed = false;
 	qDebug() << "view Released!";
 }
+#endif

@@ -4,7 +4,9 @@
 #include "LiveRoom-IM.h"
 #include "LiveRoom-Player.h"
 #include "LiveRoom-Publisher.h"
+#ifdef WIN32
 #include "ZegoSurfaceMerge.h"
+#endif
 #include <QDebug>
 
 //#define  ZEGO_PROTOCOL_UDP
@@ -98,10 +100,11 @@ bool QZegoBase::InitAVSDK(SettingsPtr pCurSetting, QString userID, QString userN
 		}
 		LIVEROOM::SetVideoFilterFactory(g_filterFactory);
 
+#ifdef WIN32
 		//是否使用截屏推流
 		if (isSurfaceMerge)
 		SurfaceMerge::Init();
-
+#endif
 		//设置回调
 		LIVEROOM::SetLivePublisherCallback(m_pAVSignal);
 		LIVEROOM::SetLivePlayerCallback(m_pAVSignal);
@@ -148,10 +151,10 @@ void QZegoBase::UninitAVSDK(void)
 		LIVEROOM::SetRoomCallback(nullptr);
 		LIVEROOM::SetIMCallback(nullptr);
 		LIVEROOM::SetDeviceStateCallback(nullptr);
-
+#ifdef WIN32
 		if (isSurfaceMerge)
 			SurfaceMerge::UnInit();
-
+#endif
 		LIVEROOM::UnInitSDK();
 
 		unsigned long dwNegation = ~(unsigned long)INIT_AVSDK;

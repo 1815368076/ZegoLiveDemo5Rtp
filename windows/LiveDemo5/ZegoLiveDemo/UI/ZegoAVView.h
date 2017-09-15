@@ -5,8 +5,11 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+
+#ifdef WIN32
 #include "ZegoSurfaceMerge.h"
 #include "ZegoSurfaceMergeDefine.h"
+#endif
 
 using namespace ZEGO;
 
@@ -24,8 +27,10 @@ public:
 	void setSurfaceMergeView(bool state);
 	bool getSurfaceMergeView();
 
+#ifdef WIN32
 	void setSurfaceMergeItemRect(SurfaceMerge::ZegoCaptureItem _screen,
 	                         SurfaceMerge::ZegoCaptureItem _camera);
+#endif
 
 	void setViewIndex(int index);
 	int getViewIndex();
@@ -48,6 +53,8 @@ class QZegoAVScene : public QGraphicsScene
 public:
 	QZegoAVScene(QWidget * parent = 0);
 	~QZegoAVScene();
+
+#ifdef WIN32
 	void setSurfaceMergeItemRect(SurfaceMerge::ZegoCaptureItem _screen,
 		SurfaceMerge::ZegoCaptureItem _camera);
 
@@ -56,7 +63,9 @@ protected:
 	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 	virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+#endif
 
+#ifdef WIN32
 private:
 	bool isMousePressed = false;
 	SurfaceMerge::ZegoCaptureItem screen;
@@ -64,4 +73,5 @@ private:
 	float scaleFactor_X;
 	float scaleFactor_Y;
 	QPointF curMousePosition;
+#endif
 };

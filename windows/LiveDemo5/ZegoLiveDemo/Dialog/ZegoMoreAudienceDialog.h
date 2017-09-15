@@ -68,7 +68,7 @@ public:
 	void OnJoinLiveResponse(int result, const QString& fromUserId, const QString& fromUserName, int seq);
 	void OnAudioDeviceChanged(AV::AudioDeviceType deviceType, const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state);
 	void OnVideoDeviceChanged(const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state);
-	//void OnRecvEndJoinLiveCommand(const QString& userId, const QString& userName, const QString& roomId);
+	void OnRecvEndJoinLiveCommand(const QString& userId, const QString& userName, const QString& roomId);
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);

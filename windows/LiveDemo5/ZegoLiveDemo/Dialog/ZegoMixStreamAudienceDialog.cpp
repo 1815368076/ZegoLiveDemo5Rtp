@@ -44,6 +44,7 @@ ZegoMixStreamAudienceDialog::ZegoMixStreamAudienceDialog(SettingsPtr curSettings
 	connect(GetAVSignal(), &QZegoAVSignal::sigMixStream, this, &ZegoMixStreamAudienceDialog::OnMixStream);
 	connect(GetAVSignal(), &QZegoAVSignal::sigAudioDeviceChanged, this, &ZegoMixStreamAudienceDialog::OnAudioDeviceChanged);
 	connect(GetAVSignal(), &QZegoAVSignal::sigVideoDeviceChanged, this, &ZegoMixStreamAudienceDialog::OnVideoDeviceChanged);
+	connect(GetAVSignal(), &QZegoAVSignal::sigRecvEndJoinLiveCommand, this, &ZegoMixStreamAudienceDialog::OnRecvEndJoinLiveCommand);
 
 	//UI的信号槽
 	connect(ui.m_bMin, &QPushButton::clicked, this, &ZegoMixStreamAudienceDialog::OnClickTitleButton);
@@ -1171,6 +1172,17 @@ void ZegoMixStreamAudienceDialog::OnJoinLiveResponse(int result, const QString& 
 	
 }
 
+void ZegoMixStreamAudienceDialog::OnRecvEndJoinLiveCommand(const QString& userId, const QString& userName, const QString& roomId)
+{
+	//停止连麦时，停止拉单流改为拉混流
+	StopPlaySingleStream();
+	StopPublishStream(m_strPublishStreamID);
+	StartPlayMixStream(m_anchorStreamInfo);
+	m_bIsJoinLive = false;
+	SetOperation(false);
+	QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("主播 %1 结束了与您的连麦").arg(userName));
+}
+
 void ZegoMixStreamAudienceDialog::OnAudioDeviceChanged(AV::AudioDeviceType deviceType, const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state)
 {
 	if (deviceType == AV::AudioDeviceType::AudioDevice_Output)
@@ -1324,7 +1336,7 @@ void ZegoMixStreamAudienceDialog::OnButtonJoinLive()
 		StopPlaySingleStream();
 		StopPublishStream(m_strPublishStreamID);
 		StartPlayMixStream(m_anchorStreamInfo);
-		
+		m_bIsJoinLive = false;
 		SetOperation(false);
 		ui.m_bRequestJoinLive->setText(QStringLiteral("请求连麦"));
 	}
@@ -1363,12 +1375,16 @@ void ZegoMixStreamAudienceDialog::OnButtonSoundCapture()
 {
 	if (ui.m_bCapture->text() == QStringLiteral("声卡采集"))
 	{
+#ifdef WIN32
 		LIVEROOM::EnableMixSystemPlayout(true);
+#endif
 		ui.m_bCapture->setText(QStringLiteral("停止采集"));
 	}
 	else
 	{
+#ifdef WIN32
 		LIVEROOM::EnableMixSystemPlayout(false);
+#endif
 		ui.m_bCapture->setText(QStringLiteral("声卡采集"));
 	}
 }

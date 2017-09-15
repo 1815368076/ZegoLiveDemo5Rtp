@@ -75,6 +75,10 @@ ZegoMainDialog::~ZegoMainDialog()
 //part1:功能函数
 void ZegoMainDialog::initDialog()
 {
+#ifdef APPLE
+	ui.m_switchSurfaceMerge->setVisible(false);
+#endif
+
 	//初始化房间列表
 	initRoomList();
 	//禁用某些高级功能的按钮

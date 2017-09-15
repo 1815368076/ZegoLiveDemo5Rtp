@@ -20,8 +20,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_ZegoMixStreamAudienceDialog_t {
-    QByteArrayData data[81];
-    char stringdata0[1074];
+    QByteArrayData data[84];
+    char stringdata0[1115];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -98,19 +98,22 @@ QT_MOC_LITERAL(64, 837, 11), // "OnMixStream"
 QT_MOC_LITERAL(65, 849, 6), // "hlsUrl"
 QT_MOC_LITERAL(66, 856, 7), // "rtmpUrl"
 QT_MOC_LITERAL(67, 864, 11), // "mixStreamID"
-QT_MOC_LITERAL(68, 876, 18), // "OnClickTitleButton"
-QT_MOC_LITERAL(69, 895, 7), // "OnClose"
-QT_MOC_LITERAL(70, 903, 16), // "OnButtonJoinLive"
-QT_MOC_LITERAL(71, 920, 19), // "OnButtonSendMessage"
-QT_MOC_LITERAL(72, 940, 20), // "OnButtonSoundCapture"
-QT_MOC_LITERAL(73, 961, 18), // "OnButtonMircoPhone"
-QT_MOC_LITERAL(74, 980, 13), // "OnButtonSound"
-QT_MOC_LITERAL(75, 994, 12), // "OnProgChange"
-QT_MOC_LITERAL(76, 1007, 11), // "OnShareLink"
-QT_MOC_LITERAL(77, 1019, 11), // "OnButtonAux"
-QT_MOC_LITERAL(78, 1031, 19), // "OnSwitchAudioDevice"
-QT_MOC_LITERAL(79, 1051, 2), // "id"
-QT_MOC_LITERAL(80, 1054, 19) // "OnSwitchVideoDevice"
+QT_MOC_LITERAL(68, 876, 24), // "OnRecvEndJoinLiveCommand"
+QT_MOC_LITERAL(69, 901, 6), // "userId"
+QT_MOC_LITERAL(70, 908, 8), // "userName"
+QT_MOC_LITERAL(71, 917, 18), // "OnClickTitleButton"
+QT_MOC_LITERAL(72, 936, 7), // "OnClose"
+QT_MOC_LITERAL(73, 944, 16), // "OnButtonJoinLive"
+QT_MOC_LITERAL(74, 961, 19), // "OnButtonSendMessage"
+QT_MOC_LITERAL(75, 981, 20), // "OnButtonSoundCapture"
+QT_MOC_LITERAL(76, 1002, 18), // "OnButtonMircoPhone"
+QT_MOC_LITERAL(77, 1021, 13), // "OnButtonSound"
+QT_MOC_LITERAL(78, 1035, 12), // "OnProgChange"
+QT_MOC_LITERAL(79, 1048, 11), // "OnShareLink"
+QT_MOC_LITERAL(80, 1060, 11), // "OnButtonAux"
+QT_MOC_LITERAL(81, 1072, 19), // "OnSwitchAudioDevice"
+QT_MOC_LITERAL(82, 1092, 2), // "id"
+QT_MOC_LITERAL(83, 1095, 19) // "OnSwitchVideoDevice"
 
     },
     "ZegoMixStreamAudienceDialog\0"
@@ -138,11 +141,13 @@ QT_MOC_LITERAL(80, 1054, 19) // "OnSwitchVideoDevice"
     "strDeviceId\0strDeviceName\0AV::DeviceState\0"
     "state\0OnVideoDeviceChanged\0OnMixStream\0"
     "hlsUrl\0rtmpUrl\0mixStreamID\0"
-    "OnClickTitleButton\0OnClose\0OnButtonJoinLive\0"
-    "OnButtonSendMessage\0OnButtonSoundCapture\0"
-    "OnButtonMircoPhone\0OnButtonSound\0"
-    "OnProgChange\0OnShareLink\0OnButtonAux\0"
-    "OnSwitchAudioDevice\0id\0OnSwitchVideoDevice"
+    "OnRecvEndJoinLiveCommand\0userId\0"
+    "userName\0OnClickTitleButton\0OnClose\0"
+    "OnButtonJoinLive\0OnButtonSendMessage\0"
+    "OnButtonSoundCapture\0OnButtonMircoPhone\0"
+    "OnButtonSound\0OnProgChange\0OnShareLink\0"
+    "OnButtonAux\0OnSwitchAudioDevice\0id\0"
+    "OnSwitchVideoDevice"
 };
 #undef QT_MOC_LITERAL
 
@@ -152,7 +157,7 @@ static const uint qt_meta_data_ZegoMixStreamAudienceDialog[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      29,   14, // methods
+      30,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -160,37 +165,38 @@ static const uint qt_meta_data_ZegoMixStreamAudienceDialog[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  159,    2, 0x06 /* Public */,
+       1,    1,  164,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       5,    3,  162,    2, 0x09 /* Protected */,
-      10,    3,  169,    2, 0x09 /* Protected */,
-      13,    3,  176,    2, 0x09 /* Protected */,
-      18,    2,  183,    2, 0x09 /* Protected */,
-      19,    6,  188,    2, 0x09 /* Protected */,
-      28,    2,  201,    2, 0x09 /* Protected */,
-      29,    2,  206,    2, 0x09 /* Protected */,
-      31,    4,  211,    2, 0x09 /* Protected */,
-      35,    4,  220,    2, 0x09 /* Protected */,
-      36,    5,  229,    2, 0x09 /* Protected */,
-      44,    4,  240,    2, 0x09 /* Protected */,
-      48,    2,  249,    2, 0x09 /* Protected */,
-      51,    4,  254,    2, 0x09 /* Protected */,
-      56,    4,  263,    2, 0x09 /* Protected */,
-      63,    3,  272,    2, 0x09 /* Protected */,
-      64,    5,  279,    2, 0x09 /* Protected */,
-      68,    0,  290,    2, 0x08 /* Private */,
-      69,    0,  291,    2, 0x08 /* Private */,
-      70,    0,  292,    2, 0x08 /* Private */,
-      71,    0,  293,    2, 0x08 /* Private */,
-      72,    0,  294,    2, 0x08 /* Private */,
-      73,    0,  295,    2, 0x08 /* Private */,
-      74,    0,  296,    2, 0x08 /* Private */,
-      75,    0,  297,    2, 0x08 /* Private */,
-      76,    0,  298,    2, 0x08 /* Private */,
-      77,    0,  299,    2, 0x08 /* Private */,
-      78,    1,  300,    2, 0x08 /* Private */,
-      80,    1,  303,    2, 0x08 /* Private */,
+       5,    3,  167,    2, 0x09 /* Protected */,
+      10,    3,  174,    2, 0x09 /* Protected */,
+      13,    3,  181,    2, 0x09 /* Protected */,
+      18,    2,  188,    2, 0x09 /* Protected */,
+      19,    6,  193,    2, 0x09 /* Protected */,
+      28,    2,  206,    2, 0x09 /* Protected */,
+      29,    2,  211,    2, 0x09 /* Protected */,
+      31,    4,  216,    2, 0x09 /* Protected */,
+      35,    4,  225,    2, 0x09 /* Protected */,
+      36,    5,  234,    2, 0x09 /* Protected */,
+      44,    4,  245,    2, 0x09 /* Protected */,
+      48,    2,  254,    2, 0x09 /* Protected */,
+      51,    4,  259,    2, 0x09 /* Protected */,
+      56,    4,  268,    2, 0x09 /* Protected */,
+      63,    3,  277,    2, 0x09 /* Protected */,
+      64,    5,  284,    2, 0x09 /* Protected */,
+      68,    3,  295,    2, 0x09 /* Protected */,
+      71,    0,  302,    2, 0x08 /* Private */,
+      72,    0,  303,    2, 0x08 /* Private */,
+      73,    0,  304,    2, 0x08 /* Private */,
+      74,    0,  305,    2, 0x08 /* Private */,
+      75,    0,  306,    2, 0x08 /* Private */,
+      76,    0,  307,    2, 0x08 /* Private */,
+      77,    0,  308,    2, 0x08 /* Private */,
+      78,    0,  309,    2, 0x08 /* Private */,
+      79,    0,  310,    2, 0x08 /* Private */,
+      80,    0,  311,    2, 0x08 /* Private */,
+      81,    1,  312,    2, 0x08 /* Private */,
+      83,    1,  315,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    4,
@@ -212,6 +218,7 @@ static const uint qt_meta_data_ZegoMixStreamAudienceDialog[] = {
     QMetaType::Void, 0x80000000 | 57, QMetaType::QString, QMetaType::QString, 0x80000000 | 61,   58,   59,   60,   62,
     QMetaType::Void, QMetaType::QString, QMetaType::QString, 0x80000000 | 61,   59,   60,   62,
     QMetaType::Void, QMetaType::UInt, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::Int,    6,   65,   66,   67,   55,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::QString,   69,   70,    7,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -222,8 +229,8 @@ static const uint qt_meta_data_ZegoMixStreamAudienceDialog[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   79,
-    QMetaType::Void, QMetaType::Int,   79,
+    QMetaType::Void, QMetaType::Int,   82,
+    QMetaType::Void, QMetaType::Int,   82,
 
        0        // eod
 };
@@ -251,18 +258,19 @@ void ZegoMixStreamAudienceDialog::qt_static_metacall(QObject *_o, QMetaObject::C
         case 14: _t->OnAudioDeviceChanged((*reinterpret_cast< AV::AudioDeviceType(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< const QString(*)>(_a[3])),(*reinterpret_cast< AV::DeviceState(*)>(_a[4]))); break;
         case 15: _t->OnVideoDeviceChanged((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< AV::DeviceState(*)>(_a[3]))); break;
         case 16: _t->OnMixStream((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< const QString(*)>(_a[3])),(*reinterpret_cast< const QString(*)>(_a[4])),(*reinterpret_cast< int(*)>(_a[5]))); break;
-        case 17: _t->OnClickTitleButton(); break;
-        case 18: _t->OnClose(); break;
-        case 19: _t->OnButtonJoinLive(); break;
-        case 20: _t->OnButtonSendMessage(); break;
-        case 21: _t->OnButtonSoundCapture(); break;
-        case 22: _t->OnButtonMircoPhone(); break;
-        case 23: _t->OnButtonSound(); break;
-        case 24: _t->OnProgChange(); break;
-        case 25: _t->OnShareLink(); break;
-        case 26: _t->OnButtonAux(); break;
-        case 27: _t->OnSwitchAudioDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 28: _t->OnSwitchVideoDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 17: _t->OnRecvEndJoinLiveCommand((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< const QString(*)>(_a[3]))); break;
+        case 18: _t->OnClickTitleButton(); break;
+        case 19: _t->OnClose(); break;
+        case 20: _t->OnButtonJoinLive(); break;
+        case 21: _t->OnButtonSendMessage(); break;
+        case 22: _t->OnButtonSoundCapture(); break;
+        case 23: _t->OnButtonMircoPhone(); break;
+        case 24: _t->OnButtonSound(); break;
+        case 25: _t->OnProgChange(); break;
+        case 26: _t->OnShareLink(); break;
+        case 27: _t->OnButtonAux(); break;
+        case 28: _t->OnSwitchAudioDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 29: _t->OnSwitchVideoDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -318,13 +326,13 @@ int ZegoMixStreamAudienceDialog::qt_metacall(QMetaObject::Call _c, int _id, void
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 29)
+        if (_id < 30)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 29;
+        _id -= 30;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 29)
+        if (_id < 30)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 29;
+        _id -= 30;
     }
     return _id;
 }

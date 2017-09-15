@@ -70,6 +70,7 @@ public:
 	void OnAudioDeviceChanged(AV::AudioDeviceType deviceType, const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state);
 	void OnVideoDeviceChanged(const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state);
 	void OnMixStream(unsigned int errorCode, const QString& hlsUrl, const QString& rtmpUrl, const QString& mixStreamID, int seq);
+	void OnRecvEndJoinLiveCommand(const QString& userId, const QString& userName, const QString& roomId);
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);

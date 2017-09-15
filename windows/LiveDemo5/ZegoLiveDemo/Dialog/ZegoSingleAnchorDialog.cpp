@@ -967,12 +967,16 @@ void ZegoSingleAnchorDialog::OnButtonSoundCapture()
 {
 	if (ui.m_bCapture->text() == QStringLiteral("声卡采集"))
 	{
+#ifdef WIN32
 		LIVEROOM::EnableMixSystemPlayout(true);
+#endif
 		ui.m_bCapture->setText(QStringLiteral("停止采集"));
 	}
 	else
 	{
+#ifdef WIN32
 		LIVEROOM::EnableMixSystemPlayout(false);
+#endif
 		ui.m_bCapture->setText(QStringLiteral("声卡采集"));
 	}
 }

@@ -43,8 +43,7 @@ ZegoMoreAudienceDialog::ZegoMoreAudienceDialog(SettingsPtr curSettings, RoomPtr 
 	connect(GetAVSignal(), &QZegoAVSignal::sigUserUpdate, this, &ZegoMoreAudienceDialog::OnUserUpdate);
 	connect(GetAVSignal(), &QZegoAVSignal::sigAudioDeviceChanged, this, &ZegoMoreAudienceDialog::OnAudioDeviceChanged);
 	connect(GetAVSignal(), &QZegoAVSignal::sigVideoDeviceChanged, this, &ZegoMoreAudienceDialog::OnVideoDeviceChanged);
-	
-
+	connect(GetAVSignal(), &QZegoAVSignal::sigRecvEndJoinLiveCommand, this, &ZegoMoreAudienceDialog::OnRecvEndJoinLiveCommand);
 	//UI的信号槽
 	connect(ui.m_bMin, &QPushButton::clicked, this, &ZegoMoreAudienceDialog::OnClickTitleButton);
 	connect(ui.m_bMax, &QPushButton::clicked, this, &ZegoMoreAudienceDialog::OnClickTitleButton);
@@ -1030,6 +1029,14 @@ void ZegoMoreAudienceDialog::OnJoinLiveResponse(int result, const QString& fromU
 	
 }
 
+void ZegoMoreAudienceDialog::OnRecvEndJoinLiveCommand(const QString& userId, const QString& userName, const QString& roomId)
+{
+	StopPublishStream(m_strPublishStreamID);
+	m_bIsJoinLive = false;
+	SetOperation(false);
+	QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("主播 %1 结束了与您的连麦").arg(userName));
+}
+
 void ZegoMoreAudienceDialog::OnAudioDeviceChanged(AV::AudioDeviceType deviceType, const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state)
 {
 	if (deviceType == AV::AudioDeviceType::AudioDevice_Output)
@@ -1220,12 +1227,16 @@ void ZegoMoreAudienceDialog::OnButtonSoundCapture()
 {
 	if (ui.m_bCapture->text() == QStringLiteral("声卡采集"))
 	{
+#ifdef WIN32
 		LIVEROOM::EnableMixSystemPlayout(true);
+#endif
 		ui.m_bCapture->setText(QStringLiteral("停止采集"));
 	}
 	else
 	{
+#ifdef WIN32
 		LIVEROOM::EnableMixSystemPlayout(false);
+#endif
 		ui.m_bCapture->setText(QStringLiteral("声卡采集"));
 	}
 }
