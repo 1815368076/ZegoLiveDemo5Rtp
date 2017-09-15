@@ -1,7 +1,9 @@
 package com.zego.livedemo5.ui.fragments;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -23,9 +25,13 @@ import com.zego.livedemo5.ui.activities.AboutZegoActivity;
 import com.zego.livedemo5.ui.activities.base.AbsBaseFragment;
 import com.zego.livedemo5.utils.ByteSizeUnit;
 import com.zego.livedemo5.utils.PreferenceUtil;
+import com.zego.livedemo5.utils.ShareUtils;
 import com.zego.livedemo5.utils.SystemUtil;
 import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.constants.ZegoAvConfig;
+
+import java.io.File;
+import java.io.FilenameFilter;
 
 import butterknife.Bind;
 import butterknife.OnCheckedChanged;
@@ -274,6 +280,25 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
         seekbarResolution.setEnabled(false);
         seekBarFps.setEnabled(false);
         seekBarBitrate.setEnabled(false);
+
+        LinearLayout container = (LinearLayout)mRootView.findViewById(R.id.container);
+        container.setOnClickListener(new View.OnClickListener() {
+
+            private long[] mHits = new long[5];
+
+            @Override
+            public void onClick(View v) {
+                System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
+                mHits[mHits.length - 1] = SystemClock.uptimeMillis();
+                if (mHits[0] >= SystemClock.uptimeMillis() - 700) {
+                    sendLog2App();
+
+                    for (int i = 0; i < mHits.length; i++) {
+                        mHits[i] = 0;
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -498,5 +523,22 @@ public class SettingFragment extends AbsBaseFragment implements MainActivity.OnS
 
         // 标记需要"重新初始化sdk"
         mNeedToReInitSDK = true;
+    }
+
+    private void sendLog2App() {
+        String rootPath = com.zego.zegoavkit2.utils.ZegoLogUtil.getLogPath(getActivity());
+        File rootDir = new File(rootPath);
+        File[] logFiles = rootDir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return !TextUtils.isEmpty(name) && name.startsWith("zegoavlog") && name.endsWith(".txt");
+            }
+        });
+
+        if (logFiles.length > 0) {
+            ShareUtils.sendFiles(logFiles, getActivity());
+        } else {
+            Log.w("SettingFragment", "not found any log files.");
+        }
     }
 }
