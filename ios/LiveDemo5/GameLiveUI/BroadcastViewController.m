@@ -45,8 +45,6 @@
 - (IBAction)onStartLive:(id)sender
 {
     [self userDidFinishSetup];
-    
-    
 }
 
 - (IBAction)onCancel:(id)sender

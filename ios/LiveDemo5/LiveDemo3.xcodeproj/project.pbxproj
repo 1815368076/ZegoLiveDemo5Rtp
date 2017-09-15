@@ -214,7 +214,7 @@
 		EF1314341DAB752000FEBACF /* GameLive.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GameLive.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF1314361DAB752000FEBACF /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		EF13143C1DAB752000FEBACF /* SampleHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleHandler.h; sourceTree = "<group>"; };
-		EF13143D1DAB752000FEBACF /* SampleHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SampleHandler.m; sourceTree = "<group>"; };
+		EF13143D1DAB752000FEBACF /* SampleHandler.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = SampleHandler.m; sourceTree = "<group>"; };
 		EF13143F1DAB752000FEBACF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF1314441DAB752000FEBACF /* GameLiveUI.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GameLiveUI.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF1314491DAB752000FEBACF /* BroadcastViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BroadcastViewController.h; sourceTree = "<group>"; };
@@ -222,7 +222,7 @@
 		EF13144D1DAB752000FEBACF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		EF13144F1DAB752000FEBACF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF1314651DAB7AF800FEBACF /* ZegoAVKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZegoAVKitManager.h; sourceTree = "<group>"; };
-		EF1314661DAB7AF800FEBACF /* ZegoAVKitManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZegoAVKitManager.m; sourceTree = "<group>"; };
+		EF1314661DAB7AF800FEBACF /* ZegoAVKitManager.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ZegoAVKitManager.m; sourceTree = "<group>"; };
 		EF1314681DAB7B8600FEBACF /* LiveDemo3.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LiveDemo3.entitlements; sourceTree = "<group>"; };
 		EF1314691DAB7BEC00FEBACF /* GameLive.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GameLive.entitlements; sourceTree = "<group>"; };
 		EF32D6F41D6599B700A764FC /* TencentOpenAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TencentOpenAPI.framework; sourceTree = "<group>"; };

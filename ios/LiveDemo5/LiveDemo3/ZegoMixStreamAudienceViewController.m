@@ -679,7 +679,7 @@
         }
     }
    
-    // 当loginRoom成功后返回的streamList的extraInfo为空时（后台处理慢时可能导致该问题），需要等待本回调返回的、更新后的streamList信息播放
+    // 当 loginRoom 成功后返回的 streamList 的 extraInfo 为空时（后台处理慢时可能导致该问题），需要等待本回调返回的、更新后的 streamList 信息播放
     if ([self.mixStreamList count]) {
         ZegoStream *stream = self.mixStreamList[0];
         if ([stream.extraInfo isEqualToString:@""]) {
