@@ -37,7 +37,7 @@ bool QZegoAVView::getSurfaceMergeView()
 	return isSurfaceMergeView;
 }
 
-#ifdef WIN32
+#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
 void QZegoAVView::setSurfaceMergeItemRect(SurfaceMerge::ZegoCaptureItem _screen,
 	SurfaceMerge::ZegoCaptureItem _camera)
 {
@@ -126,7 +126,7 @@ QZegoAVScene::~QZegoAVScene()
 
 }
 
-#ifdef WIN32
+#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
 void QZegoAVScene::setSurfaceMergeItemRect(ZEGO::SurfaceMerge::ZegoCaptureItem _screen,
 	ZEGO::SurfaceMerge::ZegoCaptureItem _camera)
 {

@@ -1,4 +1,4 @@
-#include "ZegoProgressIndicator.h"  
+ï»¿#include "ZegoProgressIndicator.h"  
 #include <QPainter>  
   
 ZegoProgressIndicator::ZegoProgressIndicator(QWidget* parent)
@@ -91,7 +91,7 @@ void ZegoProgressIndicator::paintEvent(QPaintEvent * /*event*/) {
     int capsuleWidth  = (width > 32 ) ? capsuleHeight *.23 : capsuleHeight *.35;  
     int capsuleRadius = capsuleWidth >> 1;  
   
-    /* ×«Ð´½ø¶È */  
+    /* æ’°å†™è¿›åº¦ */  
     if (progress_ > 0 && progress_ < 100) {  
         p.setPen(color_);  
         p.drawText(rect(), Qt::AlignCenter, QString("%1%").arg(progress_));  

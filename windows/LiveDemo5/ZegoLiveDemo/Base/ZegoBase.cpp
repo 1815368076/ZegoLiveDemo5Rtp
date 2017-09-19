@@ -4,7 +4,8 @@
 #include "LiveRoom-IM.h"
 #include "LiveRoom-Player.h"
 #include "LiveRoom-Publisher.h"
-#ifdef WIN32
+
+#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE) 
 #include "ZegoSurfaceMerge.h"
 #endif
 #include <QDebug>
@@ -100,7 +101,7 @@ bool QZegoBase::InitAVSDK(SettingsPtr pCurSetting, QString userID, QString userN
 		}
 		LIVEROOM::SetVideoFilterFactory(g_filterFactory);
 
-#ifdef WIN32
+#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
 		//是否使用截屏推流
 		if (isSurfaceMerge)
 		SurfaceMerge::Init();
@@ -151,7 +152,8 @@ void QZegoBase::UninitAVSDK(void)
 		LIVEROOM::SetRoomCallback(nullptr);
 		LIVEROOM::SetIMCallback(nullptr);
 		LIVEROOM::SetDeviceStateCallback(nullptr);
-#ifdef WIN32
+
+#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE) 
 		if (isSurfaceMerge)
 			SurfaceMerge::UnInit();
 #endif

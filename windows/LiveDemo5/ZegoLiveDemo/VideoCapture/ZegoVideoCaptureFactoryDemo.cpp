@@ -1,4 +1,4 @@
-#include "ZegoVideoCaptureFactoryDemo.h"
+﻿#include "ZegoVideoCaptureFactoryDemo.h"
 
 VideoCaptureFactoryGlue::VideoCaptureFactoryGlue() : device_(0) {
 }

@@ -1,4 +1,4 @@
-#ifndef ZEGOMIXSTREAMANCHORDIALOG_H
+ï»¿#ifndef ZEGOMIXSTREAMANCHORDIALOG_H
 #define ZEGOMIXSTREAMANCHORDIALOG_H
 
 #include <QtWidgets/QDialog>
@@ -34,7 +34,7 @@
 
 #define MAX_VIEW_COUNT 12
 
-//±êÌâÀ¸×ø±ê·¶Î§
+//æ ‡é¢˜æ åæ ‡èŒƒå›´
 #define pos_min_y  0
 #define pos_max_y  40
 
@@ -80,7 +80,7 @@ protected:
 	virtual bool eventFilter(QObject *target, QEvent *event);
 	
 signals:
-	//µ±Ö±²¥´°¿Ú¹Ø±ÕÊ±£¬½«¸ü¸ÄµÄÊÓÆµÉèÖÃ´«»Ø¸øMainDialog£¨Èç£¬¸ü»»ÁËÉãÏñÍ·¡¢Âó¿Ë·ç£©
+	//å½“ç›´æ’­çª—å£å…³é—­æ—¶ï¼Œå°†æ›´æ”¹çš„è§†é¢‘è®¾ç½®ä¼ å›ç»™MainDialogï¼ˆå¦‚ï¼Œæ›´æ¢äº†æ‘„åƒå¤´ã€éº¦å…‹é£ï¼‰
 	void sigSaveVideoSettings(SettingsPtr settings);
 
 private slots:
@@ -94,7 +94,7 @@ private slots:
 	void OnProgChange();
 	void OnShareLink();
 	void OnButtonAux();
-	//ÇĞ»»ÒôÊÓÆµÉè±¸
+	//åˆ‡æ¢éŸ³è§†é¢‘è®¾å¤‡
 	void OnSwitchAudioDevice(int id);
 	void OnSwitchVideoDevice(int id);
 private:
@@ -113,18 +113,18 @@ private:
 	void EndAux();
 	QString encodeStringAddingEscape(QString str);
 
-	//»ìÁ÷ĞèÒªµ÷ÓÃµÄº¯Êı
+	//æ··æµéœ€è¦è°ƒç”¨çš„å‡½æ•°
 	void StartMixStream();
 	void MixStreamAdd(QVector<StreamPtr> vStreamList, const QString& roomId);
 	void MixStreamDelete(QVector<StreamPtr> vStreamList, const QString& roomId);
 	bool isStreamExisted(QString streamID);
 	
 
-	//³ÉÔ±ÁĞ±íÔöÉ¾º¯Êı
+	//æˆå‘˜åˆ—è¡¨å¢åˆ å‡½æ•°
 	void roomMemberAdd(QString userName);
 	void roomMemberDelete(QString userName);
 
-	//view²¼¾Öº¯Êı
+	//viewå¸ƒå±€å‡½æ•°
 	int takeLeastAvaliableViewIndex();
 	void initAVView(QZegoAVView *view);
 	void addAVView(int addViewIndex);
@@ -139,7 +139,7 @@ private:
 	bool m_bCKEnableSpeaker;
 	SettingsPtr m_pAVSettings;
 	RoomPtr m_pChatRoom;
-	//»ìÒô²ÎÊı
+	//æ··éŸ³å‚æ•°
 	unsigned char* m_pAuxData;
 	int m_nAuxDataLen;
 	int m_nAuxDataPos;
@@ -164,7 +164,7 @@ private:
 	QStringList m_MircoPhoneList;
 	QStringList m_CameraList;
 
-	//×Ô¶¨ÒåµÄComboBoxÏÂÀ­Ê½Ò³Ãæ
+	//è‡ªå®šä¹‰çš„ComboBoxä¸‹æ‹‰å¼é¡µé¢
 	QListView *m_cbMircoPhoneListView;
 	QListView *m_cbCameraListView;
 
@@ -174,38 +174,38 @@ private:
 	QStringListModel *m_chatModel;
 	QStringListModel *m_memberModel;
 
-	//ÊµÏÖ×Ô¶¨Òå±êÌâÀ¸µÄÍÏ¶¯
+	//å®ç°è‡ªå®šä¹‰æ ‡é¢˜æ çš„æ‹–åŠ¨
 	bool isMousePressed;
 	QPoint mousePosition;
 
-	//ÊµÊ±¼à¿ØÂó¿Ë·çÒôÁ¿´óĞ¡
+	//å®æ—¶ç›‘æ§éº¦å…‹é£éŸ³é‡å¤§å°
 	QTimer *timer;
 
-	//±£´æÉÏÒ»¸ö½çÃæµÄÖ¸Õë£¬ÓÃÓÚÍË³ö¸ÃÒ³ÃæÊ±ÏÔÊ¾Ëü
+	//ä¿å­˜ä¸Šä¸€ä¸ªç•Œé¢çš„æŒ‡é’ˆï¼Œç”¨äºé€€å‡ºè¯¥é¡µé¢æ—¶æ˜¾ç¤ºå®ƒ
 	QDialog *m_lastDialog;
 
-	//±£´æ»ìÁ÷»­²¼ĞÅÏ¢µÄÊı×é
+	//ä¿å­˜æ··æµç”»å¸ƒä¿¡æ¯çš„æ•°ç»„
 	QVector<ZEGO::AV::ZegoMixStreamConfig *> m_mixStreamInfos;
 
-	//»ìÁ÷Ä£Ê½ÏÂÓÃÓÚ±£´æÁ÷StreamPtrµÄÊı×é
+	//æ··æµæ¨¡å¼ä¸‹ç”¨äºä¿å­˜æµStreamPtrçš„æ•°ç»„
 	QVector<StreamPtr> m_mixStreamList;
 
-	//»ìÁ÷»Øµ÷ĞòºÅ
+	//æ··æµå›è°ƒåºå·
 	int m_mixStreamRequestSeq;
 
-	//ÍÆÁ÷Ê±µÄ»ìÁ÷ID
+	//æ¨æµæ—¶çš„æ··æµID
 	QString m_myMixStreamID;
-	//À­Á÷Ê±µÚÒ»Ö÷²¥µÄ»ìÁ÷ID
+	//æ‹‰æµæ—¶ç¬¬ä¸€ä¸»æ’­çš„æ··æµID
 	QString m_anchorMixStreamID;
 
-	//±£´æÀ­»ìÁ÷µÄExtraInfoĞÅÏ¢
+	//ä¿å­˜æ‹‰æ··æµçš„ExtraInfoä¿¡æ¯
 	QString sharedHlsUrl;
 	QString sharedRtmpUrl;
 
-	//±£Áôµ±Ç°µÚÒ»Ö÷²¥µÄÁ÷ĞÅÏ¢
+	//ä¿ç•™å½“å‰ç¬¬ä¸€ä¸»æ’­çš„æµä¿¡æ¯
 	StreamPtr m_anchorStreamInfo;
 
-	//viewµÄÍø¸ñ¶¯Ì¬²¼¾Ö
+	//viewçš„ç½‘æ ¼åŠ¨æ€å¸ƒå±€
 	QGridLayout *gridLayout;
 };
 

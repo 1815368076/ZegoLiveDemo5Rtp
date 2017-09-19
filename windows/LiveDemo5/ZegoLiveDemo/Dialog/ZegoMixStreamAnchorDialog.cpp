@@ -1,4 +1,4 @@
-#include "ZegoMixStreamAnchorDialog.h"
+ï»¿#include "ZegoMixStreamAnchorDialog.h"
 #include "ZegoSDKSignal.h"
 #include <QMessageBox>
 #include <QDebug>
@@ -8,7 +8,7 @@ ZegoMixStreamAnchorDialog::ZegoMixStreamAnchorDialog(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	//UIµÄĞÅºÅ²Û
+	//UIçš„ä¿¡å·æ§½
 	connect(ui.m_bMin, &QPushButton::clicked, this, &ZegoMixStreamAnchorDialog::OnClickTitleButton);
 	connect(ui.m_bMax, &QPushButton::clicked, this, &ZegoMixStreamAnchorDialog::OnClickTitleButton);
 	connect(ui.m_bClose, &QPushButton::clicked, this, &ZegoMixStreamAnchorDialog::OnClickTitleButton);
@@ -26,7 +26,7 @@ ZegoMixStreamAnchorDialog::ZegoMixStreamAnchorDialog(SettingsPtr curSettings, Ro
 	ui.setupUi(this);
 
 
-	//Í¨¹ısdkµÄĞÅºÅÁ¬½Óµ½±¾ÀàµÄ²Ûº¯ÊıÖĞ
+	//é€šè¿‡sdkçš„ä¿¡å·è¿æ¥åˆ°æœ¬ç±»çš„æ§½å‡½æ•°ä¸­
 	connect(GetAVSignal(), &QZegoAVSignal::sigLoginRoom, this, &ZegoMixStreamAnchorDialog::OnLoginRoom);
 	connect(GetAVSignal(), &QZegoAVSignal::sigStreamUpdated, this, &ZegoMixStreamAnchorDialog::OnStreamUpdated);
 	connect(GetAVSignal(), &QZegoAVSignal::sigPublishStateUpdate, this, &ZegoMixStreamAnchorDialog::OnPublishStateUpdate);
@@ -35,7 +35,7 @@ ZegoMixStreamAnchorDialog::ZegoMixStreamAnchorDialog(SettingsPtr curSettings, Ro
 	connect(GetAVSignal(), &QZegoAVSignal::sigKickOut, this, &ZegoMixStreamAnchorDialog::OnKickOut);
 	connect(GetAVSignal(), &QZegoAVSignal::sigPublishQualityUpdate, this, &ZegoMixStreamAnchorDialog::OnPublishQualityUpdate);
 	connect(GetAVSignal(), &QZegoAVSignal::sigPlayQualityUpdate, this, &ZegoMixStreamAnchorDialog::OnPlayQualityUpdate);
-	//ĞÅºÅÓë²ÛÍ¬²½Ö´ĞĞ
+	//ä¿¡å·ä¸æ§½åŒæ­¥æ‰§è¡Œ
 	connect(GetAVSignal(), &QZegoAVSignal::sigAuxInput, this, &ZegoMixStreamAnchorDialog::OnAVAuxInput, Qt::DirectConnection);
 	connect(GetAVSignal(), &QZegoAVSignal::sigSendRoomMessage, this, &ZegoMixStreamAnchorDialog::OnSendRoomMessage);
 	connect(GetAVSignal(), &QZegoAVSignal::sigRecvRoomMessage, this, &ZegoMixStreamAnchorDialog::OnRecvRoomMessage);
@@ -45,7 +45,7 @@ ZegoMixStreamAnchorDialog::ZegoMixStreamAnchorDialog(SettingsPtr curSettings, Ro
 	connect(GetAVSignal(), &QZegoAVSignal::sigAudioDeviceChanged, this, &ZegoMixStreamAnchorDialog::OnAudioDeviceChanged);
 	connect(GetAVSignal(), &QZegoAVSignal::sigVideoDeviceChanged, this, &ZegoMixStreamAnchorDialog::OnVideoDeviceChanged);
 
-	//UIµÄĞÅºÅ²Û
+	//UIçš„ä¿¡å·æ§½
 	connect(ui.m_bMin, &QPushButton::clicked, this, &ZegoMixStreamAnchorDialog::OnClickTitleButton);
 	connect(ui.m_bMax, &QPushButton::clicked, this, &ZegoMixStreamAnchorDialog::OnClickTitleButton);
 	connect(ui.m_bClose, &QPushButton::clicked, this, &ZegoMixStreamAnchorDialog::OnClickTitleButton);
@@ -64,16 +64,16 @@ ZegoMixStreamAnchorDialog::ZegoMixStreamAnchorDialog(SettingsPtr curSettings, Ro
 	timer = new QTimer(this);
 	connect(timer, &QTimer::timeout, this, &ZegoMixStreamAnchorDialog::OnProgChange);
 
-	//»ìÒôÊı¾İ²ÎÊı
+	//æ··éŸ³æ•°æ®å‚æ•°
 	m_pAuxData = NULL;
 	m_nAuxDataLen = 0;
 	m_nAuxDataPos = 0;
 
-	this->setWindowFlags(Qt::FramelessWindowHint);//È¥µô±êÌâÀ¸ 
+	this->setWindowFlags(Qt::FramelessWindowHint);//å»æ‰æ ‡é¢˜æ  
 
 	ui.m_edInput->installEventFilter(this);
 
-	//ÉèÖÃ»ìÁ÷»Øµ÷³õÊ¼Öµ
+	//è®¾ç½®æ··æµå›è°ƒåˆå§‹å€¼
 	m_mixStreamRequestSeq = 1;
 
 	gridLayout = new QGridLayout;
@@ -84,57 +84,57 @@ ZegoMixStreamAnchorDialog::~ZegoMixStreamAnchorDialog()
 
 }
 
-//¹¦ÄÜº¯Êı
+//åŠŸèƒ½å‡½æ•°
 void ZegoMixStreamAnchorDialog::initDialog()
 {
-	//ÔÚmacÏµÍ³ÏÂ²»Ö§³ÖÉù¿¨²É¼¯
-#ifdef APPLE
+	//åœ¨macç³»ç»Ÿä¸‹ä¸æ”¯æŒå£°å¡é‡‡é›†
+#ifdef Q_OS_MAC
 	ui.m_bCapture->setVisible(false);
 #endif
 
-	//ÔÚÖ÷²¥¶Ë£¬ÇëÇóÁ¬ÂóµÄ°´Å¥±äÎªÖ±²¥¿ª¹Ø
-	ui.m_bRequestJoinLive->setText(QStringLiteral("Í£Ö¹Ö±²¥"));
+	//åœ¨ä¸»æ’­ç«¯ï¼Œè¯·æ±‚è¿éº¦çš„æŒ‰é’®å˜ä¸ºç›´æ’­å¼€å…³
+	ui.m_bRequestJoinLive->setText(QStringLiteral("åœæ­¢ç›´æ’­"));
 
 	initComboBox();
 
-	//¶Ô»°¿òÄ£ĞÍ³õÊ¼»¯
+	//å¯¹è¯æ¡†æ¨¡å‹åˆå§‹åŒ–
 	m_chatModel = new QStringListModel(this);
 	ui.m_listChat->setModel(m_chatModel);
 	ui.m_listChat->setItemDelegate(new NoFocusFrameDelegate(this));
 	ui.m_listChat->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 
-	//³ÉÔ±ÁĞ±í³õÊ¼»¯
+	//æˆå‘˜åˆ—è¡¨åˆå§‹åŒ–
 	m_memberModel = new QStringListModel(this);
 	ui.m_listMember->setModel(m_memberModel);
 	ui.m_listMember->setItemDelegate(new NoFocusFrameDelegate(this));
 	ui.m_listMember->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-	//¶ÁÈ¡±êÌâÄÚÈİ
-	QString strTitle = QString(QStringLiteral("¡¾%1¡¿%2")).arg(QStringLiteral("»ìÁ÷Ä£Ê½")).arg(m_pChatRoom->getRoomName());
+	//è¯»å–æ ‡é¢˜å†…å®¹
+	QString strTitle = QString(QStringLiteral("ã€%1ã€‘%2")).arg(QStringLiteral("æ··æµæ¨¡å¼")).arg(m_pChatRoom->getRoomName());
 	ui.m_lbRoomName->setText(strTitle);
 
 
-	//Ê£ÓàÄÜÓÃµÄAVView
+	//å‰©ä½™èƒ½ç”¨çš„AVView
 	for (int i = MAX_VIEW_COUNT; i >= 0; i--)
 		m_avaliableView.push_front(i);
 	
-	//ÍÆÁ÷³É¹¦Ç°²»ÄÜ¿ª»ìÒô¡¢ÉùÒô²É¼¯¡¢·ÖÏí¡¢Í£Ö¹Ö±²¥
+	//æ¨æµæˆåŠŸå‰ä¸èƒ½å¼€æ··éŸ³ã€å£°éŸ³é‡‡é›†ã€åˆ†äº«ã€åœæ­¢ç›´æ’­
 	ui.m_bAux->setEnabled(false);
 	ui.m_bCapture->setEnabled(false);
 	ui.m_bShare->setEnabled(false);
 	ui.m_bRequestJoinLive->setEnabled(false);
 
-	//ÔÊĞíÊ¹ÓÃÂó¿Ë·ç
+	//å…è®¸ä½¿ç”¨éº¦å…‹é£
 	LIVEROOM::EnableMic(m_bCKEnableMic);
 
-	//Ã¶¾ÙÒôÊÓÆµÉè±¸
+	//æšä¸¾éŸ³è§†é¢‘è®¾å¤‡
 	EnumVideoAndAudioDevice();
 
 	int role = LIVEROOM::ZegoRoomRole::Anchor;
 	if (!LIVEROOM::LoginRoom(m_pChatRoom->getRoomId().toStdString().c_str(), role, m_pChatRoom->getRoomName().toStdString().c_str()))
 	{
-		QMessageBox::information(NULL, QStringLiteral("ÌáÊ¾"), QStringLiteral("½øÈë·¿¼äÊ§°Ü"));
+		QMessageBox::information(NULL, QStringLiteral("æç¤º"), QStringLiteral("è¿›å…¥æˆ¿é—´å¤±è´¥"));
 	}
 
 }
@@ -143,7 +143,7 @@ void ZegoMixStreamAnchorDialog::StartPublishStream()
 {
 
 	QTime currentTime = QTime::currentTime();
-	//»ñÈ¡µ±Ç°Ê±¼äµÄºÁÃë
+	//è·å–å½“å‰æ—¶é—´çš„æ¯«ç§’
 	int ms = currentTime.msec();
 	QString strStreamId;
 	strStreamId = QString(QStringLiteral("s-windows-%1-%2")).arg(m_strCurUserID).arg(ms);
@@ -162,7 +162,7 @@ void ZegoMixStreamAnchorDialog::StartPublishStream()
 		pPublishStream->setPlayView(nIndex);
 		addAVView(nIndex);
 		qDebug() << "publish nIndex = " << nIndex;
-		//ÅäÖÃView
+		//é…ç½®View
 
 		LIVEROOM::SetPreviewView((void *)AVViews.last()->winId());
 		LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill);
@@ -206,7 +206,7 @@ void ZegoMixStreamAnchorDialog::StartPlayStream(StreamPtr stream)
 		//m_avaliableView.pop();
 		stream->setPlayView(nIndex);
 		addAVView(nIndex);
-		//ÅäÖÃView
+		//é…ç½®View
 		LIVEROOM::SetViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill, stream->getStreamId().toStdString().c_str());
 		LIVEROOM::StartPlayingStream(stream->getStreamId().toStdString().c_str(), (void *)AVViews.last()->winId());
 	}
@@ -234,10 +234,12 @@ void ZegoMixStreamAnchorDialog::StopPlayStream(const QString& streamID)
 
 void ZegoMixStreamAnchorDialog::GetOut()
 {
-	//Àë¿ª·¿¼äÊ±ÏÈ°Ñ»ìÒô¹¦ÄÜºÍÉù¿¨²É¼¯¹Ø±Õ
+	//ç¦»å¼€æˆ¿é—´æ—¶å…ˆæŠŠæ··éŸ³åŠŸèƒ½å’Œå£°å¡é‡‡é›†å…³é—­
 	EndAux();
-	if (ui.m_bCapture->text() == QStringLiteral("Í£Ö¹²É¼¯"))
+	if (ui.m_bCapture->text() == QStringLiteral("åœæ­¢é‡‡é›†"))
+#ifdef Q_OS_WIN32
 		LIVEROOM::EnableMixSystemPlayout(false);
+#endif
 
 	for (auto& stream : m_pChatRoom->getStreamList())
 	{
@@ -255,7 +257,7 @@ void ZegoMixStreamAnchorDialog::GetOut()
 	LIVEROOM::LogoutRoom();
 	timer->stop();
 
-	//ÊÍ·Å¶ÑÄÚ´æ
+	//é‡Šæ”¾å †å†…å­˜
 	delete m_cbMircoPhoneListView;
 	delete m_cbCameraListView;
 	delete m_memberModel;
@@ -292,11 +294,11 @@ void ZegoMixStreamAnchorDialog::initComboBox()
 
 void ZegoMixStreamAnchorDialog::EnumVideoAndAudioDevice()
 {
-	//Éè±¸Êı
+	//è®¾å¤‡æ•°
 	int nDeviceCount = 0;
 	AV::DeviceInfo* pDeviceList(NULL);
 
-	//»ñÈ¡ÒôÆµÉè±¸
+	//è·å–éŸ³é¢‘è®¾å¤‡
 	int curSelectionIndex = 0;
 	pDeviceList = LIVEROOM::GetAudioDeviceList(AV::AudioDeviceType::AudioDevice_Input, nDeviceCount);
 	for (int i = 0; i < nDeviceCount; ++i)
@@ -313,7 +315,7 @@ void ZegoMixStreamAnchorDialog::EnumVideoAndAudioDevice()
 
 	pDeviceList = NULL;
 
-	//»ñÈ¡ÊÓÆµÉè±¸
+	//è·å–è§†é¢‘è®¾å¤‡
 	curSelectionIndex = 0;
 	pDeviceList = LIVEROOM::GetVideoDeviceList(nDeviceCount);
 	for (int i = 0; i < nDeviceCount; ++i)
@@ -459,7 +461,7 @@ void ZegoMixStreamAnchorDialog::FreeAVView(StreamPtr stream)
 
 	m_avaliableView.push_front(nIndex);
 
-	//Ë¢ĞÂ¿ÉÓÃµÄviewÒ³Ãæ
+	//åˆ·æ–°å¯ç”¨çš„viewé¡µé¢
 	update();
 }
 
@@ -568,13 +570,13 @@ void ZegoMixStreamAnchorDialog::roomMemberAdd(QString userName)
 {
 
 	insertStringListModelItem(m_memberModel, userName, m_memberModel->rowCount());
-	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("³ÉÔ±(%1)").arg(m_memberModel->rowCount())));
+	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("æˆå‘˜(%1)").arg(m_memberModel->rowCount())));
 }
 
 void ZegoMixStreamAnchorDialog::roomMemberDelete(QString userName)
 {
 	removeStringListModelItem(m_memberModel, userName);
-	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("³ÉÔ±(%1)").arg(m_memberModel->rowCount())));
+	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("æˆå‘˜(%1)").arg(m_memberModel->rowCount())));
 }
 
 bool ZegoMixStreamAnchorDialog::isStreamExisted(QString streamID)
@@ -584,7 +586,7 @@ bool ZegoMixStreamAnchorDialog::isStreamExisted(QString streamID)
 	if (m_strPublishStreamID == streamID)
 		return true;
 
-	//»ñÈ¡·¿¼äÁ÷ÁĞ±í
+	//è·å–æˆ¿é—´æµåˆ—è¡¨
 	QVector<StreamPtr> streamList = m_pChatRoom->getStreamList();
 	for (auto streamInfo : streamList)
 		if (streamInfo->getStreamId() == streamID)
@@ -625,7 +627,7 @@ void ZegoMixStreamAnchorDialog::StartMixStream()
 
 void ZegoMixStreamAnchorDialog::MixStreamAdd(QVector<StreamPtr> vStreamList, const QString& roomId)
 {
-	//Ö÷²¥¶ËÁ÷Ôö¼Ó£¬¸üĞÂ»ìÁ÷ĞÅÏ¢
+	//ä¸»æ’­ç«¯æµå¢åŠ ï¼Œæ›´æ–°æ··æµä¿¡æ¯
 	int width = m_pAVSettings->GetResolution().cx;
 	int height = m_pAVSettings->GetResolution().cy;
 	qDebug() << "current mix size = " << m_mixStreamInfos.size();
@@ -715,19 +717,19 @@ void ZegoMixStreamAnchorDialog::MixStreamDelete(QVector<StreamPtr> vStreamList, 
 void ZegoMixStreamAnchorDialog::BeginAux()
 {
 	QString filePath = QFileDialog::getOpenFileName(this,
-		tr(QStringLiteral("ÇëÑ¡ÔñÒ»¸ö»ìÒôÎÄ¼ş").toStdString().c_str()),
+		tr(QStringLiteral("è¯·é€‰æ‹©ä¸€ä¸ªæ··éŸ³æ–‡ä»¶").toStdString().c_str()),
 		"./Resources",
-		tr(QStringLiteral("pcmÎÄ¼ş(*.pcm)").toStdString().c_str()));
+		tr(QStringLiteral("pcmæ–‡ä»¶(*.pcm)").toStdString().c_str()));
 
 
 	if (!filePath.isEmpty())
 	{
 		FILE* fAux;
-		fopen_s(&fAux, filePath.toStdString().c_str(), "rb");
+		fAux = fopen(filePath.toStdString().c_str(), "rb");
 
 		if (fAux == NULL)
 		{
-			QMessageBox::warning(this, QStringLiteral("¾¯¸æ"), QStringLiteral("ÎÄ¼şÄÚÈİ´íÎó: %1").arg(filePath));
+			QMessageBox::warning(this, QStringLiteral("è­¦å‘Š"), QStringLiteral("æ–‡ä»¶å†…å®¹é”™è¯¯: %1").arg(filePath));
 			return;
 		}
 
@@ -748,7 +750,7 @@ void ZegoMixStreamAnchorDialog::BeginAux()
 
 		LIVEROOM::EnableAux(true);
 
-		ui.m_bAux->setText(QStringLiteral("¹Ø±Õ»ìÒô"));
+		ui.m_bAux->setText(QStringLiteral("å…³é—­æ··éŸ³"));
 	}
 }
 
@@ -756,31 +758,31 @@ void ZegoMixStreamAnchorDialog::EndAux()
 {
 	LIVEROOM::EnableAux(false);
 
-	ui.m_bAux->setText(QStringLiteral("¿ªÆô»ìÒô"));
+	ui.m_bAux->setText(QStringLiteral("å¼€å¯æ··éŸ³"));
 	delete[] m_pAuxData;
 	m_nAuxDataLen = 0;
 	m_nAuxDataPos = 0;
 }
 
-//SDK»Øµ÷
+//SDKå›è°ƒ
 void ZegoMixStreamAnchorDialog::OnLoginRoom(int errorCode, const QString& strRoomID, QVector<StreamPtr> vStreamList)
 {
 	qDebug() << "Login Room!";
 	if (errorCode != 0)
 	{
-		QMessageBox::information(NULL, QStringLiteral("ÌáÊ¾"), QStringLiteral("µÇÂ½·¿¼äÊ§°Ü"));
+		QMessageBox::information(NULL, QStringLiteral("æç¤º"), QStringLiteral("ç™»é™†æˆ¿é—´å¤±è´¥"));
 		OnClose();
 		return;
 	}
 
-	//¼ÓÈë·¿¼äÁĞ±í
+	//åŠ å…¥æˆ¿é—´åˆ—è¡¨
 	roomMemberAdd(m_strCurUserName);
 
 	
 	for (auto stream : vStreamList)
 		m_mixStreamList.push_back(stream);
 
-	//Ö÷²¥ÍÆÁ÷
+	//ä¸»æ’­æ¨æµ
 	StartPublishStream();
 
 }
@@ -788,8 +790,8 @@ void ZegoMixStreamAnchorDialog::OnLoginRoom(int errorCode, const QString& strRoo
 void ZegoMixStreamAnchorDialog::OnStreamUpdated(const QString& roomId, QVector<StreamPtr> vStreamList, LIVEROOM::ZegoStreamUpdateType type)
 {
 	
-	//ÔÚ»ìÁ÷Ä£Ê½ÏÂ£¬ÓĞÁ÷¸üĞÂÊ±ĞèÒª×÷»ìÁ÷´¦Àí(ºÏ²¢/É¾³ı)
-	//Ö÷²¥Ä£Ê½ÏÂĞèÒªÖ´ĞĞÁ÷±ä»¯µÄ»ìÁ÷²Ù×÷
+	//åœ¨æ··æµæ¨¡å¼ä¸‹ï¼Œæœ‰æµæ›´æ–°æ—¶éœ€è¦ä½œæ··æµå¤„ç†(åˆå¹¶/åˆ é™¤)
+	//ä¸»æ’­æ¨¡å¼ä¸‹éœ€è¦æ‰§è¡Œæµå˜åŒ–çš„æ··æµæ“ä½œ
 	if (type == LIVEROOM::ZegoStreamUpdateType::StreamAdded)
 	{
 		MixStreamAdd(vStreamList, roomId);
@@ -809,7 +811,7 @@ void ZegoMixStreamAnchorDialog::OnPublishStateUpdate(int stateCode, const QStrin
 
 		if (streamInfo != nullptr)
 		{
-			//±£´æ×Ô¼ºµÄÁ÷ĞÅÏ¢
+			//ä¿å­˜è‡ªå·±çš„æµä¿¡æ¯
 			//m_anchorStreamInfo = streamInfo;
 
 			QString strUrl;
@@ -846,7 +848,7 @@ void ZegoMixStreamAnchorDialog::OnPublishStateUpdate(int stateCode, const QStrin
 
 		}
 
-		//µ±Ç°Ö±²¥Ä£Ê½Îª»ìÁ÷Ä£Ê½£¬½«Ö÷²¥Á÷¼Óµ½»ìÁ÷ÖĞ
+		//å½“å‰ç›´æ’­æ¨¡å¼ä¸ºæ··æµæ¨¡å¼ï¼Œå°†ä¸»æ’­æµåŠ åˆ°æ··æµä¸­
 		Size videoCaptureResolution = m_pAVSettings->GetResolution();
 		int width = videoCaptureResolution.cx;
 		int height = videoCaptureResolution.cy;
@@ -861,18 +863,18 @@ void ZegoMixStreamAnchorDialog::OnPublishStateUpdate(int stateCode, const QStrin
 
 		StartMixStream();
 
-		//ÍÆÁ÷³É¹¦ºóÆô¶¯¼ÆÊ±Æ÷¼àÌıÂó¿Ë·çÒôÁ¿
+		//æ¨æµæˆåŠŸåå¯åŠ¨è®¡æ—¶å™¨ç›‘å¬éº¦å…‹é£éŸ³é‡
 		timer->start(0);
 
 	}
 	else
 	{
-		QMessageBox::warning(NULL, QStringLiteral("ÍÆÁ÷Ê§°Ü"), QStringLiteral("´íÎóÂë: %1").arg(stateCode));
-		ui.m_bRequestJoinLive->setText(QStringLiteral("¿ªÊ¼Ö±²¥"));
+		QMessageBox::warning(NULL, QStringLiteral("æ¨æµå¤±è´¥"), QStringLiteral("é”™è¯¯ç : %1").arg(stateCode));
+		ui.m_bRequestJoinLive->setText(QStringLiteral("å¼€å§‹ç›´æ’­"));
 		ui.m_bRequestJoinLive->setEnabled(true);
 
 		EndAux();
-		// Í£Ö¹Ô¤ÀÀ, »ØÊÕview
+		// åœæ­¢é¢„è§ˆ, å›æ”¶view
 		LIVEROOM::StopPreview();
 		LIVEROOM::SetPreviewView(nullptr);
 		StreamPtr pStream = m_pChatRoom->removeStream(streamId);
@@ -888,7 +890,7 @@ void ZegoMixStreamAnchorDialog::OnPlayStateUpdate(int stateCode, const QString& 
 
 	if (stateCode != 0)
 	{
-		// »ØÊÕview
+		// å›æ”¶view
 		StreamPtr pStream = m_pChatRoom->removeStream(streamId);
 		FreeAVView(pStream);
 	}
@@ -900,13 +902,13 @@ void ZegoMixStreamAnchorDialog::OnMixStream(unsigned int errorCode, const QStrin
 
 	if (errorCode == 0)
 	{
-		qDebug() << QStringLiteral("»ìÁ÷³É¹¦£¡ Æä»ìÁ÷IDÎª£º") << mixStreamID;
+		qDebug() << QStringLiteral("æ··æµæˆåŠŸï¼ å…¶æ··æµIDä¸ºï¼š") << mixStreamID;
 		qDebug() << "mix hls :" << hlsUrl;
 		qDebug() << "mix rtmp :" << rtmpUrl;
 		sharedHlsUrl = hlsUrl;
 		sharedRtmpUrl = rtmpUrl;
 
-		//·â×°´æ·Å·ÖÏíµØÖ·µÄjson¶ÔÏó
+		//å°è£…å­˜æ”¾åˆ†äº«åœ°å€çš„jsonå¯¹è±¡
 		if (hlsUrl.size() > 0 && rtmpUrl.size() > 0)
 		{
 			QMap<QString, QString> mapUrls = QMap<QString, QString>();
@@ -927,7 +929,7 @@ void ZegoMixStreamAnchorDialog::OnMixStream(unsigned int errorCode, const QStrin
 			QJsonDocument doc = QJsonDocument::fromVariant(vMap);
 			QByteArray jba = doc.toJson();
 			QString jsonString = QString(jba);
-			//ÉèÖÃÁ÷¸½¼ÓÏûÏ¢£¬½«»ìÁ÷ĞÅÏ¢´«Èë
+			//è®¾ç½®æµé™„åŠ æ¶ˆæ¯ï¼Œå°†æ··æµä¿¡æ¯ä¼ å…¥
 			LIVEROOM::SetPublishStreamExtraInfo(jsonString.toStdString().c_str());
 		}
 
@@ -936,7 +938,7 @@ void ZegoMixStreamAnchorDialog::OnMixStream(unsigned int errorCode, const QStrin
 		ui.m_bShare->setEnabled(true);
 
 		ui.m_bRequestJoinLive->setEnabled(true);
-		ui.m_bRequestJoinLive->setText(QStringLiteral("Í£Ö¹Ö±²¥"));
+		ui.m_bRequestJoinLive->setText(QStringLiteral("åœæ­¢ç›´æ’­"));
 
 	}
 	
@@ -946,7 +948,7 @@ void ZegoMixStreamAnchorDialog::OnUserUpdate(QVector<QString> userIDs, QVector<Q
 {
 	qDebug() << "onUserUpdate!";
 
-	//È«Á¿¸üĞÂ
+	//å…¨é‡æ›´æ–°
 	if (type == LIVEROOM::ZegoUserUpdateType::UPDATE_TOTAL){
 		//removeAll
 		m_memberModel->removeRows(0, m_memberModel->rowCount());
@@ -957,7 +959,7 @@ void ZegoMixStreamAnchorDialog::OnUserUpdate(QVector<QString> userIDs, QVector<Q
 			insertStringListModelItem(m_memberModel, userNames[i], m_memberModel->rowCount());
 		}
 	}
-	//ÔöÁ¿¸üĞÂ
+	//å¢é‡æ›´æ–°
 	else
 	{
 
@@ -971,7 +973,7 @@ void ZegoMixStreamAnchorDialog::OnUserUpdate(QVector<QString> userIDs, QVector<Q
 		}
 	}
 
-	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("³ÉÔ±(%1)").arg(m_memberModel->rowCount())));
+	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("æˆå‘˜(%1)").arg(m_memberModel->rowCount())));
 	ui.m_listMember->update();
 }
 
@@ -979,7 +981,7 @@ void ZegoMixStreamAnchorDialog::OnDisconnect(int errorCode, const QString& roomI
 {
 	if (m_pChatRoom->getRoomId() == roomId)
 	{
-		QMessageBox::information(NULL, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÄúÒÑµôÏß"));
+		QMessageBox::information(NULL, QStringLiteral("æç¤º"), QStringLiteral("æ‚¨å·²æ‰çº¿"));
 		OnClose();
 	}
 }
@@ -988,7 +990,7 @@ void ZegoMixStreamAnchorDialog::OnKickOut(int reason, const QString& roomId)
 {
 	if (m_pChatRoom->getRoomId() == roomId)
 	{
-		QMessageBox::information(NULL, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÄúÒÑ±»Ìß³ö·¿¼ä"));
+		QMessageBox::information(NULL, QStringLiteral("æç¤º"), QStringLiteral("æ‚¨å·²è¢«è¸¢å‡ºæˆ¿é—´"));
 		OnClose();
 	}
 }
@@ -1007,8 +1009,8 @@ void ZegoMixStreamAnchorDialog::OnPlayQualityUpdate(const QString& streamId, int
 
 	AVViews[nIndex]->setCurrentQuality(quality);
 
-	//QVector<QString> q = { QStringLiteral("ÓÅ"), QStringLiteral("Á¼"), QStringLiteral("ÖĞ"), QStringLiteral("²î") };
-	//qDebug() << QStringLiteral("µ±Ç°´°¿Ú") << nIndex << QStringLiteral("µÄÖ±²¥ÖÊÁ¿Îª") << q[quality];
+	//QVector<QString> q = { QStringLiteral("ä¼˜"), QStringLiteral("è‰¯"), QStringLiteral("ä¸­"), QStringLiteral("å·®") };
+	//qDebug() << QStringLiteral("å½“å‰çª—å£") << nIndex << QStringLiteral("çš„ç›´æ’­è´¨é‡ä¸º") << q[quality];
 }
 
 void ZegoMixStreamAnchorDialog::OnPublishQualityUpdate(const QString& streamId, int quality, double videoFPS, double videoKBS)
@@ -1025,8 +1027,8 @@ void ZegoMixStreamAnchorDialog::OnPublishQualityUpdate(const QString& streamId, 
 
 	AVViews[nIndex]->setCurrentQuality(quality);
 
-	//QVector<QString> q = { QStringLiteral("ÓÅ"), QStringLiteral("Á¼"), QStringLiteral("ÖĞ"), QStringLiteral("²î") };
-	//qDebug() << QStringLiteral("µ±Ç°´°¿Ú") << nIndex << QStringLiteral("µÄÖ±²¥ÖÊÁ¿Îª") << q[quality];
+	//QVector<QString> q = { QStringLiteral("ä¼˜"), QStringLiteral("è‰¯"), QStringLiteral("ä¸­"), QStringLiteral("å·®") };
+	//qDebug() << QStringLiteral("å½“å‰çª—å£") << nIndex << QStringLiteral("çš„ç›´æ’­è´¨é‡ä¸º") << q[quality];
 
 }
 
@@ -1061,7 +1063,7 @@ void ZegoMixStreamAnchorDialog::OnSendRoomMessage(int errorCode, const QString& 
 {
 	if (errorCode != 0)
 	{
-		QMessageBox::warning(NULL, QStringLiteral("ÏûÏ¢·¢ËÍÊ§°Ü"), QStringLiteral("´íÎóÂë: %1").arg(errorCode));
+		QMessageBox::warning(NULL, QStringLiteral("æ¶ˆæ¯å‘é€å¤±è´¥"), QStringLiteral("é”™è¯¯ç : %1").arg(errorCode));
 		return;
 	}
 
@@ -1075,7 +1077,7 @@ void ZegoMixStreamAnchorDialog::OnRecvRoomMessage(const QString& roomId, QVector
 		QString strTmpContent;
 		strTmpContent = QString(QStringLiteral("%1: %2")).arg(roomMsg->getUserId()).arg(roomMsg->getContent());
 		insertStringListModelItem(m_chatModel, strTmpContent, m_chatModel->rowCount());
-		//Ã¿´Î½ÓÊÜÏûÏ¢¾ùÏÔÊ¾×îºóÒ»Ìõ
+		//æ¯æ¬¡æ¥å—æ¶ˆæ¯å‡æ˜¾ç¤ºæœ€åä¸€æ¡
 		ui.m_listChat->scrollToBottom();
 
 	}
@@ -1083,7 +1085,7 @@ void ZegoMixStreamAnchorDialog::OnRecvRoomMessage(const QString& roomId, QVector
 
 void ZegoMixStreamAnchorDialog::OnJoinLiveRequest(int seq, const QString& fromUserId, const QString& fromUserName, const QString& roomId)
 {
-	QMessageBox box(QMessageBox::Warning, QStringLiteral("ÌáÊ¾"), QString(QStringLiteral("%1ÕıÔÚÇëÇóÁ¬Âó")).arg(fromUserId));
+	QMessageBox box(QMessageBox::Warning, QStringLiteral("æç¤º"), QString(QStringLiteral("%1æ­£åœ¨è¯·æ±‚è¿éº¦")).arg(fromUserId));
 	box.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
 	if (box.exec() == QMessageBox::Ok)
 	{
@@ -1123,10 +1125,10 @@ void ZegoMixStreamAnchorDialog::OnAudioDeviceChanged(AV::AudioDeviceType deviceT
 
 
 			int currentCurl = ui.m_cbMircoPhone->currentIndex();
-			//Èç¹ûcurrentCurlµÈÓÚiËµÃ÷µ±Ç°É¾³ıµÄÉè±¸ÊÇµ±Ç°ÕıÔÚÊ¹ÓÃµÄÉè±¸
+			//å¦‚æœcurrentCurlç­‰äºiè¯´æ˜å½“å‰åˆ é™¤çš„è®¾å¤‡æ˜¯å½“å‰æ­£åœ¨ä½¿ç”¨çš„è®¾å¤‡
 			if (currentCurl == i)
 			{
-				//Èç¹ûÉ¾³ıÖ®ºó»¹ÓĞÄÜ²¥·ÅµÄÉè±¸´æÔÚ£¬ÔòÄ¬ÈÏÑ¡ÔñµÚÒ»¸öÒôÆµÉè±¸
+				//å¦‚æœåˆ é™¤ä¹‹åè¿˜æœ‰èƒ½æ’­æ”¾çš„è®¾å¤‡å­˜åœ¨ï¼Œåˆ™é»˜è®¤é€‰æ‹©ç¬¬ä¸€ä¸ªéŸ³é¢‘è®¾å¤‡
 				if (m_vecAudioDeviceIDs.size() > 0)
 				{
 					LIVEROOM::SetAudioDevice(AV::AudioDevice_Input, m_vecAudioDeviceIDs[0].toStdString().c_str());
@@ -1175,10 +1177,10 @@ void ZegoMixStreamAnchorDialog::OnVideoDeviceChanged(const QString& strDeviceId,
 			m_vecVideoDeviceIDs.erase(m_vecVideoDeviceIDs.begin() + i);
 
 			int currentCurl = ui.m_cbCamera->currentIndex();
-			//Èç¹ûcurrentCurlµÈÓÚiËµÃ÷µ±Ç°É¾³ıµÄÉè±¸ÊÇµ±Ç°ÕıÔÚÊ¹ÓÃµÄÉè±¸
+			//å¦‚æœcurrentCurlç­‰äºiè¯´æ˜å½“å‰åˆ é™¤çš„è®¾å¤‡æ˜¯å½“å‰æ­£åœ¨ä½¿ç”¨çš„è®¾å¤‡
 			if (currentCurl == i)
 			{
-				//Ä¬ÈÏ²É¼¯µÚÒ»¸öÊÓÆµÉè±¸
+				//é»˜è®¤é‡‡é›†ç¬¬ä¸€ä¸ªè§†é¢‘è®¾å¤‡
 				if (m_vecVideoDeviceIDs.size() > 0)
 				{
 					LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[0].toStdString().c_str());
@@ -1200,7 +1202,7 @@ void ZegoMixStreamAnchorDialog::OnVideoDeviceChanged(const QString& strDeviceId,
 	}
 }
 
-//UI»Øµ÷
+//UIå›è°ƒ
 void ZegoMixStreamAnchorDialog::OnClickTitleButton()
 {
 	QPushButton *pButton = qobject_cast<QPushButton *>(sender());
@@ -1230,23 +1232,23 @@ void ZegoMixStreamAnchorDialog::OnClickTitleButton()
 
 void ZegoMixStreamAnchorDialog::OnButtonSwitchPublish()
 {
-	//µ±Ç°°´Å¥ÎÄ±¾Îª¡°¿ªÊ¼Ö±²¥¡±
-	if (ui.m_bRequestJoinLive->text() == QStringLiteral("¿ªÊ¼Ö±²¥"))
+	//å½“å‰æŒ‰é’®æ–‡æœ¬ä¸ºâ€œå¼€å§‹ç›´æ’­â€
+	if (ui.m_bRequestJoinLive->text() == QStringLiteral("å¼€å§‹ç›´æ’­"))
 	{
-		ui.m_bRequestJoinLive->setText(QStringLiteral("¿ªÆôÖĞ..."));
+		ui.m_bRequestJoinLive->setText(QStringLiteral("å¼€å¯ä¸­..."));
 		ui.m_bRequestJoinLive->setEnabled(false);
-		//¿ªÊ¼ÍÆÁ÷
+		//å¼€å§‹æ¨æµ
 		StartPublishStream();
 
 	}
-	//µ±Ç°°´Å¥ÎÄ±¾Îª¡°Í£Ö¹Ö±²¥¡±
+	//å½“å‰æŒ‰é’®æ–‡æœ¬ä¸ºâ€œåœæ­¢ç›´æ’­â€
 	else
 	{
-		ui.m_bRequestJoinLive->setText(QStringLiteral("Í£Ö¹ÖĞ..."));
+		ui.m_bRequestJoinLive->setText(QStringLiteral("åœæ­¢ä¸­..."));
 		ui.m_bRequestJoinLive->setEnabled(false);
 		StopPublishStream(m_strPublishStreamID);
 		ui.m_bRequestJoinLive->setEnabled(true);
-		ui.m_bRequestJoinLive->setText(QStringLiteral("¿ªÊ¼Ö±²¥"));
+		ui.m_bRequestJoinLive->setText(QStringLiteral("å¼€å§‹ç›´æ’­"));
 	}
 }
 
@@ -1271,9 +1273,9 @@ void ZegoMixStreamAnchorDialog::OnButtonSendMessage()
 	ui.m_edInput->setText(QStringLiteral(""));
 
 	QString strTmpContent;
-	strTmpContent = QString(QStringLiteral("ÎÒ£º%1")).arg(m_strLastSendMsg);
+	strTmpContent = QString(QStringLiteral("æˆ‘ï¼š%1")).arg(m_strLastSendMsg);
 	insertStringListModelItem(m_chatModel, strTmpContent, m_chatModel->rowCount());
-	//Ã¿´Î·¢ËÍÏûÏ¢¾ùÏÔÊ¾×îºóÒ»Ìõ
+	//æ¯æ¬¡å‘é€æ¶ˆæ¯å‡æ˜¾ç¤ºæœ€åä¸€æ¡
 	ui.m_listChat->scrollToBottom();
 	m_strLastSendMsg.clear();
 
@@ -1281,19 +1283,19 @@ void ZegoMixStreamAnchorDialog::OnButtonSendMessage()
 
 void ZegoMixStreamAnchorDialog::OnButtonSoundCapture()
 {
-	if (ui.m_bCapture->text() == QStringLiteral("Éù¿¨²É¼¯"))
+	if (ui.m_bCapture->text() == QStringLiteral("å£°å¡é‡‡é›†"))
 	{
-#ifdef WIN32
+#ifdef Q_OS_WIN32
 		LIVEROOM::EnableMixSystemPlayout(true);
 #endif
-		ui.m_bCapture->setText(QStringLiteral("Í£Ö¹²É¼¯"));
+		ui.m_bCapture->setText(QStringLiteral("åœæ­¢é‡‡é›†"));
 	}
 	else
 	{
-#ifdef WIN32
+#ifdef Q_OS_WIN32
 		LIVEROOM::EnableMixSystemPlayout(false);
 #endif
-		ui.m_bCapture->setText(QStringLiteral("Éù¿¨²É¼¯"));
+		ui.m_bCapture->setText(QStringLiteral("å£°å¡é‡‡é›†"));
 	}
 }
 
@@ -1315,7 +1317,7 @@ void ZegoMixStreamAnchorDialog::OnButtonMircoPhone()
 		ui.m_bProgMircoPhone->update();
 	}
 
-	//Ê¹ÓÃÂó¿Ë·ç
+	//ä½¿ç”¨éº¦å…‹é£
 	LIVEROOM::EnableMic(m_bCKEnableMic);
 }
 
@@ -1334,7 +1336,7 @@ void ZegoMixStreamAnchorDialog::OnButtonSound()
 		m_bCKEnableSpeaker = false;
 	}
 
-	//Ê¹ÓÃÑïÉùÆ÷
+	//ä½¿ç”¨æ‰¬å£°å™¨
 	LIVEROOM::EnableSpeaker(m_bCKEnableSpeaker);
 
 }
@@ -1361,7 +1363,7 @@ void ZegoMixStreamAnchorDialog::OnShareLink()
 
 void ZegoMixStreamAnchorDialog::OnButtonAux()
 {
-	if (ui.m_bAux->text() == QStringLiteral("¿ªÆô»ìÒô"))
+	if (ui.m_bAux->text() == QStringLiteral("å¼€å¯æ··éŸ³"))
 	{
 		BeginAux();
 	}
@@ -1396,7 +1398,7 @@ void ZegoMixStreamAnchorDialog::OnSwitchVideoDevice(int id)
 void ZegoMixStreamAnchorDialog::mousePressEvent(QMouseEvent *event)
 {
 	mousePosition = event->pos();
-	//Ö»¶Ô±êÌâÀ¸·¶Î§ÄÚµÄÊó±êÊÂ¼ş½øĞĞ´¦Àí
+	//åªå¯¹æ ‡é¢˜æ èŒƒå›´å†…çš„é¼ æ ‡äº‹ä»¶è¿›è¡Œå¤„ç†
 
 	if (mousePosition.y() <= pos_min_y)
 		return;
@@ -1421,10 +1423,10 @@ void ZegoMixStreamAnchorDialog::mouseReleaseEvent(QMouseEvent *event)
 
 void ZegoMixStreamAnchorDialog::mouseDoubleClickEvent(QMouseEvent *event)
 {
-	//Ë«»÷±êÌâÀ¸Í¬Ñù¿ÉÒÔ·Å´óËõĞ¡
+	//åŒå‡»æ ‡é¢˜æ åŒæ ·å¯ä»¥æ”¾å¤§ç¼©å°
 
 	mousePosition = event->pos();
-	//Ö»¶Ô±êÌâÀ¸·¶Î§ÄÚµÄÊó±êÊÂ¼ş½øĞĞ´¦Àí
+	//åªå¯¹æ ‡é¢˜æ èŒƒå›´å†…çš„é¼ æ ‡äº‹ä»¶è¿›è¡Œå¤„ç†
 
 	if (mousePosition.y() <= pos_min_y)
 		return;

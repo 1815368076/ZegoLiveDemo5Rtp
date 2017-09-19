@@ -146,11 +146,11 @@ public:
     QSpacerItem *verticalSpacer_23;
     QComboBox *m_cbAppVersion;
     QSpacerItem *verticalSpacer_20;
-    QFormLayout *formLayout_5;
+    QFormLayout *formLayout_appID;
     QLabel *m_lbAPPID;
     QLineEdit *m_strEdAPPID;
     QSpacerItem *verticalSpacer_24;
-    QFormLayout *formLayout_6;
+    QFormLayout *formLayout_appSign;
     QLabel *m_lbAPPSign;
     QLineEdit *m_strEdAPPSign;
     QSpacerItem *verticalSpacer_33;
@@ -261,7 +261,7 @@ public:
     {
         if (ZegoMainDialog->objectName().isEmpty())
             ZegoMainDialog->setObjectName(QStringLiteral("ZegoMainDialog"));
-        ZegoMainDialog->resize(934, 653);
+        ZegoMainDialog->resize(940, 670);
         ZegoMainDialog->setStyleSheet(QStringLiteral("background-color: #ffffff;"));
         verticalLayout_6 = new QVBoxLayout(ZegoMainDialog);
         verticalLayout_6->setSpacing(0);
@@ -662,8 +662,8 @@ public:
 
         m_lineBeforeCreate = new QFrame(m_zoneCreateRoom);
         m_lineBeforeCreate->setObjectName(QStringLiteral("m_lineBeforeCreate"));
-        m_lineBeforeCreate->setMinimumSize(QSize(0, 1));
-        m_lineBeforeCreate->setMaximumSize(QSize(16777215, 1));
+        m_lineBeforeCreate->setMinimumSize(QSize(0, 2));
+        m_lineBeforeCreate->setMaximumSize(QSize(16777215, 2));
         m_lineBeforeCreate->setStyleSheet(QLatin1String("QFrame#m_lineBeforeCreate{\n"
 "     background-color: #b2b2b2;\n"
 " }"));
@@ -787,20 +787,20 @@ public:
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 14px;\n"
 "     color: #333333; \n"
-"     margin-left: 10px;\n"
-"     \n"
+"     margin-left: 10px;  \n"
 "     background-color: #ffffff;\n"
-"     \n"
+"      \n"
 " }\n"
 "\n"
 "QTableView::item{\n"
 "     border: none;\n"
 "     border-bottom: 1px solid #e6e6e6;\n"
-"     padding: 10px;\n"
-"\n"
+"     padding-left: 6px;\n"
+"     height: 50px;\n"
+"     background-color: #ffffff;\n"
 " }\n"
 "\n"
-"QTableView:item:selected{\n"
+"QTableView::item:selected{\n"
 "     background-color: #0e88eb;\n"
 "     color: #ffffff;\n"
 "}\n"
@@ -810,10 +810,16 @@ public:
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     color: #333333;\n"
 "     border: none;\n"
-"     padding-left: 10px;\n"
 "     border-bottom: 1px solid #e6e6e6;\n"
 "}\n"
 "\n"
+"QHeaderView::section:horizontal{\n"
+"    height: 30px;\n"
+"    background: #ffffff;\n"
+"    border: none;\n"
+"    padding-left: 10px;\n"
+"    border-right: 1px solid #e6e6e6;\n"
+"}\n"
 " "));
         m_roomList->setHorizontalScrollMode(QAbstractItemView::ScrollPerItem);
         m_roomList->setShowGrid(false);
@@ -855,26 +861,30 @@ public:
         m_tabSettings->setFocusPolicy(Qt::NoFocus);
         m_tabSettings->setAutoFillBackground(false);
         m_tabSettings->setStyleSheet(QString::fromUtf8("QTabWidget::pane{\n"
-"    border: none;\n"
-" }\n"
+"	border: none;\n"
+"}\n"
 "\n"
-" QTabBar::tab:!selected{\n"
-"     width: 210px;\n"
-"	 height: 40px;\n"
-"	 font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
-"     font-size: 14px;\n"
-"	 color: #333333;\n"
-"	 background-color: #ffffff;\n"
-" }\n"
+"QTabWidget::tab-bar{\n"
+"    left: 0px;\n"
+"}\n"
+"QTabBar::tab{\n"
+"    width: 210px;\n"
+"    height: 30px;\n"
+"    margin: 0 0 0 0;\n"
+"	font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"	font-size: 14px;\n"
+"	color: #333333;\n"
+"	background-color: #ffffff;\n"
+"}\n"
 "\n"
-" QTabBar::tab:selected{\n"
-"     width: 210px;\n"
-"	 height: 39px;\n"
-"	 font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
-"     font-size: 14px;\n"
-"	 color: #0e88eb;\n"
-"	 background-color: #ffffff;\n"
-" }"));
+"QTabBar::tab:selected{\n"
+"	width: 210px;\n"
+"	height: 30px;\n"
+"	font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"	font-size: 14px;\n"
+"	color: #0e88eb;\n"
+"	background-color: #ffffff;\n"
+"}"));
         m_tabVideoConfig = new QWidget();
         m_tabVideoConfig->setObjectName(QStringLiteral("m_tabVideoConfig"));
         m_tabVideoConfig->setStyleSheet(QStringLiteral("background-color: #ffffff;"));
@@ -1795,11 +1805,11 @@ public:
 
         verticalLayout_17->addItem(verticalSpacer_20);
 
-        formLayout_5 = new QFormLayout();
-        formLayout_5->setSpacing(6);
-        formLayout_5->setObjectName(QStringLiteral("formLayout_5"));
-        formLayout_5->setHorizontalSpacing(23);
-        formLayout_5->setVerticalSpacing(0);
+        formLayout_appID = new QFormLayout();
+        formLayout_appID->setSpacing(6);
+        formLayout_appID->setObjectName(QStringLiteral("formLayout_appID"));
+        formLayout_appID->setHorizontalSpacing(23);
+        formLayout_appID->setVerticalSpacing(0);
         m_lbAPPID = new QLabel(m_tabExtraSettings);
         m_lbAPPID->setObjectName(QStringLiteral("m_lbAPPID"));
         m_lbAPPID->setStyleSheet(QString::fromUtf8(" QLabel{\n"
@@ -1808,7 +1818,7 @@ public:
 "	 color: #666666;\n"
 " }"));
 
-        formLayout_5->setWidget(0, QFormLayout::LabelRole, m_lbAPPID);
+        formLayout_appID->setWidget(0, QFormLayout::LabelRole, m_lbAPPID);
 
         m_strEdAPPID = new QLineEdit(m_tabExtraSettings);
         m_strEdAPPID->setObjectName(QStringLiteral("m_strEdAPPID"));
@@ -1845,20 +1855,20 @@ public:
 "	 background-color: #ffffff;\n"
 " }"));
 
-        formLayout_5->setWidget(0, QFormLayout::FieldRole, m_strEdAPPID);
+        formLayout_appID->setWidget(0, QFormLayout::FieldRole, m_strEdAPPID);
 
 
-        verticalLayout_17->addLayout(formLayout_5);
+        verticalLayout_17->addLayout(formLayout_appID);
 
         verticalSpacer_24 = new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
 
         verticalLayout_17->addItem(verticalSpacer_24);
 
-        formLayout_6 = new QFormLayout();
-        formLayout_6->setSpacing(6);
-        formLayout_6->setObjectName(QStringLiteral("formLayout_6"));
-        formLayout_6->setHorizontalSpacing(9);
-        formLayout_6->setVerticalSpacing(0);
+        formLayout_appSign = new QFormLayout();
+        formLayout_appSign->setSpacing(6);
+        formLayout_appSign->setObjectName(QStringLiteral("formLayout_appSign"));
+        formLayout_appSign->setHorizontalSpacing(9);
+        formLayout_appSign->setVerticalSpacing(0);
         m_lbAPPSign = new QLabel(m_tabExtraSettings);
         m_lbAPPSign->setObjectName(QStringLiteral("m_lbAPPSign"));
         m_lbAPPSign->setStyleSheet(QString::fromUtf8(" QLabel{\n"
@@ -1867,7 +1877,7 @@ public:
 "	 color: #666666;\n"
 " }"));
 
-        formLayout_6->setWidget(2, QFormLayout::LabelRole, m_lbAPPSign);
+        formLayout_appSign->setWidget(2, QFormLayout::LabelRole, m_lbAPPSign);
 
         m_strEdAPPSign = new QLineEdit(m_tabExtraSettings);
         m_strEdAPPSign->setObjectName(QStringLiteral("m_strEdAPPSign"));
@@ -1904,10 +1914,10 @@ public:
 "	 background-color: #ffffff;\n"
 " }"));
 
-        formLayout_6->setWidget(2, QFormLayout::FieldRole, m_strEdAPPSign);
+        formLayout_appSign->setWidget(2, QFormLayout::FieldRole, m_strEdAPPSign);
 
 
-        verticalLayout_17->addLayout(formLayout_6);
+        verticalLayout_17->addLayout(formLayout_appSign);
 
         verticalSpacer_33 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -2069,7 +2079,7 @@ public:
 
         verticalLayout_21->addLayout(horizontalLayout_24);
 
-        verticalSpacer_27 = new QSpacerItem(20, 12, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+        verticalSpacer_27 = new QSpacerItem(20, 16, QSizePolicy::Minimum, QSizePolicy::Fixed);
 
         verticalLayout_21->addItem(verticalSpacer_27);
 
@@ -2198,7 +2208,7 @@ public:
 
         verticalLayout_21->addLayout(horizontalLayout_25);
 
-        verticalSpacer_28 = new QSpacerItem(20, 15, QSizePolicy::Minimum, QSizePolicy::Fixed);
+        verticalSpacer_28 = new QSpacerItem(20, 15, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 
         verticalLayout_21->addItem(verticalSpacer_28);
 
@@ -2930,7 +2940,7 @@ public:
         retranslateUi(ZegoMainDialog);
 
         m_bSingleMode->setDefault(false);
-        m_tabSettings->setCurrentIndex(1);
+        m_tabSettings->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(ZegoMainDialog);

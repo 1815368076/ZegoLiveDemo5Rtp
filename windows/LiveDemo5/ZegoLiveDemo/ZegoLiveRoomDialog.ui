@@ -364,28 +364,32 @@ background-color: #e6e6e6;</string>
         <item>
          <widget class="QTabWidget" name="m_tabCommonAndUserList">
           <property name="styleSheet">
-           <string notr="true">
-QTabWidget::pane{
-    border: none;
- }
+           <string notr="true">QTabWidget::pane{
+	border: none;
+}
 
- QTabBar::tab:!selected{
-     width: 160px;
-	 height: 40px;
-	 font-family: 微软雅黑;
-     font-size: 16px;
-	 color: #666666;
-	 background-color: #ffffff;
- }
+QTabWidget::tab-bar{
+    left: 0px;
+}
 
- QTabBar::tab:selected{
-     width: 160px;
-	 height: 40px;
-	 font-family: 微软雅黑;
-     font-size: 16px;
-	 color: #0e88eb;
-	 background-color: #ffffff;
- }</string>
+QTabBar::tab{
+    width: 160px;
+    height: 40px;
+    margin: 0 0 0 0;
+	font-family: 微软雅黑;
+	font-size: 16px;
+	color: #333333;
+	background-color: #ffffff;
+}
+
+QTabBar::tab:selected{
+	width: 160px;
+	height: 40px;
+	font-family: 微软雅黑;
+	font-size: 16px;
+	color: #0e88eb;
+	background-color: #ffffff;
+}</string>
           </property>
           <property name="currentIndex">
            <number>0</number>
@@ -723,7 +727,7 @@ background-color: #e6e6e6;</string>
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
+             <enum>QSizePolicy::Maximum</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -1061,7 +1065,7 @@ QComboBox::drop-down{
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
+             <enum>QSizePolicy::Maximum</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -1361,7 +1365,7 @@ QPushButton:enabled:hover:pressed{
                  <enum>Qt::Horizontal</enum>
                 </property>
                 <property name="sizeType">
-                 <enum>QSizePolicy::Minimum</enum>
+                 <enum>QSizePolicy::MinimumExpanding</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -1439,7 +1443,7 @@ QPushButton:enabled:hover:pressed{
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
+             <enum>QSizePolicy::Maximum</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>

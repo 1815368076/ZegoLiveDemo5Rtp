@@ -75,8 +75,14 @@ ZegoMainDialog::~ZegoMainDialog()
 //part1:功能函数
 void ZegoMainDialog::initDialog()
 {
-#ifdef APPLE
+#if (defined Q_OS_MAC) || (!(USE_SURFACE_MERGE))
+	ui.m_lbSurfaceMerge->setVisible(false);
 	ui.m_switchSurfaceMerge->setVisible(false);
+#endif
+//跨平台UI适配（某些UI在windows中默认居左，在mac中默认居中）
+#ifdef Q_OS_MAC
+	ui.formLayout_appID->setFormAlignment(Qt::AlignLeft);
+	ui.formLayout_appSign->setFormAlignment(Qt::AlignLeft);
 #endif
 
 	//初始化房间列表
@@ -280,7 +286,7 @@ void ZegoMainDialog::initRoomList()
 	ui.m_roomList->setColumnWidth(0, 310);
 	ui.m_roomList->setColumnWidth(1, 100);
 	ui.m_roomList->setColumnWidth(2, 110);
-	ui.m_roomList->setColumnWidth(3, 110);
+	ui.m_roomList->setColumnWidth(3, 120);
 	//隐藏列头
 	ui.m_roomList->verticalHeader()->setVisible(false);
 	//表头内容靠左
@@ -295,7 +301,12 @@ void ZegoMainDialog::initRoomList()
 	ui.m_roomList->setSelectionBehavior(QAbstractItemView::SelectRows);
 	//点击item时去除虚线框
 	ui.m_roomList->setItemDelegate(new NoFocusFrameDelegate(this));
-
+	//默认最后一列占满余下的位置
+	ui.m_roomList->horizontalHeader()->setStretchLastSection(true);
+	//隐藏水平滚动条
+	ui.m_roomList->horizontalScrollBar()->setStyleSheet("QScrollBar:horizontal{height: 0px;}");
+	ui.m_roomList->horizontalScrollBar()->setVisible(false);
+	//StyleSheet
 	ui.m_roomList->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
 	                                                  "background: transparent;"
                                                       "width: 9px;"
@@ -480,7 +491,7 @@ void ZegoMainDialog::RefreshRoomList(QVector<RoomPtr> roomList)
 			pBtn->setStyleSheet(qssFile.readAll());
 			qssFile.close();
 		}
-
+		ui.m_roomList->resizeRowsToContents();
 		connect(pBtn, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonEnterRoom);
 		QModelIndex indexTmp = m_roomListModel->index(index, 3, QModelIndex());
 		ui.m_roomList->setIndexWidget(indexTmp, pBtn);

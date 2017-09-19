@@ -7,7 +7,6 @@
 #include "ZegoUserConfig.h"
 #include "ZegoLiveDemo.h"
 #include "ZegoBase.h"
-
 #include <QtNetwork/qnetworkaccessmanager.h> 
 #include <QtNetwork/qnetworkrequest.h>
 #include <QtNetwork/qnetworkreply.h>

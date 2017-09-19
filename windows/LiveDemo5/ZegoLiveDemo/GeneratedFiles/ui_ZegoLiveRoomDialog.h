@@ -288,28 +288,32 @@ public:
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
         m_tabCommonAndUserList = new QTabWidget(m_zoneCommonAndUserList);
         m_tabCommonAndUserList->setObjectName(QStringLiteral("m_tabCommonAndUserList"));
-        m_tabCommonAndUserList->setStyleSheet(QString::fromUtf8("\n"
-"QTabWidget::pane{\n"
-"    border: none;\n"
-" }\n"
+        m_tabCommonAndUserList->setStyleSheet(QString::fromUtf8("QTabWidget::pane{\n"
+"	border: none;\n"
+"}\n"
 "\n"
-" QTabBar::tab:!selected{\n"
-"     width: 160px;\n"
-"	 height: 40px;\n"
-"	 font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
-"     font-size: 16px;\n"
-"	 color: #666666;\n"
-"	 background-color: #ffffff;\n"
-" }\n"
+"QTabWidget::tab-bar{\n"
+"    left: 0px;\n"
+"}\n"
 "\n"
-" QTabBar::tab:selected{\n"
-"     width: 160px;\n"
-"	 height: 40px;\n"
-"	 font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
-"     font-size: 16px;\n"
-"	 color: #0e88eb;\n"
-"	 background-color: #ffffff;\n"
-" }"));
+"QTabBar::tab{\n"
+"    width: 160px;\n"
+"    height: 40px;\n"
+"    margin: 0 0 0 0;\n"
+"	font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"	font-size: 16px;\n"
+"	color: #333333;\n"
+"	background-color: #ffffff;\n"
+"}\n"
+"\n"
+"QTabBar::tab:selected{\n"
+"	width: 160px;\n"
+"	height: 40px;\n"
+"	font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"	font-size: 16px;\n"
+"	color: #0e88eb;\n"
+"	background-color: #ffffff;\n"
+"}"));
         m_tabContact = new QWidget();
         m_tabContact->setObjectName(QStringLiteral("m_tabContact"));
         verticalLayout_3 = new QVBoxLayout(m_tabContact);
@@ -505,7 +509,7 @@ public:
         horizontalLayout_6->setSpacing(0);
         horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
         horizontalLayout_6->setContentsMargins(-1, -1, 0, -1);
-        horizontalSpacer = new QSpacerItem(46, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer = new QSpacerItem(46, 20, QSizePolicy::Maximum, QSizePolicy::Minimum);
 
         horizontalLayout_6->addItem(horizontalSpacer);
 
@@ -751,7 +755,7 @@ public:
 
         horizontalLayout_6->addLayout(verticalLayout_4);
 
-        horizontalSpacer_2 = new QSpacerItem(50, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_2 = new QSpacerItem(50, 20, QSizePolicy::Maximum, QSizePolicy::Minimum);
 
         horizontalLayout_6->addItem(horizontalSpacer_2);
 
@@ -886,7 +890,7 @@ public:
 
         horizontalLayout_4->addWidget(m_bAux, 0, Qt::AlignTop);
 
-        horizontalSpacer_7 = new QSpacerItem(14, 20, QSizePolicy::Minimum, QSizePolicy::Minimum);
+        horizontalSpacer_7 = new QSpacerItem(14, 20, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
         horizontalLayout_4->addItem(horizontalSpacer_7);
 
@@ -939,7 +943,7 @@ public:
 
         horizontalLayout_6->addLayout(verticalLayout_5);
 
-        horizontalSpacer_3 = new QSpacerItem(50, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_3 = new QSpacerItem(50, 20, QSizePolicy::Maximum, QSizePolicy::Minimum);
 
         horizontalLayout_6->addItem(horizontalSpacer_3);
 

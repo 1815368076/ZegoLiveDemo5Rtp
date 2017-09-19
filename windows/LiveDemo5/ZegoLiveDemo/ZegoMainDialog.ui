@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>934</width>
-    <height>653</height>
+    <width>940</width>
+    <height>670</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -767,13 +767,13 @@ QPushButton:hover:pressed{
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>1</height>
+            <height>2</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>1</height>
+            <height>2</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -1014,20 +1014,20 @@ QPushButton:hover:pressed{
      font-family: 微软雅黑;
      font-size: 14px;
      color: #333333; 
-     margin-left: 10px;
-     
+     margin-left: 10px;  
      background-color: #ffffff;
-     
+      
  }
 
 QTableView::item{
      border: none;
      border-bottom: 1px solid #e6e6e6;
-     padding: 10px;
-
+     padding-left: 6px;
+     height: 50px;
+     background-color: #ffffff;
  }
 
-QTableView:item:selected{
+QTableView::item:selected{
      background-color: #0e88eb;
      color: #ffffff;
 }
@@ -1037,10 +1037,16 @@ QHeaderView{
      font-family: 微软雅黑;
      color: #333333;
      border: none;
-     padding-left: 10px;
      border-bottom: 1px solid #e6e6e6;
 }
 
+QHeaderView::section:horizontal{
+    height: 30px;
+    background: #ffffff;
+    border: none;
+    padding-left: 10px;
+    border-right: 1px solid #e6e6e6;
+}
  </string>
               </property>
               <property name="horizontalScrollMode">
@@ -1125,29 +1131,33 @@ margin-right: 10px;</string>
             </property>
             <property name="styleSheet">
              <string notr="true">QTabWidget::pane{
-    border: none;
- }
+	border: none;
+}
 
- QTabBar::tab:!selected{
-     width: 210px;
-	 height: 40px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #333333;
-	 background-color: #ffffff;
- }
+QTabWidget::tab-bar{
+    left: 0px;
+}
+QTabBar::tab{
+    width: 210px;
+    height: 30px;
+    margin: 0 0 0 0;
+	font-family: 微软雅黑;
+	font-size: 14px;
+	color: #333333;
+	background-color: #ffffff;
+}
 
- QTabBar::tab:selected{
-     width: 210px;
-	 height: 39px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #0e88eb;
-	 background-color: #ffffff;
- }</string>
+QTabBar::tab:selected{
+	width: 210px;
+	height: 30px;
+	font-family: 微软雅黑;
+	font-size: 14px;
+	color: #0e88eb;
+	background-color: #ffffff;
+}</string>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="m_tabVideoConfig">
              <property name="styleSheet">
@@ -2743,7 +2753,7 @@ QComboBox::drop-down{
                    </spacer>
                   </item>
                   <item>
-                   <layout class="QFormLayout" name="formLayout_5">
+                   <layout class="QFormLayout" name="formLayout_appID">
                     <property name="horizontalSpacing">
                      <number>23</number>
                     </property>
@@ -2833,7 +2843,7 @@ QComboBox::drop-down{
                    </spacer>
                   </item>
                   <item>
-                   <layout class="QFormLayout" name="formLayout_6">
+                   <layout class="QFormLayout" name="formLayout_appSign">
                     <property name="horizontalSpacing">
                      <number>9</number>
                     </property>
@@ -3285,12 +3295,12 @@ QComboBox::drop-down{
                      <enum>Qt::Vertical</enum>
                     </property>
                     <property name="sizeType">
-                     <enum>QSizePolicy::MinimumExpanding</enum>
+                     <enum>QSizePolicy::Fixed</enum>
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>20</width>
-                      <height>12</height>
+                      <height>16</height>
                      </size>
                     </property>
                    </spacer>
@@ -3580,7 +3590,7 @@ QComboBox::drop-down{
                      <enum>Qt::Vertical</enum>
                     </property>
                     <property name="sizeType">
-                     <enum>QSizePolicy::Fixed</enum>
+                     <enum>QSizePolicy::MinimumExpanding</enum>
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>

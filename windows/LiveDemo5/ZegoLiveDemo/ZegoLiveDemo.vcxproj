@@ -133,7 +133,8 @@ if Exist   "$(ProjectDir)..\libs\x86\$(Configuration)\ZegoSurfaceMerge.dll" (ech
 if Exist   "$(ProjectDir)\Resources\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\Resources\*.*"  "$(ProjectDir)..\bin\x86\$(Configuration)\Resources\")
 if Exist   "$(ProjectDir)\Resources\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\Resources\images\*.*"  "$(ProjectDir)..\bin\x86\$(Configuration)\Resources\images\")
 
-if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\openssl\*.*"  "$(ProjectDir)..\bin\x86\$(Configuration)")</Command>
+if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\openssl\*.*"  "$(ProjectDir)..\bin\x86\$(Configuration)")
+if Exist   "$(ProjectDir)\msvc\x86\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\msvc\x86\*.*"  "$(ProjectDir)..\bin\x86\$(Configuration)")</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>if Exist  "$(ProjectDir)$(Configuration)\$(TargetName)$(TargetExt)" (echo F | xcopy  /Y  "$(ProjectDir)$(Configuration)\$(TargetName)$(TargetExt)" "$(ProjectDir)..\bin\x86\$(Configuration)\$(TargetName)$(TargetExt)")</Command>
@@ -165,7 +166,8 @@ if Exist   "$(ProjectDir)..\libs\x64\$(Configuration)\ZegoSurfaceMerge.dll" (ech
 if Exist   "$(ProjectDir)\Resources\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\Resources\*.*"  "$(ProjectDir)..\bin\x64\$(Configuration)\Resources\")
 if Exist   "$(ProjectDir)\Resources\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\Resources\images\*.*"  "$(ProjectDir)..\bin\x64\$(Configuration)\Resources\images\")
 
-if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\openssl\*.*"  "$(ProjectDir)..\bin\x64\$(Configuration)")</Command>
+if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\openssl\*.*"  "$(ProjectDir)..\bin\x64\$(Configuration)")
+if Exist   "$(ProjectDir)\msvc\x64\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\msvc\x64\*.*"  "$(ProjectDir)..\bin\x64\$(Configuration)")</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>if Exist  "$(ProjectDir)x64\$(Configuration)\$(TargetName)$(TargetExt)" (echo F | xcopy  /Y  "$(ProjectDir)x64\$(Configuration)\$(TargetName)$(TargetExt)" "$(ProjectDir)..\bin\x64\$(Configuration)\$(TargetName)$(TargetExt)")</Command>
@@ -174,7 +176,6 @@ if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\open
   <ItemGroup>
     <ClCompile Include="Base\ZegoBase.cpp" />
     <ClCompile Include="Config\ZegoUserConfig.cpp" />
-    <ClCompile Include="Delegate\ChatListDelegate.cpp" />
     <ClCompile Include="Delegate\NoFocusFrameDelegate.cpp" />
     <ClCompile Include="Dialog\ZegoMainDialog.cpp" />
     <ClCompile Include="Dialog\ZegoMixStreamAnchorDialog.cpp" />
@@ -184,10 +185,6 @@ if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\open
     <ClCompile Include="Dialog\ZegoShareDialog.cpp" />
     <ClCompile Include="Dialog\ZegoSingleAnchorDialog.cpp" />
     <ClCompile Include="Dialog\ZegoSingleAudienceDialog.cpp" />
-    <ClCompile Include="GeneratedFiles\Debug\moc_ChatListDelegate.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_ZegoMainDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -241,10 +238,6 @@ if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\open
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ChatListDelegate.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_NoFocusFrameDelegate.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -476,24 +469,6 @@ if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\open
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -D_UNICODE  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-I.\..\include\zegoliveroom" "-I.\Base" "-I.\Config" "-I.\Model" "-I.\Settings" "-I.\Signal" "-I.\Delegate" "-I.\UI" "-I.\Dialog" "-I.\VideoCapture" "-I.\VideoFilter" "-I.\..\include\ZegoSurfaceMerge"</Command>
     </CustomBuild>
-    <CustomBuild Include="Delegate\ChatListDelegate.h">
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ChatListDelegate.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtNetwork" "-I.\Base" "-I.\Config" "-I.\Delegate" "-I.\Dialog" "-I.\Model" "-I.\Settings" "-I.\Signal" "-I.\UI" "-I.\VideoCapture" "-I.\VideoFilter" "-I.\..\include\zegoliveroom"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing ChatListDelegate.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing ChatListDelegate.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -D_UNICODE "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-I.\..\include\zegoliveroom" "-I.\Base" "-I.\Config" "-I.\Model" "-I.\Settings" "-I.\Signal" "-I.\Delegate" "-I.\UI" "-I.\Dialog" "-I.\VideoCapture" "-I.\VideoFilter" "-I.\..\include\ZegoSurfaceMerge"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing ChatListDelegate.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -D_UNICODE  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-I.\..\include\zegoliveroom" "-I.\Base" "-I.\Config" "-I.\Model" "-I.\Settings" "-I.\Signal" "-I.\Delegate" "-I.\UI" "-I.\Dialog" "-I.\VideoCapture" "-I.\VideoFilter" "-I.\..\include\ZegoSurfaceMerge"</Command>
-    </CustomBuild>
     <ClInclude Include="GeneratedFiles\ui_ZegoLiveRoomDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_ZegoMainDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_ZegoShareDialog.h" />
@@ -548,6 +523,7 @@ if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\open
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing ZegoAVView.h...</Message>
     </CustomBuild>
     <CustomBuild Include="UI\ZegoProgressIndicator.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -615,7 +591,6 @@ if Exist   "$(ProjectDir)\openssl\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\open
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="QComboBox.qss" />
     <CustomBuild Include="ZegoLiveRoomDialog.ui">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>

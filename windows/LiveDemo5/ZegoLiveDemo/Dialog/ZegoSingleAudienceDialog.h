@@ -1,4 +1,4 @@
-#ifndef ZEGOSINGLEAUDIENCEDIALOG_H
+ï»¿#ifndef ZEGOSINGLEAUDIENCEDIALOG_H
 #define ZEGOSINGLEAUDIENCEDIALOG_H
 
 #include <QtWidgets/QDialog>
@@ -34,7 +34,7 @@
 
 #define MAX_VIEW_COUNT 12
 
-//±êÌâÀ¸×ø±ê·¶Î§
+//æ ‡é¢˜æ åæ ‡èŒƒå›´
 #define pos_min_y  0
 #define pos_max_y  40
 
@@ -53,7 +53,7 @@ public:
 	void initDialog();
 
 signals:
-	//µ±Ö±²¥´°¿Ú¹Ø±ÕÊ±£¬½«¸ü¸ÄµÄÊÓÆµÉèÖÃ´«»Ø¸øMainDialog£¨Èç£¬¸ü»»ÁËÉãÏñÍ·¡¢Âó¿Ë·ç£©
+	//å½“ç›´æ’­çª—å£å…³é—­æ—¶ï¼Œå°†æ›´æ”¹çš„è§†é¢‘è®¾ç½®ä¼ å›ç»™MainDialogï¼ˆå¦‚ï¼Œæ›´æ¢äº†æ‘„åƒå¤´ã€éº¦å…‹é£ï¼‰
 	void sigSaveVideoSettings(SettingsPtr settings);
 
 	protected slots:
@@ -84,7 +84,7 @@ protected:
 	void OnButtonSendMessage();
 	void OnButtonSound();
 	void OnShareLink();
-	//ÇĞ»»ÒôÊÓÆµÉè±¸
+	//åˆ‡æ¢éŸ³è§†é¢‘è®¾å¤‡
 	void OnSwitchAudioDevice(int id);
 	void OnSwitchVideoDevice(int id);
 
@@ -101,7 +101,7 @@ private:
 	bool praseJsonData(QJsonDocument doc);
 	QString encodeStringAddingEscape(QString str);
 
-	//³ÉÔ±ÁĞ±íÔöÉ¾º¯Êı
+	//æˆå‘˜åˆ—è¡¨å¢åˆ å‡½æ•°
 	void roomMemberAdd(QString userName);
 	void roomMemberDelete(QString userName);
 
@@ -132,7 +132,7 @@ private:
 	QStringList m_MircoPhoneList;
 	QStringList m_CameraList;
 
-	//×Ô¶¨ÒåµÄComboBoxÏÂÀ­Ê½Ò³Ãæ
+	//è‡ªå®šä¹‰çš„ComboBoxä¸‹æ‹‰å¼é¡µé¢
 	QListView *m_cbMircoPhoneListView;
 	QListView *m_cbCameraListView;
 
@@ -142,23 +142,23 @@ private:
 	QStringListModel *m_chatModel;
 	QStringListModel *m_memberModel;
 
-	//ÊµÏÖ×Ô¶¨Òå±êÌâÀ¸µÄÍÏ¶¯
+	//å®ç°è‡ªå®šä¹‰æ ‡é¢˜æ çš„æ‹–åŠ¨
 	bool isMousePressed;
 	QPoint mousePosition;
 
-	//ÊµÊ±¼à¿ØÂó¿Ë·çÒôÁ¿´óĞ¡
+	//å®æ—¶ç›‘æ§éº¦å…‹é£éŸ³é‡å¤§å°
 	//QTimer *timer;
 
-	//±£´æÉÏÒ»¸ö½çÃæµÄÖ¸Õë£¬ÓÃÓÚÍË³ö¸ÃÒ³ÃæÊ±ÏÔÊ¾Ëü
+	//ä¿å­˜ä¸Šä¸€ä¸ªç•Œé¢çš„æŒ‡é’ˆï¼Œç”¨äºé€€å‡ºè¯¥é¡µé¢æ—¶æ˜¾ç¤ºå®ƒ
 	QDialog *m_lastDialog;
 
-	//±£´æÀ­»ìÁ÷µÄExtraInfoĞÅÏ¢
+	//ä¿å­˜æ‹‰æ··æµçš„ExtraInfoä¿¡æ¯
 	QString sharedHlsUrl;
 	QString sharedRtmpUrl;
 
-	//µ±pcÎªÀ­Á÷¶ËÊ±£¬±£´æµ±Ç°µÚÒ»Ö÷²¥µÄstreamID
+	//å½“pcä¸ºæ‹‰æµç«¯æ—¶ï¼Œä¿å­˜å½“å‰ç¬¬ä¸€ä¸»æ’­çš„streamID
 	//QString m_anchorStreamID;
-	//±£Áôµ±Ç°µÚÒ»Ö÷²¥µÄÁ÷ĞÅÏ¢
+	//ä¿ç•™å½“å‰ç¬¬ä¸€ä¸»æ’­çš„æµä¿¡æ¯
 	StreamPtr m_anchorStreamInfo;
 
 	QZegoAVView *m_mainLiveView;

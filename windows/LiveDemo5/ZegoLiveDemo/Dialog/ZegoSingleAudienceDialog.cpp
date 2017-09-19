@@ -1,4 +1,4 @@
-#include "ZegoSingleAudienceDialog.h"
+ï»¿#include "ZegoSingleAudienceDialog.h"
 #include "ZegoSDKSignal.h"
 #include <QMessageBox>
 #include <QDebug>
@@ -8,7 +8,7 @@ ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	//UIµÄĞÅºÅ²Û
+	//UIçš„ä¿¡å·æ§½
 	connect(ui.m_bMin, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnClickTitleButton);
 	connect(ui.m_bMax, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnClickTitleButton);
 	connect(ui.m_bClose, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnClickTitleButton);
@@ -28,7 +28,7 @@ ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(SettingsPtr curSettings, Room
 	ui.setupUi(this);
 
 
-	//Í¨¹ısdkµÄĞÅºÅÁ¬½Óµ½±¾ÀàµÄ²Ûº¯ÊıÖĞ
+	//é€šè¿‡sdkçš„ä¿¡å·è¿æ¥åˆ°æœ¬ç±»çš„æ§½å‡½æ•°ä¸­
 	connect(GetAVSignal(), &QZegoAVSignal::sigLoginRoom, this, &ZegoSingleAudienceDialog::OnLoginRoom);
 	connect(GetAVSignal(), &QZegoAVSignal::sigStreamUpdated, this, &ZegoSingleAudienceDialog::OnStreamUpdated);
 	connect(GetAVSignal(), &QZegoAVSignal::sigPlayStateUpdate, this, &ZegoSingleAudienceDialog::OnPlayStateUpdate);
@@ -41,7 +41,7 @@ ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(SettingsPtr curSettings, Room
 	connect(GetAVSignal(), &QZegoAVSignal::sigAudioDeviceChanged, this, &ZegoSingleAudienceDialog::OnAudioDeviceChanged);
 	connect(GetAVSignal(), &QZegoAVSignal::sigVideoDeviceChanged, this, &ZegoSingleAudienceDialog::OnVideoDeviceChanged);
 
-	//UIµÄĞÅºÅ²Û
+	//UIçš„ä¿¡å·æ§½
 	connect(ui.m_bMin, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnClickTitleButton);
 	connect(ui.m_bMax, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnClickTitleButton);
 	connect(ui.m_bClose, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnClickTitleButton);
@@ -53,7 +53,7 @@ ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(SettingsPtr curSettings, Room
 	connect(ui.m_cbMircoPhone, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSwitchAudioDevice(int)));
 	connect(ui.m_cbCamera, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSwitchVideoDevice(int)));
 
-	this->setWindowFlags(Qt::FramelessWindowHint);//È¥µô±êÌâÀ¸ 
+	this->setWindowFlags(Qt::FramelessWindowHint);//å»æ‰æ ‡é¢˜æ  
 
 	ui.m_edInput->installEventFilter(this);
 
@@ -62,7 +62,7 @@ ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(SettingsPtr curSettings, Room
 	gridLayout->setSizeConstraint(QLayout::SetDefaultConstraint);
 	ui.zoneLiveViewHorizontalLayout->addLayout(gridLayout);
 
-	//µ¥Ö÷²¥Ä£Ê½µ¥»­ÃæÉèÖÃ
+	//å•ä¸»æ’­æ¨¡å¼å•ç”»é¢è®¾ç½®
 	m_mainLiveView = new QZegoAVView;
 	m_mainLiveView->setMinimumSize(QSize(960, 540));
 	m_mainLiveView->setStyleSheet(QLatin1String("border: none;\n"
@@ -75,58 +75,58 @@ ZegoSingleAudienceDialog::~ZegoSingleAudienceDialog()
 
 }
 
-//¹¦ÄÜº¯Êı
+//åŠŸèƒ½å‡½æ•°
 void ZegoSingleAudienceDialog::initDialog()
 {
-	//ÔÚmacÏµÍ³ÏÂ²»Ö§³ÖÉù¿¨²É¼¯
-#ifdef APPLE
+	//åœ¨macç³»ç»Ÿä¸‹ä¸æ”¯æŒå£°å¡é‡‡é›†
+#ifdef Q_OS_MAC
 	ui.m_bCapture->setVisible(false);
 #endif
 
-	//µ¥Ö÷²¥Ä£Ê½ÏÂÃ»ÓĞÁ¬Âó¹¦ÄÜ
+	//å•ä¸»æ’­æ¨¡å¼ä¸‹æ²¡æœ‰è¿éº¦åŠŸèƒ½
 	ui.m_bRequestJoinLive->setVisible(false);
 
 	initComboBox();
 
-	//¶Ô»°¿òÄ£ĞÍ³õÊ¼»¯
+	//å¯¹è¯æ¡†æ¨¡å‹åˆå§‹åŒ–
 	m_chatModel = new QStringListModel(this);
 	ui.m_listChat->setModel(m_chatModel);
 	ui.m_listChat->setItemDelegate(new NoFocusFrameDelegate(this));
 	ui.m_listChat->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 
-	//³ÉÔ±ÁĞ±í³õÊ¼»¯
+	//æˆå‘˜åˆ—è¡¨åˆå§‹åŒ–
 	m_memberModel = new QStringListModel(this);
 	ui.m_listMember->setModel(m_memberModel);
 	ui.m_listMember->setItemDelegate(new NoFocusFrameDelegate(this));
 	ui.m_listMember->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-	//¶ÁÈ¡±êÌâÄÚÈİ
-	QString strTitle = QString(QStringLiteral("¡¾%1¡¿%2")).arg(QStringLiteral("µ¥Ö÷²¥Ä£Ê½")).arg(m_pChatRoom->getRoomName());
+	//è¯»å–æ ‡é¢˜å†…å®¹
+	QString strTitle = QString(QStringLiteral("ã€%1ã€‘%2")).arg(QStringLiteral("å•ä¸»æ’­æ¨¡å¼")).arg(m_pChatRoom->getRoomName());
 	ui.m_lbRoomName->setText(strTitle);
 
-	//ÔÚ¹ÛÖÚÄ£Ê½ÏÂ£¬Èç¹û´ËÊ±¹Û¿´µÄ·¿¼äÖ±²¥Ä£Ê½Îª"µ¥Ö÷²¥Ä£Ê½"£¬ÔòÂó¿Ë·çÏÂÀ­ÁĞ±í¡¢ÉãÏñÍ·ÏÂÀ­ÁĞ±í¡¢»ìÒô¡¢Éù¿¨²É¼¯ÕâËÄ¸ö¿Ø¼ş²»¿ÉÓÃ
+	//åœ¨è§‚ä¼—æ¨¡å¼ä¸‹ï¼Œå¦‚æœæ­¤æ—¶è§‚çœ‹çš„æˆ¿é—´ç›´æ’­æ¨¡å¼ä¸º"å•ä¸»æ’­æ¨¡å¼"ï¼Œåˆ™éº¦å…‹é£ä¸‹æ‹‰åˆ—è¡¨ã€æ‘„åƒå¤´ä¸‹æ‹‰åˆ—è¡¨ã€æ··éŸ³ã€å£°å¡é‡‡é›†è¿™å››ä¸ªæ§ä»¶ä¸å¯ç”¨
 	SetOperation(false);
 
-	//Ê£ÓàÄÜÓÃµÄAVView
+	//å‰©ä½™èƒ½ç”¨çš„AVView
 	for (int i = MAX_VIEW_COUNT; i >= 0; i--)
 		m_avaliableView.push_front(i);
 	
 	AVViews.push_back(m_mainLiveView);
 
-	//ÍÆÀ­Á÷³É¹¦Ç°²»ÄÜ·ÖÏíÁ´½Ó
+	//æ¨æ‹‰æµæˆåŠŸå‰ä¸èƒ½åˆ†äº«é“¾æ¥
 	ui.m_bShare->setEnabled(false);
 
-	//ÔÊĞíÊ¹ÓÃÂó¿Ë·ç
+	//å…è®¸ä½¿ç”¨éº¦å…‹é£
 	LIVEROOM::EnableMic(m_bCKEnableMic);
 
-	//Ã¶¾ÙÒôÊÓÆµÉè±¸
+	//æšä¸¾éŸ³è§†é¢‘è®¾å¤‡
 	EnumVideoAndAudioDevice();
 
 	int role = LIVEROOM::ZegoRoomRole::Audience;
 	if (!LIVEROOM::LoginRoom(m_pChatRoom->getRoomId().toStdString().c_str(), role, m_pChatRoom->getRoomName().toStdString().c_str()))
 	{
-		QMessageBox::information(NULL, QStringLiteral("ÌáÊ¾"), QStringLiteral("½øÈë·¿¼äÊ§°Ü"));
+		QMessageBox::information(NULL, QStringLiteral("æç¤º"), QStringLiteral("è¿›å…¥æˆ¿é—´å¤±è´¥"));
 	}
 
 }
@@ -143,7 +143,7 @@ void ZegoSingleAudienceDialog::StartPlayStream(StreamPtr stream)
 		qDebug() << "playStream nIndex = " << nIndex;
 		stream->setPlayView(nIndex);
 
-		//ÅäÖÃView
+		//é…ç½®View
 		LIVEROOM::SetViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill, stream->getStreamId().toStdString().c_str());
 		LIVEROOM::StartPlayingStream(stream->getStreamId().toStdString().c_str(), (void *)AVViews[nIndex]->winId());
 	}
@@ -170,7 +170,7 @@ void ZegoSingleAudienceDialog::GetOut()
 	roomMemberDelete(m_strCurUserName);
 	LIVEROOM::LogoutRoom();
 	
-	//ÊÍ·Å¶ÑÄÚ´æ
+	//é‡Šæ”¾å †å†…å­˜
 	delete m_cbMircoPhoneListView;
 	delete m_cbCameraListView;
 	delete m_memberModel;
@@ -205,11 +205,11 @@ void ZegoSingleAudienceDialog::initComboBox()
 
 void ZegoSingleAudienceDialog::EnumVideoAndAudioDevice()
 {
-	//Éè±¸Êı
+	//è®¾å¤‡æ•°
 	int nDeviceCount = 0;
 	AV::DeviceInfo* pDeviceList(NULL);
 
-	//»ñÈ¡ÒôÆµÉè±¸
+	//è·å–éŸ³é¢‘è®¾å¤‡
 	int curSelectionIndex = 0;
 	pDeviceList = LIVEROOM::GetAudioDeviceList(AV::AudioDeviceType::AudioDevice_Input, nDeviceCount);
 	for (int i = 0; i < nDeviceCount; ++i)
@@ -226,7 +226,7 @@ void ZegoSingleAudienceDialog::EnumVideoAndAudioDevice()
 
 	pDeviceList = NULL;
 
-	//»ñÈ¡ÊÓÆµÉè±¸
+	//è·å–è§†é¢‘è®¾å¤‡
 	curSelectionIndex = 0;
 	pDeviceList = LIVEROOM::GetVideoDeviceList(nDeviceCount);
 	for (int i = 0; i < nDeviceCount; ++i)
@@ -298,7 +298,7 @@ void ZegoSingleAudienceDialog::FreeAVView(StreamPtr stream)
 
 	m_avaliableView.push_front(nIndex);
 
-	//Ë¢ĞÂ¿ÉÓÃµÄviewÒ³Ãæ
+	//åˆ·æ–°å¯ç”¨çš„viewé¡µé¢
 	update();
 }
 
@@ -407,13 +407,13 @@ void ZegoSingleAudienceDialog::roomMemberAdd(QString userName)
 {
 
 	insertStringListModelItem(m_memberModel, userName, m_memberModel->rowCount());
-	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("³ÉÔ±(%1)").arg(m_memberModel->rowCount())));
+	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("æˆå‘˜(%1)").arg(m_memberModel->rowCount())));
 }
 
 void ZegoSingleAudienceDialog::roomMemberDelete(QString userName)
 {
 	removeStringListModelItem(m_memberModel, userName);
-	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("³ÉÔ±(%1)").arg(m_memberModel->rowCount())));
+	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("æˆå‘˜(%1)").arg(m_memberModel->rowCount())));
 }
 
 
@@ -432,28 +432,28 @@ bool ZegoSingleAudienceDialog::praseJsonData(QJsonDocument doc)
 }
 
 
-//SDK»Øµ÷
+//SDKå›è°ƒ
 void ZegoSingleAudienceDialog::OnLoginRoom(int errorCode, const QString& strRoomID, QVector<StreamPtr> vStreamList)
 {
 	qDebug() << "Login Room!";
 	if (errorCode != 0)
 	{
-		QMessageBox::information(NULL, QStringLiteral("ÌáÊ¾"), QStringLiteral("µÇÂ½·¿¼äÊ§°Ü"));
+		QMessageBox::information(NULL, QStringLiteral("æç¤º"), QStringLiteral("ç™»é™†æˆ¿é—´å¤±è´¥"));
 		OnClose();
 		return;
 	}
 
-	//¼ÓÈë·¿¼äÁĞ±í
+	//åŠ å…¥æˆ¿é—´åˆ—è¡¨
 	roomMemberAdd(m_strCurUserName);
 
 
-	//µ±Ç°·¿¼äµÄÖ±²¥Ä£Ê½Îªµ¥Ö÷²¥Ä£Ê½£¬Ö±½ÓÀ­¶àÂ·Á÷
+	//å½“å‰æˆ¿é—´çš„ç›´æ’­æ¨¡å¼ä¸ºå•ä¸»æ’­æ¨¡å¼ï¼Œç›´æ¥æ‹‰å¤šè·¯æµ
 	for (auto& stream : vStreamList)
 	{
 		StartPlayStream(stream);
 	}
 
-	//½«µÚÒ»¸öÁ÷ĞÅÏ¢×÷ÎªÖ÷²¥Á÷ĞÅÏ¢
+	//å°†ç¬¬ä¸€ä¸ªæµä¿¡æ¯ä½œä¸ºä¸»æ’­æµä¿¡æ¯
 	if (m_pChatRoom->getStreamCount() > 0)
 	{
 
@@ -475,7 +475,7 @@ void ZegoSingleAudienceDialog::OnLoginRoom(int errorCode, const QString& strRoom
 
 void ZegoSingleAudienceDialog::OnStreamUpdated(const QString& roomId, QVector<StreamPtr> vStreamList, LIVEROOM::ZegoStreamUpdateType type)
 {
-	//ÔÚµ¥Ö÷²¥Ä£Ê½ÏÂ£¬ÓĞÁ÷¸üĞÂÖ±½Ó´¦Àí
+	//åœ¨å•ä¸»æ’­æ¨¡å¼ä¸‹ï¼Œæœ‰æµæ›´æ–°ç›´æ¥å¤„ç†
 	for (auto& stream : vStreamList)
 	{
 		if (type == LIVEROOM::ZegoStreamUpdateType::StreamAdded)
@@ -503,7 +503,7 @@ void ZegoSingleAudienceDialog::OnPlayStateUpdate(int stateCode, const QString& s
 
 	if (stateCode != 0)
 	{
-		// »ØÊÕview
+		// å›æ”¶view
 		StreamPtr pStream = m_pChatRoom->removeStream(streamId);
 		FreeAVView(pStream);
 	}
@@ -513,7 +513,7 @@ void ZegoSingleAudienceDialog::OnUserUpdate(QVector<QString> userIDs, QVector<QS
 {
 	qDebug() << "onUserUpdate!";
 
-	//È«Á¿¸üĞÂ
+	//å…¨é‡æ›´æ–°
 	if (type == LIVEROOM::ZegoUserUpdateType::UPDATE_TOTAL){
 		//removeAll
 		m_memberModel->removeRows(0, m_memberModel->rowCount());
@@ -524,7 +524,7 @@ void ZegoSingleAudienceDialog::OnUserUpdate(QVector<QString> userIDs, QVector<QS
 			insertStringListModelItem(m_memberModel, userNames[i], m_memberModel->rowCount());
 		}
 	}
-	//ÔöÁ¿¸üĞÂ
+	//å¢é‡æ›´æ–°
 	else
 	{
 
@@ -538,7 +538,7 @@ void ZegoSingleAudienceDialog::OnUserUpdate(QVector<QString> userIDs, QVector<QS
 		}
 	}
 
-	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("³ÉÔ±(%1)").arg(m_memberModel->rowCount())));
+	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("æˆå‘˜(%1)").arg(m_memberModel->rowCount())));
 	ui.m_listMember->update();
 }
 
@@ -546,7 +546,7 @@ void ZegoSingleAudienceDialog::OnDisconnect(int errorCode, const QString& roomId
 {
 	if (m_pChatRoom->getRoomId() == roomId)
 	{
-		QMessageBox::information(NULL, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÄúÒÑµôÏß"));
+		QMessageBox::information(NULL, QStringLiteral("æç¤º"), QStringLiteral("æ‚¨å·²æ‰çº¿"));
 		OnClose();
 	}
 }
@@ -555,7 +555,7 @@ void ZegoSingleAudienceDialog::OnKickOut(int reason, const QString& roomId)
 {
 	if (m_pChatRoom->getRoomId() == roomId)
 	{
-		QMessageBox::information(NULL, QStringLiteral("ÌáÊ¾"), QStringLiteral("ÄúÒÑ±»Ìß³ö·¿¼ä"));
+		QMessageBox::information(NULL, QStringLiteral("æç¤º"), QStringLiteral("æ‚¨å·²è¢«è¸¢å‡ºæˆ¿é—´"));
 		OnClose();
 	}
 }
@@ -574,15 +574,15 @@ void ZegoSingleAudienceDialog::OnPlayQualityUpdate(const QString& streamId, int 
 
 	AVViews[nIndex]->setCurrentQuality(quality);
 
-	//QVector<QString> q = { QStringLiteral("ÓÅ"), QStringLiteral("Á¼"), QStringLiteral("ÖĞ"), QStringLiteral("²î") };
-	//qDebug() << QStringLiteral("µ±Ç°´°¿Ú") << nIndex << QStringLiteral("µÄÖ±²¥ÖÊÁ¿Îª") << q[quality];
+	//QVector<QString> q = { QStringLiteral("ä¼˜"), QStringLiteral("è‰¯"), QStringLiteral("ä¸­"), QStringLiteral("å·®") };
+	//qDebug() << QStringLiteral("å½“å‰çª—å£") << nIndex << QStringLiteral("çš„ç›´æ’­è´¨é‡ä¸º") << q[quality];
 }
 
 void ZegoSingleAudienceDialog::OnSendRoomMessage(int errorCode, const QString& roomID, int sendSeq, unsigned long long messageId)
 {
 	if (errorCode != 0)
 	{
-		QMessageBox::warning(NULL, QStringLiteral("ÏûÏ¢·¢ËÍÊ§°Ü"), QStringLiteral("´íÎóÂë: %1").arg(errorCode));
+		QMessageBox::warning(NULL, QStringLiteral("æ¶ˆæ¯å‘é€å¤±è´¥"), QStringLiteral("é”™è¯¯ç : %1").arg(errorCode));
 		return;
 	}
 
@@ -596,7 +596,7 @@ void ZegoSingleAudienceDialog::OnRecvRoomMessage(const QString& roomId, QVector<
 		QString strTmpContent;
 		strTmpContent = QString(QStringLiteral("%1: %2")).arg(roomMsg->getUserId()).arg(roomMsg->getContent());
 		insertStringListModelItem(m_chatModel, strTmpContent, m_chatModel->rowCount());
-		//Ã¿´Î½ÓÊÜÏûÏ¢¾ùÏÔÊ¾×îºóÒ»Ìõ
+		//æ¯æ¬¡æ¥å—æ¶ˆæ¯å‡æ˜¾ç¤ºæœ€åä¸€æ¡
 		ui.m_listChat->scrollToBottom();
 
 	}
@@ -630,10 +630,10 @@ void ZegoSingleAudienceDialog::OnAudioDeviceChanged(AV::AudioDeviceType deviceTy
 
 
 			int currentCurl = ui.m_cbMircoPhone->currentIndex();
-			//Èç¹ûcurrentCurlµÈÓÚiËµÃ÷µ±Ç°É¾³ıµÄÉè±¸ÊÇµ±Ç°ÕıÔÚÊ¹ÓÃµÄÉè±¸
+			//å¦‚æœcurrentCurlç­‰äºiè¯´æ˜å½“å‰åˆ é™¤çš„è®¾å¤‡æ˜¯å½“å‰æ­£åœ¨ä½¿ç”¨çš„è®¾å¤‡
 			if (currentCurl == i)
 			{
-				//Èç¹ûÉ¾³ıÖ®ºó»¹ÓĞÄÜ²¥·ÅµÄÉè±¸´æÔÚ£¬ÔòÄ¬ÈÏÑ¡ÔñµÚÒ»¸öÒôÆµÉè±¸
+				//å¦‚æœåˆ é™¤ä¹‹åè¿˜æœ‰èƒ½æ’­æ”¾çš„è®¾å¤‡å­˜åœ¨ï¼Œåˆ™é»˜è®¤é€‰æ‹©ç¬¬ä¸€ä¸ªéŸ³é¢‘è®¾å¤‡
 				if (m_vecAudioDeviceIDs.size() > 0)
 				{
 					LIVEROOM::SetAudioDevice(AV::AudioDevice_Input, m_vecAudioDeviceIDs[0].toStdString().c_str());
@@ -682,10 +682,10 @@ void ZegoSingleAudienceDialog::OnVideoDeviceChanged(const QString& strDeviceId, 
 			m_vecVideoDeviceIDs.erase(m_vecVideoDeviceIDs.begin() + i);
 
 			int currentCurl = ui.m_cbCamera->currentIndex();
-			//Èç¹ûcurrentCurlµÈÓÚiËµÃ÷µ±Ç°É¾³ıµÄÉè±¸ÊÇµ±Ç°ÕıÔÚÊ¹ÓÃµÄÉè±¸
+			//å¦‚æœcurrentCurlç­‰äºiè¯´æ˜å½“å‰åˆ é™¤çš„è®¾å¤‡æ˜¯å½“å‰æ­£åœ¨ä½¿ç”¨çš„è®¾å¤‡
 			if (currentCurl == i)
 			{
-				//Ä¬ÈÏ²É¼¯µÚÒ»¸öÊÓÆµÉè±¸
+				//é»˜è®¤é‡‡é›†ç¬¬ä¸€ä¸ªè§†é¢‘è®¾å¤‡
 				if (m_vecVideoDeviceIDs.size() > 0)
 				{
 					LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[0].toStdString().c_str());
@@ -707,7 +707,7 @@ void ZegoSingleAudienceDialog::OnVideoDeviceChanged(const QString& strDeviceId, 
 	}
 }
 
-//UI»Øµ÷
+//UIå›è°ƒ
 void ZegoSingleAudienceDialog::OnClickTitleButton()
 {
 	QPushButton *pButton = qobject_cast<QPushButton *>(sender());
@@ -756,9 +756,9 @@ void ZegoSingleAudienceDialog::OnButtonSendMessage()
 	ui.m_edInput->setText(QStringLiteral(""));
 
 	QString strTmpContent;
-	strTmpContent = QString(QStringLiteral("ÎÒ£º%1")).arg(m_strLastSendMsg);
+	strTmpContent = QString(QStringLiteral("æˆ‘ï¼š%1")).arg(m_strLastSendMsg);
 	insertStringListModelItem(m_chatModel, strTmpContent, m_chatModel->rowCount());
-	//Ã¿´Î·¢ËÍÏûÏ¢¾ùÏÔÊ¾×îºóÒ»Ìõ
+	//æ¯æ¬¡å‘é€æ¶ˆæ¯å‡æ˜¾ç¤ºæœ€åä¸€æ¡
 	ui.m_listChat->scrollToBottom();
 	m_strLastSendMsg.clear();
 
@@ -779,7 +779,7 @@ void ZegoSingleAudienceDialog::OnButtonSound()
 		m_bCKEnableSpeaker = false;
 	}
 
-	//Ê¹ÓÃÑïÉùÆ÷
+	//ä½¿ç”¨æ‰¬å£°å™¨
 	LIVEROOM::EnableSpeaker(m_bCKEnableSpeaker);
 
 }
@@ -825,7 +825,7 @@ void ZegoSingleAudienceDialog::OnSwitchVideoDevice(int id)
 void ZegoSingleAudienceDialog::mousePressEvent(QMouseEvent *event)
 {
 	mousePosition = event->pos();
-	//Ö»¶Ô±êÌâÀ¸·¶Î§ÄÚµÄÊó±êÊÂ¼ş½øĞĞ´¦Àí
+	//åªå¯¹æ ‡é¢˜æ èŒƒå›´å†…çš„é¼ æ ‡äº‹ä»¶è¿›è¡Œå¤„ç†
 
 	if (mousePosition.y() <= pos_min_y)
 		return;
@@ -850,10 +850,10 @@ void ZegoSingleAudienceDialog::mouseReleaseEvent(QMouseEvent *event)
 
 void ZegoSingleAudienceDialog::mouseDoubleClickEvent(QMouseEvent *event)
 {
-	//Ë«»÷±êÌâÀ¸Í¬Ñù¿ÉÒÔ·Å´óËõĞ¡
+	//åŒå‡»æ ‡é¢˜æ åŒæ ·å¯ä»¥æ”¾å¤§ç¼©å°
 
 	mousePosition = event->pos();
-	//Ö»¶Ô±êÌâÀ¸·¶Î§ÄÚµÄÊó±êÊÂ¼ş½øĞĞ´¦Àí
+	//åªå¯¹æ ‡é¢˜æ èŒƒå›´å†…çš„é¼ æ ‡äº‹ä»¶è¿›è¡Œå¤„ç†
 
 	if (mousePosition.y() <= pos_min_y)
 		return;

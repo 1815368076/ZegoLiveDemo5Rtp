@@ -1,4 +1,4 @@
-#include "ZegoVideoCaptureDeviceDemo.h"
+﻿#include "ZegoVideoCaptureDeviceDemo.h"
 #include <QDebug>
 
 VideoCaptureDeviceGlue::VideoCaptureDeviceGlue()

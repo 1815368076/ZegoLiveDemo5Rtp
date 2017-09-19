@@ -1,4 +1,4 @@
-#include "video_capture.h"
+﻿#include "video_capture.h"
 #include "ZegoVideoCaptureDeviceDemo.h"
 
 

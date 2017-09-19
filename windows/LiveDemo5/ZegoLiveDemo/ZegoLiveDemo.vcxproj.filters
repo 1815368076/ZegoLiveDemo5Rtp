@@ -224,15 +224,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ZegoProgressIndicator.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Delegate\ChatListDelegate.cpp">
-      <Filter>Delegate</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ChatListDelegate.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ChatListDelegate.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ZegoMainDialog.qrc">
@@ -289,9 +280,6 @@
     <CustomBuild Include="ZegoMainDialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="Delegate\ChatListDelegate.h">
-      <Filter>Delegate</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ZegoLiveDemo.h">
@@ -344,9 +332,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="QComboBox.qss">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Resources\EnterButton.qss">
       <Filter>Resource Files</Filter>
     </None>

@@ -5,8 +5,8 @@ QPushButton:!hover{
      border-radius: 2px;
      background-color: #ffffff;
      color: #0e88eb;
-     width: 70px;
-     height: 26px;}
+	 margin: 12px 20px 12px 0;
+	}
 
 QPushButton:hover{
      font-family: Î¢ÈíÑÅºÚ;
@@ -15,5 +15,5 @@ QPushButton:hover{
      border-radius: 2px;
      background-color: #0d80de;
      color: #ffffff;
-     width: 70px;
-     height: 26px;}
+	 margin: 12px 20px 12px 0;
+	 }
