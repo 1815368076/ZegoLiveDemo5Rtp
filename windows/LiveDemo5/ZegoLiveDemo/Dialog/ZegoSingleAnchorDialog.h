@@ -27,6 +27,7 @@
 #include "LiveRoom-Player.h"
 #include "LiveRoomDefines.h"
 #include "LiveRoomDefines-IM.h"
+#define USE_SURFACE_MERGE
 #if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE) 
 #include "ZegoSurfaceMerge.h"
 #include "ZegoSurfaceMergeDefine.h"

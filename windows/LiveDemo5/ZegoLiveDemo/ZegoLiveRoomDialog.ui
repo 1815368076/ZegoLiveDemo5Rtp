@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1283</width>
-    <height>723</height>
+    <width>1281</width>
+    <height>719</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -677,7 +677,7 @@ background-color: #e6e6e6;</string>
      <item>
       <widget class="QWidget" name="m_zoneSettings" native="true">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>

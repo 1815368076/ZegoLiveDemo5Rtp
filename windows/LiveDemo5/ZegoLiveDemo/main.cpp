@@ -4,7 +4,6 @@
 #include "ZegoLiveDemo.h"
 #include <QtWidgets/QApplication>
 #include <QSettings>
-
 int main(int argc, char *argv[])
 {
 

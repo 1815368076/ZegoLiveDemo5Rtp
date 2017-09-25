@@ -5,7 +5,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
-
+#define USE_SURFACE_MERGE
 #if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
 #include "ZegoSurfaceMerge.h"
 #include "ZegoSurfaceMergeDefine.h"

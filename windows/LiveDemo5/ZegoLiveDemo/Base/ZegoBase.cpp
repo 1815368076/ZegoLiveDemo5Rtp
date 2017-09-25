@@ -4,7 +4,7 @@
 #include "LiveRoom-IM.h"
 #include "LiveRoom-Player.h"
 #include "LiveRoom-Publisher.h"
-
+#define USE_SURFACE_MERGE
 #if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE) 
 #include "ZegoSurfaceMerge.h"
 #endif

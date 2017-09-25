@@ -170,7 +170,7 @@ void ZegoSingleAnchorDialog::StartPublishStream()
 #if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE) 
 			int cx = m_pAVSettings->GetResolution().cx;
 			int cy = m_pAVSettings->GetResolution().cy;
-
+			
 			SurfaceMerge::SetFPS(m_pAVSettings->GetFps());
 			SurfaceMerge::SetCursorVisible(true);
 			SurfaceMerge::SetSurfaceSize(cx, cy);
@@ -180,7 +180,7 @@ void ZegoSingleAnchorDialog::StartPublishStream()
 			SurfaceMerge::ZegoCaptureItem itemCam;
 			strcpy(itemCam.captureSource.deviceId, m_pAVSettings->GetCameraId().toStdString().c_str());
 			itemCam.captureType = SurfaceMerge::CaptureType::Camera; 
-			itemCam.position = { cx - cx / 6, cy - cy / 6, cx / 6, cy / 6 };  //摄像头默认置于右下角
+			itemCam.position = { cx - cx / 4, cy - cy / 4, cx / 4, cy / 4 };  //摄像头默认置于右下角
 
 			unsigned int count = 0;
 			SurfaceMerge::ScreenItem *screenList = SurfaceMerge::EnumScreenList(count);

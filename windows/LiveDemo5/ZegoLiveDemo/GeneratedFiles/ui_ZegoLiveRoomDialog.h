@@ -114,7 +114,7 @@ public:
     {
         if (ZegoLiveRoomDialog->objectName().isEmpty())
             ZegoLiveRoomDialog->setObjectName(QStringLiteral("ZegoLiveRoomDialog"));
-        ZegoLiveRoomDialog->resize(1283, 723);
+        ZegoLiveRoomDialog->resize(1281, 719);
         ZegoLiveRoomDialog->setStyleSheet(QStringLiteral("border: none;"));
         verticalLayout = new QVBoxLayout(ZegoLiveRoomDialog);
         verticalLayout->setSpacing(0);
@@ -496,8 +496,11 @@ public:
         horizontalLayout2->setSizeConstraint(QLayout::SetFixedSize);
         m_zoneSettings = new QWidget(ZegoLiveRoomDialog);
         m_zoneSettings->setObjectName(QStringLiteral("m_zoneSettings"));
-        sizePolicy2.setHeightForWidth(m_zoneSettings->sizePolicy().hasHeightForWidth());
-        m_zoneSettings->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy3(QSizePolicy::Minimum, QSizePolicy::Fixed);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(m_zoneSettings->sizePolicy().hasHeightForWidth());
+        m_zoneSettings->setSizePolicy(sizePolicy3);
         m_zoneSettings->setMinimumSize(QSize(0, 138));
         m_zoneSettings->setMaximumSize(QSize(16777215, 138));
         m_zoneSettings->setStyleSheet(QStringLiteral("background-color: #ffffff;"));

@@ -519,6 +519,14 @@ namespace ZEGO
         ZEGO_API void EnableCheckPoc(bool bEnable);
         
         /**
+         设置视频采集缩放时机
+         
+         @param mode 视频采集缩放时机，请参考 AV::ZegoCapturePipelineScaleMode 定义。默认为 ZegoCapturePipelinePreScale
+         @discussion 初始化 SDK 后，StartPreview 前调用。StartPreview 之后设置不会立即生效，而是在下次摄像头启动预览时生效。
+         */
+        ZEGO_API void SetCapturePipelineScaleMode(AV::ZegoCapturePipelineScaleMode mode);
+        
+        /**
          设置延迟模式
 
          @param mode 延迟模式，默认 ZEGO_LATENCY_MODE_NORMAL

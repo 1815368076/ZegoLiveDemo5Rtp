@@ -75,7 +75,7 @@ ZegoMainDialog::~ZegoMainDialog()
 //part1:功能函数
 void ZegoMainDialog::initDialog()
 {
-#if (defined Q_OS_MAC) || (!(USE_SURFACE_MERGE))
+#if (defined Q_OS_MAC) || (undefined USE_SURFACE_MERGE)
 	ui.m_lbSurfaceMerge->setVisible(false);
 	ui.m_switchSurfaceMerge->setVisible(false);
 #endif
