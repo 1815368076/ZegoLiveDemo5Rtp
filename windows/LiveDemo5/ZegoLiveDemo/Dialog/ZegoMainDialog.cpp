@@ -86,7 +86,16 @@ void ZegoMainDialog::initDialog()
 #endif
 
 	//初始化房间列表
-	initRoomList();
+	m_roomListModel = new QStandardItemModel(this);
+	m_roomListModel->setColumnCount(4);
+	//表头内容
+	m_roomListModel->setHeaderData(0, Qt::Horizontal, QString::fromLocal8Bit("房间名"));
+	m_roomListModel->setHeaderData(1, Qt::Horizontal, QString::fromLocal8Bit("直播模式"));
+	m_roomListModel->setHeaderData(2, Qt::Horizontal, QString::fromLocal8Bit("连麦人数"));
+	m_roomListModel->setHeaderData(3, Qt::Horizontal, QString::fromLocal8Bit("进入"));
+	ui.m_roomList->setModel(m_roomListModel);
+	ui.m_roomList->initRoomList();
+
 	//禁用某些高级功能的按钮
 	banSwitch();
 	//初始化ComboBox
@@ -262,72 +271,6 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	pDeviceList = NULL;
 }
 
-void ZegoMainDialog::initRoomList()
-{
-	
-	//初始化model
-	m_roomListModel = new QStandardItemModel(this);
-	m_roomListModel->setColumnCount(4);
-
-	//表头内容
-	m_roomListModel->setHeaderData(0, Qt::Horizontal, QString::fromLocal8Bit("房间名"));
-	m_roomListModel->setHeaderData(1, Qt::Horizontal, QString::fromLocal8Bit("直播模式"));
-	m_roomListModel->setHeaderData(2, Qt::Horizontal, QString::fromLocal8Bit("连麦人数"));
-	m_roomListModel->setHeaderData(3, Qt::Horizontal, QString::fromLocal8Bit("进入"));
-
-	//绑定view和model
-	ui.m_roomList->setModel(m_roomListModel);
-	//设置列宽不可变
-	ui.m_roomList->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-	ui.m_roomList->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
-	ui.m_roomList->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Fixed);
-	ui.m_roomList->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Fixed);
-	//设置每列的宽度
-	ui.m_roomList->setColumnWidth(0, 310);
-	ui.m_roomList->setColumnWidth(1, 100);
-	ui.m_roomList->setColumnWidth(2, 110);
-	ui.m_roomList->setColumnWidth(3, 120);
-	//隐藏列头
-	ui.m_roomList->verticalHeader()->setVisible(false);
-	//表头内容靠左
-	ui.m_roomList->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-	//表头不可点击
-	ui.m_roomList->horizontalHeader()->setSectionsClickable(false);
-	//设置无边框
-	ui.m_roomList->setFrameShape(QFrame::NoFrame);
-	//列表内容不可编辑
-	ui.m_roomList->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	//设置选中时为整行选中        
-	ui.m_roomList->setSelectionBehavior(QAbstractItemView::SelectRows);
-	//点击item时去除虚线框
-	ui.m_roomList->setItemDelegate(new NoFocusFrameDelegate(this));
-	//默认最后一列占满余下的位置
-	ui.m_roomList->horizontalHeader()->setStretchLastSection(true);
-	//隐藏水平滚动条
-	ui.m_roomList->horizontalScrollBar()->setStyleSheet("QScrollBar:horizontal{height: 0px;}");
-	ui.m_roomList->horizontalScrollBar()->setVisible(false);
-	//StyleSheet
-	ui.m_roomList->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
-	                                                  "background: transparent;"
-                                                      "width: 9px;"
-                                                      "margin: 0px 0px 2px 0px;}"
-                                                      "QScrollBar::handle:vertical{"
-                                                      "background: rgb(195, 195, 195);"
-	                                                  "min-height: 20px;"
-	                                                  "border-radius: 3px;}"
-		                                              "QScrollBar::handle:vertical:hover{"
-	                                                  "background:rgba(0, 0, 0, 30%);}"
-			                                          "QScrollBar::add-line:vertical{"
-		                                              "height: 0px;"
-		                                              "subcontrol-position: bottom;"
-		                                              "subcontrol-origin: margin; }"
-			                                          "QScrollBar::sub-line:vertical{"
-		                                              "height: 0px;"
-			                                          "subcontrol-position: top;"
-			                                          "subcontrol-origin: margin; }");
-	
-}
-
 void ZegoMainDialog::PullRoomList()
 {
 	//读取房间列表成功前转菊花
@@ -483,14 +426,8 @@ void ZegoMainDialog::RefreshRoomList(QVector<RoomPtr> roomList)
 		m_roomListModel->setItem(index, 2, new QStandardItem(strDetail));
 
 		//第四列：进入按钮
-		QPushButton *pBtn = new QPushButton();
-		pBtn->setText(QStringLiteral("进入"));
-		QFile qssFile("Resources/EnterButton.qss");
-		qssFile.open(QFile::ReadOnly);
-		if (qssFile.isOpen()){
-			pBtn->setStyleSheet(qssFile.readAll());
-			qssFile.close();
-		}
+		ZegoEnterRoomButton *pBtn = new ZegoEnterRoomButton();
+		pBtn->initButton();
 		ui.m_roomList->resizeRowsToContents();
 		connect(pBtn, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonEnterRoom);
 		QModelIndex indexTmp = m_roomListModel->index(index, 3, QModelIndex());
@@ -990,7 +927,12 @@ void ZegoMainDialog::OnButtonClickedPublish()
 	int ms = currentTime.msec();
 
 	QString strRoomID = QString(QStringLiteral("%1-%2-%3")).arg(strMode).arg(m_userConfig.GetUserId()).arg(ms);
+
+#ifdef Q_OS_WIN32
 	QString strRoomName = QStringLiteral("windows-room-") + strUserId;
+#else
+	QString strRoomName = QStringLiteral("mac-room-") + strUserId;
+#endif
 
 	QString inputRoomName = ui.m_edRoomName->text();
 	if (!inputRoomName.isEmpty())
@@ -1062,7 +1004,14 @@ void ZegoMainDialog::OnButtonEnterRoom()
 		m_curMode = LIVEROOM::ZEGO_JOIN_PUBLISH;
 	else if (playLiveMode == QStringLiteral("#s-"))
 		m_curMode = LIVEROOM::ZEGO_MIX_STREAM;
-
+	else
+	{
+		if (pRoom->getLivesCount() == 1)
+			m_curMode = LIVEROOM::ZEGO_SINGLE_ANCHOR;
+		else if (pRoom->getLivesCount() > 1)
+			m_curMode = LIVEROOM::ZEGO_JOIN_PUBLISH;
+	}
+	
 	m_userConfig.SetUserRole(false);
 	m_userConfig.SetUserId(m_strEdUserId);
 	m_userConfig.SetUserName(m_strEdUserName);

@@ -7,7 +7,7 @@ ZegoProgressIndicator::ZegoProgressIndicator(QWidget* parent)
       timerId_(-1),  
       delay_(20),  
       displayedWhenStopped_(false),  
-      color_(QColor(14, 136, 235)) {  
+      color_(QColor(14, 136, 235)) {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);  
     setFocusPolicy(Qt::NoFocus);  
 }  

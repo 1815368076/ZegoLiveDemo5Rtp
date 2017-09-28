@@ -224,6 +224,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ZegoProgressIndicator.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="UI\ZegoEnterRoomButton.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ZegoEnterRoomButton.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ZegoRoomList.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ZegoMainDialog.qrc">
@@ -279,6 +288,12 @@
     </CustomBuild>
     <CustomBuild Include="ZegoMainDialog.ui">
       <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="UI\ZegoEnterRoomButton.h">
+      <Filter>UI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="UI\ZegoRoomList.h">
+      <Filter>UI</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
