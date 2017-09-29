@@ -54,15 +54,16 @@ public class WolvesGameInTurnActivity extends WolvesGameBaseActivity {
 
     /** true: 不能参与游戏，只能作为观众，如人数超过上限； false: 能参与游戏 */
     private boolean onlyAudienceRole = false;
+
     /** 登录房间之前就有的流，在得到房间信息后需要播放出来 */
     private ZegoStreamInfo[] beforeLoginStreamList;
 
-    public static void actionStart(Activity context, RoomInfo room)  {
+    public static void actionStart(Activity context, RoomInfo roomInfo)  {
         Intent intent = new Intent(context, WolvesGameInTurnActivity.class);
-        intent.putExtra(IntentExtra.ROOM_ID, room.room_id);
-        intent.putExtra(IntentExtra.ROOM_NAME, room.room_name);
-        intent.putExtra(IntentExtra.ANCHOR_ID, room.anchor_id_name);
-        intent.putExtra(IntentExtra.ANCHOR_NAME, room.anchor_nick_name);
+        intent.putExtra(IntentExtra.ROOM_ID, roomInfo.room_id);
+        intent.putExtra(IntentExtra.ROOM_NAME, roomInfo.room_name);
+        intent.putExtra(IntentExtra.ANCHOR_ID, roomInfo.anchor_id_name);
+        intent.putExtra(IntentExtra.ANCHOR_NAME, roomInfo.anchor_nick_name);
         context.startActivity(intent);
         context.overridePendingTransition(R.anim.scale_translate,
                 R.anim.my_alpha_action);

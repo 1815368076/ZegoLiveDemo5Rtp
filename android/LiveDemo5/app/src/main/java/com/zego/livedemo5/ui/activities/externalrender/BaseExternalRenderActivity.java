@@ -936,7 +936,7 @@ public abstract class BaseExternalRenderActivity extends AbsBaseLiveActivity {
 
         // 注销电话监听
         TelephonyManager tm = (TelephonyManager) getSystemService(Service.TELEPHONY_SERVICE);
-        tm.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        tm.listen(mPhoneStateListener, PhoneStateListener.LISTEN_NONE);
         mPhoneStateListener = null;
 
         // 清空回调, 避免内存泄漏
