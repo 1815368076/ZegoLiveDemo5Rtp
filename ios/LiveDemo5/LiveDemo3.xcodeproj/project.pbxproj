@@ -890,6 +890,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EFF10F0C1D1A297900ECE11E /* Build configuration list for PBXNativeTarget "LiveDemo5" */;
 			buildPhases = (
+				EF7200441F7FA525007EE9A1 /* Create ZegoLiveRoom framework */,
 				A745D7461E4C0FFC009A4265 /* Copy ZegoLiveRoom for Development */,
 				A745D7391E4B2D73009A4265 /* Copy ZegoLiveRoom for Internal Development */,
 				A745D7471E4C134B009A4265 /* Copy ZegoLiveRoom for Deployment */,
@@ -1083,6 +1084,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/usr/bin/env python";
 			shellScript = "import os, shutil\n\nif os.path.exists('./libs/ZegoLiveRoom.framework'):\n    shutil.rmtree('./libs/ZegoLiveRoom.framework')\n\nshutil.copytree('./libs/ZegoLiveRoom-all/iphoneos_simulator_static/ZegoLiveRoom.framework', './libs/ZegoLiveRoom.framework')\nwith open('./libs/zegoliveroom.version.txt', 'w') as f:\n    f.write('release static')";
+		};
+		EF7200441F7FA525007EE9A1 /* Create ZegoLiveRoom framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Create ZegoLiveRoom framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/usr/bin/env python";
+			shellScript = "import os, subprocess\n\nif os.environ['CONFIGURATION'] == 'Release':\n    exit(0)\n\nif os.path.exists('../copy_framework_new.py'):\n    arguments = ['../copy_framework_new.py']\n    subprocess.call(arguments)";
 		};
 		EF792F7A1E8DFABC00A39DBC /* Copy ZegoLiveRoom for Development */ = {
 			isa = PBXShellScriptBuildPhase;
