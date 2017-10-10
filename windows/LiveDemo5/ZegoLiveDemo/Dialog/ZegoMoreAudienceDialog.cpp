@@ -142,11 +142,7 @@ void ZegoMoreAudienceDialog::StartPublishStream()
 	//获取当前时间的毫秒
 	int ms = currentTime.msec();
 	QString strStreamId;
-#ifdef Q_OS_WIN32
 	strStreamId = QString(QStringLiteral("s-windows-%1-%2")).arg(m_strCurUserID).arg(ms);
-#else
-	strStreamId = QString(QStringLiteral("s-mac-%1-%2")).arg(m_strCurUserID).arg(ms);
-#endif
 	m_strPublishStreamID = strStreamId;
 
 	StreamPtr pPublishStream(new QZegoStreamModel(m_strPublishStreamID, m_strCurUserID, m_strCurUserName, "", true));
@@ -193,10 +189,9 @@ void ZegoMoreAudienceDialog::StopPublishStream(const QString& streamID)
 
 	LIVEROOM::StopPublishing();
 	m_bIsPublishing = false;
+
 	StreamPtr pStream = m_pChatRoom->removeStream(streamID);
 	FreeAVView(pStream);
-    
-    m_strPublishStreamID = "";
 }
 
 void ZegoMoreAudienceDialog::StartPlayStream(StreamPtr stream)
@@ -248,22 +243,19 @@ void ZegoMoreAudienceDialog::GetOut()
 
 	for (auto& stream : m_pChatRoom->getStreamList())
 	{
-		if (stream != nullptr){
-			if (stream->isCurUserCreated())
-			{
-				StopPublishStream(stream->getStreamId());
-			}
-			else
-			{
-				StopPlayStream(stream->getStreamId());
-			}
+		if (stream->isCurUserCreated())
+		{
+			StopPublishStream(stream->getStreamId());
+		}
+		else
+		{
+			StopPlayStream(stream->getStreamId());
 		}
 	}
 
 	roomMemberDelete(m_strCurUserName);
 	LIVEROOM::LogoutRoom();
-	if (timer != nullptr)
-	    timer->stop();
+	timer->stop();
 
 	//释放堆内存
 	delete m_cbMircoPhoneListView;
@@ -274,15 +266,6 @@ void ZegoMoreAudienceDialog::GetOut()
 	delete m_cbCameraModel;
 	delete timer;
 	delete gridLayout;
-	//指针置为空
-	m_cbMircoPhoneListView = nullptr;
-	m_cbCameraListView = nullptr;
-	m_memberModel = nullptr;
-	m_chatModel = nullptr;
-	m_cbMircoPhoneModel = nullptr;
-	m_cbCameraModel = nullptr;
-	timer = nullptr;
-	gridLayout = nullptr;
 }
 
 void ZegoMoreAudienceDialog::initComboBox()
@@ -351,9 +334,6 @@ void ZegoMoreAudienceDialog::EnumVideoAndAudioDevice()
 
 void ZegoMoreAudienceDialog::insertStringListModelItem(QStringListModel * model, QString name, int size)
 {
-	if (model == nullptr)
-		return;
-
 	int row = size;
 	model->insertRows(row, 1);
 	QModelIndex index = model->index(row);
@@ -363,8 +343,6 @@ void ZegoMoreAudienceDialog::insertStringListModelItem(QStringListModel * model,
 
 void ZegoMoreAudienceDialog::removeStringListModelItem(QStringListModel * model, QString name)
 {
-	if (model == nullptr)
-		return;
 
 	if (model->rowCount() > 0)
 	{
@@ -591,8 +569,6 @@ QString ZegoMoreAudienceDialog::encodeStringAddingEscape(QString str)
 
 void ZegoMoreAudienceDialog::roomMemberAdd(QString userName)
 {
-	if (m_memberModel == nullptr)
-		return;
 
 	insertStringListModelItem(m_memberModel, userName, m_memberModel->rowCount());
 	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("成员(%1)").arg(m_memberModel->rowCount())));
@@ -600,9 +576,6 @@ void ZegoMoreAudienceDialog::roomMemberAdd(QString userName)
 
 void ZegoMoreAudienceDialog::roomMemberDelete(QString userName)
 {
-	if (m_memberModel == nullptr)
-		return;
-
 	removeStringListModelItem(m_memberModel, userName);
 	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("成员(%1)").arg(m_memberModel->rowCount())));
 }
@@ -696,7 +669,7 @@ void ZegoMoreAudienceDialog::OnLoginRoom(int errorCode, const QString& strRoomID
 	qDebug() << "Login Room!";
 	if (errorCode != 0)
 	{
-		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("登陆房间失败,错误码: %1").arg(errorCode));
+		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("登陆房间失败"));
 		OnClose();
 		return;
 	}
@@ -754,35 +727,34 @@ void ZegoMoreAudienceDialog::OnStreamUpdated(const QString& roomId, QVector<Stre
 	//在连麦模式下，有流更新直接处理
 	for (auto& stream : vStreamList)
 	{
-		if (stream != nullptr){
-			if (type == LIVEROOM::ZegoStreamUpdateType::StreamAdded)
+		if (type == LIVEROOM::ZegoStreamUpdateType::StreamAdded)
+		{
+			StartPlayStream(stream);
+
+		}
+		else if (type == LIVEROOM::ZegoStreamUpdateType::StreamDeleted)
+		{
+			StopPlayStream(stream->getStreamId());
+			
+			//当第一主播流被删除后，房间仍有其他主播在，则分享链接需要改变
+			if ((stream->getStreamId() == m_anchorStreamInfo->getStreamId()) && m_pChatRoom->getStreamCount() > 0)
 			{
-				StartPlayStream(stream);
+				m_anchorStreamInfo = m_pChatRoom->getStreamList()[0];
+				QByteArray jsonArray = m_anchorStreamInfo->getExtraInfo().toUtf8();
 
-			}
-			else if (type == LIVEROOM::ZegoStreamUpdateType::StreamDeleted)
-			{
-				StopPlayStream(stream->getStreamId());
+				QJsonParseError json_error;
+				QJsonDocument doc = QJsonDocument::fromJson(jsonArray, &json_error);
 
-				//当第一主播流被删除后，房间仍有其他主播在，则分享链接需要改变
-				if ((stream->getStreamId() == m_anchorStreamInfo->getStreamId()) && m_pChatRoom->getStreamCount() > 0)
-				{
-					m_anchorStreamInfo = m_pChatRoom->getStreamList()[0];
-					QByteArray jsonArray = m_anchorStreamInfo->getExtraInfo().toUtf8();
+				if (json_error.error != QJsonParseError::NoError){ return; }
 
-					QJsonParseError json_error;
-					QJsonDocument doc = QJsonDocument::fromJson(jsonArray, &json_error);
+				if (!doc.isObject()) { return; }
 
-					if (json_error.error != QJsonParseError::NoError){ return; }
+				praseOtherAnchorJsonData(doc);
 
-					if (!doc.isObject()) { return; }
-
-					praseOtherAnchorJsonData(doc);
-
-				}
 			}
 		}
 	}
+	
 	
 }
 
@@ -1423,7 +1395,7 @@ void ZegoMoreAudienceDialog::mouseDoubleClickEvent(QMouseEvent *event)
 
 void ZegoMoreAudienceDialog::closeEvent(QCloseEvent *e)
 {
-	QDialog::closeEvent(e);
+	//OnClose();
 	GetOut();
 	//this->close();
 	emit sigSaveVideoSettings(m_pAVSettings);

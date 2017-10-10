@@ -26,10 +26,10 @@
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTableView>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 #include <ZegoProgressIndicator.h>
-#include "ZegoRoomList.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -73,7 +73,7 @@ public:
     QLabel *m_TitleList;
     ZegoProgressIndicator *m_progIndicator;
     QPushButton *m_bRefreshRoomList;
-    ZegoRoomList *m_roomList;
+    QTableView *m_roomList;
     QFrame *m_lineSpread;
     QWidget *m_zoneSettings;
     QVBoxLayout *verticalLayout_7;
@@ -340,7 +340,7 @@ public:
 "    background-color: #0d79d1;\n"
 "}"));
         QIcon icon;
-        icon.addFile(QStringLiteral(":/Resources/images/official.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QStringLiteral("Resources/images/official.png"), QSize(), QIcon::Normal, QIcon::Off);
         m_bJumpToNet->setIcon(icon);
         m_bJumpToNet->setFlat(true);
 
@@ -366,7 +366,7 @@ public:
 "    background-color: #0d79d1;\n"
 "}"));
         QIcon icon1;
-        icon1.addFile(QStringLiteral(":/Resources/images/min.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon1.addFile(QStringLiteral("Resources/images/min.png"), QSize(), QIcon::Normal, QIcon::Off);
         m_bMin->setIcon(icon1);
         m_bMin->setFlat(true);
 
@@ -392,7 +392,7 @@ public:
 "    background-color: #0d79d1;\n"
 "}"));
         QIcon icon2;
-        icon2.addFile(QStringLiteral(":/Resources/images/close.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon2.addFile(QStringLiteral("Resources/images/close.png"), QSize(), QIcon::Normal, QIcon::Off);
         m_bClose->setIcon(icon2);
         m_bClose->setFlat(false);
 
@@ -770,7 +770,7 @@ public:
 " }\n"
 ""));
         QIcon icon3;
-        icon3.addFile(QStringLiteral(":/Resources/images/refresh.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon3.addFile(QStringLiteral("Resources/images/refresh.png"), QSize(), QIcon::Normal, QIcon::Off);
         m_bRefreshRoomList->setIcon(icon3);
         m_bRefreshRoomList->setFlat(true);
 
@@ -779,7 +779,7 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout);
 
-        m_roomList = new ZegoRoomList(m_zoneRoomList);
+        m_roomList = new QTableView(m_zoneRoomList);
         m_roomList->setObjectName(QStringLiteral("m_roomList"));
         m_roomList->setMinimumSize(QSize(0, 271));
         m_roomList->setMaximumSize(QSize(16777215, 16777215));

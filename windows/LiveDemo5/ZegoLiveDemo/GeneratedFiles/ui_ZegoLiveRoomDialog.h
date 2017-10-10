@@ -173,7 +173,7 @@ public:
 "    background-color: #0d79d1;\n"
 "}"));
         QIcon icon;
-        icon.addFile(QStringLiteral(":/Resources/images/min.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QStringLiteral("Resources/images/min.png"), QSize(), QIcon::Normal, QIcon::Off);
         m_bMin->setIcon(icon);
         m_bMin->setFlat(true);
 
@@ -201,7 +201,7 @@ public:
 "    background-color: #0d79d1;\n"
 "}"));
         QIcon icon1;
-        icon1.addFile(QStringLiteral(":/Resources/images/max.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon1.addFile(QStringLiteral("Resources/images/max.png"), QSize(), QIcon::Normal, QIcon::Off);
         m_bMax->setIcon(icon1);
         m_bMax->setFlat(true);
 
@@ -231,7 +231,7 @@ public:
 "    background-color: #0d79d1;\n"
 "}"));
         QIcon icon2;
-        icon2.addFile(QStringLiteral(":/Resources/images/close.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon2.addFile(QStringLiteral("Resources/images/close.png"), QSize(), QIcon::Normal, QIcon::Off);
         m_bClose->setIcon(icon2);
         m_bClose->setFlat(true);
 
@@ -512,7 +512,7 @@ public:
         horizontalLayout_6->setSpacing(0);
         horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
         horizontalLayout_6->setContentsMargins(-1, -1, 0, -1);
-        horizontalSpacer = new QSpacerItem(46, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer = new QSpacerItem(46, 20, QSizePolicy::Maximum, QSizePolicy::Minimum);
 
         horizontalLayout_6->addItem(horizontalSpacer);
 
@@ -1203,7 +1203,7 @@ public:
 
         retranslateUi(ZegoLiveRoomDialog);
 
-        m_tabCommonAndUserList->setCurrentIndex(1);
+        m_tabCommonAndUserList->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(ZegoLiveRoomDialog);

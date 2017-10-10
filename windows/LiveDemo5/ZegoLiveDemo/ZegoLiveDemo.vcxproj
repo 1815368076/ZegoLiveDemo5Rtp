@@ -244,7 +244,6 @@ if Exist   "$(ProjectDir)\msvc\x64\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\msv
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_ZegoAVView.cpp" />
-    <ClCompile Include="GeneratedFiles\Release\moc_ZegoEnterRoomButton.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_ZegoMainDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -297,10 +296,8 @@ if Exist   "$(ProjectDir)\msvc\x64\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\msv
     <ClCompile Include="Settings\ZegoSettingsModel.cpp" />
     <ClCompile Include="Signal\ZegoSDKSignal.cpp" />
     <ClCompile Include="UI\ZegoAVView.cpp" />
-    <ClCompile Include="UI\ZegoEnterRoomButton.cpp" />
     <ClCompile Include="UI\ZegoMircophone.cpp" />
     <ClCompile Include="UI\ZegoProgressIndicator.cpp" />
-    <ClCompile Include="UI\ZegoRoomList.cpp" />
     <ClCompile Include="VideoCapture\ZegoVideoCaptureDeviceDemo.cpp" />
     <ClCompile Include="VideoCapture\ZegoVideoCaptureFactoryDemo.cpp" />
     <ClCompile Include="VideoFilter\ZegoVideoFilterDemo.cpp" />
@@ -545,36 +542,6 @@ if Exist   "$(ProjectDir)\msvc\x64\*.*" (echo F | xcopy  /Y   "$(ProjectDir)\msv
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing ZegoProgressIndicator.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -D_UNICODE  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-I.\..\include\zegoliveroom" "-I.\Base" "-I.\Config" "-I.\Model" "-I.\Settings" "-I.\Signal" "-I.\Delegate" "-I.\UI" "-I.\Dialog" "-I.\VideoCapture" "-I.\VideoFilter" "-I.\..\include\ZegoSurfaceMerge"</Command>
-    </CustomBuild>
-    <CustomBuild Include="UI\ZegoEnterRoomButton.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -D_UNICODE  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-I.\..\include\zegoliveroom" "-I.\Base" "-I.\Config" "-I.\Model" "-I.\Settings" "-I.\Signal" "-I.\Delegate" "-I.\UI" "-I.\Dialog" "-I.\VideoCapture" "-I.\VideoFilter" "-I.\..\include\ZegoSurfaceMerge"</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing ZegoEnterRoomButton.h...</Message>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -D_UNICODE  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-I.\..\include\zegoliveroom" "-I.\Base" "-I.\Config" "-I.\Model" "-I.\Settings" "-I.\Signal" "-I.\Delegate" "-I.\UI" "-I.\Dialog" "-I.\VideoCapture" "-I.\VideoFilter" "-I.\..\include\ZegoSurfaceMerge"</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ZegoEnterRoomButton.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="UI\ZegoRoomList.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </Outputs>
     </CustomBuild>
     <ClInclude Include="VideoCapture\ZegoVideoCaptureDeviceDemo.h" />
     <ClInclude Include="VideoCapture\ZegoVideoCaptureFactoryDemo.h" />

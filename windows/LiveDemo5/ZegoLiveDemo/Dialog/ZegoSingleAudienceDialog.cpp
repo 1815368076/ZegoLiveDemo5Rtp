@@ -164,8 +164,7 @@ void ZegoSingleAudienceDialog::GetOut()
 	//EndAux();
 	for (auto& stream : m_pChatRoom->getStreamList())
 	{
-		if (stream != nullptr)
-		    StopPlayStream(stream->getStreamId());
+		StopPlayStream(stream->getStreamId());
 	}
 
 	roomMemberDelete(m_strCurUserName);
@@ -178,13 +177,6 @@ void ZegoSingleAudienceDialog::GetOut()
 	delete m_chatModel;
 	delete m_cbMircoPhoneModel;
 	delete m_cbCameraModel;
-	//指针置空
-	m_cbMircoPhoneListView = nullptr;
-	m_cbCameraListView = nullptr;
-	m_memberModel = nullptr;
-	m_chatModel = nullptr;
-	m_cbMircoPhoneModel = nullptr;
-	m_cbCameraModel = nullptr;
 }
 
 void ZegoSingleAudienceDialog::initComboBox()
@@ -253,9 +245,6 @@ void ZegoSingleAudienceDialog::EnumVideoAndAudioDevice()
 
 void ZegoSingleAudienceDialog::insertStringListModelItem(QStringListModel * model, QString name, int size)
 {
-	if (model == nullptr)
-		return;
-
 	int row = size;
 	model->insertRows(row, 1);
 	QModelIndex index = model->index(row);
@@ -265,8 +254,6 @@ void ZegoSingleAudienceDialog::insertStringListModelItem(QStringListModel * mode
 
 void ZegoSingleAudienceDialog::removeStringListModelItem(QStringListModel * model, QString name)
 {
-	if (model == nullptr)
-		return;
 
 	if (model->rowCount() > 0)
 	{
@@ -418,8 +405,6 @@ QString ZegoSingleAudienceDialog::encodeStringAddingEscape(QString str)
 
 void ZegoSingleAudienceDialog::roomMemberAdd(QString userName)
 {
-	if (m_memberModel == nullptr)
-		return;
 
 	insertStringListModelItem(m_memberModel, userName, m_memberModel->rowCount());
 	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("成员(%1)").arg(m_memberModel->rowCount())));
@@ -427,9 +412,6 @@ void ZegoSingleAudienceDialog::roomMemberAdd(QString userName)
 
 void ZegoSingleAudienceDialog::roomMemberDelete(QString userName)
 {
-	if (m_memberModel == nullptr)
-		return;
-
 	removeStringListModelItem(m_memberModel, userName);
 	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("成员(%1)").arg(m_memberModel->rowCount())));
 }
@@ -456,7 +438,7 @@ void ZegoSingleAudienceDialog::OnLoginRoom(int errorCode, const QString& strRoom
 	qDebug() << "Login Room!";
 	if (errorCode != 0)
 	{
-		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("登陆房间失败,错误码: %1").arg(errorCode));
+		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("登陆房间失败"));
 		OnClose();
 		return;
 	}
@@ -496,17 +478,15 @@ void ZegoSingleAudienceDialog::OnStreamUpdated(const QString& roomId, QVector<St
 	//在单主播模式下，有流更新直接处理
 	for (auto& stream : vStreamList)
 	{
-		if (stream != nullptr){
-			if (type == LIVEROOM::ZegoStreamUpdateType::StreamAdded)
-			{
-				StartPlayStream(stream);
+		if (type == LIVEROOM::ZegoStreamUpdateType::StreamAdded)
+		{
+			StartPlayStream(stream);
 
-			}
-			else if (type == LIVEROOM::ZegoStreamUpdateType::StreamDeleted)
-			{
-				StopPlayStream(stream->getStreamId());
-
-			}
+		}
+		else if (type == LIVEROOM::ZegoStreamUpdateType::StreamDeleted)
+		{
+			StopPlayStream(stream->getStreamId());
+			
 		}
 	}
 	
@@ -896,7 +876,7 @@ void ZegoSingleAudienceDialog::mouseDoubleClickEvent(QMouseEvent *event)
 
 void ZegoSingleAudienceDialog::closeEvent(QCloseEvent *e)
 {
-	QDialog::closeEvent(e);
+	//OnClose();
 	GetOut();
 	//this->close();
 	emit sigSaveVideoSettings(m_pAVSettings);

@@ -19,10 +19,5 @@
       <file>Resources/images/mircophone_disabled.png</file>
       <file>Resources/images/sound_off.png</file>
       <file>Resources/images/sound_on.png</file>
-      <file>Resources/images/close.png</file>
-      <file>Resources/images/max.png</file>
-      <file>Resources/images/max_re.png</file>
-      <file>Resources/images/min.png</file>
-      <file>Resources/images/official.png</file>
     </qresource>
 </RCC>
