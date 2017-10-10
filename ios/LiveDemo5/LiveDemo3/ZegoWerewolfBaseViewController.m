@@ -264,8 +264,8 @@
     if (streamID.length == 0)
         return nil;
     
-    NSString *qualityString = [NSString stringWithFormat:@"[%@] 帧率: %.3f, 视频码率: %.3f kb/s, 延时: %d ms, 丢包率: %.3f%%", publish ? @"推流": @"拉流", fps, kbs, rtt, pktLostRate/256.0 * 100];
-    NSString *totalString =[NSString stringWithFormat:@"[%@] 流ID: %@, 帧率: %.3f, 视频码率: %.3f kb/s, 延时: %d ms, 丢包率: %.3f%%", publish ? @"推流": @"拉流", streamID, fps, kbs, rtt, pktLostRate/256.0 * 100];
+    NSString *qualityString = [NSString stringWithFormat:@"[%@] 帧率: %.3f, 视频码率: %.3f kb/s, 延时: %d ms, 丢包率: %d%%", publish ? @"推流": @"拉流", fps, kbs, rtt, pktLostRate];
+    NSString *totalString =[NSString stringWithFormat:@"[%@] 流ID: %@, 帧率: %.3f, 视频码率: %.3f kb/s, 延时: %d ms, 丢包率: %d%%", publish ? @"推流": @"拉流", streamID, fps, kbs, rtt, pktLostRate];
     [self.staticsArray insertObject:totalString atIndex:0];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"logUpdateNotification" object:self userInfo:nil];
