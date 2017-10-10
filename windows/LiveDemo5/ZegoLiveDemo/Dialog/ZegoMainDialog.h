@@ -7,6 +7,7 @@
 #include "ZegoUserConfig.h"
 #include "ZegoLiveDemo.h"
 #include "ZegoBase.h"
+#include "ZegoEnterRoomButton.h"
 #include <QtNetwork/qnetworkaccessmanager.h> 
 #include <QtNetwork/qnetworkrequest.h>
 #include <QtNetwork/qnetworkreply.h>
@@ -81,7 +82,6 @@ private slots:
 private:
 	void EnumVideoAndAudioDevice(SettingsPtr curSettings);
 	void setDefalutVideoQuality(SettingsPtr curSettings);
-	void initRoomList();
 	void PullRoomList();
 	void ParseRoomList(QByteArray json);
 	void RefreshRoomList(QVector<RoomPtr> roomList);

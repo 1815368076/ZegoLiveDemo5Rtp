@@ -175,8 +175,8 @@ QPushButton:hover:pressed{
          <string/>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>Resources/images/official.png</normaloff>Resources/images/official.png</iconset>
+         <iconset resource="style.qrc">
+          <normaloff>:/Resources/images/official.png</normaloff>:/Resources/images/official.png</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -220,8 +220,8 @@ QPushButton:hover:pressed{
          <string/>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>Resources/images/min.png</normaloff>Resources/images/min.png</iconset>
+         <iconset resource="style.qrc">
+          <normaloff>:/Resources/images/min.png</normaloff>:/Resources/images/min.png</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -265,8 +265,8 @@ QPushButton:hover:pressed{
          <string/>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>Resources/images/close.png</normaloff>Resources/images/close.png</iconset>
+         <iconset resource="style.qrc">
+          <normaloff>:/Resources/images/close.png</normaloff>:/Resources/images/close.png</iconset>
         </property>
         <property name="flat">
          <bool>false</bool>
@@ -985,8 +985,8 @@ QPushButton:hover:pressed{
                  <string>刷新</string>
                 </property>
                 <property name="icon">
-                 <iconset>
-                  <normaloff>Resources/images/refresh.png</normaloff>Resources/images/refresh.png</iconset>
+                 <iconset resource="style.qrc">
+                  <normaloff>:/Resources/images/refresh.png</normaloff>:/Resources/images/refresh.png</iconset>
                 </property>
                 <property name="flat">
                  <bool>true</bool>
@@ -996,7 +996,7 @@ QPushButton:hover:pressed{
              </layout>
             </item>
             <item>
-             <widget class="QTableView" name="m_roomList">
+             <widget class="ZegoRoomList" name="m_roomList">
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -4816,9 +4816,15 @@ QComboBox::drop-down{
    <header location="global">ZegoProgressIndicator.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>ZegoRoomList</class>
+   <extends>QTableView</extends>
+   <header>ZegoRoomList.h</header>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="ZegoMainDialog.qrc"/>
+  <include location="style.qrc"/>
  </resources>
  <connections/>
 </ui>

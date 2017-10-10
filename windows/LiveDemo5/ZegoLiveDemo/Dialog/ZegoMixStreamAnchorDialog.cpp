@@ -146,7 +146,11 @@ void ZegoMixStreamAnchorDialog::StartPublishStream()
 	//获取当前时间的毫秒
 	int ms = currentTime.msec();
 	QString strStreamId;
+#ifdef Q_OS_WIN32
 	strStreamId = QString(QStringLiteral("s-windows-%1-%2")).arg(m_strCurUserID).arg(ms);
+#else
+	strStreamId = QString(QStringLiteral("s-mac-%1-%2")).arg(m_strCurUserID).arg(ms);
+#endif
 	m_strPublishStreamID = strStreamId;
 	m_myMixStreamID = "mix-" + m_strPublishStreamID;
 
@@ -162,8 +166,13 @@ void ZegoMixStreamAnchorDialog::StartPublishStream()
 		pPublishStream->setPlayView(nIndex);
 		addAVView(nIndex);
 		qDebug() << "publish nIndex = " << nIndex;
-		//配置View
 
+		LIVEROOM::SetVideoFPS(m_pAVSettings->GetFps());
+		LIVEROOM::SetVideoBitrate(m_pAVSettings->GetBitrate());
+		LIVEROOM::SetVideoCaptureResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
+		LIVEROOM::SetVideoEncodeResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
+
+		//配置View
 		LIVEROOM::SetPreviewView((void *)AVViews.last()->winId());
 		LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill);
 		LIVEROOM::StartPreview();
@@ -187,9 +196,10 @@ void ZegoMixStreamAnchorDialog::StopPublishStream(const QString& streamID)
 	LIVEROOM::StopPreview();
 	LIVEROOM::StopPublishing();
 	m_bIsPublishing = false;
-
 	StreamPtr pStream = m_pChatRoom->removeStream(streamID);
 	FreeAVView(pStream);
+    
+    m_strPublishStreamID = "";
 }
 
 void ZegoMixStreamAnchorDialog::StartPlayStream(StreamPtr stream)
@@ -243,19 +253,22 @@ void ZegoMixStreamAnchorDialog::GetOut()
 
 	for (auto& stream : m_pChatRoom->getStreamList())
 	{
-		if (stream->isCurUserCreated())
-		{
-			StopPublishStream(stream->getStreamId());
-		}
-		else
-		{
-			StopPlayStream(stream->getStreamId());
+		if (stream != nullptr){
+			if (stream->isCurUserCreated())
+			{
+				StopPublishStream(stream->getStreamId());
+			}
+			else
+			{
+				StopPlayStream(stream->getStreamId());
+			}
 		}
 	}
 
 	roomMemberDelete(m_strCurUserName);
 	LIVEROOM::LogoutRoom();
-	timer->stop();
+	if (timer != nullptr)
+	    timer->stop();
 
 	//释放堆内存
 	delete m_cbMircoPhoneListView;
@@ -266,6 +279,15 @@ void ZegoMixStreamAnchorDialog::GetOut()
 	delete m_cbCameraModel;
 	delete timer;
 	delete gridLayout;
+	//指针置为空
+	m_cbMircoPhoneListView = nullptr;
+	m_cbCameraListView = nullptr;
+	m_memberModel = nullptr;
+	m_chatModel = nullptr;
+	m_cbMircoPhoneModel = nullptr;
+	m_cbCameraModel = nullptr;
+	timer = nullptr;
+	gridLayout = nullptr;
 }
 
 void ZegoMixStreamAnchorDialog::initComboBox()
@@ -334,6 +356,9 @@ void ZegoMixStreamAnchorDialog::EnumVideoAndAudioDevice()
 
 void ZegoMixStreamAnchorDialog::insertStringListModelItem(QStringListModel * model, QString name, int size)
 {
+	if (model == nullptr)
+		return;
+
 	int row = size;
 	model->insertRows(row, 1);
 	QModelIndex index = model->index(row);
@@ -343,6 +368,8 @@ void ZegoMixStreamAnchorDialog::insertStringListModelItem(QStringListModel * mod
 
 void ZegoMixStreamAnchorDialog::removeStringListModelItem(QStringListModel * model, QString name)
 {
+	if (model == nullptr)
+		return;
 
 	if (model->rowCount() > 0)
 	{
@@ -568,6 +595,8 @@ QString ZegoMixStreamAnchorDialog::encodeStringAddingEscape(QString str)
 
 void ZegoMixStreamAnchorDialog::roomMemberAdd(QString userName)
 {
+	if (m_memberModel == nullptr)
+		return;
 
 	insertStringListModelItem(m_memberModel, userName, m_memberModel->rowCount());
 	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("成员(%1)").arg(m_memberModel->rowCount())));
@@ -575,6 +604,9 @@ void ZegoMixStreamAnchorDialog::roomMemberAdd(QString userName)
 
 void ZegoMixStreamAnchorDialog::roomMemberDelete(QString userName)
 {
+	if (m_memberModel == nullptr)
+		return;
+
 	removeStringListModelItem(m_memberModel, userName);
 	ui.m_tabCommonAndUserList->setTabText(1, QString(QStringLiteral("成员(%1)").arg(m_memberModel->rowCount())));
 }
@@ -770,7 +802,7 @@ void ZegoMixStreamAnchorDialog::OnLoginRoom(int errorCode, const QString& strRoo
 	qDebug() << "Login Room!";
 	if (errorCode != 0)
 	{
-		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("登陆房间失败"));
+		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("登陆房间失败,错误码: %1").arg(errorCode));
 		OnClose();
 		return;
 	}
@@ -1448,7 +1480,7 @@ void ZegoMixStreamAnchorDialog::mouseDoubleClickEvent(QMouseEvent *event)
 
 void ZegoMixStreamAnchorDialog::closeEvent(QCloseEvent *e)
 {
-	//OnClose();
+	QDialog::closeEvent(e);
 	GetOut();
 	//this->close();
 	emit sigSaveVideoSettings(m_pAVSettings);

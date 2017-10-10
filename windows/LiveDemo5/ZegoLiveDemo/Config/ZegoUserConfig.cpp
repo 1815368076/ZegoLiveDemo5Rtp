@@ -25,8 +25,11 @@ void QZegoUserConfig::LoadConfig(void)
 	std::uniform_int_distribution<int> dist(10000000, 99999999);
 	//int to QString
 	m_strUserId = QString::number(dist(rd), 10);
+#ifdef Q_OS_WIN32
 	m_strUserName = QStringLiteral("windows-") + m_strUserId;
-
+#else
+	m_strUserName = QStringLiteral("mac-") + m_strUserId;
+#endif
 	m_bPrimary = true;
 
 	if (m_pVideoSettings == nullptr)

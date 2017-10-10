@@ -136,8 +136,8 @@ QPushButton:hover:pressed{
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>Resources/images/min.png</normaloff>Resources/images/min.png</iconset>
+           <iconset resource="style.qrc">
+            <normaloff>:/Resources/images/min.png</normaloff>:/Resources/images/min.png</iconset>
           </property>
           <property name="flat">
            <bool>true</bool>
@@ -187,8 +187,8 @@ QPushButton:hover:pressed{
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>Resources/images/max.png</normaloff>Resources/images/max.png</iconset>
+           <iconset resource="style.qrc">
+            <normaloff>:/Resources/images/max.png</normaloff>:/Resources/images/max.png</iconset>
           </property>
           <property name="flat">
            <bool>true</bool>
@@ -244,8 +244,8 @@ QPushButton:hover:pressed{
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>Resources/images/close.png</normaloff>Resources/images/close.png</iconset>
+           <iconset resource="style.qrc">
+            <normaloff>:/Resources/images/close.png</normaloff>:/Resources/images/close.png</iconset>
           </property>
           <property name="flat">
            <bool>true</bool>
@@ -392,7 +392,7 @@ QTabBar::tab:selected{
 }</string>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="m_tabContact">
            <attribute name="title">
@@ -727,7 +727,7 @@ background-color: #e6e6e6;</string>
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Maximum</enum>
+             <enum>QSizePolicy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -1919,6 +1919,8 @@ color: #ffffff;
    <header>ZegoMircophone.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="style.qrc"/>
+ </resources>
  <connections/>
 </ui>
