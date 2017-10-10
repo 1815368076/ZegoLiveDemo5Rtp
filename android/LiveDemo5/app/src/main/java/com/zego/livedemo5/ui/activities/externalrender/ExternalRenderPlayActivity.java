@@ -11,7 +11,6 @@ import android.widget.RelativeLayout;
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
 import com.zego.livedemo5.constants.IntentExtra;
-import com.zego.livedemo5.presenters.RoomInfo;
 import com.zego.livedemo5.ui.activities.BasePlayActivity;
 import com.zego.livedemo5.ui.widgets.ViewLive;
 import com.zego.zegoliveroom.callback.IZegoLivePlayerCallback;
@@ -33,11 +32,10 @@ public class ExternalRenderPlayActivity extends BasePlayActivity {
      * 启动入口.
      *
      * @param activity 源activity
-     * @param roomInfo 房间信息
      */
-    public static void actionStart(Activity activity, RoomInfo roomInfo) {
+    public static void actionStart(Activity activity, String roomID) {
         Intent intent = new Intent(activity, ExternalRenderPlayActivity.class);
-        intent.putExtra(IntentExtra.ROOM_ID, roomInfo.room_id);
+        intent.putExtra(IntentExtra.ROOM_ID, roomID);
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.scale_translate,
                 R.anim.my_alpha_action);

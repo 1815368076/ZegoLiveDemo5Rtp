@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
@@ -13,8 +12,6 @@ import com.google.gson.reflect.TypeToken;
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.constants.Constants;
 import com.zego.livedemo5.constants.IntentExtra;
-import com.zego.livedemo5.presenters.RoomInfo;
-import com.zego.livedemo5.presenters.StreamInfo;
 import com.zego.livedemo5.ui.widgets.ViewLive;
 import com.zego.livedemo5.utils.PreferenceUtil;
 import com.zego.livedemo5.utils.ZegoRoomUtil;
@@ -34,8 +31,6 @@ public abstract class BasePlayActivity extends BaseLiveActivity {
 
     protected RelativeLayout mRlytPlayBackground = null;
 
-    protected ArrayList<String> mOldSavedStreamList = null;
-
     /**
      * 推流前的工作.
      */
@@ -51,7 +46,6 @@ public abstract class BasePlayActivity extends BaseLiveActivity {
         if (savedInstanceState == null) {
             Intent intent = getIntent();
             mRoomID = intent.getStringExtra(IntentExtra.ROOM_ID);
-            mOldSavedStreamList = intent.getStringArrayListExtra(IntentExtra.LIST_STREAM);
         }
         super.initExtraData(savedInstanceState);
     }
@@ -65,17 +59,6 @@ public abstract class BasePlayActivity extends BaseLiveActivity {
         ((RelativeLayout) mListViewLive.get(0).getParent()).addView(mRlytPlayBackground);
     }
 
-    static protected ArrayList<String> getStremListFromRoomInfo(RoomInfo roomInfo) {
-        ArrayList<String> streamList = null;
-        if (roomInfo.stream_info != null && roomInfo.stream_info.size() > 0) {
-            streamList = new ArrayList<>(roomInfo.stream_info.size());
-            for (StreamInfo stream : roomInfo.stream_info) {
-                streamList.add(stream.stream_id);
-            }
-        }
-        return streamList;
-    }
-
     /**
      * 观众登录房间成功.
      */
@@ -83,21 +66,7 @@ public abstract class BasePlayActivity extends BaseLiveActivity {
         // 播放房间的流
         if (zegoStreamInfos != null && zegoStreamInfos.length > 0) {
             for (int i = 0; i < zegoStreamInfos.length; i++) {
-                String streamId = zegoStreamInfos[i].streamID;
-                if (mOldSavedStreamList != null && mOldSavedStreamList.contains(streamId)) {
-                    Log.w("BasePlayAct", "Has quick start, ignore");
-                    mOldSavedStreamList.remove(streamId);
-                } else {
-                    startPlay(streamId);
-                }
-            }
-
-            if (mOldSavedStreamList != null && mOldSavedStreamList.size() > 0) {
-                for (String streamId : mOldSavedStreamList) {
-                    Log.w("BasePlayAct", "Remove timeout stream id: " + streamId);
-                    stopPlay(streamId);
-                }
-                mOldSavedStreamList.clear();
+                startPlay(zegoStreamInfos[i].streamID);
             }
         }
 

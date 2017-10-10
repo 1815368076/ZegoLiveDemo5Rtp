@@ -116,19 +116,19 @@ public class RoomListFragment extends AbsBaseFragment implements MainActivity.On
                 switch (publishType) {
                     case 1:
                         if(ZegoApiManager.getInstance().isUseExternalRender()){
-                            ExternalRenderPlayActivity.actionStart(mParentActivity, roomInfo);
+                            ExternalRenderPlayActivity.actionStart(mParentActivity, roomInfo.room_id);
                         }else {
-                            SingleAnchorPlayActivity.actionStart(mParentActivity, roomInfo);
+                            SingleAnchorPlayActivity.actionStart(mParentActivity, roomInfo.room_id);
                         }
                         break;
                     case 2:
-                        MoreAnchorsPlayActivity.actionStart(getActivity(), roomInfo);
+                        MoreAnchorsPlayActivity.actionStart(getActivity(), roomInfo.room_id);
                         break;
                     case 3:
-                        MixStreamPlayActivity.actionStart(getActivity(), roomInfo);
+                        MixStreamPlayActivity.actionStart(getActivity(), roomInfo.room_id);
                         break;
                     case 4:
-                        GameLivingPlayActivity.actionStart(mParentActivity, roomInfo);
+                        GameLivingPlayActivity.actionStart(mParentActivity, roomInfo.room_id);
                         break;
                     case 5:
                         WolvesGameInTurnActivity.actionStart(mParentActivity, roomInfo);
