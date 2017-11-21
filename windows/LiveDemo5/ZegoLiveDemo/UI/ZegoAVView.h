@@ -1,10 +1,14 @@
 ﻿#pragma once
+#pragma execution_character_set("utf-8")
 
 #include <QPainter>
 #include <QColor>
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QMessageBox>
 #define USE_SURFACE_MERGE
 #if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
 #include "ZegoSurfaceMerge.h"
@@ -12,13 +16,22 @@
 using namespace ZEGO;
 #endif
 
+enum ZegoDialogType
+{
+	ZEGODIALOG_SingleAnchor = 0,
+	ZEGODIALOG_SingleAudience,
+	ZEGODIALOG_MoreAnchor,
+	ZEGODIALOG_MoreAudience,
+	ZEGODIALOG_MixStreamAnchor,
+	ZEGODIALOG_MixStreamAudience
+};
 
 class QZegoAVScene;
 class QZegoAVView : public QGraphicsView
 {
 	Q_OBJECT
 public:
-	QZegoAVView(QWidget * parent = 0);
+	QZegoAVView(ZegoDialogType dialogType, QWidget * parent = 0);
 	~QZegoAVView();
 
 	void setCurrentQuality(int quality);
@@ -35,15 +48,40 @@ public:
 	void setViewIndex(int index);
 	int getViewIndex();
 
+	void setViewStreamID(QString streamID);
+	void setCurUser();
+
+	//void addActionForKickOut();
+signals:
+	void sigSnapShotPreviewOnSingleAnchor();
+	void sigSnapShotOnSingleAudienceWithStreamID(const QString& streamID);
+	void sigSnapShotPreviewOnMoreAnchor();
+	void sigSnapShotOnMoreAnchorWithStreamID(const QString& streamID);
+	void sigSnapShotPreviewOnMoreAudience();
+	void sigSnapShotOnMoreAudienceWithStreamID(const QString& streamID);
+	void sigSnapShotPreviewOnMixStreamAnchor();
+	void sigSnapShotOnMixStreamAnchorWithStreamID(const QString& streamID);
+	void sigSnapShotPreviewOnMixStreamAudience();
+	void sigSnapShotOnMixStreamAudienceWithStreamID(const QString& streamID);
+
+private slots:
+    void OnMenuSnapShotTriggered();
+	void OnMenukickForceTriggered();
+
 protected:
-	virtual void paintEvent(QPaintEvent *event);
+	//virtual void paintEvent(QPaintEvent *event);
 	virtual void resizeEvent(QResizeEvent *event);
+	virtual void contextMenuEvent(QContextMenuEvent *event);
 
 private:
 	QZegoAVScene *scene;
 	int m_nAVQuality;
 	bool isSurfaceMergeView = false;
 	int viewIndex;
+	QString m_pCurStreamID;
+	bool m_isCurUser = false;
+	ZegoDialogType m_dialogType;
+	QMenu *m_menu = nullptr;
 };
 
 class QZegoAVScene : public QGraphicsScene

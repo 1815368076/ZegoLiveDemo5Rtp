@@ -1,20 +1,32 @@
 ﻿#include "ZegoAVView.h"
 #include <QDebug>
 
-QZegoAVView::QZegoAVView(QWidget * parent) : QGraphicsView(parent)
+QZegoAVView::QZegoAVView(ZegoDialogType dialogType, QWidget * parent) : 
+    m_dialogType(dialogType), QGraphicsView(parent)
 {
 	scene = new QZegoAVScene(this);
-	scene->setSceneRect(0, 0,
-		dynamic_cast<QZegoAVView *>(scene->parent())->size().width()
-		, dynamic_cast<QZegoAVView *>(scene->parent())->size().height());
+	scene->setSceneRect(0, 0, dynamic_cast<QZegoAVView *>(scene->parent())->size().width(), dynamic_cast<QZegoAVView *>(scene->parent())->size().height());
     setScene(scene);
 
 	m_nAVQuality = -1;
+
+	//设置AVView不接受焦点，可去除因鼠标点击view时闪烁问题
+	this->setFocusPolicy(Qt::NoFocus);
+
 }
 
 QZegoAVView::~QZegoAVView()
 {
-
+	if (m_menu)
+	{
+		delete m_menu;
+		m_menu = nullptr;
+	}
+	if (scene)
+	{
+		delete scene;
+		scene = nullptr;
+	}
 }
 
 void QZegoAVView::setCurrentQuality(int quality)
@@ -55,20 +67,26 @@ int QZegoAVView::getViewIndex()
 	return viewIndex;
 }
 
-void QZegoAVView::resizeEvent(QResizeEvent *event)
+void QZegoAVView::setViewStreamID(QString streamID)
 {
-	
-	scene->setSceneRect(0, 0,
-		dynamic_cast<QZegoAVView *>(scene->parent())->size().width()
-		, dynamic_cast<QZegoAVView *>(scene->parent())->size().height());
-	
+	m_pCurStreamID = streamID;
 }
 
-void QZegoAVView::paintEvent(QPaintEvent *event)
+void QZegoAVView::setCurUser()
+{
+	m_isCurUser = true;
+}
+
+void QZegoAVView::resizeEvent(QResizeEvent *event)
+{
+	scene->setSceneRect(0 , 0 , dynamic_cast<QZegoAVView *>(scene->parent())->size().width() , dynamic_cast<QZegoAVView *>(scene->parent())->size().height());
+}
+
+/*void QZegoAVView::paintEvent(QPaintEvent *event)
 {
 	QGraphicsView::paintEvent(event);
-
-	/*QPainter painter(this->viewport());
+	
+	QPainter painter(this->viewport());
 	painter.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
 	
 	QColor color;
@@ -112,7 +130,96 @@ void QZegoAVView::paintEvent(QPaintEvent *event)
 		break;
 	default:
 		break;
-	}*/
+	}
+}*/
+
+void QZegoAVView::contextMenuEvent(QContextMenuEvent *event)
+{
+	
+	m_menu = new QMenu(this);
+	m_menu->setStyleSheet("QMenu{"
+		"border: 1px solid #0e88eb;"
+		"font-family: 微软雅黑;"
+		"font-size: 14px;}"
+		"QMenu::item{"
+		"background-color: #ffffff;"
+		"color: #0e88eb;}"
+		"QMenu::item:selected{"
+		"background-color: #0e88eb;"
+		"color: #ffffff;}");
+
+		QAction *snapShot = m_menu->addAction(tr("截取图像"));
+		connect(snapShot, SIGNAL(triggered(bool)), this, SLOT(OnMenuSnapShotTriggered()));
+		
+		m_menu->move(cursor().pos());
+		m_menu->show();
+	
+}
+
+void QZegoAVView::OnMenuSnapShotTriggered()
+{
+	if (m_pCurStreamID.size() == 0)
+	{
+		QMessageBox::information(NULL, tr("提示"), tr("当前房间没有主播正在直播"));
+		return;
+	}
+
+	switch (m_dialogType)
+	{
+	case ZEGODIALOG_SingleAnchor:
+		emit sigSnapShotPreviewOnSingleAnchor();
+		break;
+
+	case ZEGODIALOG_SingleAudience:
+		emit sigSnapShotOnSingleAudienceWithStreamID(m_pCurStreamID);
+		break;
+
+	case ZEGODIALOG_MoreAnchor:
+		if (m_isCurUser)
+		    emit sigSnapShotPreviewOnMoreAnchor();
+		else
+		    emit sigSnapShotOnMoreAnchorWithStreamID(m_pCurStreamID);
+		break;
+
+	case ZEGODIALOG_MoreAudience:
+		if (m_isCurUser)
+			emit sigSnapShotPreviewOnMoreAudience();
+		else
+			emit sigSnapShotOnMoreAudienceWithStreamID(m_pCurStreamID);
+		break;
+
+	case ZEGODIALOG_MixStreamAnchor:
+		if (m_isCurUser)
+			emit sigSnapShotPreviewOnMixStreamAnchor();
+		else
+			emit sigSnapShotOnMixStreamAnchorWithStreamID(m_pCurStreamID);
+		break;
+
+	case ZEGODIALOG_MixStreamAudience:
+		if (m_isCurUser)
+			emit sigSnapShotPreviewOnMixStreamAudience();
+		else
+			emit sigSnapShotOnMixStreamAudienceWithStreamID(m_pCurStreamID);
+		break;
+
+	default:
+		break;
+	}
+	
+}
+
+/*void QZegoAVView::addActionForKickOut()
+{
+	if (!m_isCurUser)
+	{
+		QAction *kickForce = m_menu->addAction(tr("踢出连麦"));
+		connect(kickForce, SIGNAL(triggered(bool)), this, SLOT(OnMenukickForceTriggered()));
+	}
+}*/
+
+void QZegoAVView::OnMenukickForceTriggered()
+{
+
 }
 
 QZegoAVScene::QZegoAVScene(QWidget * parent)
@@ -144,7 +251,7 @@ void QZegoAVScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void QZegoAVScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	qDebug() << "view pressed!";
+	//qDebug() << "view pressed!";
 	QZegoAVView *view = (QZegoAVView *)this->views()[0];
 	qDebug() << "this view's width = " << view->width() << " height = " << view->height();
 	if (!view->getSurfaceMergeView())
@@ -153,11 +260,41 @@ void QZegoAVScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	QPointF mousePosition = event->scenePos();
 	int vx = view->width();
 	int vy = view->height();
+    
 	scaleFactor_X = screen.position.width*(1.0) / view->width();
 	scaleFactor_Y = screen.position.height*(1.0) / view->height();
+   
+	float blackBorderWidth = 0;
+	float blackBorderHeight = 0;
+	//初始化捕捉camera的范围
+	float startPointX = camera.position.xPos / scaleFactor_X;
+	float endPointX = (camera.position.xPos + camera.position.width) / scaleFactor_X;
+	float startPointY = camera.position.yPos / scaleFactor_Y;
+	float endPointY = (camera.position.yPos + camera.position.height) / scaleFactor_Y;
 
-	if ((mousePosition.x() >= (camera.position.xPos / scaleFactor_X)) && (mousePosition.x() <= ((camera.position.xPos + camera.position.width) / scaleFactor_X)) && (mousePosition.y() >= (camera.position.yPos / scaleFactor_Y)) && (mousePosition.y() <= ((camera.position.yPos + camera.position.height) / scaleFactor_Y)))
+	//比例大于16:9或者4:3的话，黑边出现在左右
+	if (view->width() * (1.0) / view->height() > screen.position.width * (1.0) / screen.position.height)
 	{
+		float screenWholeWidth = view->height() * screen.position.width / screen.position.height;
+		blackBorderWidth = (view->width() - screenWholeWidth) / 2;
+
+		startPointX = screenWholeWidth * (camera.position.xPos / scaleFactor_X) / view->width();
+		endPointX = screenWholeWidth * ((camera.position.xPos + camera.position.width) / scaleFactor_X) / view->width();
+
+	}
+	//比例小于16:9或者4:3的话，黑边出现在上下
+	else if (view->width() * (1.0) / view->height() < screen.position.width * (1.0) / screen.position.height)
+	{
+		float screenWholeHeight = view->width() * screen.position.height / screen.position.width;
+		blackBorderHeight = (view->height() - screenWholeHeight) / 2;
+		
+		startPointY = screenWholeHeight * (camera.position.yPos / scaleFactor_Y) / view->height();
+		endPointY = screenWholeHeight * ((camera.position.yPos + camera.position.height) / scaleFactor_Y) / view->height();
+	}
+
+	if (mousePosition.x() >= (startPointX + blackBorderWidth) && mousePosition.x() <= (endPointX + blackBorderWidth) && mousePosition.y() >= (startPointY + blackBorderHeight) && mousePosition.y() <= (endPointY + blackBorderHeight))
+	{
+		qDebug() << "pressed camera!!!";
 		isMousePressed = true;
 		curMousePosition = mousePosition;
 	}
@@ -172,9 +309,8 @@ void QZegoAVScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 	if (isMousePressed){
 		
-		//QMutex mutex;
-		//mutex.lock();
 		QPointF mousePosition = event->scenePos();
+
 		if (mousePosition.x() >= view->width() || mousePosition.x() < 0)
 			return;
 		if (mousePosition.y() >= view->height() || mousePosition.y() < 0)
@@ -185,16 +321,82 @@ void QZegoAVScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		move.setY(mousePosition.y() - curMousePosition.y());
 
 		bool isUpdate = false;
-		if ((move.x() > 0 && (camera.position.xPos + camera.position.width) < (screen.position.xPos + screen.position.width)) || (move.x() < 0 && (camera.position.xPos > 0)))
+		//显示屏幕区域实际宽高
+		float screenWholeWidth = view->width();
+		float screenWholeHeight = view->height();
+		//比例大于16:9或者4:3的话，黑边出现在左右
+		if (view->width() * (1.0) / view->height() > screen.position.width * (1.0) / screen.position.height)
 		{
-			camera.position.xPos += (int)(move.x() * scaleFactor_X);
+			screenWholeWidth = view->height() * screen.position.width / screen.position.height;
+		}
+		//比例小于16:9或者4:3的话，黑边出现在上下
+		else if (view->width() * (1.0) / view->height() < screen.position.width * (1.0) / screen.position.height)
+		{
+			screenWholeHeight = view->width() * screen.position.height / screen.position.width;
+		}
+		
+
+		//右移情况
+		if (move.x() > 0 && (camera.position.xPos + (move.x() * scaleFactor_X * (view->width() / screenWholeWidth)) + camera.position.width) <= (screen.position.xPos + screen.position.width))
+		{
+			camera.position.xPos += (int)(move.x() * scaleFactor_X * (view->width() / screenWholeWidth));
 			isUpdate = true;
 		}
-		if ((move.y() > 0 && (camera.position.yPos + camera.position.height) < (screen.position.yPos + screen.position.height)) || (move.y() < 0 && (camera.position.yPos > 0)))
+		//右移最大值
+		else if (move.x() > 0 && (camera.position.xPos + camera.position.width) < (screen.position.xPos + screen.position.width))
 		{
-			camera.position.yPos += (int)(move.y() * scaleFactor_Y);
+			if (!isUpdate)
+			{
+				camera.position.xPos = (screen.position.width - camera.position.width);
+				isUpdate = true;
+			}
+		}
+        //左移情况
+		if (move.x() < 0 && (camera.position.xPos + (move.x() * scaleFactor_X * (view->width() / screenWholeWidth)) >= 0))
+        {
+			camera.position.xPos += (int)(move.x() * scaleFactor_X * (view->width() / screenWholeWidth));
+            isUpdate = true;
+        }
+        //左移最小值
+        else if (move.x() < 0 && camera.position.xPos > 0)
+        {
+            if (!isUpdate)
+            {
+                camera.position.xPos = 0;
+                isUpdate = true;
+            }
+        }
+        //下移情况
+		if (move.y() > 0 && (camera.position.yPos + (move.y() * scaleFactor_Y * (view->height() / screenWholeHeight)) + camera.position.height) <= (screen.position.yPos + screen.position.height))
+		{
+			camera.position.yPos += (int)(move.y() * scaleFactor_Y * (view->height() / screenWholeHeight));
 			isUpdate = true;
 		}
+        //下移最大值
+        else if (move.y() > 0 && (camera.position.yPos + camera.position.height) < (screen.position.yPos + screen.position.height))
+        {
+            if (!isUpdate)
+            {
+                camera.position.yPos = (screen.position.height - camera.position.height);
+                isUpdate = true;
+            }
+        }
+        //上移情况
+		if (move.y() < 0 && (camera.position.yPos + (move.y() * scaleFactor_Y * (view->height() / screenWholeHeight)) >= 0))
+        {
+			camera.position.yPos += (int)(move.y() * scaleFactor_Y * (view->height() / screenWholeHeight));
+            isUpdate = true;
+        }
+        //上移最小值
+        else if (move.y() < 0 && camera.position.yPos > 0)
+        {
+            if (!isUpdate)
+            {
+                camera.position.yPos = 0;
+                isUpdate = true;
+            }
+        }
+
 		if (isUpdate)
 		{
 			SurfaceMerge::ZegoCaptureItem *itemList = new SurfaceMerge::ZegoCaptureItem[2];
@@ -205,13 +407,13 @@ void QZegoAVScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 			delete[]itemList;
 		}
 		curMousePosition = mousePosition;
-		//mutex.unlock();
+
+
 	}
 }
 
 void QZegoAVScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	isMousePressed = false;
-	qDebug() << "view Released!";
 }
 #endif

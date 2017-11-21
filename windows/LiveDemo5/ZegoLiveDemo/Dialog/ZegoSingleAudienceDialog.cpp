@@ -2,7 +2,9 @@
 #include "ZegoSDKSignal.h"
 #include <QMessageBox>
 #include <QDebug>
-
+#ifdef Q_OS_MAC
+#include "ZegoAVDevice.h"
+#endif
 ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(QWidget *parent)
 	: QDialog(parent)
 {
@@ -14,13 +16,12 @@ ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(QWidget *parent)
 	connect(ui.m_bClose, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnClickTitleButton);
 }
 
-ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, /*bool isAnchor, int curMode,*/ QDialog *lastDialog, QDialog *parent)
-	: m_pAVSettings(curSettings),
+ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, /*bool isAnchor, int curMode,*/ QDialog *lastDialog, QDialog *parent)
+	:m_dpi(dpi),
+	m_pAVSettings(curSettings),
 	m_pChatRoom(room),
 	m_strCurUserID(curUserID),
 	m_strCurUserName(curUserName),
-	//m_bIsAnchor(isAnchor),
-	//m_liveMode(curMode),
 	m_bCKEnableMic(false),
 	m_bCKEnableSpeaker(true),
 	m_lastDialog(lastDialog)
@@ -40,6 +41,7 @@ ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(SettingsPtr curSettings, Room
 	connect(GetAVSignal(), &QZegoAVSignal::sigUserUpdate, this, &ZegoSingleAudienceDialog::OnUserUpdate);
 	connect(GetAVSignal(), &QZegoAVSignal::sigAudioDeviceChanged, this, &ZegoSingleAudienceDialog::OnAudioDeviceChanged);
 	connect(GetAVSignal(), &QZegoAVSignal::sigVideoDeviceChanged, this, &ZegoSingleAudienceDialog::OnVideoDeviceChanged);
+	connect(GetAVSignal(), &QZegoAVSignal::sigSnapshot, this, &ZegoSingleAudienceDialog::OnSnapshot, Qt::DirectConnection);
 
 	//UI的信号槽
 	connect(ui.m_bMin, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnClickTitleButton);
@@ -49,13 +51,16 @@ ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(SettingsPtr curSettings, Room
 	connect(ui.m_bSendMessage, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnButtonSendMessage);
 	connect(ui.m_bSound, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnButtonSound);
 	connect(ui.m_bShare, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnShareLink);
-
+	connect(ui.m_bFullScreen, &QPushButton::clicked, this, &ZegoSingleAudienceDialog::OnButtonShowFullScreen);
 	connect(ui.m_cbMircoPhone, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSwitchAudioDevice(int)));
 	connect(ui.m_cbCamera, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSwitchVideoDevice(int)));
+	
+	connect(this, &ZegoSingleAudienceDialog::sigShowSnapShotImage, this, &ZegoSingleAudienceDialog::OnShowSnapShotImage);
 
 	this->setWindowFlags(Qt::FramelessWindowHint);//去掉标题栏 
 
 	ui.m_edInput->installEventFilter(this);
+	this->installEventFilter(this);
 
 	QGridLayout *gridLayout = new QGridLayout();
 	gridLayout->setSpacing(0);
@@ -63,7 +68,9 @@ ZegoSingleAudienceDialog::ZegoSingleAudienceDialog(SettingsPtr curSettings, Room
 	ui.zoneLiveViewHorizontalLayout->addLayout(gridLayout);
 
 	//单主播模式单画面设置
-	m_mainLiveView = new QZegoAVView;
+	m_mainLiveView = new QZegoAVView(ZEGODIALOG_SingleAudience);
+	connect(m_mainLiveView, &QZegoAVView::sigSnapShotOnSingleAudienceWithStreamID, this, &ZegoSingleAudienceDialog::OnSnapshotWithStreamID);
+
 	m_mainLiveView->setMinimumSize(QSize(960, 540));
 	m_mainLiveView->setStyleSheet(QLatin1String("border: none;\n"
 		"background-color: #383838;"));
@@ -89,10 +96,14 @@ void ZegoSingleAudienceDialog::initDialog()
 	initComboBox();
 
 	//对话框模型初始化
-	m_chatModel = new QStringListModel(this);
+	m_chatModel = new QStandardItemModel(this);
 	ui.m_listChat->setModel(m_chatModel);
+	ui.m_listChat->horizontalHeader()->setVisible(false);
+	ui.m_listChat->verticalHeader()->setVisible(false);
+	ui.m_listChat->verticalHeader()->setDefaultSectionSize(26);
 	ui.m_listChat->setItemDelegate(new NoFocusFrameDelegate(this));
 	ui.m_listChat->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	ui.m_listChat->setColumnWidth(0, 300);
 
 
 	//成员列表初始化
@@ -143,8 +154,9 @@ void ZegoSingleAudienceDialog::StartPlayStream(StreamPtr stream)
 		qDebug() << "playStream nIndex = " << nIndex;
 		stream->setPlayView(nIndex);
 
+		AVViews[nIndex]->setViewStreamID(stream->getStreamId());
 		//配置View
-		LIVEROOM::SetViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill, stream->getStreamId().toStdString().c_str());
+		LIVEROOM::SetViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFit, stream->getStreamId().toStdString().c_str());
 		LIVEROOM::StartPlayingStream(stream->getStreamId().toStdString().c_str(), (void *)AVViews[nIndex]->winId());
 	}
 }
@@ -157,6 +169,8 @@ void ZegoSingleAudienceDialog::StopPlayStream(const QString& streamID)
 
 	StreamPtr pStream = m_pChatRoom->removeStream(streamID);
 	FreeAVView(pStream);
+
+	m_mainLiveView->setViewStreamID("");
 }
 
 void ZegoSingleAudienceDialog::GetOut()
@@ -213,6 +227,7 @@ void ZegoSingleAudienceDialog::initComboBox()
 
 void ZegoSingleAudienceDialog::EnumVideoAndAudioDevice()
 {
+#ifdef Q_OS_WIN
 	//设备数
 	int nDeviceCount = 0;
 	AV::DeviceInfo* pDeviceList(NULL);
@@ -249,6 +264,36 @@ void ZegoSingleAudienceDialog::EnumVideoAndAudioDevice()
 	ui.m_cbCamera->setCurrentIndex(curSelectionIndex);
 	LIVEROOM::FreeDeviceList(pDeviceList);
 	pDeviceList = NULL;
+#else
+	QVector<deviceConfig> audioDeviceList = GetAudioDevicesWithOSX();
+	QVector<deviceConfig> videoDeviceList = GetVideoDevicesWithOSX();
+
+	//将从mac系统API中获取的Audio设备保存
+	int curSelectionIndex = 0;
+	for (int i = 0; i < audioDeviceList.size(); ++i)
+	{
+		insertStringListModelItem(m_cbMircoPhoneModel, audioDeviceList[i].deviceName, m_cbMircoPhoneModel->rowCount());
+		m_vecAudioDeviceIDs.push_back(audioDeviceList[i].deviceId);
+
+		if (m_pAVSettings->GetMircophoneId() == audioDeviceList[i].deviceId)
+			curSelectionIndex = i;
+	}
+
+	ui.m_cbMircoPhone->setCurrentIndex(curSelectionIndex);
+
+	//将从mac系统API中获取的Video设备保存
+	curSelectionIndex = 0;
+	for (int i = 0; i < videoDeviceList.size(); ++i)
+	{
+		insertStringListModelItem(m_cbCameraModel, videoDeviceList[i].deviceName, m_cbCameraModel->rowCount());
+		m_vecVideoDeviceIDs.push_back(videoDeviceList[i].deviceId);
+
+		if (m_pAVSettings->GetCameraId() == videoDeviceList[i].deviceId)
+			curSelectionIndex = i;
+	}
+
+	ui.m_cbCamera->setCurrentIndex(curSelectionIndex);
+#endif
 }
 
 void ZegoSingleAudienceDialog::insertStringListModelItem(QStringListModel * model, QString name, int size)
@@ -614,8 +659,19 @@ void ZegoSingleAudienceDialog::OnRecvRoomMessage(const QString& roomId, QVector<
 	for (auto& roomMsg : vRoomMsgList)
 	{
 		QString strTmpContent;
-		strTmpContent = QString(QStringLiteral("%1: %2")).arg(roomMsg->getUserId()).arg(roomMsg->getContent());
-		insertStringListModelItem(m_chatModel, strTmpContent, m_chatModel->rowCount());
+		strTmpContent = QString(QStringLiteral("%1")).arg(roomMsg->getContent());
+		
+		QStandardItem *item = new QStandardItem;
+		m_chatModel->appendRow(item);
+		QModelIndex index = m_chatModel->indexFromItem(item);
+
+		ZegoRoomMessageLabel *chatContent = new ZegoRoomMessageLabel;
+		chatContent->setTextContent(roomMsg->getUserName(), strTmpContent);
+
+		ui.m_listChat->setIndexWidget(index, chatContent);
+		if (chatContent->getHeightNum() > 1)
+			ui.m_listChat->resizeRowToContents(m_chatModel->rowCount() - 1);
+
 		//每次接受消息均显示最后一条
 		ui.m_listChat->scrollToBottom();
 
@@ -727,6 +783,20 @@ void ZegoSingleAudienceDialog::OnVideoDeviceChanged(const QString& strDeviceId, 
 	}
 }
 
+void ZegoSingleAudienceDialog::OnSnapshot(void *pImage, const QString &streamID)
+{
+	QImage *image = new QImage;
+
+#ifdef Q_OS_WIN
+	QPixmap pixmap = qt_pixmapFromWinHBITMAP((HBITMAP)pImage, 0);
+	*image = pixmap.toImage();
+#endif
+	
+	//发送信号切线程，不能阻塞当前线程
+	emit sigShowSnapShotImage(image);
+}
+
+
 //UI回调
 void ZegoSingleAudienceDialog::OnClickTitleButton()
 {
@@ -776,8 +846,20 @@ void ZegoSingleAudienceDialog::OnButtonSendMessage()
 	ui.m_edInput->setText(QStringLiteral(""));
 
 	QString strTmpContent;
-	strTmpContent = QString(QStringLiteral("我：%1")).arg(m_strLastSendMsg);
-	insertStringListModelItem(m_chatModel, strTmpContent, m_chatModel->rowCount());
+	strTmpContent = QString(QStringLiteral("%1")).arg(m_strLastSendMsg);
+
+	QStandardItem *item = new QStandardItem;
+	m_chatModel->appendRow(item);
+	QModelIndex index = m_chatModel->indexFromItem(item);
+
+
+	ZegoRoomMessageLabel *chatContent = new ZegoRoomMessageLabel;
+	chatContent->setTextContent(QStringLiteral("我"), strTmpContent);
+
+	ui.m_listChat->setIndexWidget(index, chatContent);
+	if (chatContent->getHeightNum() > 1)
+		ui.m_listChat->resizeRowToContents(m_chatModel->rowCount() - 1);
+
 	//每次发送消息均显示最后一条
 	ui.m_listChat->scrollToBottom();
 	m_strLastSendMsg.clear();
@@ -818,9 +900,20 @@ void ZegoSingleAudienceDialog::OnShareLink()
 
 }
 
+void ZegoSingleAudienceDialog::OnButtonShowFullScreen()
+{
+	//直播窗口总在最顶层
+	ui.m_zoneLiveView_Inner->setWindowFlags(ui.m_zoneLiveView_Inner->windowFlags() | Qt::WindowStaysOnTopHint);
+	ui.m_zoneLiveView_Inner->setParent(NULL);
+	ui.m_zoneLiveView_Inner->showFullScreen();
+	m_isLiveFullScreen = true;
+}
+
 void ZegoSingleAudienceDialog::OnSwitchAudioDevice(int id)
 {
-	qDebug() << "current audio id = " << id;
+	if (id < 0)
+		return;
+
 	if (id < m_vecAudioDeviceIDs.size())
 	{
 		LIVEROOM::SetAudioDevice(AV::AudioDevice_Input, m_vecAudioDeviceIDs[id].toStdString().c_str());
@@ -832,7 +925,9 @@ void ZegoSingleAudienceDialog::OnSwitchAudioDevice(int id)
 
 void ZegoSingleAudienceDialog::OnSwitchVideoDevice(int id)
 {
-	qDebug() << "current video id = " << id;
+	if (id < 0)
+		return;
+
 	if (id < m_vecVideoDeviceIDs.size())
 	{
 		LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[id].toStdString().c_str());
@@ -840,6 +935,19 @@ void ZegoSingleAudienceDialog::OnSwitchVideoDevice(int id)
 		ui.m_cbCamera->setCurrentIndex(id);
 		update();
 	}
+}
+
+void ZegoSingleAudienceDialog::OnSnapshotWithStreamID(const QString &streamID)
+{
+	LIVEROOM::TakeSnapshot(streamID.toStdString().c_str());
+}
+
+void ZegoSingleAudienceDialog::OnShowSnapShotImage(QImage *imageData)
+{
+	ZegoImageShowDialog imageShowDialog(imageData, imageData->width(), imageData->height(), m_pAVSettings);
+	imageShowDialog.initDialog();
+	imageShowDialog.exec();
+
 }
 
 void ZegoSingleAudienceDialog::mousePressEvent(QMouseEvent *event)
@@ -922,6 +1030,27 @@ bool ZegoSingleAudienceDialog::eventFilter(QObject *target, QEvent *event)
 			}
 		}
 	}
+	else if (target == this)
+	{
+		if (event->type() == QEvent::KeyPress)
+		{
+			QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+			if (keyEvent->key() == Qt::Key_Escape && m_isLiveFullScreen)
+			{
+				qDebug() << "clicl esc";
+				ui.m_zoneLiveView_Inner->setParent(ui.m_zoneLiveView);
+				ui.horizontalLayout_ForAVView->addWidget(ui.m_zoneLiveView_Inner);
+				m_isLiveFullScreen = false;
+				//取消直播窗口总在最顶层
+				ui.m_zoneLiveView_Inner->setWindowFlags(ui.m_zoneLiveView_Inner->windowFlags() &~Qt::WindowStaysOnTopHint);
+				return true;
+			}
+			else if (keyEvent->key() == Qt::Key_Escape && !m_isLiveFullScreen)
+			{
+				return true;
+			}
+		}
 
-	return QDialog::eventFilter(target, event);
+		return QDialog::eventFilter(target, event);
+	}
 }

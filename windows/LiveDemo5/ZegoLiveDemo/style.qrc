@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-      <file>Resources/EnterButton.qss</file>
       <file>Resources/images/refresh.png</file>
       <file>Resources/images/down_arrow.png</file>
       <file>Resources/images/switch_off.png</file>
@@ -24,5 +23,9 @@
       <file>Resources/images/max_re.png</file>
       <file>Resources/images/min.png</file>
       <file>Resources/images/official.png</file>
+      <file>Resources/images/CloudNet.png</file>
+      <file>Resources/images/QQMusic.png</file>
+      <file>Resources/images/KuGou.png</file>
+      <file>Resources/images/KuWo.png</file>
     </qresource>
 </RCC>

@@ -441,16 +441,7 @@ namespace ZEGO
          @note 必须在 InitSDK 前调用，并且不能置空
          */
         ZEGO_API void SetVideoCaptureFactory(AVE::VideoCaptureFactory* factory, AV::PublishChannelIndex idx = AV::PUBLISH_CHN_MAIN);
-        
-        /**
-         设置外部采集模块(包含音频)
-
-         @param factory 工厂对象
-         @param idx 推流 channel Index. 默认为主Channel
-         @note 必须在 InitSDK 前调用，并且不能置空
-         */
-        ZEGO_API void SetMediaCaptureFactory(AVE::MediaCaptureFactory* factory, AV::PublishChannelIndex idx = AV::PUBLISH_CHN_MAIN);
-        
+                
         /**
          设置外部滤镜模块
 

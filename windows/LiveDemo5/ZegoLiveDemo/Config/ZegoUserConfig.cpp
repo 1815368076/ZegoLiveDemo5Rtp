@@ -130,7 +130,7 @@ void QZegoUserConfig::SetUserId(QString strUserId)
 	}
 }
 
-QString QZegoUserConfig::GetUserName(void)
+QString QZegoUserConfig::getUserName(void)
 {
 	return m_strUserName;
 }

@@ -10,8 +10,13 @@
 #include "ZegoProgressIndicator.h"
 #include <QScrollBar>
 
-ZegoMainDialog::ZegoMainDialog(QWidget *parent)
-	: QDialog(parent)
+#ifdef Q_OS_MAC
+#include "ZegoAVDevice.h"
+#include "ZegoViewZoom.h"
+#endif
+
+ZegoMainDialog::ZegoMainDialog(qreal dpi, QWidget *parent)
+	: m_dpi(dpi), QDialog(parent)
 {
 	ui.setupUi(this);
 	
@@ -31,13 +36,15 @@ ZegoMainDialog::ZegoMainDialog(QWidget *parent)
 	connect(ui.m_switchTestEnv, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchTestEnv);
 	connect(ui.m_switchCapture, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchVideoCapture);
 	connect(ui.m_switchFilter, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchVideoFilter);
-	connect(ui.m_switchSurfaceMerge, &QPushButton::clicked, this, &ZegoMainDialog::OnButoonSwitchSurfaceMerge);
+	connect(ui.m_switchSurfaceMerge, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchSurfaceMerge);
 
 	connect(ui.m_bUploadLog, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonUploadLog);
 
 	connect(ui.m_strEdUserId, &QLineEdit::textChanged, this, &ZegoMainDialog::OnSaveUserIdChanged);
 	connect(ui.m_strEdUserName, &QLineEdit::textChanged, this, &ZegoMainDialog::OnSaveUserNameChanged);
 
+	//InitSDK成功回调
+	connect(GetAVSignal(), &QZegoAVSignal::sigInitSDK, this, &ZegoMainDialog::OnInitSDK);
 	//设备变更（增删）
 	connect(GetAVSignal(), &QZegoAVSignal::sigAudioDeviceChanged, this, &ZegoMainDialog::OnAudioDeviceChanged);
 	connect(GetAVSignal(), &QZegoAVSignal::sigVideoDeviceChanged, this, &ZegoMainDialog::OnVideoDeviceChanged);
@@ -75,7 +82,7 @@ ZegoMainDialog::~ZegoMainDialog()
 //part1:功能函数
 void ZegoMainDialog::initDialog()
 {
-#if (defined Q_OS_MAC) || (undefined USE_SURFACE_MERGE)
+#if (defined Q_OS_MAC) || (!defined USE_SURFACE_MERGE)
 	ui.m_lbSurfaceMerge->setVisible(false);
 	ui.m_switchSurfaceMerge->setVisible(false);
 #endif
@@ -89,10 +96,10 @@ void ZegoMainDialog::initDialog()
 	m_roomListModel = new QStandardItemModel(this);
 	m_roomListModel->setColumnCount(4);
 	//表头内容
-	m_roomListModel->setHeaderData(0, Qt::Horizontal, QString::fromLocal8Bit("房间名"));
-	m_roomListModel->setHeaderData(1, Qt::Horizontal, QString::fromLocal8Bit("直播模式"));
-	m_roomListModel->setHeaderData(2, Qt::Horizontal, QString::fromLocal8Bit("连麦人数"));
-	m_roomListModel->setHeaderData(3, Qt::Horizontal, QString::fromLocal8Bit("进入"));
+	m_roomListModel->setHeaderData(0, Qt::Horizontal, tr("房间名"));
+	m_roomListModel->setHeaderData(1, Qt::Horizontal, tr("直播模式"));
+	m_roomListModel->setHeaderData(2, Qt::Horizontal, tr("连麦人数"));
+	m_roomListModel->setHeaderData(3, Qt::Horizontal, tr("进入"));
 	ui.m_roomList->setModel(m_roomListModel);
 	ui.m_roomList->initRoomList();
 
@@ -109,7 +116,7 @@ void ZegoMainDialog::initDialog()
 	m_userConfig.LoadConfig();
 
 	m_strEdUserId = m_userConfig.GetUserId();
-	m_strEdUserName = m_userConfig.GetUserName();
+	m_strEdUserName = m_userConfig.getUserName();
 
 	ui.m_strEdUserId->setText(m_strEdUserId);
 	ui.m_strEdUserName->setText(m_strEdUserName);
@@ -127,8 +134,8 @@ void ZegoMainDialog::initDialog()
 
 	if (m_versionMode == Version::ZEGO_PROTOCOL_UDP || m_versionMode == Version::ZEGO_PROTOCOL_UDP_INTERNATIONAL)
 	{
-		ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
-		ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
+		ui.m_strEdAPPID->setText(QString("%1").arg(theApp.GetBase().GetAppID()));
+		ui.m_strEdAPPSign->setText(tr("AppSign 已设置"));
 		ui.m_strEdAPPID->setEnabled(false);
 		ui.m_strEdAPPSign->setEnabled(false);
 	}
@@ -139,9 +146,9 @@ void ZegoMainDialog::initDialog()
 	}
 
 	//初始化app版本的ComboBox
-	ui.m_cbAppVersion->addItem(QStringLiteral("国内版"));
-	ui.m_cbAppVersion->addItem(QStringLiteral("国际版"));
-	ui.m_cbAppVersion->addItem(QStringLiteral("自定义"));
+	ui.m_cbAppVersion->addItem(tr("国内版"));
+	ui.m_cbAppVersion->addItem(tr("国际版"));
+	ui.m_cbAppVersion->addItem(tr("自定义"));
 	ui.m_cbAppVersion->setCurrentIndex(theApp.GetBase().getKey());
 
 	SettingsPtr pCurSettings = m_userConfig.GetVideoSettings();
@@ -152,7 +159,7 @@ void ZegoMainDialog::initDialog()
 		EnumVideoAndAudioDevice(pCurSettings);
 
 		QString userID = m_userConfig.GetUserId();
-		QString userName = m_userConfig.GetUserName();
+		QString userName = m_userConfig.getUserName();
 		theApp.GetBase().InitAVSDK(pCurSettings, userID, userName);
 
 		//是否使用截屏推流,默认不使用
@@ -233,6 +240,7 @@ void ZegoMainDialog::setDefalutVideoQuality(SettingsPtr curSettings)
 
 void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 {
+#ifdef Q_OS_WIN
 	//设备数
 	int nDeviceCount = 0;
 	AV::DeviceInfo* pDeviceList(NULL);
@@ -269,6 +277,38 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	ui.m_cbCamera->setCurrentIndex(curSelectionIndex);
 	LIVEROOM::FreeDeviceList(pDeviceList);
 	pDeviceList = NULL;
+#else
+
+	QVector<deviceConfig> audioDeviceList = GetAudioDevicesWithOSX();
+	QVector<deviceConfig> videoDeviceList = GetVideoDevicesWithOSX();
+
+
+	//将从mac系统API中获取的Audio设备保存
+	int curSelectionIndex = 0;
+	for (int i = 0; i < audioDeviceList.size(); ++i)
+	{
+		insertStringListModelItem(m_cbMircoPhoneModel, audioDeviceList[i].deviceName, m_cbMircoPhoneModel->rowCount());
+		m_vecAudioDeviceIDs.push_back(audioDeviceList[i].deviceId);
+
+		if (curSettings->GetMircophoneId() == audioDeviceList[i].deviceId)
+			curSelectionIndex = i;
+	}
+
+	ui.m_cbMircoPhone->setCurrentIndex(curSelectionIndex);
+
+	//将从mac系统API中获取的Video设备保存
+	curSelectionIndex = 0;
+	for (int i = 0; i < videoDeviceList.size(); ++i)
+	{
+		insertStringListModelItem(m_cbCameraModel, videoDeviceList[i].deviceName, m_cbCameraModel->rowCount());
+		m_vecVideoDeviceIDs.push_back(videoDeviceList[i].deviceId);
+
+		if (curSettings->GetCameraId() == videoDeviceList[i].deviceId)
+			curSelectionIndex = i;
+	}
+
+	ui.m_cbCamera->setCurrentIndex(curSelectionIndex);
+#endif
 }
 
 void ZegoMainDialog::PullRoomList()
@@ -312,7 +352,7 @@ void ZegoMainDialog::writeJsonData(QNetworkReply *reply)
 	if (reply->error() == QNetworkReply::NoError){
 		json = reply->readAll();
 
-		qDebug() << "json = "<<json;
+		//qDebug() << "json = "<<json;
 		//关闭请求
 		reply->deleteLater();
 	}
@@ -403,25 +443,25 @@ void ZegoMainDialog::RefreshRoomList(QVector<RoomPtr> roomList)
 		//第二列：直播模式
 		QString strLiveMode;
 		strLiveMode = m_roomList[index]->getRoomId().mid(0, 3);
-		if (strLiveMode == QStringLiteral("#d-"))
-		    m_roomListModel->setItem(index, 1, new QStandardItem(QStringLiteral("单主播模式")));
-		else if (strLiveMode == QStringLiteral("#m-"))
-			m_roomListModel->setItem(index, 1, new QStandardItem(QStringLiteral("连麦模式")));
-		else if (strLiveMode == QStringLiteral("#s-"))
-			m_roomListModel->setItem(index, 1, new QStandardItem(QStringLiteral("混流模式")));
-		else if (strLiveMode == QStringLiteral("#g-"))
-			m_roomListModel->setItem(index, 1, new QStandardItem(QStringLiteral("游戏模式")));
-		else if (strLiveMode == QStringLiteral("#i-"))
-			m_roomListModel->setItem(index, 1, new QStandardItem(QStringLiteral("狼人杀模式")));
+		if (strLiveMode == "#d-")
+		    m_roomListModel->setItem(index, 1, new QStandardItem(tr("单主播模式")));
+		else if (strLiveMode == "#m-")
+			m_roomListModel->setItem(index, 1, new QStandardItem(tr("连麦模式")));
+		else if (strLiveMode == "#s-")
+			m_roomListModel->setItem(index, 1, new QStandardItem(tr("混流模式")));
+		else if (strLiveMode == "#g-")
+			m_roomListModel->setItem(index, 1, new QStandardItem(tr("游戏模式")));
+		else if (strLiveMode == "#i-")
+			m_roomListModel->setItem(index, 1, new QStandardItem(tr("狼人杀模式")));
 		else
-			m_roomListModel->setItem(index, 1, new QStandardItem(QStringLiteral("-")));
+			m_roomListModel->setItem(index, 1, new QStandardItem(tr("-")));
 
 		//第三列：连麦人数
-		QString strDetail(QStringLiteral("-"));
+		QString strDetail("-");
 		unsigned int uLivesCount = m_roomList[index]->getLivesCount();
 
 		if (uLivesCount != 0)
-			strDetail = QString(QStringLiteral("%1人正在连麦")).arg(m_roomList[index]->getLivesCount());
+			strDetail = QString(tr("%1人正在连麦")).arg(m_roomList[index]->getLivesCount());
 
 		m_roomListModel->setItem(index, 2, new QStandardItem(strDetail));
 
@@ -521,7 +561,7 @@ void ZegoMainDialog::banSwitch()
 	//以后功能开放了再取消禁用
 	ui.m_switchCapture->setEnabled(false);
 	ui.m_switchFilter->setEnabled(false);
-	ui.m_switchAutoBitrate->setEnabled(false);
+	//ui.m_switchAutoBitrate->setEnabled(false);
 	ui.m_switchHardCode->setEnabled(false);
 	ui.m_switchHardDecode->setEnabled(false);
 	ui.m_switchMicAudio->setEnabled(false);
@@ -530,7 +570,39 @@ void ZegoMainDialog::banSwitch()
 	ui.m_switchTimeCount->setEnabled(false);
 }
 
+QVector<QString> ZegoMainDialog::handleAppSign(QString appSign)
+{
+	QVector<QString> vecAppSign;
+	appSign = appSign.simplified();
+	appSign.remove(",");
+	appSign.remove(" ");
+	qDebug() << "appSign = "<<appSign;
+
+	for (int i = 0; i < appSign.size(); i += 4)
+	{
+		//qDebug() << "curString = " << appSign.mid(i, 4);
+		QString hexSign = appSign.mid(i, 4);
+		hexSign.remove("0x");
+		hexSign.toUpper();
+		vecAppSign.append(hexSign);
+	}
+	qDebug() << vecAppSign;
+	return vecAppSign;
+}
+
 //part2:SDK回调函数
+void ZegoMainDialog::OnInitSDK(int nError)
+{
+	if (nError == 0)
+	{
+		qDebug() << "InitSDK Succeeded";
+	}
+	else
+	{
+		qDebug() << QString("InitSDK Error: %1").arg(nError);
+	}
+}
+
 void ZegoMainDialog::OnAudioDeviceChanged(AV::AudioDeviceType deviceType, const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state)
 {
 	if (deviceType == AV::AudioDeviceType::AudioDevice_Output)
@@ -654,8 +726,6 @@ void ZegoMainDialog::OnButtonModeSheetChange(int id)
 
 	if (button->isChecked())
 	{
-		
-		qDebug() << "Modebutton"<< id <<"checked";
 		if (id == 0)
 			m_curMode = LIVEROOM::ZEGO_SINGLE_ANCHOR;
 		else if (id == 1)
@@ -674,12 +744,10 @@ void ZegoMainDialog::OnButtonQualityChange(int id)
 	if (button->isChecked() && (id == VQ_SelfDef))
 	{
 		//isVideoCustom = true;
-		qDebug() << "Qualitybutton" << id << "checked";
 		//changeSliderState(true);
 	}
 	else if (button->isChecked())
 	{
-		qDebug() << "Qualitybutton" << id << "checked";
 		isVideoCustom = false;
 		//changeSliderState(false);
 		m_userConfig.SetVideoQuality((VideoQuality)id);
@@ -854,19 +922,19 @@ void ZegoMainDialog::OnButtonClickedPublish()
 {
 	if (m_strEdUserId.isEmpty() || m_strEdUserName.isEmpty())
 	{
-		QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("UserID或UserName不能为空"));
+		QMessageBox::warning(NULL, tr("警告"), tr("UserID或UserName不能为空"));
 		return;
 	}
 
-	if (ui.m_strEdAPPID->text() == QStringLiteral(""))
+	if (ui.m_strEdAPPID->text() == "")
 	{
-		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppID不能为空"));
+		QMessageBox::information(NULL, tr("提示"), tr("AppID不能为空"));
 		return;
 	}
 
-	if (ui.m_strEdAPPSign->text() == QStringLiteral(""))
+	if (ui.m_strEdAPPSign->text() == "")
 	{
-		QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppSign不能为空"));
+		QMessageBox::information(NULL, tr("提示"), tr("AppSign不能为空"));
 		return;
 	}
 
@@ -875,20 +943,23 @@ void ZegoMainDialog::OnButtonClickedPublish()
 	m_userConfig.SetUserName(m_strEdUserName);
 
 	QString strUserId = m_userConfig.GetUserId();
-	QString strUserName = m_userConfig.GetUserName();
+	QString strUserName = m_userConfig.getUserName();
 
 	if (m_versionMode == Version::ZEGO_PROTOCOL_CUSTOM)
 	{
 		unsigned long appId = ui.m_strEdAPPID->text().toUInt();
 		QString strAppSign = ui.m_strEdAPPSign->text();
+		QVector<QString> vecAppSign = handleAppSign(strAppSign);
 		unsigned char *appSign = new unsigned char[32];
-		for (int i = 0; i < 32; i++)
-			appSign[i] = strAppSign.at(i).unicode();
-
+		for (int i = 0; i < vecAppSign.size(); i++)
+		{
+			bool ok;
+			appSign[i] = (unsigned char)vecAppSign[i].toInt(&ok, 16);
+		}
 		LIVEROOM::UnInitSDK();
 		if (!LIVEROOM::InitSDK(appId, appSign, 32))
 		{
-			QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("初始化SDK失败"));
+			QMessageBox::information(NULL, tr("提示"), tr("初始化SDK失败"));
 			return;
 		}
 
@@ -910,13 +981,13 @@ void ZegoMainDialog::OnButtonClickedPublish()
 	switch (m_curMode)
 	{
 	case LIVEROOM::ZEGO_SINGLE_ANCHOR:
-		strMode = QStringLiteral("#d");
+		strMode = "#d";
 		break;
 	case LIVEROOM::ZEGO_JOIN_PUBLISH:
-		strMode = QStringLiteral("#m");
+		strMode = "#m";
 		break;
 	case LIVEROOM::ZEGO_MIX_STREAM:
-		strMode = QStringLiteral("#s");
+		strMode = "#s";
 		break;
 	default:
 		break;
@@ -926,49 +997,48 @@ void ZegoMainDialog::OnButtonClickedPublish()
 	//获取当前时间的毫秒
 	int ms = currentTime.msec();
 
-	QString strRoomID = QString(QStringLiteral("%1-%2-%3")).arg(strMode).arg(m_userConfig.GetUserId()).arg(ms);
+	QString strRoomID = QString(("%1-%2-%3")).arg(strMode).arg(m_userConfig.GetUserId()).arg(ms);
 
 #ifdef Q_OS_WIN32
-	QString strRoomName = QStringLiteral("windows-room-") + strUserId;
+	QString strRoomName = "windows-room-" + strUserId;
 #else
-	QString strRoomName = QStringLiteral("mac-room-") + strUserId;
+	QString strRoomName = "mac-room-" + strUserId;
 #endif
 
 	QString inputRoomName = ui.m_edRoomName->text();
 	if (!inputRoomName.isEmpty())
 	{
 		strRoomName = inputRoomName;
-		ui.m_edRoomName->setText(QString(QStringLiteral("")));
+		ui.m_edRoomName->setText("");
 	}
 
-	qDebug() << "userId = " << strUserId << "  userName = " << strUserName << "  roomID = " << strRoomID << "  roomName = " << strRoomName;
 	RoomPtr pRoom(new QZegoRoomModel(strRoomID, strRoomName, strUserId, strUserName));
 	if (m_curMode == LIVEROOM::ZEGO_SINGLE_ANCHOR)
 	{
-		ZegoSingleAnchorDialog liveroom(pCurSettings, pRoom, strUserId, strUserName, this);
+		ZegoSingleAnchorDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
 		connect(&liveroom, &ZegoSingleAnchorDialog::sigSaveVideoSettings, this, &ZegoMainDialog::OnSaveVideoSettings);
-
+		
 		//进入直播房间前先隐藏该界面
 		this->hide();
 		liveroom.exec();
 	}
 	else if (m_curMode == LIVEROOM::ZEGO_JOIN_PUBLISH)
 	{
-		ZegoMoreAnchorDialog liveroom(pCurSettings, pRoom, strUserId, strUserName, this);
+		ZegoMoreAnchorDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
 		connect(&liveroom, &ZegoMoreAnchorDialog::sigSaveVideoSettings, this, &ZegoMainDialog::OnSaveVideoSettings);
-
+	
 		//进入直播房间前先隐藏该界面
 		this->hide();
 		liveroom.exec();
 	}
 	else if (m_curMode == LIVEROOM::ZEGO_MIX_STREAM)
 	{
-		ZegoMixStreamAnchorDialog liveroom(pCurSettings, pRoom, strUserId, strUserName, this);
+		ZegoMixStreamAnchorDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
 		connect(&liveroom, &ZegoMixStreamAnchorDialog::sigSaveVideoSettings, this, &ZegoMainDialog::OnSaveVideoSettings);
-
+		
 		//进入直播房间前先隐藏该界面
 		this->hide();
 		liveroom.exec();
@@ -993,16 +1063,16 @@ void ZegoMainDialog::OnButtonEnterRoom()
 
 	if (m_strEdUserId.isEmpty() || m_strEdUserName.isEmpty())
 	{
-		QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("UserID或UserName不能为空"));
+		QMessageBox::warning(NULL, tr("警告"), tr("UserID或UserName不能为空"));
 		return;
 	}
 
 	QString playLiveMode = pRoom->getRoomId().mid(0, 3);
-	if (playLiveMode == QStringLiteral("#d-"))
+	if (playLiveMode == "#d-")
 		m_curMode = LIVEROOM::ZEGO_SINGLE_ANCHOR;
-	else if (playLiveMode == QStringLiteral("#m-"))
+	else if (playLiveMode == "#m-")
 		m_curMode = LIVEROOM::ZEGO_JOIN_PUBLISH;
-	else if (playLiveMode == QStringLiteral("#s-"))
+	else if (playLiveMode == "#s-")
 		m_curMode = LIVEROOM::ZEGO_MIX_STREAM;
 	else
 	{
@@ -1018,7 +1088,7 @@ void ZegoMainDialog::OnButtonEnterRoom()
 	
 
 	QString strUserId = m_userConfig.GetUserId();
-	QString strUserName = m_userConfig.GetUserName();
+	QString strUserName = m_userConfig.getUserName();
 
 	//更新用户信息
 	LIVEROOM::SetUser(strUserId.toStdString().c_str(), strUserName.toStdString().c_str());
@@ -1034,30 +1104,30 @@ void ZegoMainDialog::OnButtonEnterRoom()
 
 	if (m_curMode == LIVEROOM::ZEGO_SINGLE_ANCHOR)
 	{
-		ZegoSingleAudienceDialog liveroom(pCurSettings, pRoom, strUserId, strUserName, this);
+		ZegoSingleAudienceDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
 		connect(&liveroom, &ZegoSingleAudienceDialog::sigSaveVideoSettings, this, &ZegoMainDialog::OnSaveVideoSettings);
-
+		
 		//进入直播房间前先隐藏该界面
 		this->hide();
 		liveroom.exec();
 	}
 	else if (m_curMode == LIVEROOM::ZEGO_JOIN_PUBLISH)
 	{
-		ZegoMoreAudienceDialog liveroom(pCurSettings, pRoom, strUserId, strUserName, this);
+		ZegoMoreAudienceDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
 		connect(&liveroom, &ZegoMoreAudienceDialog::sigSaveVideoSettings, this, &ZegoMainDialog::OnSaveVideoSettings);
-
+		
 		//进入直播房间前先隐藏该界面
 		this->hide();
 		liveroom.exec();
 	}
 	else if (m_curMode == LIVEROOM::ZEGO_MIX_STREAM)
 	{
-		ZegoMixStreamAudienceDialog liveroom(pCurSettings, pRoom, strUserId, strUserName, this);
+		ZegoMixStreamAudienceDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
 		connect(&liveroom, &ZegoMixStreamAudienceDialog::sigSaveVideoSettings, this, &ZegoMainDialog::OnSaveVideoSettings);
-
+		
 		//进入直播房间前先隐藏该界面
 		this->hide();
 		liveroom.exec();
@@ -1132,7 +1202,7 @@ void ZegoMainDialog::OnButtonSwitchVideoFilter()
 	ui.m_switchFilter->setEnabled(true);
 }
 
-void ZegoMainDialog::OnButoonSwitchSurfaceMerge()
+void ZegoMainDialog::OnButtonSwitchSurfaceMerge()
 {
 	if (ui.m_switchSurfaceMerge->isChecked())
 	{
@@ -1149,11 +1219,10 @@ void ZegoMainDialog::OnButoonSwitchSurfaceMerge()
 
 	if (m_isUseSurfaceMerge)
 	{
-		ui.m_bMultiMode->setEnabled(false);
 		ui.m_bMixMode->setEnabled(false);
 
 		//只有单主播模式下可以开启屏幕推流
-		if (!(m_curMode == LIVEROOM::ZEGO_SINGLE_ANCHOR))
+		if (m_curMode == LIVEROOM::ZEGO_MIX_STREAM)
 		{
 			ui.m_bMultiMode->setChecked(false);
 			ui.m_bMixMode->setChecked(false);
@@ -1165,7 +1234,6 @@ void ZegoMainDialog::OnButoonSwitchSurfaceMerge()
 	else
 	{
 		//恢复模式按钮
-		ui.m_bMultiMode->setEnabled(true);
 		ui.m_bMixMode->setEnabled(true);
 	}
 
@@ -1179,6 +1247,20 @@ void ZegoMainDialog::OnButoonSwitchSurfaceMerge()
 
 	theApp.GetBase().InitAVSDK(m_userConfig.GetVideoSettings(), m_strEdUserId, m_strEdUserName);
 	ui.m_switchSurfaceMerge->setEnabled(true);
+}
+
+void ZegoMainDialog::OnButtonSwitchAutoBitrate()
+{
+	if (ui.m_switchAutoBitrate->isChecked())
+	{
+		qDebug() << "auto bitrate checked.";
+		LIVEROOM::SetVideoEncoderRateControlConfig(AV::ZegoVideoEncoderRateControlStrategy::ZEGO_RC_CRF, 18);
+	}
+	else
+	{
+		qDebug() << "auto bitrate unchecked.";
+		LIVEROOM::SetVideoEncoderRateControlConfig(AV::ZegoVideoEncoderRateControlStrategy::ZEGO_RC_ABR, 18);
+	}
 }
 
 void ZegoMainDialog::OnCheckSliderPressed()
@@ -1207,7 +1289,9 @@ void ZegoMainDialog::OnSaveUserNameChanged()
 
 void ZegoMainDialog::OnSwitchAudioDevice(int id)
 {
-	qDebug() << "current audio id = " << id;
+	if (id < 0)
+		return;
+
 	if (id < m_vecAudioDeviceIDs.size())
 	{
 		LIVEROOM::SetAudioDevice(AV::AudioDevice_Input, m_vecAudioDeviceIDs[id].toStdString().c_str());
@@ -1221,7 +1305,9 @@ void ZegoMainDialog::OnSwitchAudioDevice(int id)
 
 void ZegoMainDialog::OnSwitchVideoDevice(int id)
 {
-	qDebug() << "current video id = " << id;
+	if (id < 0)
+		return;
+
 	if (id < m_vecVideoDeviceIDs.size())
 	{
 		LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[id].toStdString().c_str());
@@ -1264,13 +1350,13 @@ void ZegoMainDialog::OnSaveVideoSettings(SettingsPtr settings)
 
 void ZegoMainDialog::OnComboBoxAppVersionChanged(int id)
 {
-	ui.m_cbAppVersion->setCurrentIndex(id);
+	//ui.m_cbAppVersion->setCurrentIndex(id);
 
 	if (id == ZEGO_PROTOCOL_UDP || id == ZEGO_PROTOCOL_UDP_INTERNATIONAL){
 
 		theApp.GetBase().setKey(id);
-		ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
-		ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
+		ui.m_strEdAPPID->setText(QString("%1").arg(theApp.GetBase().GetAppID()));
+		ui.m_strEdAPPSign->setText(tr("AppSign 已设置"));
 		ui.m_strEdAPPID->setEnabled(false);
 		ui.m_strEdAPPSign->setEnabled(false);
 
@@ -1279,8 +1365,8 @@ void ZegoMainDialog::OnComboBoxAppVersionChanged(int id)
 	}
 	else
 	{
-		ui.m_strEdAPPID->setText(QStringLiteral(""));
-		ui.m_strEdAPPSign->setText(QStringLiteral(""));
+		ui.m_strEdAPPID->setText("");
+		ui.m_strEdAPPSign->setText("");
 		ui.m_strEdAPPID->setEnabled(true);
 		ui.m_strEdAPPSign->setEnabled(true);
 		ui.m_strEdAPPID->setFocus();
@@ -1288,7 +1374,7 @@ void ZegoMainDialog::OnComboBoxAppVersionChanged(int id)
 
 	m_versionMode = (Version)id;
 	//标题
-	ui.m_lbTitle->setText(QStringLiteral("ZegoLiveDemo(%1)").arg(ui.m_cbAppVersion->currentText()));
+	ui.m_lbTitle->setText(tr("ZegoLiveDemo(%1)").arg(ui.m_cbAppVersion->currentText()));
 	//刷新房间列表
 	PullRoomList();
 }
@@ -1296,7 +1382,7 @@ void ZegoMainDialog::OnComboBoxAppVersionChanged(int id)
 void ZegoMainDialog::OnButtonUploadLog()
 {
 	LIVEROOM::UploadLog();
-	QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("日志上传成功"));
+	QMessageBox::information(NULL, tr("提示"), tr("日志上传成功"));
 }
 
 void ZegoMainDialog::mousePressEvent(QMouseEvent *event)
@@ -1373,11 +1459,11 @@ bool ZegoMainDialog::eventFilter(QObject *target, QEvent *event)
 				//appId为空的话，转回UDP
 				if (ui.m_strEdAPPID->text().isEmpty())
 				{
-					QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppID不能为空"));
+					QMessageBox::information(NULL, tr("提示"), tr("AppID不能为空"));
 					theApp.GetBase().setKey(Version::ZEGO_PROTOCOL_UDP);
 					ui.m_cbAppVersion->setCurrentIndex(Version::ZEGO_PROTOCOL_UDP);
-					ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
-					ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
+					ui.m_strEdAPPID->setText(QString("%1").arg(theApp.GetBase().GetAppID()));
+					ui.m_strEdAPPSign->setText(tr("AppSign 已设置"));
 					ui.m_strEdAPPID->clearFocus();
 					ui.m_strEdAPPID->setEnabled(false);
 					ui.m_strEdAPPSign->setEnabled(false);
@@ -1393,24 +1479,7 @@ bool ZegoMainDialog::eventFilter(QObject *target, QEvent *event)
 				return true;
 			}
 		}
-		/*else if (event->type() == QEvent::FocusOut)
-		{
-			// appId为空的话，转回UDP
-				if (ui.m_strEdAPPID->text().isEmpty())
-				{
-				QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppID不能为空"));
-				theApp.GetBase().setKey(Version::ZEGO_PROTOCOL_UDP);
-				ui.m_cbAppVersion->setCurrentIndex(Version::ZEGO_PROTOCOL_UDP);
-				ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
-				ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
-				ui.m_strEdAPPID->clearFocus();
-				ui.m_strEdAPPID->setEnabled(false);
-				ui.m_strEdAPPSign->setEnabled(false);
-
-				}
-			ui.m_strEdAPPID->clearFocus();
-			return true;
-		}*/
+		
 	}
 	else if (target == ui.m_strEdAPPSign){
 		if (event->type() == QEvent::KeyPress) {
@@ -1418,11 +1487,11 @@ bool ZegoMainDialog::eventFilter(QObject *target, QEvent *event)
 			if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Tab){
 				if (ui.m_strEdAPPSign->text().isEmpty())
 				{
-					QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppSign不能为空"));
+					QMessageBox::information(NULL, tr("提示"), tr("AppSign不能为空"));
 					theApp.GetBase().setKey(Version::ZEGO_PROTOCOL_UDP);
 					ui.m_cbAppVersion->setCurrentIndex(Version::ZEGO_PROTOCOL_UDP);
-					ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
-					ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
+					ui.m_strEdAPPID->setText(QString("%1").arg(theApp.GetBase().GetAppID()));
+					ui.m_strEdAPPSign->setText(tr("AppSign 已设置"));
 					ui.m_strEdAPPSign->clearFocus();
 					ui.m_strEdAPPID->setEnabled(false);
 					ui.m_strEdAPPSign->setEnabled(false);
@@ -1431,22 +1500,6 @@ bool ZegoMainDialog::eventFilter(QObject *target, QEvent *event)
 				return true;
 			}
 		}
-		/*else if (event->type() == QEvent::FocusOut)
-		{
-			if (ui.m_strEdAPPSign->text().isEmpty())
-			{
-				QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("AppSign不能为空"));
-				theApp.GetBase().setKey(Version::ZEGO_PROTOCOL_UDP);
-				ui.m_cbAppVersion->setCurrentIndex(Version::ZEGO_PROTOCOL_UDP);
-				ui.m_strEdAPPID->setText(QStringLiteral("%1").arg(theApp.GetBase().GetAppID()));
-				ui.m_strEdAPPSign->setText(QStringLiteral("AppSign 已设置"));
-				ui.m_strEdAPPSign->clearFocus();
-				ui.m_strEdAPPID->setEnabled(false);
-				ui.m_strEdAPPSign->setEnabled(false);
-			}
-			ui.m_strEdAPPSign->clearFocus();
-			return true;
-		}*/
 	}
 
 	return QDialog::eventFilter(target, event);

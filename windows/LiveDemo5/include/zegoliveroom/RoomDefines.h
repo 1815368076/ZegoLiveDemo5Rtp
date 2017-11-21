@@ -11,13 +11,13 @@
 #include "./AVDefines.h"
 
 #ifdef WIN32
-#ifdef ZEGO_EXPORTS
-#define ZEGO_API __declspec(dllexport)
+    #ifdef ZEGO_EXPORTS
+        #define ZEGO_API __declspec(dllexport)
+    #else
+        #define ZEGO_API __declspec(dllimport)
+    #endif
 #else
-#define ZEGO_API __declspec(dllimport)
-#endif
-#else
-#define ZEGO_API __attribute__((visibility("default")))
+    #define ZEGO_API extern "C" __attribute__((visibility("default")))
 #endif
 
 namespace ZEGO
@@ -198,18 +198,22 @@ namespace ZEGO
                 szUserId[0] = '\0';
                 szUserName[0] = '\0';
                 szContent[0] = '\0';
+                role = COMMON::Audience;
                 type = Text;
                 priority = Default;
                 category = Chat;
+                sendTime = 0;
             }
 
             char szUserId[ZEGO_MAX_COMMON_LEN];
             char szUserName[ZEGO_MAX_COMMON_LEN];
+            COMMON::ZegoRoomRole role;
             char szContent[ZEGO_MAX_COMMON_LEN];
             unsigned long long messageId;
             ZegoMessageType type;
             ZegoMessagePriority priority;
             ZegoMessageCategory category;
+            unsigned long long sendTime;
         };
 
         struct ZegoConversationMessage
@@ -228,7 +232,7 @@ namespace ZEGO
             char szContent[ZEGO_MAX_COMMON_LEN];
             unsigned long long messageId;
             ZegoMessageType type;
-            int sendTime;
+            unsigned long long sendTime;
         };
 
         struct ZegoConverInfo

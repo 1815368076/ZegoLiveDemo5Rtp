@@ -2,7 +2,9 @@
 #include "ZegoSDKSignal.h"
 #include <QMessageBox>
 #include <QDebug>
-
+#ifdef Q_OS_MAC
+#include "ZegoAVDevice.h"
+#endif
 ZegoMoreAudienceDialog::ZegoMoreAudienceDialog(QWidget *parent)
 	: QDialog(parent)
 {
@@ -14,8 +16,9 @@ ZegoMoreAudienceDialog::ZegoMoreAudienceDialog(QWidget *parent)
 	connect(ui.m_bClose, &QPushButton::clicked, this, &ZegoMoreAudienceDialog::OnClickTitleButton);
 }
 
-ZegoMoreAudienceDialog::ZegoMoreAudienceDialog(SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent)
-	: m_pAVSettings(curSettings),
+ZegoMoreAudienceDialog::ZegoMoreAudienceDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent)
+	:m_dpi(dpi),
+	m_pAVSettings(curSettings),
 	m_pChatRoom(room),
 	m_strCurUserID(curUserID),
 	m_strCurUserName(curUserName),
@@ -37,6 +40,12 @@ ZegoMoreAudienceDialog::ZegoMoreAudienceDialog(SettingsPtr curSettings, RoomPtr 
 	connect(GetAVSignal(), &QZegoAVSignal::sigPlayQualityUpdate, this, &ZegoMoreAudienceDialog::OnPlayQualityUpdate);
 	//信号与槽同步执行
 	connect(GetAVSignal(), &QZegoAVSignal::sigAuxInput, this, &ZegoMoreAudienceDialog::OnAVAuxInput, Qt::DirectConnection);
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+	connect(GetAVSignal(), &QZegoAVSignal::sigSurfaceMergeResult, this, &ZegoMoreAudienceDialog::OnSurfaceMergeResult, Qt::DirectConnection);
+#endif
+	connect(GetAVSignal(), &QZegoAVSignal::sigPreviewSnapshot, this, &ZegoMoreAudienceDialog::OnPreviewSnapshot, Qt::DirectConnection);
+	connect(GetAVSignal(), &QZegoAVSignal::sigSnapshot, this, &ZegoMoreAudienceDialog::OnSnapshot, Qt::DirectConnection);
+
 	connect(GetAVSignal(), &QZegoAVSignal::sigSendRoomMessage, this, &ZegoMoreAudienceDialog::OnSendRoomMessage);
 	connect(GetAVSignal(), &QZegoAVSignal::sigRecvRoomMessage, this, &ZegoMoreAudienceDialog::OnRecvRoomMessage);
 	connect(GetAVSignal(), &QZegoAVSignal::sigJoinLiveResponse, this, &ZegoMoreAudienceDialog::OnJoinLiveResponse);
@@ -57,9 +66,16 @@ ZegoMoreAudienceDialog::ZegoMoreAudienceDialog(SettingsPtr curSettings, RoomPtr 
 	connect(ui.m_bSound, &QPushButton::clicked, this, &ZegoMoreAudienceDialog::OnButtonSound);
 	connect(ui.m_bShare, &QPushButton::clicked, this, &ZegoMoreAudienceDialog::OnShareLink);
 	connect(ui.m_bAux, &QPushButton::clicked, this, &ZegoMoreAudienceDialog::OnButtonAux);
+	connect(ui.m_bFullScreen, &QPushButton::clicked, this, &ZegoMoreAudienceDialog::OnButtonShowFullScreen);
 
 	connect(ui.m_cbMircoPhone, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSwitchAudioDevice(int)));
 	connect(ui.m_cbCamera, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSwitchVideoDevice(int)));
+
+#ifdef Q_OS_WIN
+	connect(&hookDialog, &ZegoMusicHookDialog::sigUseDefaultAux, this, &ZegoMoreAudienceDialog::OnUseDefaultAux);
+	connect(&hookDialog, &ZegoMusicHookDialog::sigSendMusicAppPath, this, &ZegoMoreAudienceDialog::OnGetMusicAppPath);
+#endif
+	connect(this, &ZegoMoreAudienceDialog::sigShowSnapShotImage, this, &ZegoMoreAudienceDialog::OnShowSnapShotImage);
 
 	timer = new QTimer(this);
 	connect(timer, &QTimer::timeout, this, &ZegoMoreAudienceDialog::OnProgChange);
@@ -72,7 +88,7 @@ ZegoMoreAudienceDialog::ZegoMoreAudienceDialog(SettingsPtr curSettings, RoomPtr 
 	this->setWindowFlags(Qt::FramelessWindowHint);//去掉标题栏 
 
 	ui.m_edInput->installEventFilter(this);
-
+	this->installEventFilter(this);
 	//初始化网格布局
 	gridLayout = new QGridLayout();
 }
@@ -93,10 +109,14 @@ void ZegoMoreAudienceDialog::initDialog()
 	initComboBox();
 
 	//对话框模型初始化
-	m_chatModel = new QStringListModel(this);
+	m_chatModel = new QStandardItemModel(this);
 	ui.m_listChat->setModel(m_chatModel);
+	ui.m_listChat->horizontalHeader()->setVisible(false);
+	ui.m_listChat->verticalHeader()->setVisible(false);
+	ui.m_listChat->verticalHeader()->setDefaultSectionSize(26);
 	ui.m_listChat->setItemDelegate(new NoFocusFrameDelegate(this));
 	ui.m_listChat->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	ui.m_listChat->setColumnWidth(0, 300);
 
 
 	//成员列表初始化
@@ -142,7 +162,7 @@ void ZegoMoreAudienceDialog::StartPublishStream()
 	//获取当前时间的毫秒
 	int ms = currentTime.msec();
 	QString strStreamId;
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 	strStreamId = QString(QStringLiteral("s-windows-%1-%2")).arg(m_strCurUserID).arg(ms);
 #else
 	strStreamId = QString(QStringLiteral("s-mac-%1-%2")).arg(m_strCurUserID).arg(ms);
@@ -153,25 +173,77 @@ void ZegoMoreAudienceDialog::StartPublishStream()
 
 	m_pChatRoom->addStream(pPublishStream);
 
+	//推流前调用双声道
+	LIVEROOM::SetAudioChannelCount(2);
+
 	if (m_avaliableView.size() > 0)
 	{
 
 		int nIndex = takeLeastAvaliableViewIndex();
 		pPublishStream->setPlayView(nIndex);
 		addAVView(nIndex);
-		qDebug() << "publish nIndex = " << nIndex;
-	
-		LIVEROOM::SetVideoFPS(m_pAVSettings->GetFps());
-		LIVEROOM::SetVideoBitrate(m_pAVSettings->GetBitrate());
-		LIVEROOM::SetVideoCaptureResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
-		LIVEROOM::SetVideoEncodeResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
+		AVViews.last()->setCurUser();
+		connect(AVViews.last(), &QZegoAVView::sigSnapShotPreviewOnMoreAudience, this, &ZegoMoreAudienceDialog::OnSnapshotPreview);
 
-		//配置View
-		LIVEROOM::SetPreviewView((void *)AVViews.last()->winId());
-		LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill);
-		LIVEROOM::StartPreview();
-		
+		qDebug() << "publish nIndex = " << nIndex;
+		if(m_pAVSettings->GetSurfaceMerge())
+		{
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
+			int cx = m_pAVSettings->GetResolution().cx;
+			int cy = m_pAVSettings->GetResolution().cy;
+
+			SurfaceMerge::SetFPS(m_pAVSettings->GetFps());
+			SurfaceMerge::SetCursorVisible(true);
+			SurfaceMerge::SetSurfaceSize(cx, cy);
+
+			SurfaceMerge::ZegoCaptureItem *itemList = new SurfaceMerge::ZegoCaptureItem[2];
+
+			SurfaceMerge::ZegoCaptureItem itemCam;
+			strcpy(itemCam.captureSource.deviceId, m_pAVSettings->GetCameraId().toStdString().c_str());
+			itemCam.captureType = SurfaceMerge::CaptureType::Camera;
+			itemCam.position = { cx - cx / 4, cy - cy / 4, cx / 4, cy / 4 };  //摄像头默认置于右下角
+
+			unsigned int count = 0;
+			SurfaceMerge::ScreenItem *screenList = SurfaceMerge::EnumScreenList(count);
+			SurfaceMerge::ZegoCaptureItem itemWin;
+			for (int i = 0; i < count; i++)
+			{
+				if (screenList[i].bPrimary)
+				{
+					strcpy(itemWin.captureSource.screenName, screenList[i].szName);
+					break;
+				}
+			}
+
+			itemWin.captureType = SurfaceMerge::CaptureType::Screen;
+			itemWin.position = { 0, 0, cx, cy };
+			itemList[0] = itemCam;
+			itemList[1] = itemWin;
+
+			SurfaceMerge::UpdateSurface(itemList, 2);
+			AVViews.last()->setSurfaceMergeView(true);
+			AVViews.last()->setSurfaceMergeItemRect(itemWin, itemCam);
+			SurfaceMerge::SetRenderView((void *)AVViews.last()->winId());
+
+			delete[]itemList;
+			SurfaceMerge::FreeScreenList(screenList);
+#endif
+		}
+		else
+		{
+			LIVEROOM::SetVideoFPS(m_pAVSettings->GetFps());
+			LIVEROOM::SetVideoBitrate(m_pAVSettings->GetBitrate());
+			LIVEROOM::SetVideoCaptureResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
+			LIVEROOM::SetVideoEncodeResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
+
+			//配置View
+			LIVEROOM::SetPreviewView((void *)AVViews.last()->winId());
+			LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFit);
+			LIVEROOM::StartPreview();
+		}
+
 		QString streamID = m_strPublishStreamID;
+		setWaterPrint();
 		qDebug() << "start publishing!";
 		LIVEROOM::StartPublishing(m_pChatRoom->getRoomName().toStdString().c_str(), streamID.toStdString().c_str(), LIVEROOM::ZEGO_JOIN_PUBLISH, "");
 		m_bIsPublishing = true;
@@ -189,12 +261,21 @@ void ZegoMoreAudienceDialog::StopPublishStream(const QString& streamID)
 			curStream = stream;
 	}
 
+	if (m_pAVSettings->GetSurfaceMerge())
+	{
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
+		SurfaceMerge::SetRenderView(nullptr);
+		SurfaceMerge::UpdateSurface(nullptr, 0);
+#endif
+	}
+	else
+	{
+		LIVEROOM::SetPreviewView(nullptr);
+		LIVEROOM::StopPreview();
+	}
+
 	qDebug() << "stop publish view index = " << curStream->getPlayView();
 	removeAVView(curStream->getPlayView());
-
-	LIVEROOM::SetPreviewView(nullptr);
-	LIVEROOM::StopPreview();
-	
 
 	LIVEROOM::StopPublishing();
 	m_bIsPublishing = false;
@@ -217,8 +298,11 @@ void ZegoMoreAudienceDialog::StartPlayStream(StreamPtr stream)
 		qDebug() << "playStream nIndex = " << nIndex << " play stream id is " << stream->getStreamId();
 		stream->setPlayView(nIndex);
 		addAVView(nIndex);
+		connect(AVViews.last(), &QZegoAVView::sigSnapShotOnMoreAudienceWithStreamID, this, &ZegoMoreAudienceDialog::OnSnapshotWithStreamID);
+		AVViews.last()->setViewStreamID(stream->getStreamId());
+
 		//配置View
-		LIVEROOM::SetViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFill, stream->getStreamId().toStdString().c_str());
+		LIVEROOM::SetViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFit, stream->getStreamId().toStdString().c_str());
 		LIVEROOM::StartPlayingStream(stream->getStreamId().toStdString().c_str(), (void *)AVViews.last()->winId());
 	}
 }
@@ -245,9 +329,22 @@ void ZegoMoreAudienceDialog::StopPlayStream(const QString& streamID)
 void ZegoMoreAudienceDialog::GetOut()
 {
 	//离开房间时先把混音功能和声卡采集关闭
+#ifdef Q_OS_WIN
+	if (isUseDefaultAux)
+		EndAux();
+	else
+	{
+		AUDIOHOOK::StopAudioRecord();
+		LIVEROOM::EnableAux(false);
+		AUDIOHOOK::UnInitAudioHook();
+
+	}
+#else
 	EndAux();
+#endif
+
 	if (ui.m_bCapture->text() == QStringLiteral("停止采集"))
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 		LIVEROOM::EnableMixSystemPlayout(false);
 #endif
 
@@ -316,6 +413,7 @@ void ZegoMoreAudienceDialog::initComboBox()
 
 void ZegoMoreAudienceDialog::EnumVideoAndAudioDevice()
 {
+#ifdef Q_OS_WIN
 	//设备数
 	int nDeviceCount = 0;
 	AV::DeviceInfo* pDeviceList(NULL);
@@ -352,6 +450,36 @@ void ZegoMoreAudienceDialog::EnumVideoAndAudioDevice()
 	ui.m_cbCamera->setCurrentIndex(curSelectionIndex);
 	LIVEROOM::FreeDeviceList(pDeviceList);
 	pDeviceList = NULL;
+#else
+	QVector<deviceConfig> audioDeviceList = GetAudioDevicesWithOSX();
+	QVector<deviceConfig> videoDeviceList = GetVideoDevicesWithOSX();
+
+	//将从mac系统API中获取的Audio设备保存
+	int curSelectionIndex = 0;
+	for (int i = 0; i < audioDeviceList.size(); ++i)
+	{
+		insertStringListModelItem(m_cbMircoPhoneModel, audioDeviceList[i].deviceName, m_cbMircoPhoneModel->rowCount());
+		m_vecAudioDeviceIDs.push_back(audioDeviceList[i].deviceId);
+
+		if (m_pAVSettings->GetMircophoneId() == audioDeviceList[i].deviceId)
+			curSelectionIndex = i;
+	}
+
+	ui.m_cbMircoPhone->setCurrentIndex(curSelectionIndex);
+
+	//将从mac系统API中获取的Video设备保存
+	curSelectionIndex = 0;
+	for (int i = 0; i < videoDeviceList.size(); ++i)
+	{
+		insertStringListModelItem(m_cbCameraModel, videoDeviceList[i].deviceName, m_cbCameraModel->rowCount());
+		m_vecVideoDeviceIDs.push_back(videoDeviceList[i].deviceId);
+
+		if (m_pAVSettings->GetCameraId() == videoDeviceList[i].deviceId)
+			curSelectionIndex = i;
+	}
+
+	ui.m_cbCamera->setCurrentIndex(curSelectionIndex);
+#endif
 }
 
 void ZegoMoreAudienceDialog::insertStringListModelItem(QStringListModel * model, QString name, int size)
@@ -413,7 +541,7 @@ void ZegoMoreAudienceDialog::initAVView(QZegoAVView *view)
 
 void ZegoMoreAudienceDialog::addAVView(int addViewIndex)
 {
-	QZegoAVView *newAVView = new QZegoAVView;
+	QZegoAVView *newAVView = new QZegoAVView(ZEGODIALOG_MoreAudience);
 	initAVView(newAVView);
 	newAVView->setViewIndex(addViewIndex);
 	AVViews.push_back(newAVView);
@@ -690,9 +818,39 @@ void ZegoMoreAudienceDialog::EndAux()
 	LIVEROOM::EnableAux(false);
 
 	ui.m_bAux->setText(QStringLiteral("开启混音"));
-	delete[] m_pAuxData;
+	if (m_pAuxData)
+	{
+		delete[] m_pAuxData;
+		m_pAuxData = NULL;
+	}
 	m_nAuxDataLen = 0;
 	m_nAuxDataPos = 0;
+}
+
+void ZegoMoreAudienceDialog::setWaterPrint()
+{
+	QString waterPrintPath = QDir::currentPath();
+	waterPrintPath += "/Resources/images/";
+	if (m_dpi < 2.0)
+	{
+		waterPrintPath += "waterprint.png";
+	}
+	else
+	{
+		waterPrintPath += "2x/waterprint@2x.png";
+	}
+
+	QImage waterPrint(waterPrintPath);
+
+	//标准640 * 360，根据标准对当前分辨率的水印进行等比缩放
+	int cx = m_pAVSettings->GetResolution().cx;
+	int cy = m_pAVSettings->GetResolution().cy;
+	float scaleX = cx * 1.0 / 640;
+	float scaleY = cy * 1.0 / 360;
+
+	LIVEROOM::SetPublishWaterMarkRect((int)(20 * scaleX), (int)(20 * scaleY), (int)(123 * scaleX), (int)(69 * scaleY));
+	LIVEROOM::SetPreviewWaterMarkRect((int)(20 * scaleX), (int)(20 * scaleY), (int)(123 * scaleX), (int)(69 * scaleY));
+	LIVEROOM::SetWaterMarkImagePath(waterPrintPath.toStdString().c_str());
 }
 
 //SDK回调
@@ -725,9 +883,9 @@ void ZegoMoreAudienceDialog::OnLoginRoom(int errorCode, const QString& strRoomID
 		QJsonParseError json_error;
 		QJsonDocument doc = QJsonDocument::fromJson(jsonArray, &json_error);
 
-		if (json_error.error != QJsonParseError::NoError){ return; }
+		if (json_error.error != QJsonParseError::NoError){ continue; }
 
-		if (!doc.isObject()) { return; }
+		if (!doc.isObject()) { continue; }
 
 		if (praseFirstAnchorJsonData(doc))
 		{
@@ -778,9 +936,9 @@ void ZegoMoreAudienceDialog::OnStreamUpdated(const QString& roomId, QVector<Stre
 					QJsonParseError json_error;
 					QJsonDocument doc = QJsonDocument::fromJson(jsonArray, &json_error);
 
-					if (json_error.error != QJsonParseError::NoError){ return; }
+					if (json_error.error != QJsonParseError::NoError){ continue; }
 
-					if (!doc.isObject()) { return; }
+					if (!doc.isObject()) { continue; }
 
 					praseOtherAnchorJsonData(doc);
 
@@ -883,6 +1041,7 @@ void ZegoMoreAudienceDialog::OnPublishStateUpdate(int stateCode, const QString& 
 
 		EndAux();
 		// 停止预览, 回收view
+		removeAVView(streamInfo->getPlayView());
 		LIVEROOM::StopPreview();
 		LIVEROOM::SetPreviewView(nullptr);
 		StreamPtr pStream = m_pChatRoom->removeStream(streamId);
@@ -901,6 +1060,7 @@ void ZegoMoreAudienceDialog::OnPlayStateUpdate(int stateCode, const QString& str
 	{
 		// 回收view
 		StreamPtr pStream = m_pChatRoom->removeStream(streamId);
+		removeAVView(pStream->getPlayView());
 		FreeAVView(pStream);
 	}
 }
@@ -995,6 +1155,38 @@ void ZegoMoreAudienceDialog::OnPublishQualityUpdate(const QString& streamId, int
 
 void ZegoMoreAudienceDialog::OnAVAuxInput(unsigned char *pData, int *pDataLen, int pDataLenValue, int *pSampleRate, int *pNumChannels)
 {
+#ifdef Q_OS_WIN
+	if (isUseDefaultAux)
+	{
+		if (m_pAuxData != nullptr && (*pDataLen < m_nAuxDataLen))
+		{
+			*pSampleRate = 44100;
+			*pNumChannels = 2;
+
+			if (m_nAuxDataPos + *pDataLen > m_nAuxDataLen)
+			{
+				m_nAuxDataPos = 0;
+			}
+
+			int nCopyLen = *pDataLen;
+			memcpy(pData, m_pAuxData + m_nAuxDataPos, nCopyLen);
+
+			m_nAuxDataPos += *pDataLen;
+
+			*pDataLen = nCopyLen;
+
+
+		}
+		else
+		{
+			*pDataLen = 0;
+		}
+	}
+	else
+	{
+		AUDIOHOOK::GetAUXData(pData, pDataLen, pSampleRate, pNumChannels);
+	}
+#else
 	if (m_pAuxData != nullptr && (*pDataLen < m_nAuxDataLen))
 	{
 		*pSampleRate = 44100;
@@ -1018,6 +1210,7 @@ void ZegoMoreAudienceDialog::OnAVAuxInput(unsigned char *pData, int *pDataLen, i
 	{
 		*pDataLen = 0;
 	}
+#endif
 }
 
 void ZegoMoreAudienceDialog::OnSendRoomMessage(int errorCode, const QString& roomID, int sendSeq, unsigned long long messageId)
@@ -1036,8 +1229,19 @@ void ZegoMoreAudienceDialog::OnRecvRoomMessage(const QString& roomId, QVector<Ro
 	for (auto& roomMsg : vRoomMsgList)
 	{
 		QString strTmpContent;
-		strTmpContent = QString(QStringLiteral("%1: %2")).arg(roomMsg->getUserId()).arg(roomMsg->getContent());
-		insertStringListModelItem(m_chatModel, strTmpContent, m_chatModel->rowCount());
+		strTmpContent = QString(QStringLiteral("%1")).arg(roomMsg->getContent());
+		
+		QStandardItem *item = new QStandardItem;
+		m_chatModel->appendRow(item);
+		QModelIndex index = m_chatModel->indexFromItem(item);
+
+		ZegoRoomMessageLabel *chatContent = new ZegoRoomMessageLabel;
+		chatContent->setTextContent(roomMsg->getUserName(), strTmpContent);
+
+		ui.m_listChat->setIndexWidget(index, chatContent);
+		if (chatContent->getHeightNum() > 1)
+			ui.m_listChat->resizeRowToContents(m_chatModel->rowCount() - 1);
+
 		//每次接受消息均显示最后一条
 		ui.m_listChat->scrollToBottom();
 
@@ -1178,6 +1382,48 @@ void ZegoMoreAudienceDialog::OnVideoDeviceChanged(const QString& strDeviceId, co
 	}
 }
 
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+void ZegoMoreAudienceDialog::OnSurfaceMergeResult(unsigned char *surfaceMergeData, int datalength)
+{
+	if (m_takeSnapShot)
+	{
+		//同一时刻只允许一个线程进入该代码段
+		m_takeSnapShot = false;
+		m_mutex.lock();
+		m_image = new unsigned char[datalength];
+		memcpy(m_image, surfaceMergeData, datalength);
+		QImage *image = new QImage(m_image, m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy, QImage::Format_RGB32);
+		emit sigShowSnapShotImage(image);
+		m_mutex.unlock();
+	}
+}
+#endif
+
+void ZegoMoreAudienceDialog::OnPreviewSnapshot(void *pImage)
+{
+	QImage *image = new QImage;
+
+#ifdef Q_OS_WIN
+	QPixmap pixmap = qt_pixmapFromWinHBITMAP((HBITMAP)pImage, 0);
+	*image = pixmap.toImage();
+#endif
+	//发送信号切线程，不能阻塞当前线程
+	emit sigShowSnapShotImage(image);
+}
+
+void ZegoMoreAudienceDialog::OnSnapshot(void *pImage, const QString &streamID)
+{
+	QImage *image = new QImage;
+
+#ifdef Q_OS_WIN
+	QPixmap pixmap = qt_pixmapFromWinHBITMAP((HBITMAP)pImage, 0);
+	*image = pixmap.toImage();
+#endif
+
+	//发送信号切线程，不能阻塞当前线程
+	emit sigShowSnapShotImage(image);
+}
+
 //UI回调
 void ZegoMoreAudienceDialog::OnClickTitleButton()
 {
@@ -1223,6 +1469,35 @@ void ZegoMoreAudienceDialog::OnButtonJoinLive()
 		ui.m_bRequestJoinLive->setText(QStringLiteral("停止中..."));
 		ui.m_bRequestJoinLive->setEnabled(false);
 	    StopPublishStream(m_strPublishStreamID);
+
+		if (ui.m_bAux->text() == QStringLiteral("关闭混音"))
+		{
+			ui.m_bAux->setText(QStringLiteral("关闭中..."));
+			ui.m_bAux->setEnabled(false);
+
+#ifdef Q_OS_WIN
+			if (isUseDefaultAux)
+			{
+				EndAux();
+
+			}
+			else
+			{
+				AUDIOHOOK::StopAudioRecord();
+				LIVEROOM::EnableAux(false);
+				AUDIOHOOK::UnInitAudioHook();
+
+			}
+#else
+			EndAux();
+#endif
+			ui.m_bAux->setText(QStringLiteral("开启混音"));
+		}
+
+		//停止直播后不能混音、声音采集、分享
+		ui.m_bAux->setEnabled(false);
+		ui.m_bCapture->setEnabled(false);
+		ui.m_bShare->setEnabled(false);
 		ui.m_bRequestJoinLive->setEnabled(true);
 		m_bIsJoinLive = false;
 		SetOperation(false);
@@ -1251,8 +1526,19 @@ void ZegoMoreAudienceDialog::OnButtonSendMessage()
 	ui.m_edInput->setText(QStringLiteral(""));
 
 	QString strTmpContent;
-	strTmpContent = QString(QStringLiteral("我：%1")).arg(m_strLastSendMsg);
-	insertStringListModelItem(m_chatModel, strTmpContent, m_chatModel->rowCount());
+	strTmpContent = QString(QStringLiteral("%1")).arg(m_strLastSendMsg);
+	
+	QStandardItem *item = new QStandardItem;
+	m_chatModel->appendRow(item);
+	QModelIndex index = m_chatModel->indexFromItem(item);
+
+	ZegoRoomMessageLabel *chatContent = new ZegoRoomMessageLabel;
+	chatContent->setTextContent(QStringLiteral("我"), strTmpContent);
+
+	ui.m_listChat->setIndexWidget(index, chatContent);
+	if (chatContent->getHeightNum() > 1)
+		ui.m_listChat->resizeRowToContents(m_chatModel->rowCount() - 1);
+
 	//每次发送消息均显示最后一条
 	ui.m_listChat->scrollToBottom();
 	m_strLastSendMsg.clear();
@@ -1263,14 +1549,14 @@ void ZegoMoreAudienceDialog::OnButtonSoundCapture()
 {
 	if (ui.m_bCapture->text() == QStringLiteral("声卡采集"))
 	{
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 		LIVEROOM::EnableMixSystemPlayout(true);
 #endif
 		ui.m_bCapture->setText(QStringLiteral("停止采集"));
 	}
 	else
 	{
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 		LIVEROOM::EnableMixSystemPlayout(false);
 #endif
 		ui.m_bCapture->setText(QStringLiteral("声卡采集"));
@@ -1339,21 +1625,142 @@ void ZegoMoreAudienceDialog::OnShareLink()
 
 }
 
+void ZegoMoreAudienceDialog::OnButtonShowFullScreen()
+{
+	//直播窗口总在最顶层
+	ui.m_zoneLiveView_Inner->setWindowFlags(ui.m_zoneLiveView_Inner->windowFlags() | Qt::WindowStaysOnTopHint);
+	ui.m_zoneLiveView_Inner->setParent(NULL);
+	ui.m_zoneLiveView_Inner->showFullScreen();
+	m_isLiveFullScreen = true;
+}
+
+void ZegoMoreAudienceDialog::OnSnapshotPreview()
+{
+	if (m_pAVSettings->GetSurfaceMerge())
+	{
+		m_takeSnapShot = true;
+	}
+	else
+	{
+		LIVEROOM::TakeSnapshotPreview();
+	}
+}
+
+void ZegoMoreAudienceDialog::OnSnapshotWithStreamID(const QString &streamID)
+{
+	qDebug() << LIVEROOM::TakeSnapshot(streamID.toStdString().c_str());
+}
+
+void ZegoMoreAudienceDialog::OnShowSnapShotImage(QImage *imageData)
+{
+	ZegoImageShowDialog imageShowDialog(imageData, imageData->width(), imageData->height(), m_pAVSettings);
+	imageShowDialog.initDialog();
+	imageShowDialog.exec();
+
+	if (m_image)
+	{
+		delete[] m_image;
+		m_image = nullptr;
+	}
+
+}
+
+void ZegoMoreAudienceDialog::OnUseDefaultAux(bool state)
+{
+	BeginAux();
+	isUseDefaultAux = state;
+	ui.m_bAux->setEnabled(true);
+	ui.m_bAux->setText(QStringLiteral("关闭混音"));
+}
+
+#ifdef Q_OS_WIN
+void ZegoMoreAudienceDialog::OnGetMusicAppPath(QString exePath)
+{
+
+	QString dllPath = QDir::currentPath() + "/MusicHook/ZegoMusicAudio.dll";
+
+	const char*  exepath;
+	QByteArray exeBA = exePath.toLocal8Bit();
+	exepath = exeBA.data();
+
+	const char*  dllpath;
+	QByteArray dllBA = dllPath.toLocal8Bit();
+	dllpath = dllBA.data();
+
+	AUDIOHOOK::InitAuidoHook();
+	if (!AUDIOHOOK::StartAudioHook(exepath, dllpath))
+	{
+		QMessageBox::warning(NULL, QStringLiteral("警告"), QStringLiteral("路径格式错误"));
+		ui.m_bAux->setEnabled(true);
+		ui.m_bAux->setText(QStringLiteral("开启混音"));
+		return;
+	}
+
+	AUDIOHOOK::StartAudioRecord();
+	LIVEROOM::EnableAux(true);
+
+	ui.m_bAux->setEnabled(true);
+	ui.m_bAux->setText(QStringLiteral("关闭混音"));
+}
+#endif
+
 void ZegoMoreAudienceDialog::OnButtonAux()
 {
 	if (ui.m_bAux->text() == QStringLiteral("开启混音"))
 	{
+		ui.m_bAux->setText(QStringLiteral("开启中..."));
+		ui.m_bAux->setEnabled(false);
+
+#ifdef Q_OS_WIN
+
+		hookDialog.searchMusicAppFromReg();
+		if (hookDialog.exec() == QDialog::Rejected)
+		{
+			ui.m_bAux->setEnabled(true);
+			ui.m_bAux->setText(QStringLiteral("开启混音"));
+		}
+
+#endif
+
+#ifdef Q_OS_MAC
+
 		BeginAux();
+		ui.m_bAux->setEnabled(true);
+		ui.m_bAux->setText(QStringLiteral("关闭混音"));
+#endif
+
 	}
 	else
 	{
+		ui.m_bAux->setText(QStringLiteral("关闭中..."));
+		ui.m_bAux->setEnabled(false);
+
+#ifdef Q_OS_WIN
+		if (isUseDefaultAux)
+		{
+			EndAux();
+
+		}
+		else
+		{
+			AUDIOHOOK::StopAudioRecord();
+			LIVEROOM::EnableAux(false);
+			AUDIOHOOK::UnInitAudioHook();
+
+		}
+#else
 		EndAux();
+#endif
+		ui.m_bAux->setEnabled(true);
+		ui.m_bAux->setText(QStringLiteral("开启混音"));
 	}
 }
 
 void ZegoMoreAudienceDialog::OnSwitchAudioDevice(int id)
 {
-	qDebug() << "current audio id = " << id;
+	if (id < 0)
+		return;
+
 	if (id < m_vecAudioDeviceIDs.size())
 	{
 		LIVEROOM::SetAudioDevice(AV::AudioDevice_Input, m_vecAudioDeviceIDs[id].toStdString().c_str());
@@ -1365,7 +1772,9 @@ void ZegoMoreAudienceDialog::OnSwitchAudioDevice(int id)
 
 void ZegoMoreAudienceDialog::OnSwitchVideoDevice(int id)
 {
-	qDebug() << "current video id = " << id;
+	if (id < 0)
+		return;
+
 	if (id < m_vecVideoDeviceIDs.size())
 	{
 		LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[id].toStdString().c_str());
@@ -1450,6 +1859,27 @@ bool ZegoMoreAudienceDialog::eventFilter(QObject *target, QEvent *event)
 			else if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
 			{
 				OnButtonSendMessage();
+				return true;
+			}
+		}
+	}
+	else if (target == this)
+	{
+		if (event->type() == QEvent::KeyPress)
+		{
+			QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+			if (keyEvent->key() == Qt::Key_Escape && m_isLiveFullScreen)
+			{
+				qDebug() << "clicl esc";
+				ui.m_zoneLiveView_Inner->setParent(ui.m_zoneLiveView);
+				ui.horizontalLayout_ForAVView->addWidget(ui.m_zoneLiveView_Inner);
+				m_isLiveFullScreen = false;
+				//取消直播窗口总在最顶层
+				ui.m_zoneLiveView_Inner->setWindowFlags(ui.m_zoneLiveView_Inner->windowFlags() &~Qt::WindowStaysOnTopHint);
+				return true;
+			}
+			else if (keyEvent->key() == Qt::Key_Escape && !m_isLiveFullScreen)
+			{
 				return true;
 			}
 		}

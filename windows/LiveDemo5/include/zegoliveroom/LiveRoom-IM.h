@@ -35,6 +35,18 @@ namespace ZEGO
          */
         ZEGO_API int SendRoomMessage(ROOM::ZegoMessageType type, ROOM::ZegoMessageCategory category, ROOM::ZegoMessagePriority priority, const char *messageContent);
         
+        
+        /**
+         获取聊天室历史消息
+
+         @param priority 消息优先级
+         @param ascendOrder 历史消息新旧顺序
+         @param messageId 消息ID
+         @param messageCount 历史消息条数
+         @return 操作是否成功
+         */
+        ZEGO_API bool GetRoomMessage(ROOM::ZegoMessagePriority priority, bool ascendOrder, int messageId, int messageCount);
+        
         /**
          在房间中创建一个会话
 

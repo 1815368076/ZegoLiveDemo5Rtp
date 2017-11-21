@@ -52,7 +52,7 @@ QZegoBase::QZegoBase(void) : m_dwInitedMask(INIT_NONE)
 
 	appSigns.push_back(g_bufSignKey_Udp);
 	appSigns.push_back(g_bufSignKey_International);
-
+	
 	m_pAVSignal = new QZegoAVSignal;
 
 }
@@ -112,7 +112,9 @@ bool QZegoBase::InitAVSDK(SettingsPtr pCurSetting, QString userID, QString userN
 		LIVEROOM::SetRoomCallback(m_pAVSignal);
 		LIVEROOM::SetIMCallback(m_pAVSignal);
 		LIVEROOM::SetDeviceStateCallback(m_pAVSignal);
-
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+		SurfaceMerge::SetMergeCallback(m_pAVSignal);
+#endif
 		LIVEROOM::InitSDK(appIDs[key], appSigns[key], 32);
 	}
 
@@ -152,6 +154,9 @@ void QZegoBase::UninitAVSDK(void)
 		LIVEROOM::SetRoomCallback(nullptr);
 		LIVEROOM::SetIMCallback(nullptr);
 		LIVEROOM::SetDeviceStateCallback(nullptr);
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+		SurfaceMerge::SetMergeCallback(nullptr);
+#endif
 
 #if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE) 
 		if (isSurfaceMerge)

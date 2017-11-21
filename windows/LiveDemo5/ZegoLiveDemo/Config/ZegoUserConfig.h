@@ -19,7 +19,7 @@ public:
 	QString GetUserIdWithRole(void);
 	void SetUserId(const QString strUserId);
 	
-	QString GetUserName(void);
+	QString getUserName(void);
 	void SetUserName(const QString strUserName);
 
 	bool IsPrimary(void);

@@ -22,6 +22,11 @@ QZegoAVSignal::~QZegoAVSignal()
 
 }
 
+void QZegoAVSignal::OnInitSDK(int nError)
+{
+	emit sigInitSDK(nError);
+}
+
 void QZegoAVSignal::OnLoginRoom(int errorCode, const char *pszRoomID, const LIVEROOM::ZegoStreamInfo *pStreamInfo, unsigned int streamCount)
 {
 	QString strRoomID = pszRoomID ? pszRoomID : "";
@@ -261,4 +266,33 @@ void QZegoAVSignal::OnRecvEndJoinLiveCommand(const char* pszFromUserId, const ch
 	QString roomId = pszRoomID;
 	
 	emit sigRecvEndJoinLiveCommand(userId, userName, roomId);
+}
+
+void QZegoAVSignal::OnPreviewSnapshot(void *pImage)
+{
+	emit sigPreviewSnapshot(pImage);
+}
+
+void QZegoAVSignal::OnSnapshot(void *pImage, const char* pszStreamID)
+{
+	QString streamID = pszStreamID;
+	emit sigSnapshot(pImage, streamID);
+}
+
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+void QZegoAVSignal::OnSurfaceMergeResult(
+	unsigned char *surfaceMergeData,
+	int datalength,
+	const AVE::VideoCaptureFormat& frameFormat,
+	unsigned long long reference_time,
+	unsigned int reference_time_scale)
+{
+	emit sigSurfaceMergeResult(surfaceMergeData, datalength);
+}
+
+#endif
+
+void QZegoAVSignal::OnDeviceError(const char* deviceName, int errorCode)
+{
+	qDebug() << "deviceName = " << deviceName << " error = " << errorCode;
 }

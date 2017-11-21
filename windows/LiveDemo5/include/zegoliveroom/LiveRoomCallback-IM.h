@@ -74,10 +74,21 @@ namespace ZEGO
              收到房间消息回调
 
              @param pMessageInfo 消息信息
-             @param messageCount 消息内容
+             @param messageCount 消息个数
              @param pszRoomID 房间 ID
              */
             virtual void OnRecvRoomMessage(ROOM::ZegoRoomMessage *pMessageInfo, unsigned int messageCount, const char *pszRoomID) {}
+            
+            
+            /**
+             主动拉取房间历史消息回调
+
+             @param pMessageInfo 消息信息
+             @param messageCount 消息个数
+             @param pszRoomID 房间ID
+             @param haveMore 是否还有更多消息
+             */
+            virtual void OnGetRoomMessage(int erroCode, ROOM::ZegoRoomMessage *pMessageInfo, unsigned int messageCount, const char *pszRoomID, bool haveMore) {}
             
             /**
              收到会话消息

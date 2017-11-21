@@ -152,6 +152,26 @@ namespace ZEGO
         // * advanced config
         
         /**
+         拉流是否接收音频数据
+         
+         @param pszStreamID 播放流 ID
+         @param bActive true 接收，false 不接收
+         @return 0 成功，否则失败
+         @attention 仅拉 UDP 流有效
+         */
+        ZEGO_API int ActivateAudioPlayStream(const char* pszStreamID, bool bActive);
+        
+        /**
+         拉流是否接收视频数据
+         
+         @param pszStreamID 播放流 ID
+         @param bActive true 接收，false 不接收
+         @return 0 成功，否则失败
+         @attention 仅拉 UDP 流有效
+         */
+        ZEGO_API int ActivateVideoPlayStream(const char* pszStreamID, bool bActive);
+        
+        /**
          设置播放渲染朝向
 
          @param nRotation 逆时针旋转角度(0/90/180/270)。默认 0
@@ -168,7 +188,6 @@ namespace ZEGO
          @return true 成功，false 失败
          */
         ZEGO_API bool SetPlayQualityMonitorCycle(unsigned int timeInMS);
-        
         
         // * external video render
         

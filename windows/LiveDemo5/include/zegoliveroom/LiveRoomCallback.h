@@ -17,6 +17,13 @@ namespace ZEGO
         class IRoomCallback
         {
         public:
+			/**
+			InitSDK成功回调
+
+			@param errorCode 错误码，0 表示无错误
+			*/
+			virtual void OnInitSDK(int nError) {}
+
             /**
              登录房间成功回调
 
@@ -54,6 +61,26 @@ namespace ZEGO
              */
             virtual void OnDisconnect(int errorCode, const char *pszRoomID) = 0;
         
+            
+            /**
+             与 server 重连成功通知
+
+             @param errorCode 错误码，0 表示无错误
+             @param pszRoomID 房间 ID
+             @attention 可在该回调中处理自动重连成功的下一步处理（例如提示重连成功，恢复正常连接的页面布局等）
+             @note 非主动与 server 断开连接后，SDK 会进行重试，重试成功回调该方法。
+             */
+            virtual void OnReconnect(int errorCode, const char *pszRoomID) {};
+            
+            /**
+             与 server 的连接被动断开通知
+             
+             @param errorCode 错误码，0 表示无错误
+             @param pszRoomID 房间 ID
+             @note 由于网络的波动造成连接暂时不可用
+             */
+            virtual void OnTempBroken(int errorCode, const char *pszRoomID) {};
+            
             /**
              流信息更新
 

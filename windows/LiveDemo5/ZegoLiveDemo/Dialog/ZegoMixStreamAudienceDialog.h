@@ -1,4 +1,6 @@
-﻿#ifndef ZEGOMIXSTREAMAUDIENCEDIALOG_H
+﻿#pragma execution_character_set("utf-8")
+
+#ifndef ZEGOMIXSTREAMAUDIENCEDIALOG_H
 #define ZEGOMIXSTREAMAUDIENCEDIALOG_H
 
 #include <QtWidgets/QDialog>
@@ -17,6 +19,12 @@
 #include <QJsonObject>
 #include <QFileDialog>
 #include <QGridLayout>
+#include <QStandardItemModel>
+#include <QImage>
+#include <QPixmap>
+#ifdef Q_OS_WIN
+Q_GUI_EXPORT QPixmap qt_pixmapFromWinHBITMAP(HBITMAP bitmap, int hbitmapFormat);
+#endif
 #include "ui_ZegoLiveRoomDialog.h"
 #include "ZegoSettingsModel.h"
 #include "ZegoRoomModel.h"
@@ -31,6 +39,12 @@
 #include "ZegoLiveDemo.h"
 #include "NoFocusFrameDelegate.h"
 #include "ZegoShareDialog.h"
+#ifdef Q_OS_WIN
+#include "ZegoMusicHookDialog.h"
+#include "ZegoAudioHook.h"
+#endif
+#include "ZegoRoomMessageLabel.h"
+#include "ZegoImageShowDialog.h"
 
 #define MAX_VIEW_COUNT 12
 
@@ -49,7 +63,7 @@ class ZegoMixStreamAudienceDialog : public QDialog
 
 public:
 	ZegoMixStreamAudienceDialog(QWidget *parent = 0);
-	ZegoMixStreamAudienceDialog(SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent = 0);
+	ZegoMixStreamAudienceDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent = 0);
 	~ZegoMixStreamAudienceDialog();
 	void initDialog();
 
@@ -71,6 +85,8 @@ public:
 	void OnVideoDeviceChanged(const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state);
 	void OnMixStream(unsigned int errorCode, const QString& hlsUrl, const QString& rtmpUrl, const QString& mixStreamID, int seq);
 	void OnRecvEndJoinLiveCommand(const QString& userId, const QString& userName, const QString& roomId);
+	void OnPreviewSnapshot(void *pImage);
+	void OnSnapshot(void *pImage, const QString &streamID);
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);
@@ -83,6 +99,7 @@ protected:
 signals:
 	//当直播窗口关闭时，将更改的视频设置传回给MainDialog（如，更换了摄像头、麦克风）
 	void sigSaveVideoSettings(SettingsPtr settings);
+	void sigShowSnapShotImage(QImage *imageData);
 
 private slots:
 	void OnClickTitleButton();
@@ -95,10 +112,22 @@ private slots:
 	void OnProgChange();
 	void OnShareLink();
 	void OnButtonAux();
+
+	void OnSnapshotPreview();
+	void OnSnapshotWithStreamID(const QString &streamID);
+
+	//混音app地址回调
+	void OnUseDefaultAux(bool state);
+#ifdef Q_OS_WIN
+	void OnGetMusicAppPath(QString exePath);
+#endif
 	//切换音视频设备
 	void OnSwitchAudioDevice(int id);
 	void OnSwitchVideoDevice(int id);
+	//全屏显示
+	void OnButtonShowFullScreen();
 
+	void OnShowSnapShotImage(QImage *imageData);
 private:
 	void insertStringListModelItem(QStringListModel * model, QString name, int size);
 	void removeStringListModelItem(QStringListModel * model, QString name);
@@ -137,24 +166,27 @@ private:
 	void removeAVView(int removeViewIndex);
 	void updateViewLayout(int viewCount);
 
+	void setWaterPrint();
 private:
 	Ui::ZegoLiveRoomDialog ui;
-
+	qreal m_dpi;
 	QVector<unsigned int> m_avaliableView;
 	bool m_bCKEnableMic;
 	bool m_bCKEnableSpeaker;
 	SettingsPtr m_pAVSettings;
 	RoomPtr m_pChatRoom;
-	//混流参数
+	//混音参数
 	unsigned char* m_pAuxData;
 	int m_nAuxDataLen;
 	int m_nAuxDataPos;
 
 	bool m_bSystemCapture = false;
-	//bool m_bIsAnchor = false;
+	bool m_takeSnapShot = false;
 	bool m_bIsPublishing = false;
 	bool m_bIsJoinLive = false;
 	bool isMax = false;
+	bool isUseDefaultAux = false;
+	bool m_isLiveFullScreen = false;
 	int m_iRequestJoinLiveSeq = -1;
 	QString m_strPublishStreamID;
 	QString m_strCurUserID;
@@ -179,7 +211,7 @@ private:
 	//Model
 	QStringListModel *m_cbMircoPhoneModel;
 	QStringListModel *m_cbCameraModel;
-	QStringListModel *m_chatModel;
+	QStandardItemModel *m_chatModel;
 	QStringListModel *m_memberModel;
 
 	//实现自定义标题栏的拖动
@@ -215,6 +247,11 @@ private:
 
 	//view的网格动态布局
 	QGridLayout *gridLayout;
+
+#ifdef Q_OS_WIN
+	ZegoMusicHookDialog hookDialog;
+#endif
+
 };
 
 #endif

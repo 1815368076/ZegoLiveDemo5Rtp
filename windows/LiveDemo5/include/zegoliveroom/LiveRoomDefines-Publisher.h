@@ -22,8 +22,13 @@ namespace ZEGO
         
         using COMMON::ZegoPublishingStreamInfo;
         
-        extern ZEGO_API const char* kZegoVideoDataMainPublishingStream;
-        extern ZEGO_API const char* kZegoVideoDataAuxPublishingStream;
+#ifdef WIN32
+		extern ZEGO_API const char* kZegoVideoDataMainPublishingStream;
+		extern ZEGO_API const char* kZegoVideoDataAuxPublishingStream;
+#else
+        ZEGO_API const char* kZegoVideoDataMainPublishingStream;
+        ZEGO_API const char* kZegoVideoDataAuxPublishingStream;
+#endif
     }
 }
 #endif /* LiveRoomDefines_Publisher_h */

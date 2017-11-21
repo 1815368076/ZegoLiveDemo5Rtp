@@ -7,6 +7,11 @@
 #include "LiveRoomCallback-IM.h"
 #include "LiveRoomCallback-Player.h"
 #include "LiveRoomCallback-Publisher.h"
+#define USE_SURFACE_MERGE
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+#include "ZegoSurfaceMergeCallback.h"
+#include "ZegoSurfaceMergeDefine.h"
+#endif
 #include <QObject>
 #include <QVector>
 using namespace ZEGO;
@@ -16,6 +21,9 @@ class QZegoAVSignal : public QObject,
 	public LIVEROOM::ILivePublisherCallback,
 	public LIVEROOM::ILivePlayerCallback,
 	public LIVEROOM::IIMCallback,
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+	public SurfaceMerge::IZegoSurfaceMergeCallback,
+#endif
 	public AV::IZegoDeviceStateCallback
 
 {
@@ -26,6 +34,7 @@ public:
 	~QZegoAVSignal();
 	//继承回调对象后需要重载相应的回调函数
 signals:
+	void sigInitSDK(int nError);
 	void sigLoginRoom(int errorCode, const QString& roomId, QVector<StreamPtr> vStreamList);
 	void sigLogoutRoom(int errorCode, const QString& roomId);
 	void sigDisconnect(int errorCode, const QString& roomId);
@@ -45,8 +54,14 @@ signals:
 	void sigUserUpdate(QVector<QString> userIDs, QVector<QString> userNames, QVector<int> userFlags, QVector<int> userRoles, unsigned int userCount, LIVEROOM::ZegoUserUpdateType type);
 	void sigMixStream(unsigned int errorCode, const QString& hlsUrl, const QString& rtmpUrl, const QString& mixStreamID, int seq);
 	void sigRecvEndJoinLiveCommand(const QString& userId, const QString& userName, const QString& roomId);
-
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+	void sigSurfaceMergeResult(unsigned char *surfaceMergeData, int datalength);
+#endif
+	void sigPreviewSnapshot(void *pImage);
+	void sigSnapshot(void *pImage, const QString &streamID);
+	
 protected:
+	void OnInitSDK(int nError);
 	void OnLoginRoom(int errorCode, const char *pszRoomID, const LIVEROOM::ZegoStreamInfo *pStreamInfo, unsigned int streamCount);
 	void OnLogoutRoom(int errorCode, const char *pszRoomID);
 	void OnKickOut(int reason, const char *pszRoomID);
@@ -61,7 +76,6 @@ protected:
 	void OnInviteJoinLiveResponse(int result, const char *pszFromUserId, const char *pszFromUserName, int seq) {}
 	void OnPublishQulityUpdate(const char* pszStreamID, int quality, double videoFPS, double videoKBS);
 	void OnCaptureVideoSizeChanged(int nWidth, int nHeight) {}
-	void OnPreviewSnapshot(void *pImage) {}
 	void OnAuxCallback(unsigned char *pData, int *pDataLen, int *pSampleRate, int *pNumChannels);
 	void OnMixStream(const AV::ZegoMixStreamResult& result, const char* pszMixStreamID, int seq);
 
@@ -70,7 +84,6 @@ protected:
 	void OnJoinLiveResponse(int result, const char* pszFromUserId, const char* pszFromUserName, int seq);
 	void OnInviteJoinLiveRequest(int seq, const char* pszFromUserId, const char* pszFromUserName, const char* pszRoomID) {};
 	void OnVideoSizeChanged(const char* pStreamID, int nWidth, int nHeight) {};
-	void OnSnapshot(void *pImage, const char* pszStreamID) {};
 	void OnEndJoinLive(int result, int seq, const char *pszRoomID){};
 	void OnRecvEndJoinLiveCommand(const char *pszFromUserId, const char *pszFromUserName, const char* pszRoomID);
 	void OnUserUpdate(const LIVEROOM::ZegoUserInfo *pUserInfo, unsigned int userCount, LIVEROOM::ZegoUserUpdateType type);
@@ -81,9 +94,20 @@ protected:
 	void OnRecvRoomMessage(ROOM::ZegoRoomMessage *pMessageInfo, unsigned int messageCount, const char *pszRoomID);
 	void OnRecvConversationMessage(ROOM::ZegoConversationMessage *pMessageInfo, const char *pszConversationID, const char *pszRoomID) {};
 
-
 	void OnAudioDeviceStateChanged(AV::AudioDeviceType deviceType, AV::DeviceInfo *deviceInfo, AV::DeviceState state);
 	void OnVideoDeviceStateChanged(AV::DeviceInfo *deviceInfo, AV::DeviceState state);
-	void OnDeviceError(const char* deviceName, int errorCode) {};
+	void OnDeviceError(const char* deviceName, int errorCode);
+	void OnPreviewSnapshot(void *pImage);
+	void OnSnapshot(void *pImage, const char* pszStreamID);
+	
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+	void OnSurfaceMergeResult(
+		unsigned char *surfaceMergeData,
+		int datalength,
+		const AVE::VideoCaptureFormat& frameFormat,
+		unsigned long long reference_time,
+		unsigned int reference_time_scale);
+
+#endif
 
 };

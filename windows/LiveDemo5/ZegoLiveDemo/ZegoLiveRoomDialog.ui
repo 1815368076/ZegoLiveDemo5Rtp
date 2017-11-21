@@ -190,6 +190,9 @@ QPushButton:hover:pressed{
            <iconset resource="style.qrc">
             <normaloff>:/Resources/images/max.png</normaloff>:/Resources/images/max.png</iconset>
           </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
           <property name="flat">
            <bool>true</bool>
           </property>
@@ -280,7 +283,7 @@ QPushButton:hover:pressed{
         <string notr="true">background-color: #ffffff;
 border: none;</string>
        </property>
-       <layout class="QHBoxLayout" name="zoneLiveViewHorizontalLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout_ForAVView">
         <property name="spacing">
          <number>0</number>
         </property>
@@ -296,6 +299,27 @@ border: none;</string>
         <property name="bottomMargin">
          <number>0</number>
         </property>
+        <item>
+         <widget class="QWidget" name="m_zoneLiveView_Inner" native="true">
+          <layout class="QHBoxLayout" name="zoneLiveViewHorizontalLayout">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+          </layout>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -392,7 +416,7 @@ QTabBar::tab:selected{
 }</string>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="m_tabContact">
            <attribute name="title">
@@ -462,9 +486,9 @@ background-color: #e6e6e6;</string>
              </widget>
             </item>
             <item>
-             <widget class="QListView" name="m_listChat">
+             <widget class="QTableView" name="m_listChat">
               <property name="styleSheet">
-               <string notr="true">QListView{
+               <string notr="true">QTableView{
 font-family: 微软雅黑;
 font-size: 14px;
 color: #666666;
@@ -472,10 +496,8 @@ padding-top: 5px;
 padding-left: 14px;
 }
 
-QListView::item{
-    width: 290px;
-    min-height: 8px;
-    margin-top: 10px;
+QTableView::item{
+    border: none;
 }
 
 QScrollBar:vertical {                 
@@ -508,6 +530,9 @@ QScrollBar::sub-line:vertical {
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="showGrid">
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -697,9 +722,9 @@ background-color: #e6e6e6;</string>
        <property name="styleSheet">
         <string notr="true">background-color: #ffffff;</string>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
         <property name="spacing">
-         <number>50</number>
+         <number>0</number>
         </property>
         <property name="leftMargin">
          <number>0</number>
@@ -714,11 +739,8 @@ background-color: #e6e6e6;</string>
          <number>0</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
            <number>0</number>
           </property>
           <item>
@@ -727,11 +749,11 @@ background-color: #e6e6e6;</string>
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Expanding</enum>
+             <enum>QSizePolicy::Fixed</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>46</width>
+              <width>40</width>
               <height>20</height>
              </size>
             </property>
@@ -1065,11 +1087,11 @@ QComboBox::drop-down{
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Maximum</enum>
+             <enum>QSizePolicy::Fixed</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>50</width>
+              <width>40</width>
               <height>20</height>
              </size>
             </property>
@@ -1262,7 +1284,7 @@ QPushButton:checked{
                  <enum>Qt::Horizontal</enum>
                 </property>
                 <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
+                 <enum>QSizePolicy::Expanding</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -1365,7 +1387,7 @@ QPushButton:enabled:hover:pressed{
                  <enum>Qt::Horizontal</enum>
                 </property>
                 <property name="sizeType">
-                 <enum>QSizePolicy::MinimumExpanding</enum>
+                 <enum>QSizePolicy::Fixed</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -1433,7 +1455,36 @@ QPushButton:enabled:hover:pressed{
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_12">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Expanding</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>6</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_15">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </item>
@@ -1443,11 +1494,158 @@ QPushButton:enabled:hover:pressed{
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Maximum</enum>
+             <enum>QSizePolicy::Fixed</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>50</width>
+              <width>35</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <item>
+             <spacer name="verticalSpacer_10">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>16</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="m_lbFullScreen">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">font-family: 微软雅黑;
+font-size: 14px;
+color: #666666;</string>
+              </property>
+              <property name="text">
+               <string>Screen</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_11">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>14</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="m_bFullScreen">
+              <property name="minimumSize">
+               <size>
+                <width>68</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>68</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QPushButton:!enabled{
+     font-family: 微软雅黑;
+     font-size: 14px;
+     border: 1px solid #e6e6e6;
+     border-radius: 2px;
+     background-color: #ffffff;
+     color: #e6e6e6;   
+}
+QPushButton:enabled:!hover{
+     font-family: 微软雅黑;
+     font-size: 14px;
+     border: 1px solid #0e88eb;
+     border-radius: 2px;
+     background-color: #ffffff;
+     color: #0e88eb;   
+}
+
+QPushButton:enabled:hover{
+    font-family: 微软雅黑;
+     font-size: 14px;
+     border: 1px solid #0e88eb;
+     border-radius: 2px;
+     background-color: #0e88eb;
+     color: #ffffff;   
+}
+
+QPushButton:enabled:hover:pressed{
+    font-family: 微软雅黑;
+     font-size: 14px;
+     border: 1px solid #0e88eb;
+     border-radius: 2px;
+     background-color: #0d80de;
+     color: #ffffff;   
+}</string>
+              </property>
+              <property name="text">
+               <string>全屏</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_14">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_11">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>35</width>
               <height>20</height>
              </size>
             </property>
@@ -1584,6 +1782,19 @@ QPushButton:enabled:hover:pressed{
               </property>
              </widget>
             </item>
+            <item>
+             <spacer name="verticalSpacer_13">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
           </item>
           <item>
@@ -1592,11 +1803,11 @@ QPushButton:enabled:hover:pressed{
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::MinimumExpanding</enum>
+             <enum>QSizePolicy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>200</width>
+              <width>120</width>
               <height>20</height>
              </size>
             </property>

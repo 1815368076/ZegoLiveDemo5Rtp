@@ -1,4 +1,6 @@
-﻿#ifndef ZEGOMAINDIALOG_H
+﻿#pragma execution_character_set("utf-8")
+
+#ifndef ZEGOMAINDIALOG_H
 #define ZEGOMAINDIALOG_H
 
 #include <QtWidgets/QDialog>
@@ -24,6 +26,7 @@
 #include <QMouseEvent>
 #include <QStringListModel>
 #include <QStandardItemModel>
+#include <QVector>
 
 //标题栏坐标范围
 #define pos_min_x  0
@@ -36,11 +39,12 @@ class ZegoMainDialog : public QDialog
 	Q_OBJECT
 
 public:
-	ZegoMainDialog(QWidget *parent = 0);
+	ZegoMainDialog(qreal dpi, QWidget *parent = 0);
 	~ZegoMainDialog();
 	void initDialog();
 
 protected slots:
+    void OnInitSDK(int nError);
     void OnAudioDeviceChanged(AV::AudioDeviceType deviceType, const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state);
     void OnVideoDeviceChanged(const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state);
 
@@ -55,7 +59,8 @@ public slots:
 	void OnButtonSwitchTestEnv();
 	void OnButtonSwitchVideoCapture();
 	void OnButtonSwitchVideoFilter();
-	void OnButoonSwitchSurfaceMerge();
+	void OnButtonSwitchSurfaceMerge();
+	void OnButtonSwitchAutoBitrate();
 	void OnButtonUploadLog();
 	void OnSaveUserIdChanged();
 	void OnSaveUserNameChanged();
@@ -91,9 +96,13 @@ private:
 	void insertStringListModelItem(QStringListModel * model, QString name, int size);
 	void removeStringListModelItem(QStringListModel * model, QString name);
 	void banSwitch();    //禁用未实现功能的按钮
+	QVector<QString> handleAppSign(QString appSign);
 
 private:
 	Ui::ZegoMainDialog ui;
+    //当前窗口是否为高dpi画质
+	qreal m_dpi;
+
 	QVector<RoomPtr> m_roomList;
 	QZegoUserConfig m_userConfig;
 

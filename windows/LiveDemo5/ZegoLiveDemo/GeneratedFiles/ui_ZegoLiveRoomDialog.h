@@ -24,6 +24,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTableView>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -44,6 +45,8 @@ public:
     QPushButton *m_bClose;
     QHBoxLayout *horizontalLayout1;
     QWidget *m_zoneLiveView;
+    QHBoxLayout *horizontalLayout_ForAVView;
+    QWidget *m_zoneLiveView_Inner;
     QHBoxLayout *zoneLiveViewHorizontalLayout;
     QFrame *m_lineBetweenViewAndList;
     QWidget *m_zoneCommonAndUserList;
@@ -53,7 +56,7 @@ public:
     QVBoxLayout *verticalLayout_3;
     QFrame *m_lineContact;
     QFrame *m_lineLongContact;
-    QListView *m_listChat;
+    QTableView *m_listChat;
     QWidget *m_tabMember;
     QVBoxLayout *verticalLayout_7;
     QFrame *m_lineMember;
@@ -62,8 +65,8 @@ public:
     QFrame *m_lineMain;
     QHBoxLayout *horizontalLayout2;
     QWidget *m_zoneSettings;
-    QHBoxLayout *horizontalLayout_7;
     QHBoxLayout *horizontalLayout_6;
+    QHBoxLayout *horizontalLayout_3;
     QSpacerItem *horizontalSpacer;
     QVBoxLayout *verticalLayout_4;
     QSpacerItem *verticalSpacer_2;
@@ -89,12 +92,22 @@ public:
     QPushButton *m_bAux;
     QSpacerItem *horizontalSpacer_7;
     QPushButton *m_bCapture;
+    QSpacerItem *horizontalSpacer_12;
+    QSpacerItem *verticalSpacer_15;
     QSpacerItem *horizontalSpacer_3;
+    QVBoxLayout *verticalLayout_10;
+    QSpacerItem *verticalSpacer_10;
+    QLabel *m_lbFullScreen;
+    QSpacerItem *verticalSpacer_11;
+    QPushButton *m_bFullScreen;
+    QSpacerItem *verticalSpacer_14;
+    QSpacerItem *horizontalSpacer_11;
     QVBoxLayout *verticalLayout_6;
     QSpacerItem *verticalSpacer_6;
     QLabel *m_lbShare;
     QSpacerItem *verticalSpacer_7;
     QPushButton *m_bShare;
+    QSpacerItem *verticalSpacer_13;
     QSpacerItem *horizontalSpacer_4;
     QFrame *m_lineBetweenSettingsAndEdit;
     QWidget *m_zoneInput;
@@ -203,6 +216,7 @@ public:
         QIcon icon1;
         icon1.addFile(QStringLiteral(":/Resources/images/max.png"), QSize(), QIcon::Normal, QIcon::Off);
         m_bMax->setIcon(icon1);
+        m_bMax->setCheckable(true);
         m_bMax->setFlat(true);
 
         horizontalLayout->addWidget(m_bMax);
@@ -254,10 +268,19 @@ public:
         m_zoneLiveView->setAutoFillBackground(false);
         m_zoneLiveView->setStyleSheet(QLatin1String("background-color: #ffffff;\n"
 "border: none;"));
-        zoneLiveViewHorizontalLayout = new QHBoxLayout(m_zoneLiveView);
+        horizontalLayout_ForAVView = new QHBoxLayout(m_zoneLiveView);
+        horizontalLayout_ForAVView->setSpacing(0);
+        horizontalLayout_ForAVView->setObjectName(QStringLiteral("horizontalLayout_ForAVView"));
+        horizontalLayout_ForAVView->setContentsMargins(0, 0, 0, 0);
+        m_zoneLiveView_Inner = new QWidget(m_zoneLiveView);
+        m_zoneLiveView_Inner->setObjectName(QStringLiteral("m_zoneLiveView_Inner"));
+        zoneLiveViewHorizontalLayout = new QHBoxLayout(m_zoneLiveView_Inner);
         zoneLiveViewHorizontalLayout->setSpacing(0);
         zoneLiveViewHorizontalLayout->setObjectName(QStringLiteral("zoneLiveViewHorizontalLayout"));
         zoneLiveViewHorizontalLayout->setContentsMargins(0, 0, 0, 0);
+
+        horizontalLayout_ForAVView->addWidget(m_zoneLiveView_Inner);
+
 
         horizontalLayout1->addWidget(m_zoneLiveView);
 
@@ -343,9 +366,9 @@ public:
 
         verticalLayout_3->addWidget(m_lineLongContact);
 
-        m_listChat = new QListView(m_tabContact);
+        m_listChat = new QTableView(m_tabContact);
         m_listChat->setObjectName(QStringLiteral("m_listChat"));
-        m_listChat->setStyleSheet(QString::fromUtf8("QListView{\n"
+        m_listChat->setStyleSheet(QString::fromUtf8("QTableView{\n"
 "font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "font-size: 14px;\n"
 "color: #666666;\n"
@@ -353,10 +376,8 @@ public:
 "padding-left: 14px;\n"
 "}\n"
 "\n"
-"QListView::item{\n"
-"    width: 290px;\n"
-"    min-height: 8px;\n"
-"    margin-top: 10px;\n"
+"QTableView::item{\n"
+"    border: none;\n"
 "}\n"
 "\n"
 "QScrollBar:vertical {                 \n"
@@ -387,6 +408,7 @@ public:
 "    subcontrol-origin: margin;  \n"
 "}"));
         m_listChat->setFrameShape(QFrame::NoFrame);
+        m_listChat->setShowGrid(false);
 
         verticalLayout_3->addWidget(m_listChat);
 
@@ -504,17 +526,16 @@ public:
         m_zoneSettings->setMinimumSize(QSize(0, 138));
         m_zoneSettings->setMaximumSize(QSize(16777215, 138));
         m_zoneSettings->setStyleSheet(QStringLiteral("background-color: #ffffff;"));
-        horizontalLayout_7 = new QHBoxLayout(m_zoneSettings);
-        horizontalLayout_7->setSpacing(50);
-        horizontalLayout_7->setObjectName(QStringLiteral("horizontalLayout_7"));
-        horizontalLayout_7->setContentsMargins(0, 0, 0, 0);
-        horizontalLayout_6 = new QHBoxLayout();
+        horizontalLayout_6 = new QHBoxLayout(m_zoneSettings);
         horizontalLayout_6->setSpacing(0);
         horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
-        horizontalLayout_6->setContentsMargins(-1, -1, 0, -1);
-        horizontalSpacer = new QSpacerItem(46, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalLayout_6->setContentsMargins(0, 0, 0, 0);
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setSpacing(0);
+        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
-        horizontalLayout_6->addItem(horizontalSpacer);
+        horizontalLayout_3->addItem(horizontalSpacer);
 
         verticalLayout_4 = new QVBoxLayout();
         verticalLayout_4->setSpacing(0);
@@ -756,11 +777,11 @@ public:
         verticalLayout_4->addLayout(formLayout);
 
 
-        horizontalLayout_6->addLayout(verticalLayout_4);
+        horizontalLayout_3->addLayout(verticalLayout_4);
 
-        horizontalSpacer_2 = new QSpacerItem(50, 20, QSizePolicy::Maximum, QSizePolicy::Minimum);
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
-        horizontalLayout_6->addItem(horizontalSpacer_2);
+        horizontalLayout_3->addItem(horizontalSpacer_2);
 
         verticalLayout_5 = new QVBoxLayout();
         verticalLayout_5->setSpacing(0);
@@ -834,7 +855,7 @@ public:
 
         horizontalLayout_5->addWidget(m_bSound);
 
-        horizontalSpacer_5 = new QSpacerItem(136, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_5 = new QSpacerItem(136, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_5->addItem(horizontalSpacer_5);
 
@@ -893,7 +914,7 @@ public:
 
         horizontalLayout_4->addWidget(m_bAux, 0, Qt::AlignTop);
 
-        horizontalSpacer_7 = new QSpacerItem(14, 20, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+        horizontalSpacer_7 = new QSpacerItem(14, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_4->addItem(horizontalSpacer_7);
 
@@ -940,15 +961,97 @@ public:
 
         horizontalLayout_4->addWidget(m_bCapture, 0, Qt::AlignTop);
 
+        horizontalSpacer_12 = new QSpacerItem(6, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_4->addItem(horizontalSpacer_12);
+
 
         verticalLayout_5->addLayout(horizontalLayout_4);
 
+        verticalSpacer_15 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        horizontalLayout_6->addLayout(verticalLayout_5);
+        verticalLayout_5->addItem(verticalSpacer_15);
 
-        horizontalSpacer_3 = new QSpacerItem(50, 20, QSizePolicy::Maximum, QSizePolicy::Minimum);
 
-        horizontalLayout_6->addItem(horizontalSpacer_3);
+        horizontalLayout_3->addLayout(verticalLayout_5);
+
+        horizontalSpacer_3 = new QSpacerItem(35, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_3->addItem(horizontalSpacer_3);
+
+        verticalLayout_10 = new QVBoxLayout();
+        verticalLayout_10->setSpacing(0);
+        verticalLayout_10->setObjectName(QStringLiteral("verticalLayout_10"));
+        verticalSpacer_10 = new QSpacerItem(20, 16, QSizePolicy::Minimum, QSizePolicy::Fixed);
+
+        verticalLayout_10->addItem(verticalSpacer_10);
+
+        m_lbFullScreen = new QLabel(m_zoneSettings);
+        m_lbFullScreen->setObjectName(QStringLiteral("m_lbFullScreen"));
+        m_lbFullScreen->setMinimumSize(QSize(0, 0));
+        m_lbFullScreen->setMaximumSize(QSize(16777215, 16777215));
+        m_lbFullScreen->setStyleSheet(QString::fromUtf8("font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"font-size: 14px;\n"
+"color: #666666;"));
+
+        verticalLayout_10->addWidget(m_lbFullScreen);
+
+        verticalSpacer_11 = new QSpacerItem(20, 14, QSizePolicy::Minimum, QSizePolicy::Fixed);
+
+        verticalLayout_10->addItem(verticalSpacer_11);
+
+        m_bFullScreen = new QPushButton(m_zoneSettings);
+        m_bFullScreen->setObjectName(QStringLiteral("m_bFullScreen"));
+        m_bFullScreen->setMinimumSize(QSize(68, 32));
+        m_bFullScreen->setMaximumSize(QSize(68, 32));
+        m_bFullScreen->setStyleSheet(QString::fromUtf8("QPushButton:!enabled{\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"     border: 1px solid #e6e6e6;\n"
+"     border-radius: 2px;\n"
+"     background-color: #ffffff;\n"
+"     color: #e6e6e6;   \n"
+"}\n"
+"QPushButton:enabled:!hover{\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"     border: 1px solid #0e88eb;\n"
+"     border-radius: 2px;\n"
+"     background-color: #ffffff;\n"
+"     color: #0e88eb;   \n"
+"}\n"
+"\n"
+"QPushButton:enabled:hover{\n"
+"    font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"     border: 1px solid #0e88eb;\n"
+"     border-radius: 2px;\n"
+"     background-color: #0e88eb;\n"
+"     color: #ffffff;   \n"
+"}\n"
+"\n"
+"QPushButton:enabled:hover:pressed{\n"
+"    font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"     border: 1px solid #0e88eb;\n"
+"     border-radius: 2px;\n"
+"     background-color: #0d8"
+                        "0de;\n"
+"     color: #ffffff;   \n"
+"}"));
+
+        verticalLayout_10->addWidget(m_bFullScreen);
+
+        verticalSpacer_14 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_10->addItem(verticalSpacer_14);
+
+
+        horizontalLayout_3->addLayout(verticalLayout_10);
+
+        horizontalSpacer_11 = new QSpacerItem(35, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_3->addItem(horizontalSpacer_11);
 
         verticalLayout_6 = new QVBoxLayout();
         verticalLayout_6->setSpacing(0);
@@ -1017,15 +1120,19 @@ public:
 
         verticalLayout_6->addWidget(m_bShare, 0, Qt::AlignTop);
 
+        verticalSpacer_13 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        horizontalLayout_6->addLayout(verticalLayout_6);
-
-        horizontalSpacer_4 = new QSpacerItem(200, 20, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-
-        horizontalLayout_6->addItem(horizontalSpacer_4);
+        verticalLayout_6->addItem(verticalSpacer_13);
 
 
-        horizontalLayout_7->addLayout(horizontalLayout_6);
+        horizontalLayout_3->addLayout(verticalLayout_6);
+
+        horizontalSpacer_4 = new QSpacerItem(120, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_3->addItem(horizontalSpacer_4);
+
+
+        horizontalLayout_6->addLayout(horizontalLayout_3);
 
 
         horizontalLayout2->addWidget(m_zoneSettings);
@@ -1203,7 +1310,7 @@ public:
 
         retranslateUi(ZegoLiveRoomDialog);
 
-        m_tabCommonAndUserList->setCurrentIndex(1);
+        m_tabCommonAndUserList->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(ZegoLiveRoomDialog);
@@ -1226,6 +1333,8 @@ public:
         m_bSound->setText(QString());
         m_bAux->setText(QApplication::translate("ZegoLiveRoomDialog", "\345\274\200\345\220\257\346\267\267\351\237\263", Q_NULLPTR));
         m_bCapture->setText(QApplication::translate("ZegoLiveRoomDialog", "\345\243\260\345\215\241\351\207\207\351\233\206", Q_NULLPTR));
+        m_lbFullScreen->setText(QApplication::translate("ZegoLiveRoomDialog", "Screen", Q_NULLPTR));
+        m_bFullScreen->setText(QApplication::translate("ZegoLiveRoomDialog", "\345\205\250\345\261\217", Q_NULLPTR));
         m_lbShare->setText(QApplication::translate("ZegoLiveRoomDialog", "Share", Q_NULLPTR));
         m_bShare->setText(QApplication::translate("ZegoLiveRoomDialog", "\345\210\206\344\272\253", Q_NULLPTR));
         m_bRequestJoinLive->setText(QApplication::translate("ZegoLiveRoomDialog", "\350\257\267\346\261\202\350\277\236\351\272\246", Q_NULLPTR));

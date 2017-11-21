@@ -6,10 +6,11 @@
 #include <QSettings>
 int main(int argc, char *argv[])
 {
-
+	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+	QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 	QApplication app(argc, argv);
-	app.setWindowIcon(QIcon("ZegoLiveDemo.ico"));
-	ZegoMainDialog w;
+	qreal dpi = app.devicePixelRatio();
+	ZegoMainDialog w(dpi);
 	w.setFixedSize(930, 670);
 	w.initDialog();
 	w.show();
