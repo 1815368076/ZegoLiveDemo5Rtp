@@ -10,7 +10,7 @@ import com.zego.zegoavkit2.ZegoVideoCaptureFactory;
  * Created by robotding on 16/6/5.
  */
 public class VideoCaptureFactoryDemo extends ZegoVideoCaptureFactory {
-    private int mode = 2;
+    private int mode = 3;
     private ZegoVideoCaptureDevice mDevice = null;
     private Context mContext = null;
 
@@ -21,6 +21,8 @@ public class VideoCaptureFactoryDemo extends ZegoVideoCaptureFactory {
             mDevice = new VideoCaptureFromImage(mContext);
         } else if (mode == 2) {
             mDevice = new VideoCaptureFromImage2(mContext);
+        } else if (mode == 3) {
+            mDevice = new VideoCaptureFromCamera2();
         }
 
         return mDevice;
