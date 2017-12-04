@@ -196,6 +196,7 @@ void QZegoUserConfig::SetVideoSettings(SettingsPtr curSettings)
 	m_pVideoSettings->SetFps(curSettings->GetFps());
 	m_pVideoSettings->SetMicrophoneId(curSettings->GetMircophoneId());
 	m_pVideoSettings->SetCameraId(curSettings->GetCameraId());
+	m_pVideoSettings->SetCameraId2(curSettings->GetCameraId2());
 	//m_pVideoSettings->SetQuality(curSettings->GetQuality());
 }
 

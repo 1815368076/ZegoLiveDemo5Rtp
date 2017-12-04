@@ -13,9 +13,9 @@
       <file>Resources/images/handle_default.png</file>
       <file>Resources/images/handle_hover.png</file>
       <file>Resources/images/handle_pressed.png</file>
-      <file>Resources/images/mircophone_off.png</file>
-      <file>Resources/images/mircophone_on.png</file>
-      <file>Resources/images/mircophone_disabled.png</file>
+      <file>Resources/images/microphone_off.png</file>
+      <file>Resources/images/microphone_on.png</file>
+      <file>Resources/images/microphone_disabled.png</file>
       <file>Resources/images/sound_off.png</file>
       <file>Resources/images/sound_on.png</file>
       <file>Resources/images/close.png</file>
@@ -27,5 +27,35 @@
       <file>Resources/images/QQMusic.png</file>
       <file>Resources/images/KuGou.png</file>
       <file>Resources/images/KuWo.png</file>
+      <file>Resources/images/@2x/refresh_default@2x.png</file>
+      <file>Resources/images/@2x/down_arrow@2x.png</file>
+      <file>Resources/images/@2x/switch_off@2x.png</file>
+      <file>Resources/images/@2x/switch_on@2x.png</file>
+      <file>Resources/images/@2x/add_default@2x.png</file>
+      <file>Resources/images/@2x/sub_default@2x.png</file>
+      <file>Resources/images/@2x/add_hover@2x.png</file>
+      <file>Resources/images/@2x/sub_hover@2x.png</file>
+      <file>Resources/images/@2x/add_pressed@2x.png</file>
+      <file>Resources/images/@2x/sub_pressed@2x.png</file>
+      <file>Resources/images/@2x/handle_default@2x.png</file>
+      <file>Resources/images/@2x/handle_hover@2x.png</file>
+      <file>Resources/images/@2x/handle_pressed@2x.png</file>
+      <file>Resources/images/@2x/microphone_off@2x.png</file>
+      <file>Resources/images/@2x/microphone_on@2x.png</file>
+      <file>Resources/images/@2x/microphone_disabled@2x.png</file>
+      <file>Resources/images/@2x/sound_off@2x.png</file>
+      <file>Resources/images/@2x/sound_on@2x.png</file>
+      <file>Resources/images/@2x/close@2x.png</file>
+      <file>Resources/images/@2x/max@2x.png</file>
+      <file>Resources/images/@2x/max_re@2x.png</file>
+      <file>Resources/images/@2x/min@2x.png</file>
+      <file>Resources/images/@2x/official@2x.png</file>
+      <file>Resources/images/@2x/CloudNet@2x.png</file>
+      <file>Resources/images/@2x/QQMusic@2x.png</file>
+      <file>Resources/images/@2x/KuGou@2x.png</file>
+      <file>Resources/images/@2x/KuWo@2x.png</file>
     </qresource>
+
+
+
 </RCC>

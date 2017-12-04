@@ -17,7 +17,7 @@
         #define ZEGO_API __declspec(dllimport)
     #endif
 #else
-    #define ZEGO_API extern "C" __attribute__((visibility("default")))
+    #define ZEGO_API __attribute__((visibility("default")))
 #endif
 
 namespace ZEGO

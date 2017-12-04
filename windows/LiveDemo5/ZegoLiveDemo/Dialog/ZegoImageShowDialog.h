@@ -1,10 +1,10 @@
-﻿#pragma execution_character_set("utf-8")
+#pragma execution_character_set("utf-8")
 
 #ifndef ZEGOIMAGESHOWDIALOG_H
 #define ZEGOIMAGESHOWDIALOG_H
 
 #include "ui_ZegoImageShowDialog.h"
-#include "ZegoSettingsModel.h"
+#include "Settings/ZegoSettingsModel.h"
 
 #include <QtWidgets/QDialog>
 #include <QImage>

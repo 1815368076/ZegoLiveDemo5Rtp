@@ -28,6 +28,7 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include <ZegoImageButton.h>
 #include <ZegoProgressIndicator.h>
 #include "ZegoRoomList.h"
 
@@ -43,9 +44,9 @@ public:
     QLabel *m_lbTitle;
     QFrame *m_lineVer;
     QLabel *m_lbTitleVersion;
-    QPushButton *m_bJumpToNet;
-    QPushButton *m_bMin;
-    QPushButton *m_bClose;
+    ZegoImageButton *m_bJumpToNet;
+    ZegoImageButton *m_bMin;
+    ZegoImageButton *m_bClose;
     QHBoxLayout *horizontalLayout_4;
     QWidget *m_zoneCreateRoom;
     QVBoxLayout *verticalLayout_5;
@@ -71,8 +72,10 @@ public:
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout;
     QLabel *m_TitleList;
+    QSpacerItem *horizontalSpacer_30;
     ZegoProgressIndicator *m_progIndicator;
-    QPushButton *m_bRefreshRoomList;
+    ZegoImageButton *m_bRefreshRoomList;
+    QSpacerItem *horizontalSpacer_31;
     ZegoRoomList *m_roomList;
     QFrame *m_lineSpread;
     QWidget *m_zoneSettings;
@@ -101,27 +104,27 @@ public:
     QLabel *m_lbValueResolution;
     QSpacerItem *verticalSpacer_13;
     QHBoxLayout *horizontalLayout_8;
-    QPushButton *m_bResolutionDown;
+    ZegoImageButton *m_bResolutionDown;
     QSlider *m_sliderResolution;
-    QPushButton *m_bResolutionUp;
+    ZegoImageButton *m_bResolutionUp;
     QSpacerItem *verticalSpacer_14;
     QHBoxLayout *horizontalLayout_9;
     QLabel *m_lbFPS;
     QLabel *m_lbValueFPS;
     QSpacerItem *verticalSpacer_15;
     QHBoxLayout *horizontalLayout_10;
-    QPushButton *m_bFPSDown;
+    ZegoImageButton *m_bFPSDown;
     QSlider *m_sliderFPS;
-    QPushButton *m_bFPSUp;
+    ZegoImageButton *m_bFPSUp;
     QSpacerItem *verticalSpacer_16;
     QHBoxLayout *horizontalLayout_11;
     QLabel *m_lbBitrate;
     QLabel *m_lbValueBitrate;
     QSpacerItem *verticalSpacer_17;
     QHBoxLayout *horizontalLayout_12;
-    QPushButton *m_bBitrateDown;
+    ZegoImageButton *m_bBitrateDown;
     QSlider *m_sliderBitrate;
-    QPushButton *m_bBitrateUp;
+    ZegoImageButton *m_bBitrateUp;
     QSpacerItem *verticalSpacer_18;
     QSpacerItem *horizontalSpacer_7;
     QWidget *m_tabExtraSettings;
@@ -137,12 +140,8 @@ public:
     QHBoxLayout *horizontalLayout_14;
     QLabel *m_lbTestEnv;
     QSpacerItem *horizontalSpacer_8;
-    QPushButton *m_switchTestEnv;
+    ZegoImageButton *m_switchTestEnv;
     QSpacerItem *horizontalSpacer_28;
-    QLabel *m_lbSurfaceMerge;
-    QSpacerItem *horizontalSpacer_29;
-    QSpacerItem *horizontalSpacer_9;
-    QPushButton *m_switchSurfaceMerge;
     QSpacerItem *verticalSpacer_23;
     QComboBox *m_cbAppVersion;
     QSpacerItem *verticalSpacer_20;
@@ -163,33 +162,36 @@ public:
     QHBoxLayout *horizontalLayout_15;
     QLabel *m_lbCapture;
     QSpacerItem *horizontalSpacer_10;
-    QPushButton *m_switchCapture;
+    ZegoImageButton *m_switchCapture;
     QSpacerItem *horizontalSpacer_11;
     QHBoxLayout *horizontalLayout_16;
     QLabel *m_lbFilter;
     QSpacerItem *horizontalSpacer_12;
-    QPushButton *m_switchFilter;
+    ZegoImageButton *m_switchFilter;
     QSpacerItem *horizontalSpacer_13;
     QHBoxLayout *horizontalLayout_17;
-    QLabel *m_lbHardDecode;
+    QLabel *m_lbRender;
     QSpacerItem *horizontalSpacer_14;
-    QPushButton *m_switchHardDecode;
+    ZegoImageButton *m_switchRender;
     QSpacerItem *verticalSpacer_27;
+    QLabel *m_lbExtra;
+    QSpacerItem *verticalSpacer_35;
     QHBoxLayout *horizontalLayout_25;
     QHBoxLayout *horizontalLayout_18;
-    QLabel *m_lbRender;
-    QSpacerItem *horizontalSpacer_18;
-    QPushButton *m_switchRender;
-    QSpacerItem *horizontalSpacer_19;
+    QLabel *m_lbSurfaceMerge;
+    QSpacerItem *m_spacerSurfaceMergeMid;
+    ZegoImageButton *m_switchSurfaceMerge;
+    QSpacerItem *m_spacerSurfaceMergeRight;
     QHBoxLayout *horizontalLayout_19;
-    QLabel *m_lbHardCode;
+    QLabel *m_lbPublish2Stream;
     QSpacerItem *horizontalSpacer_20;
-    QPushButton *m_switchHardCode;
+    ZegoImageButton *m_switchPublish2Stream;
     QSpacerItem *horizontalSpacer_21;
     QHBoxLayout *horizontalLayout_20;
-    QLabel *m_lbAutoBitrate;
+    QLabel *m_lbUnknown2;
     QSpacerItem *horizontalSpacer_22;
-    QPushButton *m_switchAutoBitrate;
+    ZegoImageButton *m_switchUnknown2;
+    QSpacerItem *horizontalSpacer_32;
     QSpacerItem *verticalSpacer_28;
     QHBoxLayout *horizontalLayout_26;
     QVBoxLayout *verticalLayout_18;
@@ -198,7 +200,7 @@ public:
     QHBoxLayout *horizontalLayout_21;
     QLabel *m_lbMicAudio;
     QSpacerItem *horizontalSpacer_23;
-    QPushButton *m_switchMicAudio;
+    ZegoImageButton *m_switchMicAudio;
     QSpacerItem *horizontalSpacer_24;
     QVBoxLayout *verticalLayout_19;
     QLabel *m_lbTime;
@@ -206,7 +208,7 @@ public:
     QHBoxLayout *horizontalLayout_22;
     QLabel *m_lbTimeCount;
     QSpacerItem *horizontalSpacer_25;
-    QPushButton *m_switchTimeCount;
+    ZegoImageButton *m_switchTimeCount;
     QSpacerItem *horizontalSpacer_27;
     QVBoxLayout *verticalLayout_20;
     QLabel *m_lbAudioRight;
@@ -214,7 +216,7 @@ public:
     QHBoxLayout *horizontalLayout_23;
     QLabel *m_lbNational;
     QSpacerItem *horizontalSpacer_26;
-    QPushButton *m_switchNational;
+    ZegoImageButton *m_switchNational;
     QSpacerItem *verticalSpacer_34;
     QSpacerItem *horizontalSpacer_16;
     QWidget *m_tabUserSettings;
@@ -234,18 +236,25 @@ public:
     QFormLayout *formLayout_2;
     QLabel *m_lbUserName;
     QLineEdit *m_strEdUserName;
+    QSpacerItem *verticalSpacer_36;
     QSpacerItem *horizontalSpacer_4;
     QVBoxLayout *verticalLayout_11;
     QSpacerItem *verticalSpacer_8;
     QLabel *m_lbEquipment;
     QSpacerItem *verticalSpacer_11;
     QVBoxLayout *verticalLayout_9;
-    QFormLayout *formLayout_3;
+    QHBoxLayout *horizontalLayout_28;
     QLabel *m_lbMircoPhone;
+    QSpacerItem *horizontalSpacer_9;
     QComboBox *m_cbMircoPhone;
-    QFormLayout *formLayout_4;
+    QHBoxLayout *horizontalLayout_29;
     QLabel *m_lbCamera;
+    QSpacerItem *horizontalSpacer_29;
     QComboBox *m_cbCamera;
+    QHBoxLayout *horizontalLayout_30;
+    QLabel *m_lbCamera2;
+    QSpacerItem *horizontalSpacer_33;
+    QComboBox *m_cbCamera2;
     QSpacerItem *verticalSpacer_9;
     QHBoxLayout *horizontalLayout_7;
     QLabel *m_lbVersion;
@@ -319,7 +328,7 @@ public:
 
         horizontalLayout_3->addLayout(horizontalLayout_2);
 
-        m_bJumpToNet = new QPushButton(m_zoneTitle);
+        m_bJumpToNet = new ZegoImageButton(m_zoneTitle);
         m_bJumpToNet->setObjectName(QStringLiteral("m_bJumpToNet"));
         m_bJumpToNet->setMinimumSize(QSize(40, 40));
         m_bJumpToNet->setMaximumSize(QSize(40, 40));
@@ -346,7 +355,7 @@ public:
 
         horizontalLayout_3->addWidget(m_bJumpToNet);
 
-        m_bMin = new QPushButton(m_zoneTitle);
+        m_bMin = new ZegoImageButton(m_zoneTitle);
         m_bMin->setObjectName(QStringLiteral("m_bMin"));
         m_bMin->setMinimumSize(QSize(40, 40));
         m_bMin->setMaximumSize(QSize(40, 40));
@@ -372,7 +381,7 @@ public:
 
         horizontalLayout_3->addWidget(m_bMin);
 
-        m_bClose = new QPushButton(m_zoneTitle);
+        m_bClose = new ZegoImageButton(m_zoneTitle);
         m_bClose->setObjectName(QStringLiteral("m_bClose"));
         m_bClose->setMinimumSize(QSize(50, 40));
         m_bClose->setMaximumSize(QSize(50, 40));
@@ -732,7 +741,7 @@ public:
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(0);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        horizontalLayout->setContentsMargins(20, -1, 20, -1);
+        horizontalLayout->setContentsMargins(20, -1, 0, -1);
         m_TitleList = new QLabel(m_zoneRoomList);
         m_TitleList->setObjectName(QStringLiteral("m_TitleList"));
         m_TitleList->setMinimumSize(QSize(0, 64));
@@ -747,6 +756,10 @@ public:
 
         horizontalLayout->addWidget(m_TitleList);
 
+        horizontalSpacer_30 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_30);
+
         m_progIndicator = new ZegoProgressIndicator(m_zoneRoomList);
         m_progIndicator->setObjectName(QStringLiteral("m_progIndicator"));
         m_progIndicator->setMinimumSize(QSize(20, 20));
@@ -754,10 +767,15 @@ public:
 
         horizontalLayout->addWidget(m_progIndicator);
 
-        m_bRefreshRoomList = new QPushButton(m_zoneRoomList);
+        m_bRefreshRoomList = new ZegoImageButton(m_zoneRoomList);
         m_bRefreshRoomList->setObjectName(QStringLiteral("m_bRefreshRoomList"));
-        m_bRefreshRoomList->setMinimumSize(QSize(55, 20));
-        m_bRefreshRoomList->setMaximumSize(QSize(55, 20));
+        QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(m_bRefreshRoomList->sizePolicy().hasHeightForWidth());
+        m_bRefreshRoomList->setSizePolicy(sizePolicy);
+        m_bRefreshRoomList->setMinimumSize(QSize(0, 0));
+        m_bRefreshRoomList->setMaximumSize(QSize(16777215, 16777215));
         m_bRefreshRoomList->setCursor(QCursor(Qt::PointingHandCursor));
         m_bRefreshRoomList->setFocusPolicy(Qt::ClickFocus);
         m_bRefreshRoomList->setLayoutDirection(Qt::RightToLeft);
@@ -768,6 +786,17 @@ public:
 "     text-align: top;\n"
 "     border: none;\n"
 " }\n"
+"\n"
+"QPushButton:hover{\n"
+"    color: #0f8ff7;\n"
+"}\n"
+"\n"
+"QPushButton:pressed{\n"
+"    color: #0d80de;\n"
+"}\n"
+"\n"
+"\n"
+"\n"
 ""));
         QIcon icon3;
         icon3.addFile(QStringLiteral(":/Resources/images/refresh.png"), QSize(), QIcon::Normal, QIcon::Off);
@@ -775,6 +804,10 @@ public:
         m_bRefreshRoomList->setFlat(true);
 
         horizontalLayout->addWidget(m_bRefreshRoomList);
+
+        horizontalSpacer_31 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_31);
 
 
         verticalLayout_2->addLayout(horizontalLayout);
@@ -1201,7 +1234,7 @@ public:
         horizontalLayout_8 = new QHBoxLayout();
         horizontalLayout_8->setSpacing(6);
         horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
-        m_bResolutionDown = new QPushButton(m_tabVideoConfig);
+        m_bResolutionDown = new ZegoImageButton(m_tabVideoConfig);
         m_bResolutionDown->setObjectName(QStringLiteral("m_bResolutionDown"));
         m_bResolutionDown->setMinimumSize(QSize(15, 15));
         m_bResolutionDown->setMaximumSize(QSize(15, 15));
@@ -1272,7 +1305,7 @@ public:
 
         horizontalLayout_8->addWidget(m_sliderResolution);
 
-        m_bResolutionUp = new QPushButton(m_tabVideoConfig);
+        m_bResolutionUp = new ZegoImageButton(m_tabVideoConfig);
         m_bResolutionUp->setObjectName(QStringLiteral("m_bResolutionUp"));
         m_bResolutionUp->setMinimumSize(QSize(15, 15));
         m_bResolutionUp->setMaximumSize(QSize(15, 15));
@@ -1332,7 +1365,7 @@ public:
         horizontalLayout_10 = new QHBoxLayout();
         horizontalLayout_10->setSpacing(6);
         horizontalLayout_10->setObjectName(QStringLiteral("horizontalLayout_10"));
-        m_bFPSDown = new QPushButton(m_tabVideoConfig);
+        m_bFPSDown = new ZegoImageButton(m_tabVideoConfig);
         m_bFPSDown->setObjectName(QStringLiteral("m_bFPSDown"));
         m_bFPSDown->setMinimumSize(QSize(15, 15));
         m_bFPSDown->setMaximumSize(QSize(15, 15));
@@ -1400,7 +1433,7 @@ public:
 
         horizontalLayout_10->addWidget(m_sliderFPS);
 
-        m_bFPSUp = new QPushButton(m_tabVideoConfig);
+        m_bFPSUp = new ZegoImageButton(m_tabVideoConfig);
         m_bFPSUp->setObjectName(QStringLiteral("m_bFPSUp"));
         m_bFPSUp->setMinimumSize(QSize(15, 15));
         m_bFPSUp->setMaximumSize(QSize(15, 15));
@@ -1460,7 +1493,7 @@ public:
         horizontalLayout_12 = new QHBoxLayout();
         horizontalLayout_12->setSpacing(6);
         horizontalLayout_12->setObjectName(QStringLiteral("horizontalLayout_12"));
-        m_bBitrateDown = new QPushButton(m_tabVideoConfig);
+        m_bBitrateDown = new ZegoImageButton(m_tabVideoConfig);
         m_bBitrateDown->setObjectName(QStringLiteral("m_bBitrateDown"));
         m_bBitrateDown->setMinimumSize(QSize(15, 15));
         m_bBitrateDown->setMaximumSize(QSize(15, 15));
@@ -1483,11 +1516,11 @@ public:
 
         m_sliderBitrate = new QSlider(m_tabVideoConfig);
         m_sliderBitrate->setObjectName(QStringLiteral("m_sliderBitrate"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(m_sliderBitrate->sizePolicy().hasHeightForWidth());
-        m_sliderBitrate->setSizePolicy(sizePolicy);
+        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(m_sliderBitrate->sizePolicy().hasHeightForWidth());
+        m_sliderBitrate->setSizePolicy(sizePolicy1);
         m_sliderBitrate->setMinimumSize(QSize(240, 0));
         m_sliderBitrate->setStyleSheet(QLatin1String("QSlider::groove:horizontal{\n"
 "     border: none;\n"
@@ -1533,7 +1566,7 @@ public:
 
         horizontalLayout_12->addWidget(m_sliderBitrate);
 
-        m_bBitrateUp = new QPushButton(m_tabVideoConfig);
+        m_bBitrateUp = new ZegoImageButton(m_tabVideoConfig);
         m_bBitrateUp->setObjectName(QStringLiteral("m_bBitrateUp"));
         m_bBitrateUp->setMinimumSize(QSize(15, 15));
         m_bBitrateUp->setMaximumSize(QSize(15, 15));
@@ -1649,11 +1682,11 @@ public:
 
         horizontalLayout_14->addWidget(m_lbTestEnv);
 
-        horizontalSpacer_8 = new QSpacerItem(14, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_8 = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_14->addItem(horizontalSpacer_8);
 
-        m_switchTestEnv = new QPushButton(m_tabExtraSettings);
+        m_switchTestEnv = new ZegoImageButton(m_tabExtraSettings);
         m_switchTestEnv->setObjectName(QStringLiteral("m_switchTestEnv"));
         m_switchTestEnv->setMinimumSize(QSize(32, 16));
         m_switchTestEnv->setMaximumSize(QSize(32, 16));
@@ -1668,47 +1701,9 @@ public:
 
         horizontalLayout_14->addWidget(m_switchTestEnv);
 
-        horizontalSpacer_28 = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_28 = new QSpacerItem(15, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_14->addItem(horizontalSpacer_28);
-
-        m_lbSurfaceMerge = new QLabel(m_tabExtraSettings);
-        m_lbSurfaceMerge->setObjectName(QStringLiteral("m_lbSurfaceMerge"));
-        m_lbSurfaceMerge->setStyleSheet(QString::fromUtf8(" QLabel{\n"
-"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
-"     font-size: 14px;\n"
-"	 color: #666666;\n"
-" }"));
-
-        horizontalLayout_14->addWidget(m_lbSurfaceMerge);
-
-        horizontalSpacer_29 = new QSpacerItem(14, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_14->addItem(horizontalSpacer_29);
-
-        horizontalSpacer_9 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_14->addItem(horizontalSpacer_9);
-
-        m_switchSurfaceMerge = new QPushButton(m_tabExtraSettings);
-        m_switchSurfaceMerge->setObjectName(QStringLiteral("m_switchSurfaceMerge"));
-        QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(m_switchSurfaceMerge->sizePolicy().hasHeightForWidth());
-        m_switchSurfaceMerge->setSizePolicy(sizePolicy1);
-        m_switchSurfaceMerge->setMinimumSize(QSize(32, 16));
-        m_switchSurfaceMerge->setMaximumSize(QSize(32, 16));
-        m_switchSurfaceMerge->setStyleSheet(QLatin1String("QPushButton:!checked{\n"
-"     border-image: url(:/Resources/images/switch_off.png);\n"
-" }\n"
-"\n"
-" QPushButton:checked{\n"
-"     border-image: url(:/Resources/images/switch_on.png);\n"
-" }"));
-        m_switchSurfaceMerge->setCheckable(true);
-
-        horizontalLayout_14->addWidget(m_switchSurfaceMerge);
 
 
         verticalLayout_17->addLayout(horizontalLayout_14);
@@ -1970,11 +1965,11 @@ public:
 
         horizontalLayout_15->addWidget(m_lbCapture);
 
-        horizontalSpacer_10 = new QSpacerItem(14, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_10 = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_15->addItem(horizontalSpacer_10);
 
-        m_switchCapture = new QPushButton(m_tabExtraSettings);
+        m_switchCapture = new ZegoImageButton(m_tabExtraSettings);
         m_switchCapture->setObjectName(QStringLiteral("m_switchCapture"));
         m_switchCapture->setMinimumSize(QSize(32, 16));
         m_switchCapture->setMaximumSize(QSize(32, 16));
@@ -1992,7 +1987,7 @@ public:
 
         horizontalLayout_24->addLayout(horizontalLayout_15);
 
-        horizontalSpacer_11 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_11 = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_24->addItem(horizontalSpacer_11);
 
@@ -2011,14 +2006,14 @@ public:
 
         horizontalLayout_16->addWidget(m_lbFilter);
 
-        horizontalSpacer_12 = new QSpacerItem(14, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_12 = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_16->addItem(horizontalSpacer_12);
 
-        m_switchFilter = new QPushButton(m_tabExtraSettings);
+        m_switchFilter = new ZegoImageButton(m_tabExtraSettings);
         m_switchFilter->setObjectName(QStringLiteral("m_switchFilter"));
-        sizePolicy1.setHeightForWidth(m_switchFilter->sizePolicy().hasHeightForWidth());
-        m_switchFilter->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(m_switchFilter->sizePolicy().hasHeightForWidth());
+        m_switchFilter->setSizePolicy(sizePolicy);
         m_switchFilter->setMinimumSize(QSize(32, 16));
         m_switchFilter->setMaximumSize(QSize(32, 16));
         m_switchFilter->setStyleSheet(QLatin1String("QPushButton:!checked{\n"
@@ -2035,60 +2030,13 @@ public:
 
         horizontalLayout_24->addLayout(horizontalLayout_16);
 
-        horizontalSpacer_13 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_13 = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_24->addItem(horizontalSpacer_13);
 
         horizontalLayout_17 = new QHBoxLayout();
         horizontalLayout_17->setSpacing(0);
         horizontalLayout_17->setObjectName(QStringLiteral("horizontalLayout_17"));
-        m_lbHardDecode = new QLabel(m_tabExtraSettings);
-        m_lbHardDecode->setObjectName(QStringLiteral("m_lbHardDecode"));
-        m_lbHardDecode->setMinimumSize(QSize(58, 16));
-        m_lbHardDecode->setMaximumSize(QSize(58, 16));
-        m_lbHardDecode->setStyleSheet(QString::fromUtf8(" QLabel{\n"
-"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
-"     font-size: 14px;\n"
-"	 color: #666666;\n"
-" }"));
-
-        horizontalLayout_17->addWidget(m_lbHardDecode);
-
-        horizontalSpacer_14 = new QSpacerItem(14, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_17->addItem(horizontalSpacer_14);
-
-        m_switchHardDecode = new QPushButton(m_tabExtraSettings);
-        m_switchHardDecode->setObjectName(QStringLiteral("m_switchHardDecode"));
-        m_switchHardDecode->setMinimumSize(QSize(32, 16));
-        m_switchHardDecode->setMaximumSize(QSize(32, 16));
-        m_switchHardDecode->setStyleSheet(QLatin1String("QPushButton:!checked{\n"
-"     border-image: url(:/Resources/images/switch_off.png);\n"
-" }\n"
-"\n"
-" QPushButton:checked{\n"
-"     border-image: url(:/Resources/images/switch_on.png);\n"
-" }"));
-        m_switchHardDecode->setCheckable(true);
-
-        horizontalLayout_17->addWidget(m_switchHardDecode);
-
-
-        horizontalLayout_24->addLayout(horizontalLayout_17);
-
-
-        verticalLayout_21->addLayout(horizontalLayout_24);
-
-        verticalSpacer_27 = new QSpacerItem(20, 16, QSizePolicy::Minimum, QSizePolicy::Fixed);
-
-        verticalLayout_21->addItem(verticalSpacer_27);
-
-        horizontalLayout_25 = new QHBoxLayout();
-        horizontalLayout_25->setSpacing(0);
-        horizontalLayout_25->setObjectName(QStringLiteral("horizontalLayout_25"));
-        horizontalLayout_18 = new QHBoxLayout();
-        horizontalLayout_18->setSpacing(0);
-        horizontalLayout_18->setObjectName(QStringLiteral("horizontalLayout_18"));
         m_lbRender = new QLabel(m_tabExtraSettings);
         m_lbRender->setObjectName(QStringLiteral("m_lbRender"));
         m_lbRender->setMinimumSize(QSize(58, 16));
@@ -2099,13 +2047,13 @@ public:
 "	 color: #666666;\n"
 " }"));
 
-        horizontalLayout_18->addWidget(m_lbRender);
+        horizontalLayout_17->addWidget(m_lbRender);
 
-        horizontalSpacer_18 = new QSpacerItem(14, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_14 = new QSpacerItem(10, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        horizontalLayout_18->addItem(horizontalSpacer_18);
+        horizontalLayout_17->addItem(horizontalSpacer_14);
 
-        m_switchRender = new QPushButton(m_tabExtraSettings);
+        m_switchRender = new ZegoImageButton(m_tabExtraSettings);
         m_switchRender->setObjectName(QStringLiteral("m_switchRender"));
         m_switchRender->setMinimumSize(QSize(32, 16));
         m_switchRender->setMaximumSize(QSize(32, 16));
@@ -2118,48 +2066,109 @@ public:
 " }"));
         m_switchRender->setCheckable(true);
 
-        horizontalLayout_18->addWidget(m_switchRender);
+        horizontalLayout_17->addWidget(m_switchRender);
 
 
-        horizontalLayout_25->addLayout(horizontalLayout_18);
+        horizontalLayout_24->addLayout(horizontalLayout_17);
 
-        horizontalSpacer_19 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
-        horizontalLayout_25->addItem(horizontalSpacer_19);
+        verticalLayout_21->addLayout(horizontalLayout_24);
 
-        horizontalLayout_19 = new QHBoxLayout();
-        horizontalLayout_19->setSpacing(0);
-        horizontalLayout_19->setObjectName(QStringLiteral("horizontalLayout_19"));
-        m_lbHardCode = new QLabel(m_tabExtraSettings);
-        m_lbHardCode->setObjectName(QStringLiteral("m_lbHardCode"));
-        m_lbHardCode->setMinimumSize(QSize(58, 16));
-        m_lbHardCode->setMaximumSize(QSize(58, 16));
-        m_lbHardCode->setStyleSheet(QString::fromUtf8(" QLabel{\n"
+        verticalSpacer_27 = new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
+
+        verticalLayout_21->addItem(verticalSpacer_27);
+
+        m_lbExtra = new QLabel(m_tabExtraSettings);
+        m_lbExtra->setObjectName(QStringLiteral("m_lbExtra"));
+        m_lbExtra->setStyleSheet(QString::fromUtf8(" QLabel{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 14px;\n"
 "	 color: #666666;\n"
 " }"));
 
-        horizontalLayout_19->addWidget(m_lbHardCode);
+        verticalLayout_21->addWidget(m_lbExtra);
 
-        horizontalSpacer_20 = new QSpacerItem(14, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        verticalSpacer_35 = new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
 
-        horizontalLayout_19->addItem(horizontalSpacer_20);
+        verticalLayout_21->addItem(verticalSpacer_35);
 
-        m_switchHardCode = new QPushButton(m_tabExtraSettings);
-        m_switchHardCode->setObjectName(QStringLiteral("m_switchHardCode"));
-        m_switchHardCode->setMinimumSize(QSize(32, 16));
-        m_switchHardCode->setMaximumSize(QSize(32, 16));
-        m_switchHardCode->setStyleSheet(QLatin1String("QPushButton:!checked{\n"
+        horizontalLayout_25 = new QHBoxLayout();
+        horizontalLayout_25->setSpacing(0);
+        horizontalLayout_25->setObjectName(QStringLiteral("horizontalLayout_25"));
+        horizontalLayout_18 = new QHBoxLayout();
+        horizontalLayout_18->setSpacing(0);
+        horizontalLayout_18->setObjectName(QStringLiteral("horizontalLayout_18"));
+        m_lbSurfaceMerge = new QLabel(m_tabExtraSettings);
+        m_lbSurfaceMerge->setObjectName(QStringLiteral("m_lbSurfaceMerge"));
+        m_lbSurfaceMerge->setMinimumSize(QSize(58, 16));
+        m_lbSurfaceMerge->setMaximumSize(QSize(58, 16));
+        m_lbSurfaceMerge->setStyleSheet(QString::fromUtf8(" QLabel{\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"	 color: #666666;\n"
+" }"));
+
+        horizontalLayout_18->addWidget(m_lbSurfaceMerge);
+
+        m_spacerSurfaceMergeMid = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_18->addItem(m_spacerSurfaceMergeMid);
+
+        m_switchSurfaceMerge = new ZegoImageButton(m_tabExtraSettings);
+        m_switchSurfaceMerge->setObjectName(QStringLiteral("m_switchSurfaceMerge"));
+        m_switchSurfaceMerge->setMinimumSize(QSize(32, 16));
+        m_switchSurfaceMerge->setMaximumSize(QSize(32, 16));
+        m_switchSurfaceMerge->setStyleSheet(QLatin1String("QPushButton:!checked{\n"
 "     border-image: url(:/Resources/images/switch_off.png);\n"
 " }\n"
 "\n"
 " QPushButton:checked{\n"
 "     border-image: url(:/Resources/images/switch_on.png);\n"
 " }"));
-        m_switchHardCode->setCheckable(true);
+        m_switchSurfaceMerge->setCheckable(true);
 
-        horizontalLayout_19->addWidget(m_switchHardCode);
+        horizontalLayout_18->addWidget(m_switchSurfaceMerge);
+
+
+        horizontalLayout_25->addLayout(horizontalLayout_18);
+
+        m_spacerSurfaceMergeRight = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_25->addItem(m_spacerSurfaceMergeRight);
+
+        horizontalLayout_19 = new QHBoxLayout();
+        horizontalLayout_19->setSpacing(0);
+        horizontalLayout_19->setObjectName(QStringLiteral("horizontalLayout_19"));
+        m_lbPublish2Stream = new QLabel(m_tabExtraSettings);
+        m_lbPublish2Stream->setObjectName(QStringLiteral("m_lbPublish2Stream"));
+        m_lbPublish2Stream->setMinimumSize(QSize(0, 0));
+        m_lbPublish2Stream->setMaximumSize(QSize(16777215, 16777215));
+        m_lbPublish2Stream->setStyleSheet(QString::fromUtf8(" QLabel{\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"	 color: #666666;\n"
+" }"));
+
+        horizontalLayout_19->addWidget(m_lbPublish2Stream);
+
+        horizontalSpacer_20 = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_19->addItem(horizontalSpacer_20);
+
+        m_switchPublish2Stream = new ZegoImageButton(m_tabExtraSettings);
+        m_switchPublish2Stream->setObjectName(QStringLiteral("m_switchPublish2Stream"));
+        m_switchPublish2Stream->setMinimumSize(QSize(32, 16));
+        m_switchPublish2Stream->setMaximumSize(QSize(32, 16));
+        m_switchPublish2Stream->setStyleSheet(QLatin1String("QPushButton:!checked{\n"
+"     border-image: url(:/Resources/images/switch_off.png);\n"
+" }\n"
+"\n"
+" QPushButton:checked{\n"
+"     border-image: url(:/Resources/images/switch_on.png);\n"
+" }"));
+        m_switchPublish2Stream->setCheckable(true);
+
+        horizontalLayout_19->addWidget(m_switchPublish2Stream);
 
 
         horizontalLayout_25->addLayout(horizontalLayout_19);
@@ -2171,39 +2180,43 @@ public:
         horizontalLayout_20 = new QHBoxLayout();
         horizontalLayout_20->setSpacing(0);
         horizontalLayout_20->setObjectName(QStringLiteral("horizontalLayout_20"));
-        m_lbAutoBitrate = new QLabel(m_tabExtraSettings);
-        m_lbAutoBitrate->setObjectName(QStringLiteral("m_lbAutoBitrate"));
-        m_lbAutoBitrate->setMinimumSize(QSize(68, 0));
-        m_lbAutoBitrate->setMaximumSize(QSize(58, 16));
-        m_lbAutoBitrate->setStyleSheet(QString::fromUtf8(" QLabel{\n"
+        m_lbUnknown2 = new QLabel(m_tabExtraSettings);
+        m_lbUnknown2->setObjectName(QStringLiteral("m_lbUnknown2"));
+        m_lbUnknown2->setMinimumSize(QSize(0, 0));
+        m_lbUnknown2->setMaximumSize(QSize(16777215, 16777215));
+        m_lbUnknown2->setStyleSheet(QString::fromUtf8(" QLabel{\n"
 "     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
 "     font-size: 14px;\n"
 "	 color: #666666;\n"
 " }"));
 
-        horizontalLayout_20->addWidget(m_lbAutoBitrate);
+        horizontalLayout_20->addWidget(m_lbUnknown2);
 
         horizontalSpacer_22 = new QSpacerItem(4, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_20->addItem(horizontalSpacer_22);
 
-        m_switchAutoBitrate = new QPushButton(m_tabExtraSettings);
-        m_switchAutoBitrate->setObjectName(QStringLiteral("m_switchAutoBitrate"));
-        m_switchAutoBitrate->setMinimumSize(QSize(32, 16));
-        m_switchAutoBitrate->setMaximumSize(QSize(32, 16));
-        m_switchAutoBitrate->setStyleSheet(QLatin1String("QPushButton:!checked{\n"
+        m_switchUnknown2 = new ZegoImageButton(m_tabExtraSettings);
+        m_switchUnknown2->setObjectName(QStringLiteral("m_switchUnknown2"));
+        m_switchUnknown2->setMinimumSize(QSize(32, 16));
+        m_switchUnknown2->setMaximumSize(QSize(32, 16));
+        m_switchUnknown2->setStyleSheet(QLatin1String("QPushButton:!checked{\n"
 "     border-image: url(:/Resources/images/switch_off.png);\n"
 " }\n"
 "\n"
 " QPushButton:checked{\n"
 "     border-image: url(:/Resources/images/switch_on.png);\n"
 " }"));
-        m_switchAutoBitrate->setCheckable(true);
+        m_switchUnknown2->setCheckable(true);
 
-        horizontalLayout_20->addWidget(m_switchAutoBitrate);
+        horizontalLayout_20->addWidget(m_switchUnknown2);
 
 
         horizontalLayout_25->addLayout(horizontalLayout_20);
+
+        horizontalSpacer_32 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_25->addItem(horizontalSpacer_32);
 
 
         verticalLayout_21->addLayout(horizontalLayout_25);
@@ -2251,7 +2264,7 @@ public:
 
         horizontalLayout_21->addItem(horizontalSpacer_23);
 
-        m_switchMicAudio = new QPushButton(m_tabExtraSettings);
+        m_switchMicAudio = new ZegoImageButton(m_tabExtraSettings);
         m_switchMicAudio->setObjectName(QStringLiteral("m_switchMicAudio"));
         m_switchMicAudio->setMinimumSize(QSize(32, 16));
         m_switchMicAudio->setMaximumSize(QSize(32, 16));
@@ -2312,7 +2325,7 @@ public:
 
         horizontalLayout_22->addItem(horizontalSpacer_25);
 
-        m_switchTimeCount = new QPushButton(m_tabExtraSettings);
+        m_switchTimeCount = new ZegoImageButton(m_tabExtraSettings);
         m_switchTimeCount->setObjectName(QStringLiteral("m_switchTimeCount"));
         m_switchTimeCount->setMinimumSize(QSize(32, 16));
         m_switchTimeCount->setMaximumSize(QSize(32, 16));
@@ -2373,7 +2386,7 @@ public:
 
         horizontalLayout_23->addItem(horizontalSpacer_26);
 
-        m_switchNational = new QPushButton(m_tabExtraSettings);
+        m_switchNational = new ZegoImageButton(m_tabExtraSettings);
         m_switchNational->setObjectName(QStringLiteral("m_switchNational"));
         m_switchNational->setMinimumSize(QSize(32, 16));
         m_switchNational->setMaximumSize(QSize(32, 16));
@@ -2455,7 +2468,8 @@ public:
         verticalLayout_10 = new QVBoxLayout();
         verticalLayout_10->setSpacing(0);
         verticalLayout_10->setObjectName(QStringLiteral("verticalLayout_10"));
-        verticalSpacer_7 = new QSpacerItem(20, 18, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalLayout_10->setContentsMargins(-1, -1, -1, 0);
+        verticalSpacer_7 = new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
 
         verticalLayout_10->addItem(verticalSpacer_7);
 
@@ -2470,7 +2484,7 @@ public:
 
         verticalLayout_10->addWidget(m_lbAccount);
 
-        verticalSpacer_10 = new QSpacerItem(20, 16, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalSpacer_10 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_10->addItem(verticalSpacer_10);
 
@@ -2586,6 +2600,10 @@ public:
 
         verticalLayout_10->addLayout(verticalLayout_8);
 
+        verticalSpacer_36 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_10->addItem(verticalSpacer_36);
+
 
         horizontalLayout_5->addLayout(verticalLayout_10);
 
@@ -2596,7 +2614,7 @@ public:
         verticalLayout_11 = new QVBoxLayout();
         verticalLayout_11->setSpacing(0);
         verticalLayout_11->setObjectName(QStringLiteral("verticalLayout_11"));
-        verticalSpacer_8 = new QSpacerItem(20, 16, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalSpacer_8 = new QSpacerItem(312, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
 
         verticalLayout_11->addItem(verticalSpacer_8);
 
@@ -2611,16 +2629,17 @@ public:
 
         verticalLayout_11->addWidget(m_lbEquipment);
 
-        verticalSpacer_11 = new QSpacerItem(20, 16, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalSpacer_11 = new QSpacerItem(312, 13, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_11->addItem(verticalSpacer_11);
 
         verticalLayout_9 = new QVBoxLayout();
         verticalLayout_9->setSpacing(10);
         verticalLayout_9->setObjectName(QStringLiteral("verticalLayout_9"));
-        formLayout_3 = new QFormLayout();
-        formLayout_3->setSpacing(6);
-        formLayout_3->setObjectName(QStringLiteral("formLayout_3"));
+        verticalLayout_9->setContentsMargins(-1, -1, -1, 0);
+        horizontalLayout_28 = new QHBoxLayout();
+        horizontalLayout_28->setSpacing(0);
+        horizontalLayout_28->setObjectName(QStringLiteral("horizontalLayout_28"));
         m_lbMircoPhone = new QLabel(m_tabUserSettings);
         m_lbMircoPhone->setObjectName(QStringLiteral("m_lbMircoPhone"));
         m_lbMircoPhone->setStyleSheet(QString::fromUtf8(" QLabel{\n"
@@ -2629,11 +2648,18 @@ public:
 "	 color: #666666;\n"
 " }"));
 
-        formLayout_3->setWidget(0, QFormLayout::LabelRole, m_lbMircoPhone);
+        horizontalLayout_28->addWidget(m_lbMircoPhone);
+
+        horizontalSpacer_9 = new QSpacerItem(16, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_28->addItem(horizontalSpacer_9);
 
         m_cbMircoPhone = new QComboBox(m_tabUserSettings);
         m_cbMircoPhone->setObjectName(QStringLiteral("m_cbMircoPhone"));
+        sizePolicy1.setHeightForWidth(m_cbMircoPhone->sizePolicy().hasHeightForWidth());
+        m_cbMircoPhone->setSizePolicy(sizePolicy1);
         m_cbMircoPhone->setMinimumSize(QSize(260, 32));
+        m_cbMircoPhone->setMaximumSize(QSize(16777215, 32));
         m_cbMircoPhone->setStyleSheet(QString::fromUtf8("  QComboBox{\n"
 "     padding-left: 10px;\n"
 " }\n"
@@ -2716,14 +2742,14 @@ public:
 ""));
         m_cbMircoPhone->setFrame(true);
 
-        formLayout_3->setWidget(0, QFormLayout::FieldRole, m_cbMircoPhone);
+        horizontalLayout_28->addWidget(m_cbMircoPhone);
 
 
-        verticalLayout_9->addLayout(formLayout_3);
+        verticalLayout_9->addLayout(horizontalLayout_28);
 
-        formLayout_4 = new QFormLayout();
-        formLayout_4->setSpacing(6);
-        formLayout_4->setObjectName(QStringLiteral("formLayout_4"));
+        horizontalLayout_29 = new QHBoxLayout();
+        horizontalLayout_29->setSpacing(0);
+        horizontalLayout_29->setObjectName(QStringLiteral("horizontalLayout_29"));
         m_lbCamera = new QLabel(m_tabUserSettings);
         m_lbCamera->setObjectName(QStringLiteral("m_lbCamera"));
         m_lbCamera->setStyleSheet(QString::fromUtf8(" QLabel{\n"
@@ -2732,11 +2758,18 @@ public:
 "	 color: #666666;\n"
 " }"));
 
-        formLayout_4->setWidget(0, QFormLayout::LabelRole, m_lbCamera);
+        horizontalLayout_29->addWidget(m_lbCamera);
+
+        horizontalSpacer_29 = new QSpacerItem(16, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_29->addItem(horizontalSpacer_29);
 
         m_cbCamera = new QComboBox(m_tabUserSettings);
         m_cbCamera->setObjectName(QStringLiteral("m_cbCamera"));
+        sizePolicy1.setHeightForWidth(m_cbCamera->sizePolicy().hasHeightForWidth());
+        m_cbCamera->setSizePolicy(sizePolicy1);
         m_cbCamera->setMinimumSize(QSize(260, 32));
+        m_cbCamera->setMaximumSize(QSize(16777215, 32));
         m_cbCamera->setStyleSheet(QString::fromUtf8("  QComboBox{\n"
 "     padding-left: 10px;\n"
 " }\n"
@@ -2818,10 +2851,119 @@ public:
 " }\n"
 ""));
 
-        formLayout_4->setWidget(0, QFormLayout::FieldRole, m_cbCamera);
+        horizontalLayout_29->addWidget(m_cbCamera);
 
 
-        verticalLayout_9->addLayout(formLayout_4);
+        verticalLayout_9->addLayout(horizontalLayout_29);
+
+        horizontalLayout_30 = new QHBoxLayout();
+        horizontalLayout_30->setSpacing(0);
+        horizontalLayout_30->setObjectName(QStringLiteral("horizontalLayout_30"));
+        m_lbCamera2 = new QLabel(m_tabUserSettings);
+        m_lbCamera2->setObjectName(QStringLiteral("m_lbCamera2"));
+        m_lbCamera2->setStyleSheet(QString::fromUtf8(" QLabel{\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"	 color: #666666;\n"
+" }"));
+
+        horizontalLayout_30->addWidget(m_lbCamera2);
+
+        horizontalSpacer_33 = new QSpacerItem(8, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_30->addItem(horizontalSpacer_33);
+
+        m_cbCamera2 = new QComboBox(m_tabUserSettings);
+        m_cbCamera2->setObjectName(QStringLiteral("m_cbCamera2"));
+        sizePolicy1.setHeightForWidth(m_cbCamera2->sizePolicy().hasHeightForWidth());
+        m_cbCamera2->setSizePolicy(sizePolicy1);
+        m_cbCamera2->setMinimumSize(QSize(260, 32));
+        m_cbCamera2->setMaximumSize(QSize(16777215, 32));
+        m_cbCamera2->setStyleSheet(QString::fromUtf8("  QComboBox{\n"
+"     padding-left: 10px;\n"
+" }\n"
+"\n"
+" QComboBox:!enabled{\n"
+"    border: 1px solid #e6e6e6;\n"
+"    border-radius: 2px;\n"
+"    font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"    font-size: 16px;\n"
+"	background-color: #fafafa;\n"
+"	color: #cccccc;\n"
+" }\n"
+"\n"
+" QComboBox:enabled:!hover{\n"
+"    border: 1px solid #e6e6e6;\n"
+"    border-radius: 2px;\n"
+"    font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"    font-size: 16px;\n"
+"	background-color: #fafafa;\n"
+"	color: #666666;\n"
+"}\n"
+"QComboBox:enabled:hover{\n"
+"     border: 1px solid #0e88eb;\n"
+"     border-radius: 2px;\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 16px;\n"
+"	 background-color: #fafafa;\n"
+"	 color: #666666;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down{\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 20px;\n"
+" \n"
+"    border-left-width: 1px;\n"
+"\n"
+"    border-top-right-radius: 2px; /* same rad"
+                        "ius as the QComboBox */\n"
+"    border-bottom-right-radius: 2px;\n"
+"\n"
+" }\n"
+"\n"
+" QComboBox::down-arrow{\n"
+"\n"
+"     border-image: url(:/Resources/images/down_arrow.png);\n"
+" }\n"
+"\n"
+" \n"
+"  QComboBox QAbstractItemView{\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"     border: 1px solid #0e88eb;\n"
+"	 background-color: #ffffff;\n"
+"	 border-radius: 2px;\n"
+"	 \n"
+"  }\n"
+"\n"
+" QComboBox QAbstractItemView::item{\n"
+"     \n"
+"     height: 32px;\n"
+"	 font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"	 color: #666666;\n"
+"	 background-color: #ffffff;\n"
+"	 padding-left: 10px;\n"
+"	 padding-right: 10px;\n"
+" }\n"
+"\n"
+" QComboBox QAbstractItemView::item:hover{\n"
+"     \n"
+"     height: 32px;\n"
+"	 font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"	 color: #ffffff;\n"
+"	 background-color: #0e88eb;\n"
+"	 padding-left: 10px;\n"
+"	 padding-right: 10px;\n"
+" }\n"
+""));
+
+        horizontalLayout_30->addWidget(m_cbCamera2);
+
+
+        verticalLayout_9->addLayout(horizontalLayout_30);
 
 
         verticalLayout_11->addLayout(verticalLayout_9);
@@ -2832,7 +2974,7 @@ public:
 
         verticalLayout_12->addLayout(horizontalLayout_5);
 
-        verticalSpacer_9 = new QSpacerItem(20, 18, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalSpacer_9 = new QSpacerItem(591, 13, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_12->addItem(verticalSpacer_9);
 
@@ -2910,7 +3052,7 @@ public:
 
         verticalLayout_12->addLayout(horizontalLayout_7);
 
-        verticalSpacer_6 = new QSpacerItem(20, 18, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalSpacer_6 = new QSpacerItem(591, 13, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_12->addItem(verticalSpacer_6);
 
@@ -2940,7 +3082,7 @@ public:
         retranslateUi(ZegoMainDialog);
 
         m_bSingleMode->setDefault(false);
-        m_tabSettings->setCurrentIndex(2);
+        m_tabSettings->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(ZegoMainDialog);
@@ -2987,8 +3129,6 @@ public:
         m_lbEnvironment->setText(QApplication::translate("ZegoMainDialog", "Environment", Q_NULLPTR));
         m_lbTestEnv->setText(QApplication::translate("ZegoMainDialog", "\346\265\213\350\257\225\347\216\257\345\242\203", Q_NULLPTR));
         m_switchTestEnv->setText(QString());
-        m_lbSurfaceMerge->setText(QApplication::translate("ZegoMainDialog", "\345\261\217\345\271\225\347\233\264\346\222\255", Q_NULLPTR));
-        m_switchSurfaceMerge->setText(QString());
         m_lbAPPID->setText(QApplication::translate("ZegoMainDialog", "APP ID", Q_NULLPTR));
         m_lbAPPSign->setText(QApplication::translate("ZegoMainDialog", "APP Sign", Q_NULLPTR));
         m_lbAdvanced->setText(QApplication::translate("ZegoMainDialog", "Advanced", Q_NULLPTR));
@@ -2996,14 +3136,15 @@ public:
         m_switchCapture->setText(QString());
         m_lbFilter->setText(QApplication::translate("ZegoMainDialog", "\345\244\226\351\203\250\346\273\244\351\225\234", Q_NULLPTR));
         m_switchFilter->setText(QString());
-        m_lbHardDecode->setText(QApplication::translate("ZegoMainDialog", "\347\241\254\344\273\266\350\247\243\347\240\201", Q_NULLPTR));
-        m_switchHardDecode->setText(QString());
         m_lbRender->setText(QApplication::translate("ZegoMainDialog", "\345\244\226\351\203\250\346\270\262\346\237\223", Q_NULLPTR));
         m_switchRender->setText(QString());
-        m_lbHardCode->setText(QApplication::translate("ZegoMainDialog", "\347\241\254\344\273\266\347\274\226\347\240\201", Q_NULLPTR));
-        m_switchHardCode->setText(QString());
-        m_lbAutoBitrate->setText(QApplication::translate("ZegoMainDialog", "\350\207\252\351\200\202\345\272\224\347\240\201\347\216\207", Q_NULLPTR));
-        m_switchAutoBitrate->setText(QString());
+        m_lbExtra->setText(QApplication::translate("ZegoMainDialog", "Extra", Q_NULLPTR));
+        m_lbSurfaceMerge->setText(QApplication::translate("ZegoMainDialog", "\345\261\217\345\271\225\347\233\264\346\222\255", Q_NULLPTR));
+        m_switchSurfaceMerge->setText(QString());
+        m_lbPublish2Stream->setText(QApplication::translate("ZegoMainDialog", "\346\216\250\344\270\244\350\267\257\346\265\201", Q_NULLPTR));
+        m_switchPublish2Stream->setText(QString());
+        m_lbUnknown2->setText(QString());
+        m_switchUnknown2->setText(QString());
         m_lbAudioLeft->setText(QApplication::translate("ZegoMainDialog", "Audio", Q_NULLPTR));
         m_lbMicAudio->setText(QApplication::translate("ZegoMainDialog", "\346\267\267\345\223\215", Q_NULLPTR));
         m_switchMicAudio->setText(QString());
@@ -3020,6 +3161,7 @@ public:
         m_lbEquipment->setText(QApplication::translate("ZegoMainDialog", "Equipment", Q_NULLPTR));
         m_lbMircoPhone->setText(QApplication::translate("ZegoMainDialog", "\351\272\246\345\205\213\351\243\216", Q_NULLPTR));
         m_lbCamera->setText(QApplication::translate("ZegoMainDialog", "\346\221\204\345\203\217\345\244\264", Q_NULLPTR));
+        m_lbCamera2->setText(QApplication::translate("ZegoMainDialog", "\346\221\204\345\203\217\345\244\2642", Q_NULLPTR));
         m_lbVersion->setText(QApplication::translate("ZegoMainDialog", "Version", Q_NULLPTR));
         m_bUploadLog->setText(QApplication::translate("ZegoMainDialog", "\344\270\212\344\274\240\346\227\245\345\277\227", Q_NULLPTR));
         m_lbTips->setText(QApplication::translate("ZegoMainDialog", "(\345\246\202\351\201\207\347\250\213\345\272\217\345\264\251\346\272\203\347\255\211\351\227\256\351\242\230,\350\257\267\347\202\271\345\207\273\344\270\212\344\274\240\346\227\245\345\277\227,\347\255\211\345\276\205\350\247\243\345\206\263)", Q_NULLPTR));

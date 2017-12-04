@@ -122,9 +122,6 @@
     <ClCompile Include="Delegate\NoFocusFrameDelegate.cpp">
       <Filter>Delegate</Filter>
     </ClCompile>
-    <ClCompile Include="UI\ZegoMircophone.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="UI\ZegoAVView.cpp">
       <Filter>UI</Filter>
     </ClCompile>
@@ -167,9 +164,6 @@
     <ClCompile Include="UI\ZegoRoomList.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="Dialog\ZegoMusicHookDialog.cpp">
-      <Filter>MusicHook</Filter>
-    </ClCompile>
     <ClCompile Include="Dialog\ZegoMainDialog.cpp">
       <Filter>MainDialog</Filter>
     </ClCompile>
@@ -194,9 +188,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ZegoMainDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ZegoMircophone.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_ZegoMixStreamAnchorDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
@@ -207,9 +198,6 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_ZegoMoreAudienceDialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ZegoMusicHookDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_ZegoProgressIndicator.cpp">
@@ -239,6 +227,33 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ZegoImageShowDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="AudioHookDialog\ZegoMusicHookDialog.cpp">
+      <Filter>MusicHook</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ZegoMusicHookDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ZegoImageButton.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ZegoMicrophoneButton.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ZegoMicrophoneButton.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ZegoMicrophoneButton.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ZegoVideoFilterDemo.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ZegoVideoFilterDemo.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ZegoMusicHookDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ZegoMainDialog.qrc">
@@ -255,9 +270,6 @@
     </CustomBuild>
     <CustomBuild Include="Delegate\NoFocusFrameDelegate.h">
       <Filter>Delegate</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\ZegoMircophone.h">
-      <Filter>UI</Filter>
     </CustomBuild>
     <CustomBuild Include="UI\ZegoAVView.h">
       <Filter>UI</Filter>
@@ -292,9 +304,6 @@
     <CustomBuild Include="UI\ZegoRoomList.h">
       <Filter>UI</Filter>
     </CustomBuild>
-    <CustomBuild Include="Dialog\ZegoMusicHookDialog.h">
-      <Filter>MusicHook</Filter>
-    </CustomBuild>
     <CustomBuild Include="Dialog\ZegoMainDialog.h">
       <Filter>MainDialog</Filter>
     </CustomBuild>
@@ -315,6 +324,15 @@
     </CustomBuild>
     <CustomBuild Include="Dialog\ZegoImageShowDialog.h">
       <Filter>ImageShow</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AudioHookDialog\ZegoMusicHookDialog.h">
+      <Filter>MusicHook</Filter>
+    </CustomBuild>
+    <CustomBuild Include="UI\ZegoMicrophoneButton.h">
+      <Filter>UI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="VideoFilter\ZegoVideoFilterDemo.h">
+      <Filter>VideoFilter</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -357,9 +375,6 @@
     <ClInclude Include="VideoCapture\ZegoVideoCaptureDeviceDemo.h">
       <Filter>VideoCapture</Filter>
     </ClInclude>
-    <ClInclude Include="VideoFilter\ZegoVideoFilterDemo.h">
-      <Filter>VideoFilter</Filter>
-    </ClInclude>
     <ClInclude Include="VideoFilter\ZegoVideoFilterFactoryDemo.h">
       <Filter>VideoFilter</Filter>
     </ClInclude>
@@ -374,6 +389,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_ZegoImageShowDialog.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\ZegoImageButton.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

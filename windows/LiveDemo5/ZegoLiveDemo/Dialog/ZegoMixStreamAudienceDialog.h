@@ -1,4 +1,4 @@
-﻿#pragma execution_character_set("utf-8")
+#pragma execution_character_set("utf-8")
 
 #ifndef ZEGOMIXSTREAMAUDIENCEDIALOG_H
 #define ZEGOMIXSTREAMAUDIENCEDIALOG_H
@@ -26,8 +26,8 @@
 Q_GUI_EXPORT QPixmap qt_pixmapFromWinHBITMAP(HBITMAP bitmap, int hbitmapFormat);
 #endif
 #include "ui_ZegoLiveRoomDialog.h"
-#include "ZegoSettingsModel.h"
-#include "ZegoRoomModel.h"
+#include "Settings/ZegoSettingsModel.h"
+#include "Model/ZegoRoomModel.h"
 #include "ZegoAVView.h"
 #include "LiveRoom.h"
 #include "LiveRoom-IM.h"
@@ -35,9 +35,9 @@ Q_GUI_EXPORT QPixmap qt_pixmapFromWinHBITMAP(HBITMAP bitmap, int hbitmapFormat);
 #include "LiveRoom-Player.h"
 #include "LiveRoomDefines.h"
 #include "LiveRoomDefines-IM.h"
-#include "ZegoRoomMsgModel.h"
+#include "Model/ZegoRoomMsgModel.h"
 #include "ZegoLiveDemo.h"
-#include "NoFocusFrameDelegate.h"
+#include "Delegate/NoFocusFrameDelegate.h"
 #include "ZegoShareDialog.h"
 #ifdef Q_OS_WIN
 #include "ZegoMusicHookDialog.h"

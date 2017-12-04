@@ -1,9 +1,10 @@
-﻿#pragma once
+#pragma once
 
-#include "ZegoRoomModel.h"
-#include "ZegoStreamModel.h"
+#include "Model/ZegoRoomModel.h"
+#include "Model/ZegoStreamModel.h"
+#include "Model/ZegoRoomMsgModel.h"
+
 #include "LiveRoomCallback.h"
-#include "ZegoRoomMsgModel.h"
 #include "LiveRoomCallback-IM.h"
 #include "LiveRoomCallback-Player.h"
 #include "LiveRoomCallback-Publisher.h"

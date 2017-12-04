@@ -1,9 +1,10 @@
 ﻿#include "ZegoMoreAnchorDialog.h"
-#include "ZegoSDKSignal.h"
+#include "Signal/ZegoSDKSignal.h"
 #include <QMessageBox>
 #include <QDebug>
 #ifdef Q_OS_MAC
-#include "ZegoAVDevice.h"
+#include "OSX_Objective-C/ZegoAVDevice.h"
+#include "OSX_Objective-C/ZegoCGImageToQImage.h"
 #endif
 ZegoMoreAnchorDialog::ZegoMoreAnchorDialog(QWidget *parent)
 	: QDialog(parent)
@@ -139,6 +140,8 @@ void ZegoMoreAnchorDialog::initDialog()
 	ui.m_bCapture->setEnabled(false);
 	ui.m_bShare->setEnabled(false);
 	ui.m_bRequestJoinLive->setEnabled(false);
+	ui.m_lbCamera2->setVisible(false);
+	ui.m_cbCamera2->setVisible(false);
 
 	//允许使用麦克风
 	LIVEROOM::EnableMic(m_bCKEnableMic);
@@ -188,44 +191,7 @@ void ZegoMoreAnchorDialog::StartPublishStream()
 		if (m_pAVSettings->GetSurfaceMerge())
 		{
 #if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
-			int cx = m_pAVSettings->GetResolution().cx;
-			int cy = m_pAVSettings->GetResolution().cy;
-
-			SurfaceMerge::SetFPS(m_pAVSettings->GetFps());
-			SurfaceMerge::SetCursorVisible(true);
-			SurfaceMerge::SetSurfaceSize(cx, cy);
-
-			SurfaceMerge::ZegoCaptureItem *itemList = new SurfaceMerge::ZegoCaptureItem[2];
-
-			SurfaceMerge::ZegoCaptureItem itemCam;
-			strcpy(itemCam.captureSource.deviceId, m_pAVSettings->GetCameraId().toStdString().c_str());
-			itemCam.captureType = SurfaceMerge::CaptureType::Camera;
-			itemCam.position = { cx - cx / 4, cy - cy / 4, cx / 4, cy / 4 };  //摄像头默认置于右下角
-
-			unsigned int count = 0;
-			SurfaceMerge::ScreenItem *screenList = SurfaceMerge::EnumScreenList(count);
-			SurfaceMerge::ZegoCaptureItem itemWin;
-			for (int i = 0; i < count; i++)
-			{
-				if (screenList[i].bPrimary)
-				{
-					strcpy(itemWin.captureSource.screenName, screenList[i].szName);
-					break;
-				}
-			}
-
-			itemWin.captureType = SurfaceMerge::CaptureType::Screen;
-			itemWin.position = { 0, 0, cx, cy };
-			itemList[0] = itemCam;
-			itemList[1] = itemWin;
-
-			SurfaceMerge::UpdateSurface(itemList, 2);
-			AVViews.last()->setSurfaceMergeView(true);
-			AVViews.last()->setSurfaceMergeItemRect(itemWin, itemCam);
-			SurfaceMerge::SetRenderView((void *)AVViews.last()->winId());
-
-			delete[]itemList;
-			SurfaceMerge::FreeScreenList(screenList);
+			StartSurfaceMerge();
 #endif
 		}
 		else
@@ -246,12 +212,78 @@ void ZegoMoreAnchorDialog::StartPublishStream()
 		AVViews.last()->setViewStreamID(streamID);
 		setWaterPrint();
 		qDebug() << "start publishing!";
-		LIVEROOM::StartPublishing(m_pChatRoom->getRoomName().toStdString().c_str(), streamID.toStdString().c_str(), LIVEROOM::ZEGO_JOIN_PUBLISH, "");
+		if (!m_pAVSettings->GetUsePublish2Stream())
+		{
+			LIVEROOM::StartPublishing(m_pChatRoom->getRoomName().toStdString().c_str(), streamID.toStdString().c_str(), LIVEROOM::ZEGO_JOIN_PUBLISH, "");
+		}
+		else
+		{
+			LIVEROOM::StartPublishing2(m_pChatRoom->getRoomName().toStdString().c_str(), streamID.toStdString().c_str(), LIVEROOM::ZEGO_JOIN_PUBLISH, "");
+		}
 		m_bIsPublishing = true;
 	}
 }
 
-void ZegoMoreAnchorDialog::StopPublishStream(const QString& streamID)
+void ZegoMoreAnchorDialog::StartPublishStream_Aux()
+{
+	QTime currentTime = QTime::currentTime();
+	//获取当前时间的毫秒
+	int ms = currentTime.msec();
+	QString strStreamId;
+#ifdef Q_OS_WIN
+	strStreamId = QString(QStringLiteral("s-windows-%1-%2-aux")).arg(m_strCurUserID).arg(ms);
+#else
+	strStreamId = QString(QStringLiteral("s-mac-%1-%2-aux")).arg(m_strCurUserID).arg(ms);
+#endif
+	m_strPublishStreamID_Aux = strStreamId;
+
+	StreamPtr pPublishStream(new QZegoStreamModel(m_strPublishStreamID_Aux, m_strCurUserID, m_strCurUserName, "", true, true));
+
+	m_pChatRoom->addStream(pPublishStream);
+
+	//推流前调用双声道
+	LIVEROOM::SetAudioChannelCount(2);
+
+	if (m_avaliableView.size() > 0)
+	{
+
+		int nIndex = takeLeastAvaliableViewIndex();
+		pPublishStream->setPlayView(nIndex);
+		addAVView(nIndex);
+		AVViews.last()->setCurUser();
+		connect(AVViews.last(), &QZegoAVView::sigSnapShotPreviewOnMoreAnchor, this, &ZegoMoreAnchorDialog::OnSnapshotPreview);
+
+		qDebug() << "publish nIndex = " << nIndex << "publish stream id is" << pPublishStream->getStreamId();
+		if (m_pAVSettings->GetSurfaceMerge())
+		{
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
+			StartSurfaceMerge();
+#endif
+		}
+		else
+		{
+			LIVEROOM::SetVideoFPS(m_pAVSettings->GetFps(), ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::SetVideoBitrate(m_pAVSettings->GetBitrate(), ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::SetVideoCaptureResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy, ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::SetVideoEncodeResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy, ZEGO::AV::PUBLISH_CHN_AUX);
+
+			//配置View
+			LIVEROOM::SetPreviewView((void *)AVViews.last()->winId(), ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFit, ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::StartPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+		}
+
+		QString streamID = m_strPublishStreamID_Aux;
+		m_anchorStreamInfo_Aux = pPublishStream;
+		AVViews.last()->setViewStreamID(streamID);
+		setWaterPrint();
+		qDebug() << "start publishing aux!";
+		LIVEROOM::StartPublishing2(m_pChatRoom->getRoomName().toStdString().c_str(), streamID.toStdString().c_str(), LIVEROOM::ZEGO_JOIN_PUBLISH, "", ZEGO::AV::PUBLISH_CHN_AUX);
+		//m_bIsPublishing = true;
+	}
+}
+
+void ZegoMoreAnchorDialog::StopPublishStream(const QString& streamID, AV::PublishChannelIndex idx)
 {
 	if (streamID.size() == 0){ return; }
 
@@ -267,16 +299,39 @@ void ZegoMoreAnchorDialog::StopPublishStream(const QString& streamID)
 	{
 		LIVEROOM::SetPreviewView(nullptr);
 		LIVEROOM::StopPreview();
+		if (idx == ZEGO::AV::PUBLISH_CHN_MAIN)
+		{
+			LIVEROOM::SetPreviewView(nullptr);
+			LIVEROOM::StopPreview();
+		}
+		else
+		{
+			LIVEROOM::SetPreviewView(nullptr, ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::StopPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+		}
 	}
 
-	qDebug() << "stop publish view index = " << m_anchorStreamInfo->getPlayView();
-	removeAVView(m_anchorStreamInfo->getPlayView());
-	LIVEROOM::StopPublishing();
-	m_bIsPublishing = false;
-	StreamPtr pStream = m_pChatRoom->removeStream(streamID);
-	FreeAVView(pStream);
-    
-    m_strPublishStreamID = "";
+	if (idx == ZEGO::AV::PUBLISH_CHN_MAIN)
+	{
+		qDebug() << "stop publish view index = " << m_anchorStreamInfo->getPlayView();
+		removeAVView(m_anchorStreamInfo->getPlayView());
+		LIVEROOM::StopPublishing();
+		m_bIsPublishing = false;
+		StreamPtr pStream = m_pChatRoom->removeStream(streamID);
+		FreeAVView(pStream);
+		m_strPublishStreamID = "";
+	}
+	else
+	{
+		qDebug() << "stop publish view index = " << m_anchorStreamInfo_Aux->getPlayView();
+		removeAVView(m_anchorStreamInfo_Aux->getPlayView());
+		LIVEROOM::StopPublishing(0, 0, ZEGO::AV::PUBLISH_CHN_AUX);
+		m_bIsPublishing = false;
+		StreamPtr pStream = m_pChatRoom->removeStream(streamID);
+		FreeAVView(pStream);
+		m_strPublishStreamID_Aux = "";
+	}
+	
 }
 
 void ZegoMoreAnchorDialog::StartPlayStream(StreamPtr stream)
@@ -347,7 +402,10 @@ void ZegoMoreAnchorDialog::GetOut()
 		if (stream != nullptr){
 			if (stream->isCurUserCreated())
 			{
-				StopPublishStream(stream->getStreamId());
+				if (!stream->isCurUserCreated_Aux())
+				    StopPublishStream(stream->getStreamId());
+				else
+					StopPublishStream(stream->getStreamId(), ZEGO::AV::PUBLISH_CHN_AUX);
 			}
 			else
 			{
@@ -381,6 +439,50 @@ void ZegoMoreAnchorDialog::GetOut()
 	gridLayout = nullptr;
 }
 
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
+void ZegoMoreAnchorDialog::StartSurfaceMerge()
+{
+	int cx = m_pAVSettings->GetResolution().cx;
+	int cy = m_pAVSettings->GetResolution().cy;
+
+	SurfaceMerge::SetFPS(m_pAVSettings->GetFps());
+	SurfaceMerge::SetCursorVisible(true);
+	SurfaceMerge::SetSurfaceSize(cx, cy);
+
+	SurfaceMerge::ZegoCaptureItem *itemList = new SurfaceMerge::ZegoCaptureItem[2];
+
+	SurfaceMerge::ZegoCaptureItem itemCam;
+	strcpy(itemCam.captureSource.deviceId, m_pAVSettings->GetCameraId().toStdString().c_str());
+	itemCam.captureType = SurfaceMerge::CaptureType::Camera;
+	itemCam.position = { cx - cx / 4, cy - cy / 4, cx / 4, cy / 4 };  //摄像头默认置于右下角
+
+	unsigned int count = 0;
+	SurfaceMerge::ScreenItem *screenList = SurfaceMerge::EnumScreenList(count);
+	SurfaceMerge::ZegoCaptureItem itemWin;
+	for (int i = 0; i < count; i++)
+	{
+		if (screenList[i].bPrimary)
+		{
+			strcpy(itemWin.captureSource.screenName, screenList[i].szName);
+			break;
+		}
+	}
+
+	itemWin.captureType = SurfaceMerge::CaptureType::Screen;
+	itemWin.position = { 0, 0, cx, cy };
+	itemList[0] = itemCam;
+	itemList[1] = itemWin;
+
+	SurfaceMerge::UpdateSurface(itemList, 2);
+	AVViews.last()->setSurfaceMergeView(true);
+	AVViews.last()->setSurfaceMergeItemRect(itemWin, itemCam);
+	SurfaceMerge::SetRenderView((void *)AVViews.last()->winId());
+
+	delete[]itemList;
+	SurfaceMerge::FreeScreenList(screenList);
+}
+#endif
+
 void ZegoMoreAnchorDialog::initComboBox()
 {
 
@@ -402,7 +504,10 @@ void ZegoMoreAnchorDialog::initComboBox()
 	ui.m_cbCamera->setModel(m_cbCameraModel);
 	ui.m_cbCamera->setItemDelegate(new NoFocusFrameDelegate(this));
 
-
+	m_cbCameraListView2 = new QListView(this);
+	ui.m_cbCamera2->setView(m_cbCameraListView2);
+	ui.m_cbCamera2->setModel(m_cbCameraModel);
+	ui.m_cbCamera2->setItemDelegate(new NoFocusFrameDelegate(this));
 }
 
 void ZegoMoreAnchorDialog::EnumVideoAndAudioDevice()
@@ -425,6 +530,8 @@ void ZegoMoreAnchorDialog::EnumVideoAndAudioDevice()
 	}
 
 	ui.m_cbMircoPhone->setCurrentIndex(curSelectionIndex);
+
+	qDebug() << "[MoreAnchorDialog::EnumAudioDevice]: current audio device : " << m_pAVSettings->GetMircophoneId();
 	LIVEROOM::FreeDeviceList(pDeviceList);
 
 	pDeviceList = NULL;
@@ -441,7 +548,31 @@ void ZegoMoreAnchorDialog::EnumVideoAndAudioDevice()
 			curSelectionIndex = i;
 	}
 
+	ui.m_cbCamera->blockSignals(true);
 	ui.m_cbCamera->setCurrentIndex(curSelectionIndex);
+	ui.m_cbCamera->blockSignals(false);
+	qDebug() << "[MoreAnchorDialog::EnumVideoDevice]: current video device_main : " << m_pAVSettings->GetCameraId();
+
+	curSelectionIndex = -1;
+	for (int i = 0; i < nDeviceCount; ++i)
+	{
+		if (m_pAVSettings->GetCameraId2() == QString(pDeviceList[i].szDeviceId))
+			curSelectionIndex = i;
+	}
+
+	if (curSelectionIndex < 0)
+	{
+		//先将第二个camera model用一个空的model绑定，此时就算推了第二路流也会没有图像
+		ui.m_cbCamera2->setModel(new QStringListModel(this));
+	}
+	else
+	{
+		ui.m_cbCamera2->blockSignals(true);
+		ui.m_cbCamera2->setCurrentIndex(curSelectionIndex);
+		ui.m_cbCamera2->blockSignals(false);
+	}
+
+	qDebug() << "[MoreAnchorDialog::EnumVideoDevice]: current video device_aux : " << m_pAVSettings->GetCameraId2();
 	LIVEROOM::FreeDeviceList(pDeviceList);
 	pDeviceList = NULL;
 #else
@@ -795,7 +926,7 @@ void ZegoMoreAnchorDialog::setWaterPrint()
 	}
 	else
 	{
-		waterPrintPath += "2x/waterprint@2x.png";
+		waterPrintPath += "@2x/waterprint@2x.png";
 	}
 
 	QImage waterPrint(waterPrintPath);
@@ -809,6 +940,17 @@ void ZegoMoreAnchorDialog::setWaterPrint()
 	LIVEROOM::SetPublishWaterMarkRect((int)(20 * scaleX), (int)(20 * scaleY), (int)(123 * scaleX), (int)(69 * scaleY));
 	LIVEROOM::SetPreviewWaterMarkRect((int)(20 * scaleX), (int)(20 * scaleY), (int)(123 * scaleX), (int)(69 * scaleY));
 	LIVEROOM::SetWaterMarkImagePath(waterPrintPath.toStdString().c_str());
+}
+
+int ZegoMoreAnchorDialog::getCameraIndexFromID(const QString& cameraID)
+{
+	for (int i = 0; i < m_vecVideoDeviceIDs.size(); ++i)
+	{
+		if (m_vecVideoDeviceIDs[i] == cameraID)
+			return i;
+	}
+
+	return -1;
 }
 
 //SDK回调
@@ -826,7 +968,8 @@ void ZegoMoreAnchorDialog::OnLoginRoom(int errorCode, const QString& strRoomID, 
 	roomMemberAdd(m_strCurUserName);
 
     StartPublishStream();
-	
+	if (m_pAVSettings->GetUsePublish2Stream())
+	    StartPublishStream_Aux();
 
 }
 
@@ -1226,13 +1369,44 @@ void ZegoMoreAnchorDialog::OnVideoDeviceChanged(const QString& strDeviceId, cons
 		m_vecVideoDeviceIDs.push_back(strDeviceId);
 		if (m_vecVideoDeviceIDs.size() == 1)
 		{
+			LIVEROOM::StopPreview();
 			LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[0].toStdString().c_str());
+			LIVEROOM::StartPreview();
 
 			m_pAVSettings->SetCameraId(m_vecVideoDeviceIDs[0]);
-
+			ui.m_cbCamera->blockSignals(true);
 			ui.m_cbCamera->setCurrentIndex(0);
+			ui.m_cbCamera->blockSignals(false);
+
+			ui.m_cbCamera->blockSignals(true);
+			ui.m_cbCamera2->setModel(new QStringListModel(this));
+			ui.m_cbCamera->blockSignals(false);
+
+		}
+		//当前摄像头有两个的话，将最新加入的摄像头分配给摄像头2
+		else if (m_vecVideoDeviceIDs.size() == 2)
+		{
+			LIVEROOM::StopPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::SetVideoDevice(strDeviceId.toStdString().c_str(), ZEGO::AV::PUBLISH_CHN_AUX);
+
+			m_pAVSettings->SetCameraId2(strDeviceId);
+
+			ui.m_cbCamera2->blockSignals(true);
+			ui.m_cbCamera2->setModel(m_cbCameraModel);
+			ui.m_cbCamera2->setCurrentIndex(1);
+			ui.m_cbCamera2->blockSignals(false);
+
+			ui.m_cbCamera->blockSignals(true);
+			ui.m_cbCamera->setCurrentIndex(0);
+			ui.m_cbCamera->blockSignals(false);
+			m_pAVSettings->SetCameraId(m_vecVideoDeviceIDs[0]);
+
+			LIVEROOM::EnableCamera(true, ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::StartPreview(ZEGO::AV::PUBLISH_CHN_AUX);
 		}
 		update();
+
+		qDebug() << "[MoreAnchorDialog::VideoDevice_Added]: current video device_main : " << m_pAVSettings->GetCameraId() << " video device_aux : " << m_pAVSettings->GetCameraId2();
 	}
 	else if (state == AV::DeviceState::Device_Deleted)
 	{
@@ -1241,31 +1415,104 @@ void ZegoMoreAnchorDialog::OnVideoDeviceChanged(const QString& strDeviceId, cons
 			if (m_vecVideoDeviceIDs[i] != strDeviceId)
 				continue;
 
-			m_vecVideoDeviceIDs.erase(m_vecVideoDeviceIDs.begin() + i);
-
-			int currentCurl = ui.m_cbCamera->currentIndex();
-			//如果currentCurl等于i说明当前删除的设备是当前正在使用的设备
-			if (currentCurl == i)
+			int currentCurl_1 = ui.m_cbCamera->currentIndex();
+			int currentCurl_2 = ui.m_cbCamera2->currentIndex();
+			//如果currentCurl等于i说明当前删除的设备是当前正在使用的设备1
+			if (currentCurl_1 == i)
 			{
-				//默认采集第一个视频设备
-				if (m_vecVideoDeviceIDs.size() > 0)
+				//默认采集靠前的没有被使用的视频设备
+				if (m_vecVideoDeviceIDs.size() > 1)
 				{
-					LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[0].toStdString().c_str());
-					m_pAVSettings->SetCameraId(m_vecVideoDeviceIDs[0]);
-					ui.m_cbCamera->setCurrentIndex(0);
+					int index = -1;
+					for (int j = 0; j < m_vecVideoDeviceIDs.size(); ++j)
+					{
+						if ((j != currentCurl_1) && (j != currentCurl_2))
+						{
+							index = j;
+							break;
+						}
+					}
+					//这种情况是摄像头2占了剩下的一个设备，这个时候需将该设备给1
+					if (index < 0)
+					{
+						LIVEROOM::EnableCamera(false, ZEGO::AV::PUBLISH_CHN_AUX);
+						LIVEROOM::StopPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+
+						LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[currentCurl_2].toStdString().c_str());
+						m_pAVSettings->SetCameraId(m_vecVideoDeviceIDs[currentCurl_2]);
+						ui.m_cbCamera->blockSignals(true);
+						ui.m_cbCamera->setCurrentIndex(currentCurl_2);
+						ui.m_cbCamera->blockSignals(false);
+
+						ui.m_cbCamera2->blockSignals(true);
+						ui.m_cbCamera2->setModel(new QStringListModel(this));
+						ui.m_cbCamera2->blockSignals(false);
+
+						m_pAVSettings->SetCameraId2("");
+					}
+					else
+					{
+						LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[index].toStdString().c_str());
+						m_pAVSettings->SetCameraId(m_vecVideoDeviceIDs[index]);
+						ui.m_cbCamera->blockSignals(true);
+						ui.m_cbCamera->setCurrentIndex(index);
+						ui.m_cbCamera->blockSignals(false);
+					}
+
 				}
-				else
+				else if (m_vecVideoDeviceIDs.size() <= 1)
 				{
-					LIVEROOM::SetVideoDevice(NULL);
+					LIVEROOM::SetVideoDevice(nullptr);
 					m_pAVSettings->SetCameraId("");
+
 				}
 
 			}
-			removeStringListModelItem(m_cbCameraModel, strDeviceName);
-			update();
+			else if (currentCurl_2 == i)
+			{
+				if (m_vecVideoDeviceIDs.size() > 1)
+				{
+					int index = -1;
+					for (int j = 0; j < m_vecVideoDeviceIDs.size(); ++j)
+					{
+						if ((j != currentCurl_1) && (j != currentCurl_2))
+						{
+							index = j;
+							break;
+						}
+					}
+					//这种情况是摄像头1占了剩下的一个设备，这个时候设备2直接复制空
+					if (index < 0)
+					{
+						LIVEROOM::EnableCamera(false, ZEGO::AV::PUBLISH_CHN_AUX);
+						LIVEROOM::SetVideoDevice(nullptr, ZEGO::AV::PUBLISH_CHN_AUX);
+						ui.m_cbCamera2->blockSignals(true);
+						ui.m_cbCamera2->setModel(new QStringListModel(this));
+						ui.m_cbCamera2->blockSignals(false);
+						m_pAVSettings->SetCameraId2("");
+					}
+					else
+					{
+						LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[index].toStdString().c_str(), ZEGO::AV::PUBLISH_CHN_AUX);
+						m_pAVSettings->SetCameraId2(m_vecVideoDeviceIDs[index]);
+						ui.m_cbCamera2->blockSignals(true);
+						ui.m_cbCamera2->setCurrentIndex(index);
+						ui.m_cbCamera2->blockSignals(false);
+					}
+				}
+			}
 
+			m_vecVideoDeviceIDs.erase(m_vecVideoDeviceIDs.begin() + i);
+			ui.m_cbCamera->blockSignals(true);
+			ui.m_cbCamera2->blockSignals(true);
+			removeStringListModelItem(m_cbCameraModel, strDeviceName);
+			ui.m_cbCamera->blockSignals(false);
+			ui.m_cbCamera2->blockSignals(false);
+			update();
 			break;
 		}
+
+		qDebug() << "[MoreAnchorDialog::VideoDevice_Deleted]: current video device_main : " << m_pAVSettings->GetCameraId() << " video device_aux : " << m_pAVSettings->GetCameraId2();
 	}
 }
 
@@ -1288,11 +1535,14 @@ void ZegoMoreAnchorDialog::OnSurfaceMergeResult(unsigned char *surfaceMergeData,
 
 void ZegoMoreAnchorDialog::OnPreviewSnapshot(void *pImage)
 {
-	QImage *image = new QImage;
+	QImage *image;
 
 #ifdef Q_OS_WIN
+	image = new QImage;
 	QPixmap pixmap = qt_pixmapFromWinHBITMAP((HBITMAP)pImage, 0);
 	*image = pixmap.toImage();
+#else
+	image = CGImageToQImage(pImage);
 #endif
 	//发送信号切线程，不能阻塞当前线程
 	emit sigShowSnapShotImage(image);
@@ -1300,11 +1550,14 @@ void ZegoMoreAnchorDialog::OnPreviewSnapshot(void *pImage)
 
 void ZegoMoreAnchorDialog::OnSnapshot(void *pImage, const QString &streamID)
 {
-	QImage *image = new QImage;
+	QImage *image;
 
 #ifdef Q_OS_WIN
+	image = new QImage;
 	QPixmap pixmap = qt_pixmapFromWinHBITMAP((HBITMAP)pImage, 0);
 	*image = pixmap.toImage();
+#else
+	image = CGImageToQImage(pImage);
 #endif
 
 	//发送信号切线程，不能阻塞当前线程
@@ -1347,6 +1600,8 @@ void ZegoMoreAnchorDialog::OnButtonSwitchPublish()
 		ui.m_bRequestJoinLive->setEnabled(false);
 		//开始推流
 		StartPublishStream();
+		if (m_pAVSettings->GetUsePublish2Stream())
+			StartPublishStream_Aux();
 
 	}
 	//当前按钮文本为“停止直播”
@@ -1355,6 +1610,8 @@ void ZegoMoreAnchorDialog::OnButtonSwitchPublish()
 		ui.m_bRequestJoinLive->setText(QStringLiteral("停止中..."));
 		ui.m_bRequestJoinLive->setEnabled(false);
 		StopPublishStream(m_strPublishStreamID);
+		if (m_pAVSettings->GetUsePublish2Stream())
+			StopPublishStream(m_strPublishStreamID_Aux, ZEGO::AV::PUBLISH_CHN_AUX);
 
 		if (ui.m_bAux->text() == QStringLiteral("关闭混音"))
 		{
@@ -1512,8 +1769,7 @@ void ZegoMoreAnchorDialog::OnShareLink()
 void ZegoMoreAnchorDialog::OnButtonShowFullScreen()
 {
 	//直播窗口总在最顶层
-	ui.m_zoneLiveView_Inner->setWindowFlags(ui.m_zoneLiveView_Inner->windowFlags() | Qt::WindowStaysOnTopHint);
-	ui.m_zoneLiveView_Inner->setParent(NULL);
+	ui.m_zoneLiveView_Inner->setWindowFlags(Qt::Dialog);
 	ui.m_zoneLiveView_Inner->showFullScreen();
 	m_isLiveFullScreen = true;
 }
@@ -1661,13 +1917,88 @@ void ZegoMoreAnchorDialog::OnSwitchVideoDevice(int id)
 
 	if (id < m_vecVideoDeviceIDs.size())
 	{
+		//若摄像头1需要选取的摄像头已被摄像头2选取，则交换摄像头
+		if (id == ui.m_cbCamera2->currentIndex())
+		{
+			//先关闭所有正在使用的摄像头，避免交换时先后次序不同导致的抢占问题
+			LIVEROOM::StopPreview();
+			LIVEROOM::StopPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::EnableCamera(false);
+			LIVEROOM::EnableCamera(false, ZEGO::AV::PUBLISH_CHN_AUX);
+
+			m_pAVSettings->SetCameraId2(m_pAVSettings->GetCameraId());
+
+			int curLastCameraIndex = getCameraIndexFromID(m_pAVSettings->GetCameraId());
+			if (curLastCameraIndex < 0)
+				return;
+
+			ui.m_cbCamera2->blockSignals(true);
+			ui.m_cbCamera2->setCurrentIndex(curLastCameraIndex);
+			ui.m_cbCamera2->blockSignals(false);
+
+			LIVEROOM::SetVideoDevice(m_pAVSettings->GetCameraId().toStdString().c_str(), ZEGO::AV::PUBLISH_CHN_AUX);
+		}
+
 		LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[id].toStdString().c_str());
+
 		m_pAVSettings->SetCameraId(m_vecVideoDeviceIDs[id]);
+		ui.m_cbCamera->blockSignals(true);
 		ui.m_cbCamera->setCurrentIndex(id);
+		ui.m_cbCamera->blockSignals(false);
 		update();
+
+		LIVEROOM::EnableCamera(true);
+		LIVEROOM::EnableCamera(true, ZEGO::AV::PUBLISH_CHN_AUX);
+		LIVEROOM::StartPreview();
+		LIVEROOM::StartPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+
+		qDebug() << "[MoreAnchorDialog::VideoDevice_Changed_1]: current video device_main : " << m_pAVSettings->GetCameraId() << " video device_aux : " << m_pAVSettings->GetCameraId2();
 	}
 }
 
+void ZegoMoreAnchorDialog::OnSwitchVideoDevice2(int id)
+{
+	if (id < 0)
+		return;
+
+	if (id < m_vecVideoDeviceIDs.size())
+	{
+		//若摄像头1需要选取的摄像头已被摄像头2选取，则交换摄像头
+		if (id == ui.m_cbCamera->currentIndex())
+		{
+			//先关闭所有正在使用的摄像头，避免交换时先后次序不同导致的抢占问题
+			LIVEROOM::StopPreview();
+			LIVEROOM::StopPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::EnableCamera(false);
+			LIVEROOM::EnableCamera(false, ZEGO::AV::PUBLISH_CHN_AUX);
+
+			m_pAVSettings->SetCameraId(m_pAVSettings->GetCameraId2());
+
+			int curLastCameraIndex = getCameraIndexFromID(m_pAVSettings->GetCameraId2());
+			if (curLastCameraIndex < 0)
+				return;
+
+			ui.m_cbCamera->blockSignals(true);
+			ui.m_cbCamera->setCurrentIndex(curLastCameraIndex);
+			ui.m_cbCamera->blockSignals(false);
+			LIVEROOM::SetVideoDevice(m_pAVSettings->GetCameraId2().toStdString().c_str());
+		}
+
+		LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[id].toStdString().c_str(), ZEGO::AV::PUBLISH_CHN_AUX);
+		m_pAVSettings->SetCameraId2(m_vecVideoDeviceIDs[id]);
+		ui.m_cbCamera2->blockSignals(true);
+		ui.m_cbCamera2->setCurrentIndex(id);
+		ui.m_cbCamera2->blockSignals(false);
+		update();
+
+		LIVEROOM::EnableCamera(true);
+		LIVEROOM::EnableCamera(true, ZEGO::AV::PUBLISH_CHN_AUX);
+		LIVEROOM::StartPreview();
+		LIVEROOM::StartPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+
+		qDebug() << "[MoreAnchorDialog::VideoDevice_Changed_2]: current video device_main : " << m_pAVSettings->GetCameraId() << " video device_aux : " << m_pAVSettings->GetCameraId2();
+	}
+}
 
 void ZegoMoreAnchorDialog::mousePressEvent(QMouseEvent *event)
 {
@@ -1755,12 +2086,12 @@ bool ZegoMoreAnchorDialog::eventFilter(QObject *target, QEvent *event)
 			QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 			if (keyEvent->key() == Qt::Key_Escape && m_isLiveFullScreen)
 			{
-				qDebug() << "clicl esc";
-				ui.m_zoneLiveView_Inner->setParent(ui.m_zoneLiveView);
+				//qDebug() << "clicl esc";
+				//ui.m_zoneLiveView_Inner->setParent(ui.m_zoneLiveView);
+				ui.m_zoneLiveView_Inner->setWindowFlags(Qt::SubWindow);
+				ui.m_zoneLiveView_Inner->showNormal();
 				ui.horizontalLayout_ForAVView->addWidget(ui.m_zoneLiveView_Inner);
 				m_isLiveFullScreen = false;
-				//取消直播窗口总在最顶层
-				ui.m_zoneLiveView_Inner->setWindowFlags(ui.m_zoneLiveView_Inner->windowFlags() &~Qt::WindowStaysOnTopHint);
 				return true;
 			}
 			else if (keyEvent->key() == Qt::Key_Escape && !m_isLiveFullScreen)

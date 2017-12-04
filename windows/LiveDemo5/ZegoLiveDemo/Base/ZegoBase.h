@@ -1,10 +1,10 @@
-﻿#pragma once
+#pragma once
 
 #include <QObject>
-#include "ZegoSettingsModel.h"
-#include "ZegoSDKSignal.h"
-#include "ZegoVideoCaptureFactoryDemo.h"
-#include "ZegoVideoFilterFactoryDemo.h"
+#include "Settings/ZegoSettingsModel.h"
+#include "Signal/ZegoSDKSignal.h"
+#include "VideoCapture/ZegoVideoCaptureFactoryDemo.h"
+#include "VideoFilter/ZegoVideoFilterFactoryDemo.h"
 
 //demo版本的枚举类型
 typedef enum _Version
@@ -51,7 +51,7 @@ private :
 	bool isVideoFilter = false;
 	//是否使用截屏推流
 	bool isSurfaceMerge = false;
-
+	
 	//appid、appsign默认为UDP版本
 	int key = Version::ZEGO_PROTOCOL_UDP;
 

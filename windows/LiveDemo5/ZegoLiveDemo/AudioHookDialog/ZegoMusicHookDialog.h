@@ -2,20 +2,21 @@
 
 #ifndef ZEGOMUSICHOOKDIALOG_H
 #define ZEGOMUSICHOOKDIALOG_H
-
 #include <QtWidgets/QDialog>
+
+#ifdef Q_OS_WIN
 #include <QMessageBox>
 #include <QMouseEvent>
 #include "ui_ZegoMusicHookDialog.h"
 
-#ifdef Q_OS_WIN
+//#ifdef Q_OS_WIN
     #include "ZegoAudioHook.h"
-    #include "ZegoSoftWareInfo.h"
+    #include "SoftWareInfo/ZegoSoftWareInfo.h"
 
     #include <windows.h>
     #include <tlhelp32.h>
     #include <Psapi.h>
-
+//#endif
 //标题栏坐标范围
 #define pos_min_x  0
 #define pos_max_x  ui.m_zoneTitle->size().width()
@@ -29,6 +30,7 @@ class ZegoMusicHookDialog : public QDialog
 public:
 	ZegoMusicHookDialog(QWidget *parent = 0);
 	~ZegoMusicHookDialog();
+//#ifdef Q_OS_WIN
 	void searchMusicAppFromReg();
 	QString getAppPath();
 
@@ -39,6 +41,7 @@ public:
 private slots:
     void OnSelectedMusicApp();
     void OnSendCustomAppPath();
+//#endif
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);
@@ -53,15 +56,17 @@ private slots:
 	void OnClose();
 private:
 	Ui::ZegoMusicHookDialog ui;
+//#ifdef Q_OS_WIN
 	SoftInfo KuGouMusic;
 	SoftInfo CloudMusic;
 	SoftInfo QQMusic;
 	SoftInfo KuwoMusic;
-
+//#endif
 	//自定义标题栏拖动
 	bool isMousePressed = false;
 	QPoint mousePosition;
 };
+
 #endif
 
 #endif

@@ -1,7 +1,7 @@
 ﻿#include "ZegoStreamModel.h"
 
-QZegoStreamModel::QZegoStreamModel(const QString &streamId, const QString &userId, const QString &userName, const QString &extraInfo, bool isCurUser) :
-m_strStreamId(streamId), m_strUserId(userId), m_strUserName(userName), m_strExtraInfo(extraInfo), m_bCurUserCreated(isCurUser)
+QZegoStreamModel::QZegoStreamModel(const QString &streamId, const QString &userId, const QString &userName, const QString &extraInfo, bool isCurUser, bool isCurUserAux) :
+m_strStreamId(streamId), m_strUserId(userId), m_strUserName(userName), m_strExtraInfo(extraInfo), m_bCurUserCreated(isCurUser), m_bCurUserCreated_Aux(isCurUserAux)
 {
 	m_nPlayViewId = -1;
 }
@@ -14,6 +14,7 @@ QZegoStreamModel::QZegoStreamModel(const QZegoStreamModel &otherStream)
 	m_strExtraInfo = otherStream.m_strExtraInfo;
 	m_nPlayViewId = otherStream.m_nPlayViewId;
 	m_bCurUserCreated = otherStream.m_bCurUserCreated;
+	m_bCurUserCreated_Aux = otherStream.m_bCurUserCreated_Aux;
 	m_bPrimary = otherStream.m_bPrimary;
 }
 
@@ -55,4 +56,14 @@ bool QZegoStreamModel::isPlaying(void)
 bool QZegoStreamModel::isCurUserCreated(void)
 {
 	return m_bCurUserCreated;
+}
+
+bool QZegoStreamModel::isCurUserCreated_Aux(void)
+{
+	return m_bCurUserCreated_Aux;
+}
+
+void QZegoStreamModel::setStreamID(const QString &streamID)
+{
+	m_strStreamId = streamID;
 }

@@ -3,13 +3,13 @@
 #include <QPushButton>
 #include <QPainter>
 #include <QColor>
-class MircoPhoneButton : public QPushButton
+class ZegoMicrophoneButton : public QPushButton
 {
 	Q_OBJECT
 
 public:
-	MircoPhoneButton(QWidget  * parent);
-	~MircoPhoneButton();
+	ZegoMicrophoneButton(QWidget  * parent);
+	~ZegoMicrophoneButton();
 
 protected:
 	virtual void paintEvent(QPaintEvent *event);

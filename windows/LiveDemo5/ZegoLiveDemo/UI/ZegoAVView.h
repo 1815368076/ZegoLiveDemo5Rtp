@@ -5,16 +5,20 @@
 #include <QColor>
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QMessageBox>
+#include <QLabel>
+#include <QGraphicsProxyWidget>
 #define USE_SURFACE_MERGE
 #if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
 #include "ZegoSurfaceMerge.h"
 #include "ZegoSurfaceMergeDefine.h"
 using namespace ZEGO;
 #endif
+
 
 enum ZegoDialogType
 {
@@ -51,6 +55,7 @@ public:
 	void setViewStreamID(QString streamID);
 	void setCurUser();
 
+	//WId getLiveViewWinID();
 	//void addActionForKickOut();
 signals:
 	void sigSnapShotPreviewOnSingleAnchor();
@@ -96,6 +101,8 @@ public:
 	void setSurfaceMergeItemRect(SurfaceMerge::ZegoCaptureItem _screen,
 		SurfaceMerge::ZegoCaptureItem _camera);
 
+	//WId getLiveViewWinID_Inner();
+
 protected:
 	virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -112,4 +119,8 @@ private:
 	float scaleFactor_Y;
 	QPointF curMousePosition;
 #endif
+    
+private:
+	QLabel *qualityLabel = nullptr;
+	QWidget *liveView = nullptr;
 };

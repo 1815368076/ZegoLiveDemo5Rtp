@@ -2,6 +2,7 @@
 #define ZEGOVideoCapture_h
 
 namespace AVE {
+    // memory align
     enum VideoPixelFormat {
         PIXEL_FORMAT_UNKNOWN = 0,
         PIXEL_FORMAT_I420 = 1,
@@ -9,16 +10,25 @@ namespace AVE {
         PIXEL_FORMAT_NV21 = 3,
         PIXEL_FORMAT_BGRA32 = 4,
         PIXEL_FORMAT_RGBA32 = 5,
+        PIXEL_FORMAT_ARGB32 = 6,
+        PIXEL_FORMAT_ABGR32 = 7,
     };
   
     struct VideoCaptureFormat {
-        VideoCaptureFormat() : width(0), height(0), pixel_format(PIXEL_FORMAT_UNKNOWN), rotation(0) {
+        VideoCaptureFormat() {
+            width = 0;
+            height = 0;
             strides[0] = strides[1] = strides[2] = strides[3] = 0;
+            rotation = 0;
+            pixel_format = PIXEL_FORMAT_UNKNOWN;
         }
         
-        VideoCaptureFormat(int width, int height, VideoPixelFormat pixel_format)
-            : width(width), height(height), pixel_format(pixel_format), rotation(0) {
+        VideoCaptureFormat(int width, int height, VideoPixelFormat pixel_format) {
+            this->width = width;
+            this->height = height;
             strides[0] = strides[1] = strides[2] = strides[3] = 0;
+            rotation = 0;
+            this->pixel_format = pixel_format;
         }
         
         bool operator==(const VideoCaptureFormat& other) {

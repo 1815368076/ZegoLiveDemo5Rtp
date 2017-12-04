@@ -1,4 +1,4 @@
-﻿#include "ZegoSDKSignal.h"
+#include "Signal/ZegoSDKSignal.h"
 #include <QMetaType>
 #include <QDebug>
 

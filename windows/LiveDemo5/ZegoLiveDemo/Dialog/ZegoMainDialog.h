@@ -1,14 +1,14 @@
-﻿#pragma execution_character_set("utf-8")
+#pragma execution_character_set("utf-8")
 
 #ifndef ZEGOMAINDIALOG_H
 #define ZEGOMAINDIALOG_H
 
 #include <QtWidgets/QDialog>
 #include "ui_ZegoMainDialog.h"
-#include "ZegoRoomModel.h"
-#include "ZegoUserConfig.h"
+#include "Model/ZegoRoomModel.h"
+#include "Config/ZegoUserConfig.h"
 #include "ZegoLiveDemo.h"
-#include "ZegoBase.h"
+#include "Base/ZegoBase.h"
 #include "ZegoEnterRoomButton.h"
 #include <QtNetwork/qnetworkaccessmanager.h> 
 #include <QtNetwork/qnetworkrequest.h>
@@ -60,7 +60,7 @@ public slots:
 	void OnButtonSwitchVideoCapture();
 	void OnButtonSwitchVideoFilter();
 	void OnButtonSwitchSurfaceMerge();
-	void OnButtonSwitchAutoBitrate();
+	void OnButtonSwitchPublish2Stream();
 	void OnButtonUploadLog();
 	void OnSaveUserIdChanged();
 	void OnSaveUserNameChanged();
@@ -71,6 +71,7 @@ public slots:
 	//切换音视频设备
 	void OnSwitchAudioDevice(int id);
 	void OnSwitchVideoDevice(int id);
+	void OnSwitchVideoDevice2(int id);
 	void OnSaveVideoSettings(SettingsPtr settings);
 
 	void OnComboBoxAppVersionChanged(int id);
@@ -98,6 +99,7 @@ private:
 	void banSwitch();    //禁用未实现功能的按钮
 	QVector<QString> handleAppSign(QString appSign);
 
+	int getCameraIndexFromID(const QString& cameraID);
 private:
 	Ui::ZegoMainDialog ui;
     //当前窗口是否为高dpi画质
@@ -136,6 +138,7 @@ private:
 	//Model
 	QStringListModel *m_cbMircoPhoneModel;
 	QStringListModel *m_cbCameraModel;
+	//QStringListModel *m_cbCameraModel2;
 	QStandardItemModel *m_roomListModel;
 
 	//List
@@ -145,7 +148,7 @@ private:
 	//自定义的ComboBox下拉式页面
 	QListView *m_cbMircoPhoneListView;
 	QListView *m_cbCameraListView;
-
+	QListView *m_cbCameraListView2;
 	//实现自定义标题栏的拖动
 	bool isMousePressed;
 	QPoint mousePosition;
@@ -162,6 +165,8 @@ private:
 	bool m_isUseVideoFilter = false;
 	//是否使用截屏推流，默认不使用
 	bool m_isUseSurfaceMerge = false;
+	//是否使用推两路流，默认不使用
+	bool m_isUsePublish2Stream = false;
 };
 
 #endif // ZEGOMAINDIALOG_H

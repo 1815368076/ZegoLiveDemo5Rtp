@@ -1,6 +1,6 @@
-﻿#pragma execution_character_set("utf-8")
+#pragma execution_character_set("utf-8")
 
-#include "ZegoMainDialog.h"
+#include "Dialog/ZegoMainDialog.h"
 #include "ZegoLiveDemo.h"
 #include <QtWidgets/QApplication>
 #include <QSettings>
@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 	QApplication app(argc, argv);
 	qreal dpi = app.devicePixelRatio();
 	ZegoMainDialog w(dpi);
-	w.setFixedSize(930, 670);
+	w.setFixedSize(940, 670);
 	w.initDialog();
 	w.show();
 

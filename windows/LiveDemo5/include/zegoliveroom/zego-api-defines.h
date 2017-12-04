@@ -39,17 +39,9 @@
         #define ZEGOAVKIT_API __declspec(dllimport)
     #endif
 
-#elif (ANDROID)
-
-    #define ZEGOAVKIT_API __attribute__((visibility("default")))
-
 #else
 
-    #ifdef COMPILE_LIVEROOM
-        #define ZEGOAVKIT_API __attribute__((visibility("default")))
-    #else
-        #define ZEGOAVKIT_API extern "C" __attribute__((visibility("default")))
-    #endif
+    #define ZEGOAVKIT_API __attribute__((visibility("default")))
 
 #endif
 

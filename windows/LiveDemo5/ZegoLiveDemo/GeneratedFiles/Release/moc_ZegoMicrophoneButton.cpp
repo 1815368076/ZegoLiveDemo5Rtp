@@ -1,16 +1,16 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'ZegoMircophone.h'
+** Meta object code from reading C++ file 'ZegoMicrophoneButton.h'
 **
 ** Created by: The Qt Meta Object Compiler version 67 (Qt 5.7.1)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../UI/ZegoMircophone.h"
+#include "../../UI/ZegoMicrophoneButton.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'ZegoMircophone.h' doesn't include <QObject>."
+#error "The header file 'ZegoMicrophoneButton.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
 #error "This file was generated using the moc from 5.7.1. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -18,25 +18,25 @@
 #endif
 
 QT_BEGIN_MOC_NAMESPACE
-struct qt_meta_stringdata_MircoPhoneButton_t {
+struct qt_meta_stringdata_ZegoMicrophoneButton_t {
     QByteArrayData data[1];
-    char stringdata0[17];
+    char stringdata0[21];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_MircoPhoneButton_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_ZegoMicrophoneButton_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_MircoPhoneButton_t qt_meta_stringdata_MircoPhoneButton = {
+static const qt_meta_stringdata_ZegoMicrophoneButton_t qt_meta_stringdata_ZegoMicrophoneButton = {
     {
-QT_MOC_LITERAL(0, 0, 16) // "MircoPhoneButton"
+QT_MOC_LITERAL(0, 0, 20) // "ZegoMicrophoneButton"
 
     },
-    "MircoPhoneButton"
+    "ZegoMicrophoneButton"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_MircoPhoneButton[] = {
+static const uint qt_meta_data_ZegoMicrophoneButton[] = {
 
  // content:
        7,       // revision
@@ -52,7 +52,7 @@ static const uint qt_meta_data_MircoPhoneButton[] = {
        0        // eod
 };
 
-void MircoPhoneButton::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void ZegoMicrophoneButton::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     Q_UNUSED(_o);
     Q_UNUSED(_id);
@@ -60,26 +60,26 @@ void MircoPhoneButton::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
     Q_UNUSED(_a);
 }
 
-const QMetaObject MircoPhoneButton::staticMetaObject = {
-    { &QPushButton::staticMetaObject, qt_meta_stringdata_MircoPhoneButton.data,
-      qt_meta_data_MircoPhoneButton,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
+const QMetaObject ZegoMicrophoneButton::staticMetaObject = {
+    { &QPushButton::staticMetaObject, qt_meta_stringdata_ZegoMicrophoneButton.data,
+      qt_meta_data_ZegoMicrophoneButton,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
-const QMetaObject *MircoPhoneButton::metaObject() const
+const QMetaObject *ZegoMicrophoneButton::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *MircoPhoneButton::qt_metacast(const char *_clname)
+void *ZegoMicrophoneButton::qt_metacast(const char *_clname)
 {
     if (!_clname) return Q_NULLPTR;
-    if (!strcmp(_clname, qt_meta_stringdata_MircoPhoneButton.stringdata0))
-        return static_cast<void*>(const_cast< MircoPhoneButton*>(this));
+    if (!strcmp(_clname, qt_meta_stringdata_ZegoMicrophoneButton.stringdata0))
+        return static_cast<void*>(const_cast< ZegoMicrophoneButton*>(this));
     return QPushButton::qt_metacast(_clname);
 }
 
-int MircoPhoneButton::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int ZegoMicrophoneButton::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QPushButton::qt_metacall(_c, _id, _a);
     if (_id < 0)

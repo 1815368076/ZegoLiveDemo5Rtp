@@ -20,8 +20,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_ZegoMoreAnchorDialog_t {
-    QByteArrayData data[93];
-    char stringdata0[1284];
+    QByteArrayData data[94];
+    char stringdata0[1305];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -121,8 +121,9 @@ QT_MOC_LITERAL(87, 1190, 7), // "exePath"
 QT_MOC_LITERAL(88, 1198, 19), // "OnSwitchAudioDevice"
 QT_MOC_LITERAL(89, 1218, 2), // "id"
 QT_MOC_LITERAL(90, 1221, 19), // "OnSwitchVideoDevice"
-QT_MOC_LITERAL(91, 1241, 22), // "OnButtonShowFullScreen"
-QT_MOC_LITERAL(92, 1264, 19) // "OnShowSnapShotImage"
+QT_MOC_LITERAL(91, 1241, 20), // "OnSwitchVideoDevice2"
+QT_MOC_LITERAL(92, 1262, 22), // "OnButtonShowFullScreen"
+QT_MOC_LITERAL(93, 1285, 19) // "OnShowSnapShotImage"
 
     },
     "ZegoMoreAnchorDialog\0sigSaveVideoSettings\0"
@@ -159,8 +160,8 @@ QT_MOC_LITERAL(92, 1264, 19) // "OnShowSnapShotImage"
     "OnSnapshotPreview\0OnSnapshotWithStreamID\0"
     "OnUseDefaultAux\0OnGetMusicAppPath\0"
     "exePath\0OnSwitchAudioDevice\0id\0"
-    "OnSwitchVideoDevice\0OnButtonShowFullScreen\0"
-    "OnShowSnapShotImage"
+    "OnSwitchVideoDevice\0OnSwitchVideoDevice2\0"
+    "OnButtonShowFullScreen\0OnShowSnapShotImage"
 };
 #undef QT_MOC_LITERAL
 
@@ -170,7 +171,7 @@ static const uint qt_meta_data_ZegoMoreAnchorDialog[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      38,   14, // methods
+      39,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -178,46 +179,47 @@ static const uint qt_meta_data_ZegoMoreAnchorDialog[] = {
        2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  204,    2, 0x06 /* Public */,
-       5,    1,  207,    2, 0x06 /* Public */,
+       1,    1,  209,    2, 0x06 /* Public */,
+       5,    1,  212,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       8,    3,  210,    2, 0x09 /* Protected */,
-      13,    3,  217,    2, 0x09 /* Protected */,
-      16,    3,  224,    2, 0x09 /* Protected */,
-      21,    2,  231,    2, 0x09 /* Protected */,
-      22,    6,  236,    2, 0x09 /* Protected */,
-      31,    2,  249,    2, 0x09 /* Protected */,
-      32,    2,  254,    2, 0x09 /* Protected */,
-      34,    4,  259,    2, 0x09 /* Protected */,
-      38,    4,  268,    2, 0x09 /* Protected */,
-      39,    5,  277,    2, 0x09 /* Protected */,
-      47,    4,  288,    2, 0x09 /* Protected */,
-      51,    2,  297,    2, 0x09 /* Protected */,
-      54,    4,  302,    2, 0x09 /* Protected */,
-      58,    4,  311,    2, 0x09 /* Protected */,
-      65,    3,  320,    2, 0x09 /* Protected */,
-      66,    2,  327,    2, 0x09 /* Protected */,
-      69,    1,  332,    2, 0x09 /* Protected */,
-      71,    2,  335,    2, 0x09 /* Protected */,
-      73,    0,  340,    2, 0x08 /* Private */,
-      74,    0,  341,    2, 0x08 /* Private */,
-      75,    0,  342,    2, 0x08 /* Private */,
-      76,    0,  343,    2, 0x08 /* Private */,
-      77,    0,  344,    2, 0x08 /* Private */,
-      78,    0,  345,    2, 0x08 /* Private */,
-      79,    0,  346,    2, 0x08 /* Private */,
-      80,    0,  347,    2, 0x08 /* Private */,
-      81,    0,  348,    2, 0x08 /* Private */,
-      82,    0,  349,    2, 0x08 /* Private */,
-      83,    0,  350,    2, 0x08 /* Private */,
-      84,    1,  351,    2, 0x08 /* Private */,
-      85,    1,  354,    2, 0x08 /* Private */,
-      86,    1,  357,    2, 0x08 /* Private */,
-      88,    1,  360,    2, 0x08 /* Private */,
-      90,    1,  363,    2, 0x08 /* Private */,
-      91,    0,  366,    2, 0x08 /* Private */,
-      92,    1,  367,    2, 0x08 /* Private */,
+       8,    3,  215,    2, 0x09 /* Protected */,
+      13,    3,  222,    2, 0x09 /* Protected */,
+      16,    3,  229,    2, 0x09 /* Protected */,
+      21,    2,  236,    2, 0x09 /* Protected */,
+      22,    6,  241,    2, 0x09 /* Protected */,
+      31,    2,  254,    2, 0x09 /* Protected */,
+      32,    2,  259,    2, 0x09 /* Protected */,
+      34,    4,  264,    2, 0x09 /* Protected */,
+      38,    4,  273,    2, 0x09 /* Protected */,
+      39,    5,  282,    2, 0x09 /* Protected */,
+      47,    4,  293,    2, 0x09 /* Protected */,
+      51,    2,  302,    2, 0x09 /* Protected */,
+      54,    4,  307,    2, 0x09 /* Protected */,
+      58,    4,  316,    2, 0x09 /* Protected */,
+      65,    3,  325,    2, 0x09 /* Protected */,
+      66,    2,  332,    2, 0x09 /* Protected */,
+      69,    1,  337,    2, 0x09 /* Protected */,
+      71,    2,  340,    2, 0x09 /* Protected */,
+      73,    0,  345,    2, 0x08 /* Private */,
+      74,    0,  346,    2, 0x08 /* Private */,
+      75,    0,  347,    2, 0x08 /* Private */,
+      76,    0,  348,    2, 0x08 /* Private */,
+      77,    0,  349,    2, 0x08 /* Private */,
+      78,    0,  350,    2, 0x08 /* Private */,
+      79,    0,  351,    2, 0x08 /* Private */,
+      80,    0,  352,    2, 0x08 /* Private */,
+      81,    0,  353,    2, 0x08 /* Private */,
+      82,    0,  354,    2, 0x08 /* Private */,
+      83,    0,  355,    2, 0x08 /* Private */,
+      84,    1,  356,    2, 0x08 /* Private */,
+      85,    1,  359,    2, 0x08 /* Private */,
+      86,    1,  362,    2, 0x08 /* Private */,
+      88,    1,  365,    2, 0x08 /* Private */,
+      90,    1,  368,    2, 0x08 /* Private */,
+      91,    1,  371,    2, 0x08 /* Private */,
+      92,    0,  374,    2, 0x08 /* Private */,
+      93,    1,  375,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    4,
@@ -256,6 +258,7 @@ static const uint qt_meta_data_ZegoMoreAnchorDialog[] = {
     QMetaType::Void, QMetaType::QString,   72,
     QMetaType::Void, QMetaType::Bool,   64,
     QMetaType::Void, QMetaType::QString,   87,
+    QMetaType::Void, QMetaType::Int,   89,
     QMetaType::Void, QMetaType::Int,   89,
     QMetaType::Void, QMetaType::Int,   89,
     QMetaType::Void,
@@ -306,8 +309,9 @@ void ZegoMoreAnchorDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
         case 33: _t->OnGetMusicAppPath((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 34: _t->OnSwitchAudioDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 35: _t->OnSwitchVideoDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 36: _t->OnButtonShowFullScreen(); break;
-        case 37: _t->OnShowSnapShotImage((*reinterpret_cast< QImage*(*)>(_a[1]))); break;
+        case 36: _t->OnSwitchVideoDevice2((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 37: _t->OnButtonShowFullScreen(); break;
+        case 38: _t->OnShowSnapShotImage((*reinterpret_cast< QImage*(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -370,13 +374,13 @@ int ZegoMoreAnchorDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 38)
+        if (_id < 39)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 38;
+        _id -= 39;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 38)
+        if (_id < 39)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 38;
+        _id -= 39;
     }
     return _id;
 }

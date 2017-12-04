@@ -1,4 +1,4 @@
-﻿#pragma execution_character_set("utf-8")
+#pragma execution_character_set("utf-8")
 
 #ifndef ZEGOMOREANCHORDIALOG_H
 #define ZEGOMOREANCHORDIALOG_H
@@ -26,8 +26,8 @@
 Q_GUI_EXPORT QPixmap qt_pixmapFromWinHBITMAP(HBITMAP bitmap, int hbitmapFormat);
 #endif
 #include "ui_ZegoLiveRoomDialog.h"
-#include "ZegoSettingsModel.h"
-#include "ZegoRoomModel.h"
+#include "Settings/ZegoSettingsModel.h"
+#include "Model/ZegoRoomModel.h"
 #include "ZegoAVView.h"
 #include "LiveRoom.h"
 #include "LiveRoom-IM.h"
@@ -35,9 +35,9 @@ Q_GUI_EXPORT QPixmap qt_pixmapFromWinHBITMAP(HBITMAP bitmap, int hbitmapFormat);
 #include "LiveRoom-Player.h"
 #include "LiveRoomDefines.h"
 #include "LiveRoomDefines-IM.h"
-#include "ZegoRoomMsgModel.h"
+#include "Model/ZegoRoomMsgModel.h"
 #include "ZegoLiveDemo.h"
-#include "NoFocusFrameDelegate.h"
+#include "Delegate/NoFocusFrameDelegate.h"
 #include "ZegoShareDialog.h"
 #ifdef Q_OS_WIN
 #include "ZegoMusicHookDialog.h"
@@ -122,6 +122,7 @@ private slots:
 	//切换音视频设备
 	void OnSwitchAudioDevice(int id);
 	void OnSwitchVideoDevice(int id);
+	void OnSwitchVideoDevice2(int id);
 	//全屏显示
 	void OnButtonShowFullScreen();
 
@@ -133,7 +134,8 @@ private:
 	void EnumVideoAndAudioDevice();
 	void initComboBox();
 	void StartPublishStream();
-	void StopPublishStream(const QString& streamID);
+	void StartPublishStream_Aux();
+	void StopPublishStream(const QString& streamID, AV::PublishChannelIndex idx = ZEGO::AV::PUBLISH_CHN_MAIN);
 	void FreeAVView(StreamPtr stream);
 	void StartPlayStream(StreamPtr stream);
 	void StopPlayStream(const QString& streamID);
@@ -153,8 +155,12 @@ private:
 	void addAVView(int addViewIndex);
 	void removeAVView(int removeViewIndex);
 	void updateViewLayout(int viewCount);
-
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
+	void StartSurfaceMerge();
+#endif
 	void setWaterPrint();
+
+	int getCameraIndexFromID(const QString& cameraID);
 private:
 	Ui::ZegoLiveRoomDialog ui;
 	qreal m_dpi;
@@ -176,6 +182,7 @@ private:
 	bool m_isLiveFullScreen = false;
 	bool m_takeSnapShot = false;
 	QString m_strPublishStreamID;
+	QString m_strPublishStreamID_Aux;
 	QString m_strCurUserID;
 	QString m_strCurUserName;
 
@@ -193,6 +200,7 @@ private:
 	//自定义的ComboBox下拉式页面
 	QListView *m_cbMircoPhoneListView;
 	QListView *m_cbCameraListView;
+	QListView *m_cbCameraListView2;
 
 	//Model
 	QStringListModel *m_cbMircoPhoneModel;
@@ -216,7 +224,7 @@ private:
 
 	//保留当前第一主播的流信息
 	StreamPtr m_anchorStreamInfo;
-
+	StreamPtr m_anchorStreamInfo_Aux;
 	//view的网格动态布局
 	QGridLayout *gridLayout;
 

@@ -1,8 +1,6 @@
 ﻿#include "ZegoSettingsModel.h"
 
 //默认的索引组合类型（视频质量的组合）
-//static IndexSet g_PrimaryDefConf[] = { { 9, 15, 3 }, { 8, 12, 3 }, { 7, 10, 3 }, { 6, 8, 3 }, { 4, 5, 3 } };
-//static IndexSet g_StudentDefConf[] = { { 11, 16, 3 }, { 10, 14, 3 }, { 9, 15, 3 }, { 8, 12, 3 }, { 7, 10, 3 } };
 static IndexSet g_PrimaryDefConf[] = { { 8, 17, 3 }, { 5, 15, 3 }, { 4, 11, 3 }, { 2, 6, 3 }, { 1, 5, 3 }, { 0, 0, 3 } };
 
 QZegoSettingsModel::QZegoSettingsModel()
@@ -81,6 +79,16 @@ void QZegoSettingsModel::SetCameraId(const QString& cameraId)
 QString QZegoSettingsModel::GetCameraId(void)
 {
 	return m_strCameraId;
+}
+
+QString QZegoSettingsModel::GetCameraId2(void)
+{
+	return m_strCameraId2;
+}
+
+void QZegoSettingsModel::SetCameraId2(const QString& cameraId)
+{
+	m_strCameraId2 = cameraId;
 }
 
 void QZegoSettingsModel::SetMicrophoneId(const QString& microphoneId)
@@ -175,10 +183,20 @@ IndexSet QZegoSettingsModel::getIndex()
 
 void QZegoSettingsModel::SetSurfaceMerge(bool isSurface)
 {
-	isSurfaceMerge = isSurface;
+	m_isUseSurfaceMerge = isSurface;
 }
 
 bool QZegoSettingsModel::GetSurfaceMerge(void)
 {
-	return isSurfaceMerge;
+	return m_isUseSurfaceMerge;
+}
+
+void QZegoSettingsModel::SetUsePublish2Stream(bool isPublish2Stream)
+{
+	m_isUsePublish2Stream = isPublish2Stream;
+}
+
+bool QZegoSettingsModel::GetUsePublish2Stream(void)
+{
+	return m_isUsePublish2Stream;
 }

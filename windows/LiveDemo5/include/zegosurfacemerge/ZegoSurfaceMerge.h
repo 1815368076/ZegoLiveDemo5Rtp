@@ -83,5 +83,9 @@ namespace ZEGO
         /// \brief 同步释放枚举到的窗口列表
         /// \param[in] pWindowList 枚举到的窗口列表首地址
         ZEGO_API void FreeWindowList(ZEGO::SurfaceMerge::WindowItem* pWindowList);
+
+		/// \brief 截取子窗体图像
+		/// \param[in] nViewIndex 子窗体图像的索引，与itemList一致
+		ZEGO_API bool TakeSubViewSnapShot(int nViewIndex);
     }
 }

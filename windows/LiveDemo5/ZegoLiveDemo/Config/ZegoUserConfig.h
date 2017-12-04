@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 
-#include "ZegoSettingsModel.h"
+#include "Settings/ZegoSettingsModel.h"
 #include <QSharedPointer>
 #include <QFile>
 #include <QSettings>

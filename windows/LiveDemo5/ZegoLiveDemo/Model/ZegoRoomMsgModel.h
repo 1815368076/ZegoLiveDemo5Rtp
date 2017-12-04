@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 
 #include <QObject>
 #include <QVector>
-#include "LiveRoomDefines-Im.h"
+#include "LiveRoomDefines-IM.h"
 
 using namespace ZEGO;
 
@@ -12,7 +12,7 @@ public :
 	QZegoRoomMsgModel(const QString &userId, const QString &userName, const QString &content, unsigned long long msgId, ROOM::ZegoMessageType msgType, ROOM::ZegoMessagePriority msgPriority, ROOM::ZegoMessageCategory msgCategory);
 	QZegoRoomMsgModel(const QZegoRoomMsgModel &otherRoom);
 	~QZegoRoomMsgModel();
-
+	                                                                                                                                                                                                                  
 public :
 	QString getUserId(void);
 	QString getUserName(void);

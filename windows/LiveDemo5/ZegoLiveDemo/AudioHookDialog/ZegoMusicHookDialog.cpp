@@ -8,6 +8,8 @@ ZegoMusicHookDialog::ZegoMusicHookDialog(QWidget *parent) : QDialog(parent)
 
 	connect(ui.m_bClose, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnClose);
 	connect(ui.m_bReject, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnClose);
+
+#ifdef Q_OS_WIN
 	connect(ui.m_bAccept, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnSendCustomAppPath);
 
 	connect(ui.m_bOpenFile, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnSelectedMusicApp);
@@ -15,7 +17,8 @@ ZegoMusicHookDialog::ZegoMusicHookDialog(QWidget *parent) : QDialog(parent)
 	connect(ui.m_bKuGou, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnSelectedMusicApp);
 	connect(ui.m_bQQMusic, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnSelectedMusicApp);
 	connect(ui.m_bKuWo, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnSelectedMusicApp);
-
+#endif
+    
 	this->setFixedSize(QSize(700, 480));
 	this->setWindowFlags(Qt::FramelessWindowHint);//去掉标题栏
 }
@@ -25,7 +28,7 @@ ZegoMusicHookDialog::~ZegoMusicHookDialog()
 
 }
 
-
+#ifdef Q_OS_WIN
 void ZegoMusicHookDialog::searchMusicAppFromReg()
 {
 	CSoftInfo allAppInfo;
@@ -292,3 +295,6 @@ void ZegoMusicHookDialog::mouseReleaseEvent(QMouseEvent *event)
 }
 
 #endif
+
+#endif
+

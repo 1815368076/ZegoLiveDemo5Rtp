@@ -1,4 +1,4 @@
-#include "nofocusframedelegate.h"
+#include "Delegate/Nofocusframedelegate.h"
 #include <QPainter>
 #include <QDebug>
 

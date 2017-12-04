@@ -1,4 +1,3 @@
-#设置cmake版本号
 cmake_minimum_required(VERSION 3.6)
 
 #设置工程名称
@@ -34,10 +33,22 @@ file(GLOB_RECURSE All_SOURCES ${CMAKE_CURRENT_LIST_DIR}/*.mm
                               ${CMAKE_CURRENT_LIST_DIR}/*.mm 
                               ${CMAKE_CURRENT_LIST_DIR}/*.c 
                               ${CMAKE_CURRENT_LIST_DIR}/*.cc 
-			      ${CMAKE_CURRENT_LIST_DIR}/*.hh 
+                              ${CMAKE_CURRENT_LIST_DIR}/*.hh 
                               ${CMAKE_CURRENT_LIST_DIR}/*.h)
-                              
-source_group_by_dir(All_SOURCES)	
+            
+if(WIN32)
+    list(REMOVE_ITEM All_SOURCES ${CMAKE_CURRENT_LIST_DIR}/OSX_Objective-C/ZegoAVDevice.h)
+    list(REMOVE_ITEM All_SOURCES ${CMAKE_CURRENT_LIST_DIR}/OSX_Objective-C/ZegoAVDevice.mm)
+    list(REMOVE_ITEM All_SOURCES ${CMAKE_CURRENT_LIST_DIR}/OSX_Objective-C/ZegoCGImageToQImage.h)
+    list(REMOVE_ITEM All_SOURCES ${CMAKE_CURRENT_LIST_DIR}/OSX_Objective-C/ZegoCGImageToQImage.mm)
+    list(REMOVE_ITEM All_SOURCES ${CMAKE_CURRENT_LIST_DIR}/OSX_Objective-C/ZegoViewZoom.h)
+    list(REMOVE_ITEM All_SOURCES ${CMAKE_CURRENT_LIST_DIR}/OSX_Objective-C/ZegoViewZoom.mm)
+elseif(APPLE)
+    list(REMOVE_ITEM All_SOURCES ${CMAKE_CURRENT_LIST_DIR}/AudioHookDialog/ZegoMusicHookDialog.h)
+    list(REMOVE_ITEM All_SOURCES ${CMAKE_CURRENT_LIST_DIR}/AudioHookDialog/ZegoMusicHookDialog.cpp)
+endif(WIN32)
+
+source_group_by_dir(All_SOURCES)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -45,44 +56,32 @@ if(WIN32)
     include_directories(${CMAKE_CURRENT_LIST_DIR}/../include/zegoliveroom
                         ${CMAKE_CURRENT_LIST_DIR}/../include/zegosurfacemerge
                         ${CMAKE_CURRENT_LIST_DIR}/../include/zegoaudiohook
-                        ${CMAKE_CURRENT_LIST_DIR}/Base
-                        ${CMAKE_CURRENT_LIST_DIR}/Config
-                        ${CMAKE_CURRENT_LIST_DIR}/Delegate
-                        ${CMAKE_CURRENT_LIST_DIR}/Model
-                        ${CMAKE_CURRENT_LIST_DIR}/Settings
-                        ${CMAKE_CURRENT_LIST_DIR}/Signal
+                        ${CMAKE_CURRENT_LIST_DIR}
                         ${CMAKE_CURRENT_LIST_DIR}/UI
-                        ${CMAKE_CURRENT_LIST_DIR}/Dialog
-                        ${CMAKE_CURRENT_LIST_DIR}/VideoCapture
-                        ${CMAKE_CURRENT_LIST_DIR}/VideoFilter)
+                        ${CMAKE_CURRENT_LIST_DIR}/AudioHookDialog)
 
 elseif(APPLE)
     include_directories(${CMAKE_CURRENT_LIST_DIR}/../include/zegoliveroom
-                        ${CMAKE_CURRENT_LIST_DIR}/Base
-                        ${CMAKE_CURRENT_LIST_DIR}/Config
-                        ${CMAKE_CURRENT_LIST_DIR}/Delegate
-                        ${CMAKE_CURRENT_LIST_DIR}/Model
-                        ${CMAKE_CURRENT_LIST_DIR}/Settings
-                        ${CMAKE_CURRENT_LIST_DIR}/Signal
-                        ${CMAKE_CURRENT_LIST_DIR}/UI
-                        ${CMAKE_CURRENT_LIST_DIR}/Dialog
-                        ${CMAKE_CURRENT_LIST_DIR}/VideoCapture
-                        ${CMAKE_CURRENT_LIST_DIR}/VideoFilter
-                        ${CMAKE_CURRENT_LIST_DIR}/OSX_Objective-C)
+                        ${CMAKE_CURRENT_LIST_DIR}
+                        ${CMAKE_CURRENT_LIST_DIR}/UI)
 endif(WIN32)
 
 if(WIN32)
 	set(exe_property WIN32)
-    set(ZegoLiveDemo_RC ${CMAKE_CURRENT_LIST_DIR}/ZegoLiveDemo.rc)
+    set(ZegoLiveDemo_RC ${CMAKE_CURRENT_LIST_DIR}/Resources/res.rc)
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
 	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
-	set(LINK_LIBRARY zegoliveroom.lib)
-	set(ZEGOLIVEROOM_PATH ${CMAKE_CURRENT_LIST_DIR}/../ZegoLiveRoom/lib/windows/$(Configuration)/zegoliveroom.dll)
-
+	set(LINK_LIBRARY zegoliveroom.lib ZegoSurfaceMerge.lib ZegoAudioHook.lib)
+	set(ZEGOLIVEROOM_PATH ${CMAKE_CURRENT_LIST_DIR}/../libs/windows/x86/$(Configuration)/zegoliveroom.dll)
+    set(ZEGOSURFACEMERGE_PATH ${CMAKE_CURRENT_LIST_DIR}/../libs/windows/x86/$(Configuration)/ZegoSurfaceMerge.dll)
+    set(ZEGOAUDIOHOOK_PATH ${CMAKE_CURRENT_LIST_DIR}/../libs/windows/x86/$(Configuration)/ZegoAudioHook.dll)
+    set(OPENSSL_PATH ${CMAKE_CURRENT_LIST_DIR}/openssl)
+    set(MSVC_PATH ${CMAKE_CURRENT_LIST_DIR}/msvc/x86)
+    set(MUSICHOOK_PATH ${CMAKE_CURRENT_LIST_DIR}/MusicHook/ZegoMusicAudio.dll)
 	add_definitions(-DUNICODE -D_UNICODE -D_SCL_SECURE_NO_WARNINGS -DWIN32 -DV_LOG -DCURL_STATICLIB)
-	link_directories(${CMAKE_CURRENT_LIST_DIR}/../ZegoLiveRoom/lib/windows)
+	link_directories(${CMAKE_CURRENT_LIST_DIR}/../libs/windows/x86)
 
 elseif(APPLE)
     SET(BUILD_WITH_INSTALL_RPATH TRUE)
@@ -92,7 +91,7 @@ elseif(APPLE)
     set (CMAKE_CXX_FLAGS "--std=gnu++11 ${CMAKE_CXX_FLAGS}")
     set(LINK_LIBRARY libZegoLiveRoomOSX.dylib)				
 
-    link_directories(${CMAKE_CURRENT_LIST_DIR}/../libs/x86/Release)	
+    link_directories(${CMAKE_CURRENT_LIST_DIR}/../libs/mac)	
 
 endif(WIN32)
 
@@ -103,13 +102,20 @@ add_executable(${NAME} ${exe_property} ${All_SOURCES} ${ZegoLiveDemo_RC} ${FORMS
 
 if(WIN32)
 	add_custom_command(TARGET ZegoLiveDemo POST_BUILD COMMAND if exist ${ZEGOLIVEROOM_PATH} cmake -E copy ${ZEGOLIVEROOM_PATH} ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
+    add_custom_command(TARGET ZegoLiveDemo POST_BUILD COMMAND if exist ${ZEGOSURFACEMERGE_PATH} cmake -E copy ${ZEGOSURFACEMERGE_PATH} ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
+    add_custom_command(TARGET ZegoLiveDemo POST_BUILD COMMAND if exist ${ZEGOAUDIOHOOK_PATH} cmake -E copy ${ZEGOAUDIOHOOK_PATH} ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
+    add_custom_command(TARGET ZegoLiveDemo POST_BUILD COMMAND if exist ${OPENSSL_PATH}/libeay32.dll cmake -E copy ${OPENSSL_PATH}/libeay32.dll ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
+    add_custom_command(TARGET ZegoLiveDemo POST_BUILD COMMAND if exist ${OPENSSL_PATH}/ssleay32.dll cmake -E copy ${OPENSSL_PATH}/ssleay32.dll ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
+    add_custom_command(TARGET ZegoLiveDemo POST_BUILD COMMAND if exist ${MSVC_PATH}/msvcp120.dll cmake -E copy ${MSVC_PATH}/msvcp120.dll ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
+    add_custom_command(TARGET ZegoLiveDemo POST_BUILD COMMAND if exist ${MSVC_PATH}/msvcr120.dll cmake -E copy ${MSVC_PATH}/msvcr120.dll ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
+    add_custom_command(TARGET ZegoLiveDemo POST_BUILD COMMAND if exist ${MUSICHOOK_PATH} cmake -E copy ${MUSICHOOK_PATH} ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration)/MusicHook)
 
 elseif(APPLE)
     set_source_files_properties(${CMAKE_CURRENT_LIST_DIR}/Resources/ZegoLiveDemo.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     set_target_properties(${NAME} PROPERTIES MACOSX_BUNDLE_ICON_FILE ZegoLiveDemo.icns)
 
-    ADD_FRAMEWORK(Foundation ZegoLiveDemo)	
-    ADD_FRAMEWORK(AVFoundation ZegoLiveDemo)	
+    ADD_FRAMEWORK(Foundation ZegoLiveDemo)
+    ADD_FRAMEWORK(AVFoundation ZegoLiveDemo)
     ADD_FRAMEWORK(cocoa ZegoLiveDemo)
     ADD_FRAMEWORK(CoreMedia ZegoLiveDemo)
     ADD_FRAMEWORK(CoreVideo ZegoLiveDemo)

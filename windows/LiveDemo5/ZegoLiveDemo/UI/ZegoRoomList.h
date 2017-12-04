@@ -4,7 +4,7 @@
 #include <QStandardItemModel>
 #include <QHeaderView>
 #include <QScrollBar>
-#include "NoFocusFrameDelegate.h"
+#include "Delegate/NoFocusFrameDelegate.h"
 
 class ZegoRoomList : public QTableView
 {

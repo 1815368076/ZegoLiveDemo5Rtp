@@ -84,9 +84,10 @@ void QZegoAVView::resizeEvent(QResizeEvent *event)
 
 /*void QZegoAVView::paintEvent(QPaintEvent *event)
 {
-	QGraphicsView::paintEvent(event);
+	//qDebug() << "paint view";
+	//QGraphicsView::paintEvent(event);
 	
-	QPainter painter(this->viewport());
+	/*QPainter painter(this->viewport());
 	painter.setRenderHint(QPainter::Antialiasing);  // 反锯齿;
 	
 	QColor color;
@@ -208,6 +209,10 @@ void QZegoAVView::OnMenuSnapShotTriggered()
 	
 }
 
+/*WId QZegoAVView::getLiveViewWinID()
+{
+	return this->scene->getLiveViewWinID_Inner();
+}*/
 /*void QZegoAVView::addActionForKickOut()
 {
 	if (!m_isCurUser)
@@ -225,13 +230,27 @@ void QZegoAVView::OnMenukickForceTriggered()
 QZegoAVScene::QZegoAVScene(QWidget * parent)
 	: QGraphicsScene(parent)
 {
+	/*liveView = new QWidget(parent);
+	liveView->setStyleSheet("background-color: none;");
 	
+	addWidget(liveView)->setZValue(-1);
+	qualityLabel = new QLabel(parent);
+	qualityLabel->setText("!!!!!!!!!!!aaabbasdf!!!!!!!!");
+	qualityLabel->setWindowOpacity(1);
+	qualityLabel->setAttribute(Qt::WA_TranslucentBackground);
+	
+	addWidget(qualityLabel)->setZValue(0);*/
 }
 
 QZegoAVScene::~QZegoAVScene()
 {
 
 }
+
+/*WId QZegoAVScene::getLiveViewWinID_Inner()
+{
+	return liveView->winId();
+}*/
 
 #if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
 void QZegoAVScene::setSurfaceMergeItemRect(ZEGO::SurfaceMerge::ZegoCaptureItem _screen,

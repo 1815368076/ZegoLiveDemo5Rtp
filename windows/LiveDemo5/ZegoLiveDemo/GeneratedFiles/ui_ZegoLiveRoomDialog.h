@@ -28,13 +28,15 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include "ZegoMircophone.h"
+#include <ZegoMicrophoneButton.h>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_ZegoLiveRoomDialog
 {
 public:
+    QVBoxLayout *verticalLayout_11;
+    QWidget *m_zoneBaseDialog;
     QVBoxLayout *verticalLayout;
     QWidget *m_zoneTitle;
     QHBoxLayout *horizontalLayout_2;
@@ -77,13 +79,15 @@ public:
     QComboBox *m_cbMircoPhone;
     QLabel *m_lbCamera;
     QComboBox *m_cbCamera;
+    QLabel *m_lbCamera2;
+    QComboBox *m_cbCamera2;
     QSpacerItem *horizontalSpacer_2;
     QVBoxLayout *verticalLayout_5;
     QSpacerItem *verticalSpacer;
     QLabel *m_lbOperation;
     QSpacerItem *verticalSpacer_4;
     QHBoxLayout *horizontalLayout_5;
-    MircoPhoneButton *m_bProgMircoPhone;
+    ZegoMicrophoneButton *m_bProgMircoPhone;
     QSpacerItem *horizontalSpacer_6;
     QPushButton *m_bSound;
     QSpacerItem *horizontalSpacer_5;
@@ -127,13 +131,20 @@ public:
     {
         if (ZegoLiveRoomDialog->objectName().isEmpty())
             ZegoLiveRoomDialog->setObjectName(QStringLiteral("ZegoLiveRoomDialog"));
-        ZegoLiveRoomDialog->resize(1281, 719);
+        ZegoLiveRoomDialog->resize(1283, 763);
         ZegoLiveRoomDialog->setStyleSheet(QStringLiteral("border: none;"));
-        verticalLayout = new QVBoxLayout(ZegoLiveRoomDialog);
+        verticalLayout_11 = new QVBoxLayout(ZegoLiveRoomDialog);
+        verticalLayout_11->setSpacing(0);
+        verticalLayout_11->setObjectName(QStringLiteral("verticalLayout_11"));
+        verticalLayout_11->setContentsMargins(0, 0, 0, 0);
+        m_zoneBaseDialog = new QWidget(ZegoLiveRoomDialog);
+        m_zoneBaseDialog->setObjectName(QStringLiteral("m_zoneBaseDialog"));
+        m_zoneBaseDialog->setStyleSheet(QStringLiteral("background-color: #0e88eb;"));
+        verticalLayout = new QVBoxLayout(m_zoneBaseDialog);
         verticalLayout->setSpacing(0);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
-        m_zoneTitle = new QWidget(ZegoLiveRoomDialog);
+        verticalLayout->setContentsMargins(1, 1, 1, 1);
+        m_zoneTitle = new QWidget(m_zoneBaseDialog);
         m_zoneTitle->setObjectName(QStringLiteral("m_zoneTitle"));
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
@@ -204,6 +215,11 @@ public:
 "    background-color: #0e88eb;\n"
 "}\n"
 "\n"
+"QPushButton:checked{\n"
+"    border: 1px solid #0e88eb;\n"
+"    background-color: #0e88eb;\n"
+"}\n"
+"\n"
 "QPushButton:hover{\n"
 "    border: 1px solid #0d80de;\n"
 "    background-color: #0d80de;\n"
@@ -260,7 +276,7 @@ public:
         horizontalLayout1 = new QHBoxLayout();
         horizontalLayout1->setSpacing(0);
         horizontalLayout1->setObjectName(QStringLiteral("horizontalLayout1"));
-        m_zoneLiveView = new QWidget(ZegoLiveRoomDialog);
+        m_zoneLiveView = new QWidget(m_zoneBaseDialog);
         m_zoneLiveView->setObjectName(QStringLiteral("m_zoneLiveView"));
         m_zoneLiveView->setEnabled(true);
         sizePolicy.setHeightForWidth(m_zoneLiveView->sizePolicy().hasHeightForWidth());
@@ -274,6 +290,7 @@ public:
         horizontalLayout_ForAVView->setContentsMargins(0, 0, 0, 0);
         m_zoneLiveView_Inner = new QWidget(m_zoneLiveView);
         m_zoneLiveView_Inner->setObjectName(QStringLiteral("m_zoneLiveView_Inner"));
+        m_zoneLiveView_Inner->setStyleSheet(QStringLiteral("background-color: #383838;"));
         zoneLiveViewHorizontalLayout = new QHBoxLayout(m_zoneLiveView_Inner);
         zoneLiveViewHorizontalLayout->setSpacing(0);
         zoneLiveViewHorizontalLayout->setObjectName(QStringLiteral("zoneLiveViewHorizontalLayout"));
@@ -284,7 +301,7 @@ public:
 
         horizontalLayout1->addWidget(m_zoneLiveView);
 
-        m_lineBetweenViewAndList = new QFrame(ZegoLiveRoomDialog);
+        m_lineBetweenViewAndList = new QFrame(m_zoneBaseDialog);
         m_lineBetweenViewAndList->setObjectName(QStringLiteral("m_lineBetweenViewAndList"));
         m_lineBetweenViewAndList->setMinimumSize(QSize(1, 0));
         m_lineBetweenViewAndList->setMaximumSize(QSize(1, 16777215));
@@ -295,7 +312,7 @@ public:
 
         horizontalLayout1->addWidget(m_lineBetweenViewAndList);
 
-        m_zoneCommonAndUserList = new QWidget(ZegoLiveRoomDialog);
+        m_zoneCommonAndUserList = new QWidget(m_zoneBaseDialog);
         m_zoneCommonAndUserList->setObjectName(QStringLiteral("m_zoneCommonAndUserList"));
         QSizePolicy sizePolicy2(QSizePolicy::Minimum, QSizePolicy::Minimum);
         sizePolicy2.setHorizontalStretch(0);
@@ -501,7 +518,7 @@ public:
 
         verticalLayout->addLayout(horizontalLayout1);
 
-        m_lineMain = new QFrame(ZegoLiveRoomDialog);
+        m_lineMain = new QFrame(m_zoneBaseDialog);
         m_lineMain->setObjectName(QStringLiteral("m_lineMain"));
         m_lineMain->setMinimumSize(QSize(0, 1));
         m_lineMain->setMaximumSize(QSize(16777215, 1));
@@ -516,15 +533,15 @@ public:
         horizontalLayout2->setSpacing(0);
         horizontalLayout2->setObjectName(QStringLiteral("horizontalLayout2"));
         horizontalLayout2->setSizeConstraint(QLayout::SetFixedSize);
-        m_zoneSettings = new QWidget(ZegoLiveRoomDialog);
+        m_zoneSettings = new QWidget(m_zoneBaseDialog);
         m_zoneSettings->setObjectName(QStringLiteral("m_zoneSettings"));
         QSizePolicy sizePolicy3(QSizePolicy::Minimum, QSizePolicy::Fixed);
         sizePolicy3.setHorizontalStretch(0);
         sizePolicy3.setVerticalStretch(0);
         sizePolicy3.setHeightForWidth(m_zoneSettings->sizePolicy().hasHeightForWidth());
         m_zoneSettings->setSizePolicy(sizePolicy3);
-        m_zoneSettings->setMinimumSize(QSize(0, 138));
-        m_zoneSettings->setMaximumSize(QSize(16777215, 138));
+        m_zoneSettings->setMinimumSize(QSize(0, 180));
+        m_zoneSettings->setMaximumSize(QSize(16777215, 180));
         m_zoneSettings->setStyleSheet(QStringLiteral("background-color: #ffffff;"));
         horizontalLayout_6 = new QHBoxLayout(m_zoneSettings);
         horizontalLayout_6->setSpacing(0);
@@ -773,6 +790,108 @@ public:
 
         formLayout->setWidget(1, QFormLayout::FieldRole, m_cbCamera);
 
+        m_lbCamera2 = new QLabel(m_zoneSettings);
+        m_lbCamera2->setObjectName(QStringLiteral("m_lbCamera2"));
+        m_lbCamera2->setStyleSheet(QString::fromUtf8("QLabel:!enabled{\n"
+"    font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"    font-size: 14px;\n"
+"    color: #cccccc;\n"
+" }\n"
+" \n"
+"QLabel:enabled{\n"
+"    font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"    font-size: 14px;\n"
+"    color: #666666;\n"
+" }"));
+
+        formLayout->setWidget(2, QFormLayout::LabelRole, m_lbCamera2);
+
+        m_cbCamera2 = new QComboBox(m_zoneSettings);
+        m_cbCamera2->setObjectName(QStringLiteral("m_cbCamera2"));
+        m_cbCamera2->setMinimumSize(QSize(260, 32));
+        m_cbCamera2->setStyleSheet(QString::fromUtf8("  QComboBox{\n"
+"     padding-left: 10px;\n"
+" }\n"
+"\n"
+" QComboBox:!enabled{\n"
+"    border: 1px solid #e6e6e6;\n"
+"    border-radius: 2px;\n"
+"    font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"    font-size: 16px;\n"
+"	background-color: #fafafa;\n"
+"	color: #cccccc;\n"
+" }\n"
+"\n"
+" QComboBox:enabled:!hover{\n"
+"    border: 1px solid #e6e6e6;\n"
+"    border-radius: 2px;\n"
+"    font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"    font-size: 16px;\n"
+"	background-color: #fafafa;\n"
+"	color: #666666;\n"
+"}\n"
+"QComboBox:enabled:hover{\n"
+"     border: 1px solid #0e88eb;\n"
+"     border-radius: 2px;\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 16px;\n"
+"	 background-color: #fafafa;\n"
+"	 color: #666666;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down{\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 20px;\n"
+" \n"
+"    border-left-width: 1px;\n"
+"\n"
+"    border-top-right-radius: 2px; /* same rad"
+                        "ius as the QComboBox */\n"
+"    border-bottom-right-radius: 2px;\n"
+"\n"
+" }\n"
+"\n"
+" QComboBox::down-arrow{\n"
+"\n"
+"     border-image: url(:/Resources/images/down_arrow.png);\n"
+" }\n"
+"\n"
+" \n"
+"  QComboBox QAbstractItemView{\n"
+"     font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"     border: 1px solid #0e88eb;\n"
+"	 background-color: #ffffff;\n"
+"	 border-radius: 2px;\n"
+"	 \n"
+"  }\n"
+"\n"
+" QComboBox QAbstractItemView::item{\n"
+"     \n"
+"     height: 32px;\n"
+"	 font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"	 color: #666666;\n"
+"	 background-color: #ffffff;\n"
+"	 padding-left: 10px;\n"
+"	 padding-right: 10px;\n"
+" }\n"
+"\n"
+" QComboBox QAbstractItemView::item:hover{\n"
+"     \n"
+"     height: 32px;\n"
+"	 font-family: \345\276\256\350\275\257\351\233\205\351\273\221;\n"
+"     font-size: 14px;\n"
+"	 color: #ffffff;\n"
+"	 background-color: #0e88eb;\n"
+"	 padding-left: 10px;\n"
+"	 padding-right: 10px;\n"
+" }\n"
+""));
+
+        formLayout->setWidget(2, QFormLayout::FieldRole, m_cbCamera2);
+
 
         verticalLayout_4->addLayout(formLayout);
 
@@ -809,7 +928,7 @@ public:
         horizontalLayout_5 = new QHBoxLayout();
         horizontalLayout_5->setSpacing(0);
         horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
-        m_bProgMircoPhone = new MircoPhoneButton(m_zoneSettings);
+        m_bProgMircoPhone = new ZegoMicrophoneButton(m_zoneSettings);
         m_bProgMircoPhone->setObjectName(QStringLiteral("m_bProgMircoPhone"));
         sizePolicy1.setHeightForWidth(m_bProgMircoPhone->sizePolicy().hasHeightForWidth());
         m_bProgMircoPhone->setSizePolicy(sizePolicy1);
@@ -817,15 +936,15 @@ public:
         m_bProgMircoPhone->setMaximumSize(QSize(32, 32));
         m_bProgMircoPhone->setCursor(QCursor(Qt::PointingHandCursor));
         m_bProgMircoPhone->setStyleSheet(QLatin1String("QPushButton:!enabled{\n"
-"    border-image: url(:/Resources/images/mircophone_disabled.png);\n"
+"    border-image: url(:/Resources/images/microphone_disabled.png);\n"
 "}\n"
 "\n"
 "QPushButton:enabled:!checked{\n"
-"    border-image: url(:/Resources/images/mircophone_off.png);\n"
+"    border-image: url(:/Resources/images/microphone_off.png);\n"
 "}\n"
 "\n"
 "QPushButton:enabled:checked{\n"
-"    border-image: url(:/Resources/images/mircophone_on.png);\n"
+"    border-image: url(:/Resources/images/microphone_on.png);\n"
 "}"));
         m_bProgMircoPhone->setCheckable(true);
         m_bProgMircoPhone->setChecked(true);
@@ -862,7 +981,7 @@ public:
 
         verticalLayout_5->addLayout(horizontalLayout_5);
 
-        verticalSpacer_5 = new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
+        verticalSpacer_5 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Fixed);
 
         verticalLayout_5->addItem(verticalSpacer_5);
 
@@ -1127,7 +1246,7 @@ public:
 
         horizontalLayout_3->addLayout(verticalLayout_6);
 
-        horizontalSpacer_4 = new QSpacerItem(120, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer_4 = new QSpacerItem(112, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_3->addItem(horizontalSpacer_4);
 
@@ -1137,7 +1256,7 @@ public:
 
         horizontalLayout2->addWidget(m_zoneSettings);
 
-        m_lineBetweenSettingsAndEdit = new QFrame(ZegoLiveRoomDialog);
+        m_lineBetweenSettingsAndEdit = new QFrame(m_zoneBaseDialog);
         m_lineBetweenSettingsAndEdit->setObjectName(QStringLiteral("m_lineBetweenSettingsAndEdit"));
         m_lineBetweenSettingsAndEdit->setMinimumSize(QSize(1, 0));
         m_lineBetweenSettingsAndEdit->setMaximumSize(QSize(1, 16777215));
@@ -1148,12 +1267,12 @@ public:
 
         horizontalLayout2->addWidget(m_lineBetweenSettingsAndEdit);
 
-        m_zoneInput = new QWidget(ZegoLiveRoomDialog);
+        m_zoneInput = new QWidget(m_zoneBaseDialog);
         m_zoneInput->setObjectName(QStringLiteral("m_zoneInput"));
         sizePolicy2.setHeightForWidth(m_zoneInput->sizePolicy().hasHeightForWidth());
         m_zoneInput->setSizePolicy(sizePolicy2);
-        m_zoneInput->setMinimumSize(QSize(320, 138));
-        m_zoneInput->setMaximumSize(QSize(320, 138));
+        m_zoneInput->setMinimumSize(QSize(320, 180));
+        m_zoneInput->setMaximumSize(QSize(320, 180));
         m_zoneInput->setStyleSheet(QStringLiteral("background-color: #ffffff;"));
         verticalLayout_9 = new QVBoxLayout(m_zoneInput);
         verticalLayout_9->setSpacing(0);
@@ -1308,6 +1427,9 @@ public:
         verticalLayout->setStretch(1, 4);
         verticalLayout->setStretch(3, 1);
 
+        verticalLayout_11->addWidget(m_zoneBaseDialog);
+
+
         retranslateUi(ZegoLiveRoomDialog);
 
         m_tabCommonAndUserList->setCurrentIndex(0);
@@ -1328,6 +1450,7 @@ public:
         m_lbEquipment->setText(QApplication::translate("ZegoLiveRoomDialog", "Equipment", Q_NULLPTR));
         m_lbMircoPhone->setText(QApplication::translate("ZegoLiveRoomDialog", "\351\272\246\345\205\213\351\243\216", Q_NULLPTR));
         m_lbCamera->setText(QApplication::translate("ZegoLiveRoomDialog", "\346\221\204\345\203\217\345\244\264", Q_NULLPTR));
+        m_lbCamera2->setText(QApplication::translate("ZegoLiveRoomDialog", "\346\221\204\345\203\217\345\244\2642", Q_NULLPTR));
         m_lbOperation->setText(QApplication::translate("ZegoLiveRoomDialog", "Operation", Q_NULLPTR));
         m_bProgMircoPhone->setText(QString());
         m_bSound->setText(QString());

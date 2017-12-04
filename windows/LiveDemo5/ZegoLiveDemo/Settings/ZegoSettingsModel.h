@@ -107,11 +107,17 @@ public:
 	QString GetCameraId(void);
 	void SetCameraId(const QString& cameraId);
 
+	QString GetCameraId2(void);
+	void SetCameraId2(const QString& cameraId);
+
 	QString GetMircophoneId(void);
 	void SetMicrophoneId(const QString& microphoneId);
 
 	void SetSurfaceMerge(bool isSurface);
 	bool GetSurfaceMerge(void);
+
+	void SetUsePublish2Stream(bool isPublish2Stream);
+	bool GetUsePublish2Stream(void);
 
 	void InitDeviceId(void);
 
@@ -124,9 +130,12 @@ private:
 	int m_nBitrate;
 	int m_nFps;
 	QString m_strCameraId;
+	QString m_strCameraId2;
 	QString m_strMicrophoneId;
 	//是否使用截屏推流
-	bool isSurfaceMerge;
+	bool m_isUseSurfaceMerge = false;
+	//是否使用推两路流
+	bool m_isUsePublish2Stream = false;
 };
 
 using SettingsPtr = QSharedPointer< QZegoSettingsModel >;

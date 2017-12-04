@@ -1,4 +1,4 @@
-﻿#pragma execution_character_set("utf-8")
+#pragma execution_character_set("utf-8")
 
 #ifndef ZEGOSINGLEANCHORDIALOG_H
 #define ZEGOSINGLEANCHORDIALOG_H
@@ -28,8 +28,8 @@
 Q_GUI_EXPORT QPixmap qt_pixmapFromWinHBITMAP(HBITMAP bitmap, int hbitmapFormat);
 #endif
 #include "ui_ZegoLiveRoomDialog.h"
-#include "ZegoSettingsModel.h"
-#include "ZegoRoomModel.h"
+#include "Settings/ZegoSettingsModel.h"
+#include "Model/ZegoRoomModel.h"
 #include "ZegoAVView.h"
 #include "LiveRoom.h"
 #include "LiveRoom-IM.h"
@@ -42,9 +42,9 @@ Q_GUI_EXPORT QPixmap qt_pixmapFromWinHBITMAP(HBITMAP bitmap, int hbitmapFormat);
 #include "ZegoSurfaceMerge.h"
 #include "ZegoSurfaceMergeDefine.h"
 #endif
-#include "ZegoRoomMsgModel.h"
+#include "Model/ZegoRoomMsgModel.h"
 #include "ZegoLiveDemo.h"
-#include "NoFocusFrameDelegate.h"
+#include "Delegate/NoFocusFrameDelegate.h"
 #include "ZegoShareDialog.h"
 #ifdef Q_OS_WIN
 #include "ZegoMusicHookDialog.h"
@@ -126,19 +126,23 @@ private slots:
 	//切换音视频设备
 	void OnSwitchAudioDevice(int id);
 	void OnSwitchVideoDevice(int id);
+	void OnSwitchVideoDevice2(int id);
 	//全屏显示
 	void OnButtonShowFullScreen();
     
 	void OnShowSnapShotImage(QImage *imageData);
-
+	int getCameraIndexFromID(const QString& cameraID);
 private:
 	void insertStringListModelItem(QStringListModel * model, QString name, int size);
 	void removeStringListModelItem(QStringListModel * model, QString name);
 	void EnumVideoAndAudioDevice();
 	void initComboBox();
 	void StartPublishStream();
-	void StopPublishStream(const QString& streamID);
+	void StopPublishStream(const QString& streamID, AV::PublishChannelIndex idx = ZEGO::AV::PUBLISH_CHN_MAIN);
 	void FreeAVView(StreamPtr stream);
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
+	void StartSurfaceMerge();
+#endif
 	void GetOut();
 	void BeginAux();
 	void EndAux();
@@ -150,7 +154,7 @@ private:
 
 	int takeLeastAvaliableViewIndex();
 
-	void setWaterPrint();
+	void setWaterPrint(AV::PublishChannelIndex idx = ZEGO::AV::PUBLISH_CHN_MAIN);
 private:
 	Ui::ZegoLiveRoomDialog ui;
 	qreal m_dpi;
@@ -173,6 +177,7 @@ private:
 	bool m_takeSnapShot = false;
 	int m_iRequestJoinLiveSeq = -1;
 	QString m_strPublishStreamID;
+	QString m_strPublishStreamID_Aux;
 	QString m_strCurUserID;
 	QString m_strCurUserName;
 
@@ -190,6 +195,7 @@ private:
 	//自定义的ComboBox下拉式页面
 	QListView *m_cbMircoPhoneListView;
 	QListView *m_cbCameraListView;
+	QListView *m_cbCameraListView2;
 
 	//Model
 	QStringListModel *m_cbMircoPhoneModel;
@@ -215,7 +221,10 @@ private:
 	StreamPtr m_anchorStreamInfo;
 
 	QZegoAVView *m_mainLiveView;
-	
+	QZegoAVView *m_AuxLiveView;
+
+	QGridLayout *gridLayout;
+
 #ifdef Q_OS_WIN
 	ZegoMusicHookDialog hookDialog;
 #endif

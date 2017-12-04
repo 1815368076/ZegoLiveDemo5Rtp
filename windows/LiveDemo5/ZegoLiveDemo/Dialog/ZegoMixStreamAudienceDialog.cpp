@@ -1,9 +1,10 @@
 ﻿#include "ZegoMixStreamAudienceDialog.h"
-#include "ZegoSDKSignal.h"
+#include "Signal/ZegoSDKSignal.h"
 #include <QMessageBox>
 #include <QDebug>
 #ifdef Q_OS_MAC
-#include "ZegoAVDevice.h"
+#include "OSX_Objective-C/ZegoAVDevice.h"
+#include "OSX_Objective-C/ZegoCGImageToQImage.h"
 #endif
 ZegoMixStreamAudienceDialog::ZegoMixStreamAudienceDialog(QWidget *parent)
 	: QDialog(parent)
@@ -573,6 +574,8 @@ void ZegoMixStreamAudienceDialog::SetOperation(bool state)
 	ui.m_lbMircoPhone->setEnabled(state);
 	ui.m_lbCamera->setEnabled(state);
 
+	ui.m_lbCamera2->setVisible(false);
+	ui.m_cbCamera2->setVisible(false);
 
 	ui.m_bProgMircoPhone->setMyEnabled(state);
 	ui.m_bProgMircoPhone->update();
@@ -909,7 +912,7 @@ void ZegoMixStreamAudienceDialog::setWaterPrint()
 	}
 	else
 	{
-		waterPrintPath += "2x/waterprint@2x.png";
+		waterPrintPath += "@2x/waterprint@2x.png";
 	}
 
 	QImage waterPrint(waterPrintPath);
@@ -1468,11 +1471,14 @@ void ZegoMixStreamAudienceDialog::OnVideoDeviceChanged(const QString& strDeviceI
 
 void ZegoMixStreamAudienceDialog::OnPreviewSnapshot(void *pImage)
 {
-	QImage *image = new QImage;
+	QImage *image;
 
 #ifdef Q_OS_WIN
+	image = new QImage;
 	QPixmap pixmap = qt_pixmapFromWinHBITMAP((HBITMAP)pImage, 0);
 	*image = pixmap.toImage();
+#else
+	image = CGImageToQImage(pImage);
 #endif
 	//发送信号切线程，不能阻塞当前线程
 	emit sigShowSnapShotImage(image);
@@ -1480,11 +1486,14 @@ void ZegoMixStreamAudienceDialog::OnPreviewSnapshot(void *pImage)
 
 void ZegoMixStreamAudienceDialog::OnSnapshot(void *pImage, const QString &streamID)
 {
-	QImage *image = new QImage;
+	QImage *image;
 
 #ifdef Q_OS_WIN
+	image = new QImage;
 	QPixmap pixmap = qt_pixmapFromWinHBITMAP((HBITMAP)pImage, 0);
 	*image = pixmap.toImage();
+#else
+	image = CGImageToQImage(pImage);
 #endif
 
 	//发送信号切线程，不能阻塞当前线程
@@ -1695,8 +1704,7 @@ void ZegoMixStreamAudienceDialog::OnShareLink()
 void ZegoMixStreamAudienceDialog::OnButtonShowFullScreen()
 {
 	//直播窗口总在最顶层
-	ui.m_zoneLiveView_Inner->setWindowFlags(ui.m_zoneLiveView_Inner->windowFlags() | Qt::WindowStaysOnTopHint);
-	ui.m_zoneLiveView_Inner->setParent(NULL);
+	ui.m_zoneLiveView_Inner->setWindowFlags(Qt::Dialog);
 	ui.m_zoneLiveView_Inner->showFullScreen();
 	m_isLiveFullScreen = true;
 }
@@ -1925,12 +1933,12 @@ bool ZegoMixStreamAudienceDialog::eventFilter(QObject *target, QEvent *event)
 			QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 			if (keyEvent->key() == Qt::Key_Escape && m_isLiveFullScreen)
 			{
-				qDebug() << "clicl esc";
-				ui.m_zoneLiveView_Inner->setParent(ui.m_zoneLiveView);
+				//qDebug() << "clicl esc";
+				//ui.m_zoneLiveView_Inner->setParent(ui.m_zoneLiveView);
+				ui.m_zoneLiveView_Inner->setWindowFlags(Qt::SubWindow);
+				ui.m_zoneLiveView_Inner->showNormal();
 				ui.horizontalLayout_ForAVView->addWidget(ui.m_zoneLiveView_Inner);
 				m_isLiveFullScreen = false;
-				//取消直播窗口总在最顶层
-				ui.m_zoneLiveView_Inner->setWindowFlags(ui.m_zoneLiveView_Inner->windowFlags() &~Qt::WindowStaysOnTopHint);
 				return true;
 			}
 			else if (keyEvent->key() == Qt::Key_Escape && !m_isLiveFullScreen)

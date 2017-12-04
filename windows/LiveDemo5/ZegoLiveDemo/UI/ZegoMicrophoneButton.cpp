@@ -1,17 +1,17 @@
-﻿#include "ZegoMircophone.h"
+﻿#include "ZegoMicrophoneButton.h"
 
-MircoPhoneButton::MircoPhoneButton(QWidget  * parent) : QPushButton(parent)
+ZegoMicrophoneButton::ZegoMicrophoneButton(QWidget  * parent) : QPushButton(parent)
 {
 	m_progValue = 0;
 	isEabled = true;
 }
 
-MircoPhoneButton::~MircoPhoneButton()
+ZegoMicrophoneButton::~ZegoMicrophoneButton()
 {
  
 }
 
-void MircoPhoneButton::paintEvent(QPaintEvent *event)
+void ZegoMicrophoneButton::paintEvent(QPaintEvent *event)
 {
 	//先绘制父控件图
 	QPushButton::paintEvent(event);
@@ -32,12 +32,12 @@ void MircoPhoneButton::paintEvent(QPaintEvent *event)
 	}
 }
 
-void MircoPhoneButton::setProgValue(int value)
+void ZegoMicrophoneButton::setProgValue(int value)
 {
 	m_progValue = value;
 }
 
-void MircoPhoneButton::setMyEnabled(bool state)
+void ZegoMicrophoneButton::setMyEnabled(bool state)
 {
 	isEabled = state;
 }

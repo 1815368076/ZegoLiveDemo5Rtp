@@ -1,76 +1,121 @@
 #include "ZegoVideoFilterDemo.h"
 #include <QDebug>
 
-VideoFilterGlue::VideoFilterGlue()
+VideoFilterGlue::VideoFilterGlue() : width_(0), height_(0), stride_(0)
 {
 
 }
 
 VideoFilterGlue::~VideoFilterGlue()
 {
-
+	delete m_pThread;
 }
 
 void VideoFilterGlue::AllocateAndStart(Client* client) {
-	client_ = client;
-	qDebug() << "vf alloced!";
-	/*m_oPendingCount = 0;
+	/*client_ = client;
+	m_oPendingCount = 0;
 	m_nWritePtr = 0;
 	m_nReadPtr = 0;
-	m_bExit = FALSE;
+	m_bExit = false;
 
-	LPDWORD tid = 0;
-	m_hVideoTimer = CreateThread(0, 0, &VideoFilterGlue::thread_proc, this, 0, tid);
-	*/
+	//m_pThread = new ZegoVideoFilterWorkThread(this);
+	//LPDWORD tid = 0;
+	//m_hVideoTimer = CreateThread(0, 0, &VideoFilterGlue::thread_proc, this, 0, tid);
+
+	m_pThread = new QThread;
+	m_pTimer = new QTimer;
+	m_pTimer->setSingleShot(true);
+	m_pTimer->moveToThread(m_pThread);
+	
+	connect(m_pTimer, &QTimer::timeout, this, &VideoFilterGlue::OnVideoTimer, Qt::DirectConnection);
+	connect(m_pThread, &QThread::started, this, &VideoFilterGlue::TimerStart, Qt::DirectConnection);
+	m_pThread->start();*/
 }
 
 void VideoFilterGlue::StopAndDeAllocate() {
-	qDebug() << "vf dealloced!";
-	/*m_bExit = TRUE;
-	if (m_hVideoTimer) {
-		WaitForSingleObject(m_hVideoTimer, INFINITE);
-		CloseHandle(m_hVideoTimer);
-		m_hVideoTimer = NULL;
-	}
-	*/
+	/*m_bExit = true;
+	if (m_pTimer) {
+		m_pTimer->moveToThread(m_pThread);
+		connect(m_pThread, &QThread::finished, this, &VideoFilterGlue::TimerStop, Qt::DirectConnection);
+		
+		m_pThread->quit();
+		m_pThread->wait();
+		//WaitForSingleObject(m_hVideoTimer, INFINITE);
+		//CloseHandle(m_hVideoTimer);
+		//m_hVideoTimer = NULL;
+    }
+	
 	client_->Destroy();
-	client_ = NULL;
+	client_ = NULL;*/
 }
 
 int VideoFilterGlue::DequeueInputBuffer(int width, int height, int stride) {
-	qDebug() << "dequeueInput";
 
-	/*if (m_oPendingCount >= MAX_FRAME) {
+	if (m_oPendingCount >= MAX_FRAME) {
 		return -1;
-	}*/
+	}
 	return m_nWritePtr;
 }
 
 void* VideoFilterGlue::GetInputBuffer(int index) {
-	qDebug() << "getInput";
 
-	//return m_aBuffers[m_nWritePtr].frame;
-	return NULL;
+	return m_aBuffers[m_nWritePtr].frame;
 }
 
 void VideoFilterGlue::QueueInputBuffer(int index, int width, int height, int stride, unsigned long long timestamp_100n) {
-	qDebug() << "queueInput";
 
 	if (m_nWritePtr != index) {
 		return;
 	}
 
-	/*m_aBuffers[index].width = width;
+	m_aBuffers[index].width = width;
 	m_aBuffers[index].height = height;
 	m_aBuffers[index].timestamp_100n = timestamp_100n;
 
 	m_nWritePtr = (m_nWritePtr + 1) % MAX_FRAME;
-	InterlockedIncrement(&m_oPendingCount);
-	*/
+
+	m_pMutex.lock();
+	if (m_oPendingCount >= 0)
+		m_oPendingCount++;
+	m_pMutex.unlock();
+	//InterlockedIncrement(&m_oPendingCount);
+	
+}
+
+/*DWORD WINAPI VideoFilterGlue::thread_proc(PVOID pParam)
+{
+	VideoFilterGlue *pThis = (VideoFilterGlue *)pParam;
+	pThis->OnVideoTimer();
+	return 0;
+}*/
+
+void VideoFilterGlue::TimerStart()
+{
+	m_pTimer->start();
+}
+
+void VideoFilterGlue::TimerStop()
+{
+	m_pTimer->stop();
+	m_pTimer->deleteLater();
+}
+
+void VideoFilterGlue::Sleep(int msec)
+{
+	QDateTime last = QDateTime::currentDateTime();
+	QDateTime now;
+	while (1)
+	{
+		now = QDateTime::currentDateTime();
+		if (last.msecsTo(now) >= msec)
+		{
+			break;
+		}
+	}
 }
 
 void VideoFilterGlue::OnVideoTimer() {
-	/*while (!m_bExit) {
+	while (!m_bExit) {
 		while (m_oPendingCount > 0) {
 			VideoBufferPool* pool = (VideoBufferPool*)client_->GetInterface();
 
@@ -92,15 +137,20 @@ void VideoFilterGlue::OnVideoTimer() {
 				pool->QueueInputBuffer(index, m_aBuffers[m_nReadPtr].width, m_aBuffers[m_nReadPtr].height, m_aBuffers[m_nReadPtr].width * 4, m_aBuffers[m_nReadPtr].timestamp_100n);
 
 				m_nReadPtr = (m_nReadPtr + 1) % MAX_FRAME;
-				InterlockedDecrement(&m_oPendingCount);
+				m_pMutex.lock();
+				if (m_oPendingCount > 0)
+					m_oPendingCount--;
+				m_pMutex.unlock();
+				//InterlockedDecrement(&m_oPendingCount);
 			}
 			else {
 				break;
 			}
 		}
-
-		Sleep(m_nVideoTickPeriod);
+		//Sleep(m_nVideoTickPeriod);
+		//this->sleep(m_nVideoTickPeriod);
+		//m_pTimer->
 	}
-	*/
+	
 	return;
 }

@@ -1,4 +1,4 @@
-﻿#include "ZegoRoomModel.h"
+#include "Model/ZegoRoomModel.h"
 
 QZegoRoomModel::QZegoRoomModel(QString &roomId, QString &roomName, QString &anchorId, QString &anchorName)
 	: m_strRoomId(roomId), m_strRoomName(roomName), m_strAnchorId(anchorId), m_strAnchorName(anchorName)
