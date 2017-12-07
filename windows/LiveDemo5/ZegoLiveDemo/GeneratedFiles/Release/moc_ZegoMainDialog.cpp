@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_ZegoMainDialog_t {
-    QByteArrayData data[42];
-    char stringdata0[737];
+    QByteArrayData data[41];
+    char stringdata0[708];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -54,23 +54,22 @@ QT_MOC_LITERAL(21, 319, 21), // "OnButtonSwitchTestEnv"
 QT_MOC_LITERAL(22, 341, 26), // "OnButtonSwitchVideoCapture"
 QT_MOC_LITERAL(23, 368, 25), // "OnButtonSwitchVideoFilter"
 QT_MOC_LITERAL(24, 394, 26), // "OnButtonSwitchSurfaceMerge"
-QT_MOC_LITERAL(25, 421, 28), // "OnButtonSwitchPublish2Stream"
-QT_MOC_LITERAL(26, 450, 17), // "OnButtonUploadLog"
-QT_MOC_LITERAL(27, 468, 19), // "OnSaveUserIdChanged"
-QT_MOC_LITERAL(28, 488, 21), // "OnSaveUserNameChanged"
-QT_MOC_LITERAL(29, 510, 20), // "OnCheckSliderPressed"
-QT_MOC_LITERAL(30, 531, 21), // "OnCheckSliderReleased"
-QT_MOC_LITERAL(31, 553, 13), // "writeJsonData"
-QT_MOC_LITERAL(32, 567, 14), // "QNetworkReply*"
-QT_MOC_LITERAL(33, 582, 5), // "reply"
-QT_MOC_LITERAL(34, 588, 19), // "OnSwitchAudioDevice"
-QT_MOC_LITERAL(35, 608, 19), // "OnSwitchVideoDevice"
-QT_MOC_LITERAL(36, 628, 20), // "OnSwitchVideoDevice2"
-QT_MOC_LITERAL(37, 649, 19), // "OnSaveVideoSettings"
-QT_MOC_LITERAL(38, 669, 11), // "SettingsPtr"
-QT_MOC_LITERAL(39, 681, 8), // "settings"
-QT_MOC_LITERAL(40, 690, 27), // "OnComboBoxAppVersionChanged"
-QT_MOC_LITERAL(41, 718, 18) // "OnClickTitleButton"
+QT_MOC_LITERAL(25, 421, 17), // "OnButtonUploadLog"
+QT_MOC_LITERAL(26, 439, 19), // "OnSaveUserIdChanged"
+QT_MOC_LITERAL(27, 459, 21), // "OnSaveUserNameChanged"
+QT_MOC_LITERAL(28, 481, 20), // "OnCheckSliderPressed"
+QT_MOC_LITERAL(29, 502, 21), // "OnCheckSliderReleased"
+QT_MOC_LITERAL(30, 524, 13), // "writeJsonData"
+QT_MOC_LITERAL(31, 538, 14), // "QNetworkReply*"
+QT_MOC_LITERAL(32, 553, 5), // "reply"
+QT_MOC_LITERAL(33, 559, 19), // "OnSwitchAudioDevice"
+QT_MOC_LITERAL(34, 579, 19), // "OnSwitchVideoDevice"
+QT_MOC_LITERAL(35, 599, 20), // "OnSwitchVideoDevice2"
+QT_MOC_LITERAL(36, 620, 19), // "OnSaveVideoSettings"
+QT_MOC_LITERAL(37, 640, 11), // "SettingsPtr"
+QT_MOC_LITERAL(38, 652, 8), // "settings"
+QT_MOC_LITERAL(39, 661, 27), // "OnComboBoxAppVersionChanged"
+QT_MOC_LITERAL(40, 689, 18) // "OnClickTitleButton"
 
     },
     "ZegoMainDialog\0OnInitSDK\0\0nError\0"
@@ -84,15 +83,13 @@ QT_MOC_LITERAL(41, 718, 18) // "OnClickTitleButton"
     "OnButtonEnterRoom\0OnButtonSwitchTestEnv\0"
     "OnButtonSwitchVideoCapture\0"
     "OnButtonSwitchVideoFilter\0"
-    "OnButtonSwitchSurfaceMerge\0"
-    "OnButtonSwitchPublish2Stream\0"
-    "OnButtonUploadLog\0OnSaveUserIdChanged\0"
-    "OnSaveUserNameChanged\0OnCheckSliderPressed\0"
-    "OnCheckSliderReleased\0writeJsonData\0"
-    "QNetworkReply*\0reply\0OnSwitchAudioDevice\0"
-    "OnSwitchVideoDevice\0OnSwitchVideoDevice2\0"
-    "OnSaveVideoSettings\0SettingsPtr\0"
-    "settings\0OnComboBoxAppVersionChanged\0"
+    "OnButtonSwitchSurfaceMerge\0OnButtonUploadLog\0"
+    "OnSaveUserIdChanged\0OnSaveUserNameChanged\0"
+    "OnCheckSliderPressed\0OnCheckSliderReleased\0"
+    "writeJsonData\0QNetworkReply*\0reply\0"
+    "OnSwitchAudioDevice\0OnSwitchVideoDevice\0"
+    "OnSwitchVideoDevice2\0OnSaveVideoSettings\0"
+    "SettingsPtr\0settings\0OnComboBoxAppVersionChanged\0"
     "OnClickTitleButton"
 };
 #undef QT_MOC_LITERAL
@@ -103,7 +100,7 @@ static const uint qt_meta_data_ZegoMainDialog[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      27,   14, // methods
+      26,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -111,33 +108,32 @@ static const uint qt_meta_data_ZegoMainDialog[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,  149,    2, 0x09 /* Protected */,
-       4,    4,  152,    2, 0x09 /* Protected */,
-      11,    3,  161,    2, 0x09 /* Protected */,
-      12,    1,  168,    2, 0x0a /* Public */,
-      14,    1,  171,    2, 0x0a /* Public */,
-      15,    1,  174,    2, 0x0a /* Public */,
-      17,    0,  177,    2, 0x0a /* Public */,
-      18,    0,  178,    2, 0x0a /* Public */,
-      19,    0,  179,    2, 0x0a /* Public */,
-      20,    0,  180,    2, 0x0a /* Public */,
-      21,    0,  181,    2, 0x0a /* Public */,
-      22,    0,  182,    2, 0x0a /* Public */,
-      23,    0,  183,    2, 0x0a /* Public */,
-      24,    0,  184,    2, 0x0a /* Public */,
-      25,    0,  185,    2, 0x0a /* Public */,
-      26,    0,  186,    2, 0x0a /* Public */,
-      27,    0,  187,    2, 0x0a /* Public */,
-      28,    0,  188,    2, 0x0a /* Public */,
-      29,    0,  189,    2, 0x0a /* Public */,
-      30,    0,  190,    2, 0x0a /* Public */,
-      31,    1,  191,    2, 0x0a /* Public */,
-      34,    1,  194,    2, 0x0a /* Public */,
-      35,    1,  197,    2, 0x0a /* Public */,
-      36,    1,  200,    2, 0x0a /* Public */,
-      37,    1,  203,    2, 0x0a /* Public */,
-      40,    1,  206,    2, 0x0a /* Public */,
-      41,    0,  209,    2, 0x08 /* Private */,
+       1,    1,  144,    2, 0x09 /* Protected */,
+       4,    4,  147,    2, 0x09 /* Protected */,
+      11,    3,  156,    2, 0x09 /* Protected */,
+      12,    1,  163,    2, 0x0a /* Public */,
+      14,    1,  166,    2, 0x0a /* Public */,
+      15,    1,  169,    2, 0x0a /* Public */,
+      17,    0,  172,    2, 0x0a /* Public */,
+      18,    0,  173,    2, 0x0a /* Public */,
+      19,    0,  174,    2, 0x0a /* Public */,
+      20,    0,  175,    2, 0x0a /* Public */,
+      21,    0,  176,    2, 0x0a /* Public */,
+      22,    0,  177,    2, 0x0a /* Public */,
+      23,    0,  178,    2, 0x0a /* Public */,
+      24,    0,  179,    2, 0x0a /* Public */,
+      25,    0,  180,    2, 0x0a /* Public */,
+      26,    0,  181,    2, 0x0a /* Public */,
+      27,    0,  182,    2, 0x0a /* Public */,
+      28,    0,  183,    2, 0x0a /* Public */,
+      29,    0,  184,    2, 0x0a /* Public */,
+      30,    1,  185,    2, 0x0a /* Public */,
+      33,    1,  188,    2, 0x0a /* Public */,
+      34,    1,  191,    2, 0x0a /* Public */,
+      35,    1,  194,    2, 0x0a /* Public */,
+      36,    1,  197,    2, 0x0a /* Public */,
+      39,    1,  200,    2, 0x0a /* Public */,
+      40,    0,  203,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Int,    3,
@@ -159,12 +155,11 @@ static const uint qt_meta_data_ZegoMainDialog[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 32,   33,
+    QMetaType::Void, 0x80000000 | 31,   32,
     QMetaType::Void, QMetaType::Int,   13,
     QMetaType::Void, QMetaType::Int,   13,
     QMetaType::Void, QMetaType::Int,   13,
-    QMetaType::Void, 0x80000000 | 38,   39,
+    QMetaType::Void, 0x80000000 | 37,   38,
     QMetaType::Void, QMetaType::Int,   13,
     QMetaType::Void,
 
@@ -191,25 +186,24 @@ void ZegoMainDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 11: _t->OnButtonSwitchVideoCapture(); break;
         case 12: _t->OnButtonSwitchVideoFilter(); break;
         case 13: _t->OnButtonSwitchSurfaceMerge(); break;
-        case 14: _t->OnButtonSwitchPublish2Stream(); break;
-        case 15: _t->OnButtonUploadLog(); break;
-        case 16: _t->OnSaveUserIdChanged(); break;
-        case 17: _t->OnSaveUserNameChanged(); break;
-        case 18: _t->OnCheckSliderPressed(); break;
-        case 19: _t->OnCheckSliderReleased(); break;
-        case 20: _t->writeJsonData((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
-        case 21: _t->OnSwitchAudioDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 22: _t->OnSwitchVideoDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 23: _t->OnSwitchVideoDevice2((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 24: _t->OnSaveVideoSettings((*reinterpret_cast< SettingsPtr(*)>(_a[1]))); break;
-        case 25: _t->OnComboBoxAppVersionChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 26: _t->OnClickTitleButton(); break;
+        case 14: _t->OnButtonUploadLog(); break;
+        case 15: _t->OnSaveUserIdChanged(); break;
+        case 16: _t->OnSaveUserNameChanged(); break;
+        case 17: _t->OnCheckSliderPressed(); break;
+        case 18: _t->OnCheckSliderReleased(); break;
+        case 19: _t->writeJsonData((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
+        case 20: _t->OnSwitchAudioDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 21: _t->OnSwitchVideoDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 22: _t->OnSwitchVideoDevice2((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 23: _t->OnSaveVideoSettings((*reinterpret_cast< SettingsPtr(*)>(_a[1]))); break;
+        case 24: _t->OnComboBoxAppVersionChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 25: _t->OnClickTitleButton(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 20:
+        case 19:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -245,13 +239,13 @@ int ZegoMainDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 27)
+        if (_id < 26)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 27;
+        _id -= 26;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 27)
+        if (_id < 26)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 27;
+        _id -= 26;
     }
     return _id;
 }

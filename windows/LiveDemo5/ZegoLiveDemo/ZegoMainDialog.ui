@@ -745,6 +745,61 @@ QPushButton:hover:pressed{
               </property>
              </widget>
             </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="m_bPublish2StreamMode">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>50</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>50</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"> QPushButton:!hover{
+     font-family: 微软雅黑;
+     font-size: 16px;
+     border: 1px solid #b2b2b2;
+     border-radius: 2px;
+     background-color: #343841;
+     color: #e6e6e6;
+ }
+
+ QPushButton:hover{
+     font-family: 微软雅黑;
+     font-size: 16px;
+     border: 1px solid #0e88eb;
+     border-radius: 2px;
+     background-color: #343841;
+     color: #0e88eb;   
+ }
+
+ QPushButton:checked{
+     border: 1px solid #0e88eb;
+     border-radius: 2px;
+     background-color: #0e88eb;
+     color: #ffffff;  
+ }
+
+ QPushButton:!enabled{
+     border: 1px solid #111111;
+     border-radius: 2px;
+     background-color: #343841;
+     color: #111111;  
+ }</string>
+              </property>
+              <property name="text">
+               <string>推双流模式</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>
@@ -3326,10 +3381,16 @@ QComboBox::drop-down{
                          </size>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true"> QLabel{
-     font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #666666;
+                         <string notr="true">QLabel:!enabled{
+    font-family: 微软雅黑;
+    font-size: 14px;
+    color: #cccccc;
+ }
+ 
+QLabel:enabled{
+    font-family: 微软雅黑;
+    font-size: 14px;
+    color: #666666;
  }</string>
                         </property>
                         <property name="text">
@@ -3408,7 +3469,7 @@ QComboBox::drop-down{
                        <number>0</number>
                       </property>
                       <item>
-                       <widget class="QLabel" name="m_lbPublish2Stream">
+                       <widget class="QLabel" name="m_lbUnknown">
                         <property name="minimumSize">
                          <size>
                           <width>0</width>
@@ -3429,7 +3490,7 @@ QComboBox::drop-down{
  }</string>
                         </property>
                         <property name="text">
-                         <string>推两路流</string>
+                         <string/>
                         </property>
                        </widget>
                       </item>
@@ -3450,7 +3511,7 @@ QComboBox::drop-down{
                        </spacer>
                       </item>
                       <item>
-                       <widget class="ZegoImageButton" name="m_switchPublish2Stream">
+                       <widget class="ZegoImageButton" name="m_switchUnknown">
                         <property name="minimumSize">
                          <size>
                           <width>32</width>
@@ -4166,10 +4227,13 @@ border: none;</string>
                       <property name="orientation">
                        <enum>Qt::Vertical</enum>
                       </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Expanding</enum>
+                      </property>
                       <property name="sizeHint" stdset="0">
                        <size>
                         <width>20</width>
-                        <height>20</height>
+                        <height>30</height>
                        </size>
                       </property>
                      </spacer>
@@ -4322,10 +4386,13 @@ border: none;</string>
                       <property name="orientation">
                        <enum>Qt::Vertical</enum>
                       </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Expanding</enum>
+                      </property>
                       <property name="sizeHint" stdset="0">
                        <size>
                         <width>20</width>
-                        <height>20</height>
+                        <height>10</height>
                        </size>
                       </property>
                      </spacer>
@@ -4371,6 +4438,12 @@ border: none;</string>
                     </item>
                     <item>
                      <widget class="QLabel" name="m_lbEquipment">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="font">
                        <font>
                         <family>微软雅黑</family>
@@ -4390,14 +4463,17 @@ border: none;</string>
                      </widget>
                     </item>
                     <item>
-                     <spacer name="verticalSpacer_11">
+                     <spacer name="m_vSpacerUpper">
                       <property name="orientation">
                        <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Preferred</enum>
                       </property>
                       <property name="sizeHint" stdset="0">
                        <size>
                         <width>312</width>
-                        <height>13</height>
+                        <height>30</height>
                        </size>
                       </property>
                      </spacer>
@@ -4405,7 +4481,7 @@ border: none;</string>
                     <item>
                      <layout class="QVBoxLayout" name="verticalLayout_9">
                       <property name="spacing">
-                       <number>10</number>
+                       <number>0</number>
                       </property>
                       <property name="bottomMargin">
                        <number>0</number>
@@ -4446,7 +4522,7 @@ border: none;</string>
                          </spacer>
                         </item>
                         <item>
-                         <widget class="QComboBox" name="m_cbMircoPhone">
+                         <widget class="ZegoDeviceComboBox" name="m_cbMircoPhone">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -4554,6 +4630,22 @@ QComboBox::drop-down{
                        </layout>
                       </item>
                       <item>
+                       <spacer name="verticalSpacer_37">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Fixed</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>10</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_29">
                         <property name="spacing">
                          <number>0</number>
@@ -4589,7 +4681,7 @@ QComboBox::drop-down{
                          </spacer>
                         </item>
                         <item>
-                         <widget class="QComboBox" name="m_cbCamera">
+                         <widget class="ZegoDeviceComboBox" name="m_cbCamera">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -4694,6 +4786,22 @@ QComboBox::drop-down{
                        </layout>
                       </item>
                       <item>
+                       <spacer name="verticalSpacer_38">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::Fixed</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>10</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_30">
                         <property name="spacing">
                          <number>0</number>
@@ -4729,7 +4837,7 @@ QComboBox::drop-down{
                          </spacer>
                         </item>
                         <item>
-                         <widget class="QComboBox" name="m_cbCamera2">
+                         <widget class="ZegoDeviceComboBox" name="m_cbCamera2">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -4833,6 +4941,19 @@ QComboBox::drop-down{
                         </item>
                        </layout>
                       </item>
+                      <item>
+                       <spacer name="m_vSpacerBottom">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
                      </layout>
                     </item>
                    </layout>
@@ -4844,10 +4965,13 @@ QComboBox::drop-down{
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
                   </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Expanding</enum>
+                  </property>
                   <property name="sizeHint" stdset="0">
                    <size>
                     <width>591</width>
-                    <height>13</height>
+                    <height>10</height>
                    </size>
                   </property>
                  </spacer>
@@ -5028,7 +5152,7 @@ QComboBox::drop-down{
           <enum>Qt::Vertical</enum>
          </property>
          <property name="sizeType">
-          <enum>QSizePolicy::Minimum</enum>
+          <enum>QSizePolicy::Fixed</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -5061,6 +5185,11 @@ QComboBox::drop-down{
    <class>ZegoImageButton</class>
    <extends>QPushButton</extends>
    <header location="global">ZegoImageButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ZegoDeviceComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">ZegoDeviceComboBox.h</header>
   </customwidget>
  </customwidgets>
  <resources>

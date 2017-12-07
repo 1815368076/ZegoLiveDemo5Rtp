@@ -1,17 +1,17 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'ZegoMoreAnchorDialog.h'
+** Meta object code from reading C++ file 'ZegoPublish2StreamDialog.h'
 **
 ** Created by: The Qt Meta Object Compiler version 67 (Qt 5.7.1)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../Dialog/ZegoMoreAnchorDialog.h"
+#include "../../Dialog/ZegoPublish2StreamDialog.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #include <QtCore/QVector>
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'ZegoMoreAnchorDialog.h' doesn't include <QObject>."
+#error "The header file 'ZegoPublish2StreamDialog.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
 #error "This file was generated using the moc from 5.7.1. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -19,42 +19,42 @@
 #endif
 
 QT_BEGIN_MOC_NAMESPACE
-struct qt_meta_stringdata_ZegoMoreAnchorDialog_t {
+struct qt_meta_stringdata_ZegoPublish2StreamDialog_t {
     QByteArrayData data[21];
-    char stringdata0[281];
+    char stringdata0[285];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_ZegoMoreAnchorDialog_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_ZegoPublish2StreamDialog_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_ZegoMoreAnchorDialog_t qt_meta_stringdata_ZegoMoreAnchorDialog = {
+static const qt_meta_stringdata_ZegoPublish2StreamDialog_t qt_meta_stringdata_ZegoPublish2StreamDialog = {
     {
-QT_MOC_LITERAL(0, 0, 20), // "ZegoMoreAnchorDialog"
-QT_MOC_LITERAL(1, 21, 11), // "OnLoginRoom"
-QT_MOC_LITERAL(2, 33, 0), // ""
-QT_MOC_LITERAL(3, 34, 9), // "errorCode"
-QT_MOC_LITERAL(4, 44, 6), // "roomId"
-QT_MOC_LITERAL(5, 51, 18), // "QVector<StreamPtr>"
-QT_MOC_LITERAL(6, 70, 11), // "vStreamList"
-QT_MOC_LITERAL(7, 82, 15), // "OnStreamUpdated"
-QT_MOC_LITERAL(8, 98, 30), // "LIVEROOM::ZegoStreamUpdateType"
-QT_MOC_LITERAL(9, 129, 4), // "type"
-QT_MOC_LITERAL(10, 134, 20), // "OnPublishStateUpdate"
-QT_MOC_LITERAL(11, 155, 9), // "stateCode"
-QT_MOC_LITERAL(12, 165, 8), // "streamId"
-QT_MOC_LITERAL(13, 174, 9), // "StreamPtr"
-QT_MOC_LITERAL(14, 184, 10), // "streamInfo"
-QT_MOC_LITERAL(15, 195, 17), // "OnPlayStateUpdate"
-QT_MOC_LITERAL(16, 213, 17), // "OnJoinLiveRequest"
-QT_MOC_LITERAL(17, 231, 3), // "seq"
-QT_MOC_LITERAL(18, 235, 10), // "fromUserId"
-QT_MOC_LITERAL(19, 246, 12), // "fromUserName"
-QT_MOC_LITERAL(20, 259, 21) // "OnButtonSwitchPublish"
+QT_MOC_LITERAL(0, 0, 24), // "ZegoPublish2StreamDialog"
+QT_MOC_LITERAL(1, 25, 11), // "OnLoginRoom"
+QT_MOC_LITERAL(2, 37, 0), // ""
+QT_MOC_LITERAL(3, 38, 9), // "errorCode"
+QT_MOC_LITERAL(4, 48, 6), // "roomId"
+QT_MOC_LITERAL(5, 55, 18), // "QVector<StreamPtr>"
+QT_MOC_LITERAL(6, 74, 11), // "vStreamList"
+QT_MOC_LITERAL(7, 86, 15), // "OnStreamUpdated"
+QT_MOC_LITERAL(8, 102, 30), // "LIVEROOM::ZegoStreamUpdateType"
+QT_MOC_LITERAL(9, 133, 4), // "type"
+QT_MOC_LITERAL(10, 138, 20), // "OnPublishStateUpdate"
+QT_MOC_LITERAL(11, 159, 9), // "stateCode"
+QT_MOC_LITERAL(12, 169, 8), // "streamId"
+QT_MOC_LITERAL(13, 178, 9), // "StreamPtr"
+QT_MOC_LITERAL(14, 188, 10), // "streamInfo"
+QT_MOC_LITERAL(15, 199, 17), // "OnPlayStateUpdate"
+QT_MOC_LITERAL(16, 217, 17), // "OnJoinLiveRequest"
+QT_MOC_LITERAL(17, 235, 3), // "seq"
+QT_MOC_LITERAL(18, 239, 10), // "fromUserId"
+QT_MOC_LITERAL(19, 250, 12), // "fromUserName"
+QT_MOC_LITERAL(20, 263, 21) // "OnButtonSwitchPublish"
 
     },
-    "ZegoMoreAnchorDialog\0OnLoginRoom\0\0"
-    "errorCode\0roomId\0QVector<StreamPtr>\0"
+    "ZegoPublish2StreamDialog\0OnLoginRoom\0"
+    "\0errorCode\0roomId\0QVector<StreamPtr>\0"
     "vStreamList\0OnStreamUpdated\0"
     "LIVEROOM::ZegoStreamUpdateType\0type\0"
     "OnPublishStateUpdate\0stateCode\0streamId\0"
@@ -64,7 +64,7 @@ QT_MOC_LITERAL(20, 259, 21) // "OnButtonSwitchPublish"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_ZegoMoreAnchorDialog[] = {
+static const uint qt_meta_data_ZegoPublish2StreamDialog[] = {
 
  // content:
        7,       // revision
@@ -96,10 +96,10 @@ static const uint qt_meta_data_ZegoMoreAnchorDialog[] = {
        0        // eod
 };
 
-void ZegoMoreAnchorDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void ZegoPublish2StreamDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        ZegoMoreAnchorDialog *_t = static_cast<ZegoMoreAnchorDialog *>(_o);
+        ZegoPublish2StreamDialog *_t = static_cast<ZegoPublish2StreamDialog *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->OnLoginRoom((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< QVector<StreamPtr>(*)>(_a[3]))); break;
@@ -113,26 +113,26 @@ void ZegoMoreAnchorDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
     }
 }
 
-const QMetaObject ZegoMoreAnchorDialog::staticMetaObject = {
-    { &ZegoBaseDialog::staticMetaObject, qt_meta_stringdata_ZegoMoreAnchorDialog.data,
-      qt_meta_data_ZegoMoreAnchorDialog,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
+const QMetaObject ZegoPublish2StreamDialog::staticMetaObject = {
+    { &ZegoBaseDialog::staticMetaObject, qt_meta_stringdata_ZegoPublish2StreamDialog.data,
+      qt_meta_data_ZegoPublish2StreamDialog,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
-const QMetaObject *ZegoMoreAnchorDialog::metaObject() const
+const QMetaObject *ZegoPublish2StreamDialog::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *ZegoMoreAnchorDialog::qt_metacast(const char *_clname)
+void *ZegoPublish2StreamDialog::qt_metacast(const char *_clname)
 {
     if (!_clname) return Q_NULLPTR;
-    if (!strcmp(_clname, qt_meta_stringdata_ZegoMoreAnchorDialog.stringdata0))
-        return static_cast<void*>(const_cast< ZegoMoreAnchorDialog*>(this));
+    if (!strcmp(_clname, qt_meta_stringdata_ZegoPublish2StreamDialog.stringdata0))
+        return static_cast<void*>(const_cast< ZegoPublish2StreamDialog*>(this));
     return ZegoBaseDialog::qt_metacast(_clname);
 }
 
-int ZegoMoreAnchorDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int ZegoPublish2StreamDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = ZegoBaseDialog::qt_metacall(_c, _id, _a);
     if (_id < 0)

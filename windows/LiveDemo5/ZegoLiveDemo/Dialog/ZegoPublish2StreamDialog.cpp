@@ -1,57 +1,63 @@
-﻿#include "ZegoMoreAnchorDialog.h"
+﻿#include "ZegoPublish2StreamDialog.h"
 #include "Signal/ZegoSDKSignal.h"
 //Objective-C Header
 #ifdef Q_OS_MAC
 #include "OSX_Objective-C/ZegoAVDevice.h"
 #include "OSX_Objective-C/ZegoCGImageToQImage.h"
 #endif
-ZegoMoreAnchorDialog::ZegoMoreAnchorDialog(QWidget *parent)
+ZegoPublish2StreamDialog::ZegoPublish2StreamDialog(QWidget *parent)
 	: ZegoBaseDialog(parent)
 {
-	//ui.setupUi(this);
 
 }
 
-ZegoMoreAnchorDialog::ZegoMoreAnchorDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent)
+ZegoPublish2StreamDialog::ZegoPublish2StreamDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent)
 	:m_strCurUserID(curUserID),
 	m_strCurUserName(curUserName),
 	ZegoBaseDialog(dpi, curSettings, room, curUserID, curUserName, lastDialog, parent)
 {
-	//ui.setupUi(this);
 	//通过sdk的信号连接到本类的槽函数中
-	connect(GetAVSignal(), &QZegoAVSignal::sigLoginRoom, this, &ZegoMoreAnchorDialog::OnLoginRoom);
-	connect(GetAVSignal(), &QZegoAVSignal::sigStreamUpdated, this, &ZegoMoreAnchorDialog::OnStreamUpdated);
-	connect(GetAVSignal(), &QZegoAVSignal::sigPublishStateUpdate, this, &ZegoMoreAnchorDialog::OnPublishStateUpdate);
-	connect(GetAVSignal(), &QZegoAVSignal::sigPlayStateUpdate, this, &ZegoMoreAnchorDialog::OnPlayStateUpdate);
-	connect(GetAVSignal(), &QZegoAVSignal::sigJoinLiveRequest, this, &ZegoMoreAnchorDialog::OnJoinLiveRequest);
-
-	connect(ui.m_bRequestJoinLive, &QPushButton::clicked, this, &ZegoMoreAnchorDialog::OnButtonSwitchPublish);
-
+	connect(GetAVSignal(), &QZegoAVSignal::sigLoginRoom, this, &ZegoPublish2StreamDialog::OnLoginRoom);
+	connect(GetAVSignal(), &QZegoAVSignal::sigStreamUpdated, this, &ZegoPublish2StreamDialog::OnStreamUpdated);
+	connect(GetAVSignal(), &QZegoAVSignal::sigPublishStateUpdate, this, &ZegoPublish2StreamDialog::OnPublishStateUpdate);
+	connect(GetAVSignal(), &QZegoAVSignal::sigPlayStateUpdate, this, &ZegoPublish2StreamDialog::OnPlayStateUpdate);
+	connect(GetAVSignal(), &QZegoAVSignal::sigJoinLiveRequest, this, &ZegoPublish2StreamDialog::OnJoinLiveRequest);
+	//UI信号槽
+	connect(ui.m_bRequestJoinLive, &QPushButton::clicked, this, &ZegoPublish2StreamDialog::OnButtonSwitchPublish);
+	connect(ui.m_cbCamera2, SIGNAL(currentIndexChanged(int)), this, SLOT(OnSwitchVideoDevice2(int)));
 }
 
-ZegoMoreAnchorDialog::~ZegoMoreAnchorDialog()
+ZegoPublish2StreamDialog::~ZegoPublish2StreamDialog()
 {
 
 }
 
 //功能函数
-void ZegoMoreAnchorDialog::initDialog()
+void ZegoPublish2StreamDialog::initDialog()
 {
-	//读取标题内容
-	QString strTitle = QString(tr("【%1】%2")).arg(tr("连麦模式")).arg(m_pChatRoom->getRoomName());
-	ui.m_lbRoomName->setText(strTitle);
 
-	//连麦模式不需要第二个摄像头
-	ui.m_lbCamera2->setVisible(false);
-	ui.m_cbCamera2->setVisible(false);
+	//读取标题内容
+	QString strTitle = QString(tr("【%1】%2")).arg(tr("推双流模式")).arg(m_pChatRoom->getRoomName());
+	ui.m_lbRoomName->setText(strTitle);
 
 	//在主播端，请求连麦的按钮变为直播开关
 	ui.m_bRequestJoinLive->setText(tr("停止直播"));
 
+	ui.m_cbCamera2->setEnabled(false);
+	ui.m_lbCamera2->setEnabled(false);
+
 	ZegoBaseDialog::initDialog();
 }
 
-void ZegoMoreAnchorDialog::StartPublishStream()
+void ZegoPublish2StreamDialog::initCameraListView2()
+{
+	m_cbCameraListView2 = new QListView(this);
+	ui.m_cbCamera2->setView(m_cbCameraListView2);
+	ui.m_cbCamera2->setModel(m_cbCameraModel);
+	ui.m_cbCamera2->setItemDelegate(new NoFocusFrameDelegate(this));
+}
+
+void ZegoPublish2StreamDialog::StartPublishStream()
 {
 
 	QTime currentTime = QTime::currentTime();
@@ -104,21 +110,74 @@ void ZegoMoreAnchorDialog::StartPublishStream()
 		QString streamID = m_strPublishStreamID;
 		m_anchorStreamInfo = pPublishStream;
 		AVViews.last()->setViewStreamID(streamID);
-		setWaterPrint();
+		setWaterPrint(ZEGO::AV::PUBLISH_CHN_MAIN);
 		qDebug() << "start publishing!";
-		if (!m_pAVSettings->GetUsePublish2Stream())
-		{
-			LIVEROOM::StartPublishing(m_pChatRoom->getRoomName().toStdString().c_str(), streamID.toStdString().c_str(), LIVEROOM::ZEGO_JOIN_PUBLISH, "");
-		}
-		else
-		{
-			LIVEROOM::StartPublishing2(m_pChatRoom->getRoomName().toStdString().c_str(), streamID.toStdString().c_str(), LIVEROOM::ZEGO_JOIN_PUBLISH, "");
-		}
+		LIVEROOM::StartPublishing2(m_pChatRoom->getRoomName().toStdString().c_str(), streamID.toStdString().c_str(), LIVEROOM::ZEGO_JOIN_PUBLISH, "");
+		
 		m_bIsPublishing = true;
 	}
 }
 
-void ZegoMoreAnchorDialog::StopPublishStream(const QString& streamID)
+void ZegoPublish2StreamDialog::StartPublishStream_Aux()
+{
+	QTime currentTime = QTime::currentTime();
+	//获取当前时间的毫秒
+	int ms = currentTime.msec();
+	QString strStreamId;
+#ifdef Q_OS_WIN
+	strStreamId = QString("s-windows-%1-%2-aux").arg(m_strCurUserID).arg(ms);
+#else
+	strStreamId = QString("s-mac-%1-%2-aux").arg(m_strCurUserID).arg(ms);
+#endif
+	m_strPublishStreamID_Aux = strStreamId;
+
+	StreamPtr pPublishStream(new QZegoStreamModel(m_strPublishStreamID_Aux, m_strCurUserID, m_strCurUserName, "", true, true));
+
+	m_pChatRoom->addStream(pPublishStream);
+
+	//推流前调用双声道
+	LIVEROOM::SetAudioChannelCount(2);
+
+	if (m_avaliableView.size() > 0)
+	{
+
+		int nIndex = takeLeastAvaliableViewIndex();
+		pPublishStream->setPlayView(nIndex);
+		addAVView(nIndex, ZEGODIALOG_MoreAnchor);
+		AVViews.last()->setCurUser();
+		connect(AVViews.last(), &QZegoAVView::sigSnapShotPreviewOnMoreAnchor, this, &ZegoBaseDialog::OnSnapshotPreview);
+
+		qDebug() << "publish nIndex = " << nIndex << "publish stream id is" << pPublishStream->getStreamId();
+		if (m_pAVSettings->GetSurfaceMerge())
+		{
+#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
+			StartSurfaceMerge();
+#endif
+		}
+		else
+		{
+			LIVEROOM::SetVideoFPS(m_pAVSettings->GetFps(), ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::SetVideoBitrate(m_pAVSettings->GetBitrate(), ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::SetVideoCaptureResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy, ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::SetVideoEncodeResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy, ZEGO::AV::PUBLISH_CHN_AUX);
+
+			//配置View
+			LIVEROOM::SetPreviewView((void *)AVViews.last()->winId(), ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFit, ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::StartPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+		}
+
+		QString streamID = m_strPublishStreamID_Aux;
+		m_anchorStreamInfo_Aux = pPublishStream;
+		AVViews.last()->setViewStreamID(streamID);
+		setWaterPrint(ZEGO::AV::PUBLISH_CHN_AUX);
+		qDebug() << "start publishing aux!";
+		LIVEROOM::StartPublishing2(m_pChatRoom->getRoomName().toStdString().c_str(), streamID.toStdString().c_str(), LIVEROOM::ZEGO_JOIN_PUBLISH, "", ZEGO::AV::PUBLISH_CHN_AUX);
+		//m_bIsPublishing = true;
+	}
+}
+
+void ZegoPublish2StreamDialog::StopPublishStream(const QString& streamID, AV::PublishChannelIndex idx)
 {
 	if (streamID.size() == 0){ return; }
 
@@ -134,19 +193,42 @@ void ZegoMoreAnchorDialog::StopPublishStream(const QString& streamID)
 	{
 		LIVEROOM::SetPreviewView(nullptr);
 		LIVEROOM::StopPreview();
+		if (idx == ZEGO::AV::PUBLISH_CHN_MAIN)
+		{
+			LIVEROOM::SetPreviewView(nullptr);
+			LIVEROOM::StopPreview();
+		}
+		else
+		{
+			LIVEROOM::SetPreviewView(nullptr, ZEGO::AV::PUBLISH_CHN_AUX);
+			LIVEROOM::StopPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+		}
 	}
 
-	qDebug() << "stop publish view index = " << m_anchorStreamInfo->getPlayView();
-	removeAVView(m_anchorStreamInfo->getPlayView());
-	LIVEROOM::StopPublishing();
-	m_bIsPublishing = false;
-	StreamPtr pStream = m_pChatRoom->removeStream(streamID);
-	FreeAVView(pStream);
-	m_strPublishStreamID = "";
+	if (idx == ZEGO::AV::PUBLISH_CHN_MAIN)
+	{
+		qDebug() << "stop publish view index = " << m_anchorStreamInfo->getPlayView();
+		removeAVView(m_anchorStreamInfo->getPlayView());
+		LIVEROOM::StopPublishing();
+		m_bIsPublishing = false;
+		StreamPtr pStream = m_pChatRoom->removeStream(streamID);
+		FreeAVView(pStream);
+		m_strPublishStreamID = "";
+	}
+	else
+	{
+		qDebug() << "stop publish view index = " << m_anchorStreamInfo_Aux->getPlayView();
+		removeAVView(m_anchorStreamInfo_Aux->getPlayView());
+		LIVEROOM::StopPublishing(0, 0, ZEGO::AV::PUBLISH_CHN_AUX);
+		m_bIsPublishing = false;
+		StreamPtr pStream = m_pChatRoom->removeStream(streamID);
+		FreeAVView(pStream);
+		m_strPublishStreamID_Aux = "";
+	}
 	
 }
 
-void ZegoMoreAnchorDialog::StartPlayStream(StreamPtr stream)
+void ZegoPublish2StreamDialog::StartPlayStream(StreamPtr stream)
 {
 	if (stream == nullptr) { return; }
 
@@ -158,7 +240,7 @@ void ZegoMoreAnchorDialog::StartPlayStream(StreamPtr stream)
 		qDebug() << "playStream nIndex = " << nIndex <<" play stream id is "<<stream->getStreamId();
 		stream->setPlayView(nIndex);
 		addAVView(nIndex, ZEGODIALOG_MoreAnchor);
-		connect(AVViews.last(), &QZegoAVView::sigSnapShotOnMoreAnchorWithStreamID, this, &ZegoMoreAnchorDialog::OnSnapshotWithStreamID);
+		connect(AVViews.last(), &QZegoAVView::sigSnapShotOnMoreAnchorWithStreamID, this, &ZegoPublish2StreamDialog::OnSnapshotWithStreamID);
 		AVViews.last()->setViewStreamID(stream->getStreamId());
 
 		//配置View
@@ -167,7 +249,7 @@ void ZegoMoreAnchorDialog::StartPlayStream(StreamPtr stream)
 	}
 }
 
-void ZegoMoreAnchorDialog::StopPlayStream(const QString& streamID)
+void ZegoPublish2StreamDialog::StopPlayStream(const QString& streamID)
 {
 	if (streamID.size() == 0) { return; }
 
@@ -187,7 +269,7 @@ void ZegoMoreAnchorDialog::StopPlayStream(const QString& streamID)
 	FreeAVView(pStream);
 }
 
-bool ZegoMoreAnchorDialog::praseJsonData(QJsonDocument doc)
+bool ZegoPublish2StreamDialog::praseJsonData(QJsonDocument doc)
 {
 	QJsonObject obj = doc.object();
 
@@ -201,14 +283,52 @@ bool ZegoMoreAnchorDialog::praseJsonData(QJsonDocument doc)
 	return true;
 }
 
-void ZegoMoreAnchorDialog::GetOut()
+void ZegoPublish2StreamDialog::setWaterPrint(AV::PublishChannelIndex idx)
+{
+	QString waterPrintPath = QDir::currentPath();
+	waterPrintPath += "/Resources/images/";
+	if (m_dpi < 2.0)
+	{
+		waterPrintPath += "waterprint.png";
+	}
+	else
+	{
+		waterPrintPath += "@2x/waterprint@2x.png";
+	}
+
+	QImage waterPrint(waterPrintPath);
+
+	//标准640 * 360，根据标准对当前分辨率的水印进行等比缩放
+	int cx = m_pAVSettings->GetResolution().cx;
+	int cy = m_pAVSettings->GetResolution().cy;
+	float scaleX = cx * 1.0 / 640;
+	float scaleY = cy * 1.0 / 360;
+
+	if (idx == ZEGO::AV::PUBLISH_CHN_MAIN)
+	{
+		LIVEROOM::SetPublishWaterMarkRect((int)(20 * scaleX), (int)(20 * scaleY), (int)(123 * scaleX), (int)(69 * scaleY));
+		LIVEROOM::SetPreviewWaterMarkRect((int)(20 * scaleX), (int)(20 * scaleY), (int)(123 * scaleX), (int)(69 * scaleY));
+		LIVEROOM::SetWaterMarkImagePath(waterPrintPath.toStdString().c_str());
+	}
+	else
+	{
+		LIVEROOM::SetPublishWaterMarkRect((int)(20 * scaleX), (int)(20 * scaleY), (int)(123 * scaleX), (int)(69 * scaleY), ZEGO::AV::PUBLISH_CHN_AUX);
+		LIVEROOM::SetPreviewWaterMarkRect((int)(20 * scaleX), (int)(20 * scaleY), (int)(123 * scaleX), (int)(69 * scaleY), ZEGO::AV::PUBLISH_CHN_AUX);
+		LIVEROOM::SetWaterMarkImagePath(waterPrintPath.toStdString().c_str(), ZEGO::AV::PUBLISH_CHN_AUX);
+	}
+}
+
+void ZegoPublish2StreamDialog::GetOut()
 {
 	for (auto& stream : m_pChatRoom->getStreamList())
 	{
 		if (stream != nullptr){
 			if (stream->isCurUserCreated())
 			{
-				StopPublishStream(stream->getStreamId());
+				if (!stream->isCurUserCreated_Aux())
+					StopPublishStream(stream->getStreamId());
+				else
+					StopPublishStream(stream->getStreamId(), ZEGO::AV::PUBLISH_CHN_AUX);
 			}
 			else
 			{
@@ -221,7 +341,7 @@ void ZegoMoreAnchorDialog::GetOut()
 }
 
 //SDK回调
-void ZegoMoreAnchorDialog::OnLoginRoom(int errorCode, const QString& strRoomID, QVector<StreamPtr> vStreamList)
+void ZegoPublish2StreamDialog::OnLoginRoom(int errorCode, const QString& strRoomID, QVector<StreamPtr> vStreamList)
 {
 	qDebug() << "Login Room!";
 	if (errorCode != 0)
@@ -235,9 +355,11 @@ void ZegoMoreAnchorDialog::OnLoginRoom(int errorCode, const QString& strRoomID, 
 	roomMemberAdd(m_strCurUserName);
 
     StartPublishStream();
+	StartPublishStream_Aux();
+
 }
 
-void ZegoMoreAnchorDialog::OnStreamUpdated(const QString& roomId, QVector<StreamPtr> vStreamList, LIVEROOM::ZegoStreamUpdateType type)
+void ZegoPublish2StreamDialog::OnStreamUpdated(const QString& roomId, QVector<StreamPtr> vStreamList, LIVEROOM::ZegoStreamUpdateType type)
 {
 	//在连麦模式下，有流更新直接处理
 	for (auto& stream : vStreamList)
@@ -259,7 +381,7 @@ void ZegoMoreAnchorDialog::OnStreamUpdated(const QString& roomId, QVector<Stream
 	
 }
 
-void ZegoMoreAnchorDialog::OnPublishStateUpdate(int stateCode, const QString& streamId, StreamPtr streamInfo)
+void ZegoPublish2StreamDialog::OnPublishStateUpdate(int stateCode, const QString& streamId, StreamPtr streamInfo)
 {
 	
 	if (stateCode == 0)
@@ -332,6 +454,11 @@ void ZegoMoreAnchorDialog::OnPublishStateUpdate(int stateCode, const QString& st
 		}
 		
 		SetOperation(true);
+		if (streamId == m_anchorStreamInfo_Aux->getStreamId())
+		{
+			ui.m_cbCamera2->setEnabled(true);
+			ui.m_lbCamera2->setEnabled(true);
+		}
 		ui.m_bRequestJoinLive->setText(tr("停止直播"));
 		ui.m_bRequestJoinLive->setEnabled(true);
 
@@ -354,7 +481,7 @@ void ZegoMoreAnchorDialog::OnPublishStateUpdate(int stateCode, const QString& st
 	}
 }
 
-void ZegoMoreAnchorDialog::OnPlayStateUpdate(int stateCode, const QString& streamId)
+void ZegoPublish2StreamDialog::OnPlayStateUpdate(int stateCode, const QString& streamId)
 {
 	qDebug() << "OnPlay! stateCode = " << stateCode;
 
@@ -371,7 +498,7 @@ void ZegoMoreAnchorDialog::OnPlayStateUpdate(int stateCode, const QString& strea
 
 }
 
-void ZegoMoreAnchorDialog::OnJoinLiveRequest(int seq, const QString& fromUserId, const QString& fromUserName, const QString& roomId)
+void ZegoPublish2StreamDialog::OnJoinLiveRequest(int seq, const QString& fromUserId, const QString& fromUserName, const QString& roomId)
 {
 	QMessageBox box(QMessageBox::Warning, tr("提示"), QString(tr("%1正在请求连麦")).arg(fromUserId));
 	box.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -386,7 +513,7 @@ void ZegoMoreAnchorDialog::OnJoinLiveRequest(int seq, const QString& fromUserId,
 }
 
 //UI回调
-void ZegoMoreAnchorDialog::OnButtonSwitchPublish()
+void ZegoPublish2StreamDialog::OnButtonSwitchPublish()
 {
 	//当前按钮文本为“开始直播”
 	if (ui.m_bRequestJoinLive->text() == tr("开始直播"))
@@ -395,6 +522,7 @@ void ZegoMoreAnchorDialog::OnButtonSwitchPublish()
 		ui.m_bRequestJoinLive->setEnabled(false);
 		//开始推流
 		StartPublishStream();
+		StartPublishStream_Aux();
 
 	}
 	//当前按钮文本为“停止直播”
@@ -403,6 +531,7 @@ void ZegoMoreAnchorDialog::OnButtonSwitchPublish()
 		ui.m_bRequestJoinLive->setText(tr("停止中..."));
 		ui.m_bRequestJoinLive->setEnabled(false);
 		StopPublishStream(m_strPublishStreamID);
+		StopPublishStream(m_strPublishStreamID_Aux, ZEGO::AV::PUBLISH_CHN_AUX);
 
 		if (ui.m_bAux->text() == tr("关闭混音"))
 		{

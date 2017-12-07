@@ -1,6 +1,6 @@
 #include "ZegoImageButton.h"
 #include <QDebug>
-ZegoImageButton::ZegoImageButton(QWidget *parent)
+ZegoImageButton::ZegoImageButton(QWidget *parent) : QPushButton(parent)
 {
 	
 }

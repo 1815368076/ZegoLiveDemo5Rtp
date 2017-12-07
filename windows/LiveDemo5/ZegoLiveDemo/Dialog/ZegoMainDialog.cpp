@@ -5,10 +5,11 @@
 #include "ZegoMoreAudienceDialog.h"
 #include "ZegoMixStreamAnchorDialog.h"
 #include "ZegoMixStreamAudienceDialog.h"
-#include <QStyledItemDelegate>
+#include "ZegoPublish2StreamDialog.h"
 #include "Delegate/NoFocusFrameDelegate.h"
 #include "ZegoProgressIndicator.h"
 #include <QScrollBar>
+#include <QStyledItemDelegate>
 
 #ifdef Q_OS_MAC
 #include "OSX_Objective-C/ZegoAVDevice.h"
@@ -37,7 +38,6 @@ ZegoMainDialog::ZegoMainDialog(qreal dpi, QWidget *parent)
 	connect(ui.m_switchCapture, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchVideoCapture);
 	connect(ui.m_switchFilter, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchVideoFilter);
 	connect(ui.m_switchSurfaceMerge, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchSurfaceMerge);
-	connect(ui.m_switchPublish2Stream, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchPublish2Stream);
 
 	connect(ui.m_bUploadLog, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonUploadLog);
 
@@ -85,14 +85,17 @@ ZegoMainDialog::~ZegoMainDialog()
 void ZegoMainDialog::initDialog()
 {
 #if (defined Q_OS_MAC) || (!defined USE_SURFACE_MERGE)
-	ui.m_lbSurfaceMerge->setVisible(false);
-	ui.m_switchSurfaceMerge->setVisible(false);
+	ui.m_lbSurfaceMerge->setEnabled(false);
+	ui.m_switchSurfaceMerge->setEnabled(false);
 #endif
 //跨平台UI适配（某些UI在windows中默认居左，在mac中默认居中）
 #ifdef Q_OS_MAC
 	ui.formLayout_appID->setFormAlignment(Qt::AlignLeft);
 	ui.formLayout_appSign->setFormAlignment(Qt::AlignLeft);
 #endif
+
+	ui.m_lbCamera2->setVisible(false);
+	ui.m_cbCamera2->setVisible(false);
 
 	//初始化房间列表
 	m_roomListModel = new QStandardItemModel(this);
@@ -109,7 +112,7 @@ void ZegoMainDialog::initDialog()
 	banSwitch();
 	//初始化ComboBox
 	initComboBox();
-	//将三个模式按钮加入组中
+	//将四个模式按钮加入组中
 	addModeButtonGroup();
 	//将六个视频质量按钮加入组中
 	addQualityButtonGroup();
@@ -143,13 +146,14 @@ void ZegoMainDialog::initDialog()
 	}
 	else if (m_versionMode == Version::ZEGO_PROTOCOL_CUSTOM)
 	{
-		ui.m_strEdAPPID->setText(QStringLiteral(""));
-		ui.m_strEdAPPSign->setText(QStringLiteral(""));
+		ui.m_strEdAPPID->setText("");
+		ui.m_strEdAPPSign->setText("");
 	}
 
 	//初始化app版本的ComboBox
 	ui.m_cbAppVersion->addItem(tr("国内版"));
 	ui.m_cbAppVersion->addItem(tr("国际版"));
+	ui.m_cbAppVersion->addItem(tr("娃娃机"));
 	ui.m_cbAppVersion->addItem(tr("自定义"));
 	ui.m_cbAppVersion->setCurrentIndex(theApp.GetBase().getKey());
 
@@ -170,12 +174,13 @@ void ZegoMainDialog::initDialog()
 		m_userConfig.SetVideoSettings(pCurSettings);
 	}
 	//app版本
-	ui.m_lbTitle->setText(QStringLiteral("ZegoLiveDemo(%1)").arg(ui.m_cbAppVersion->currentText()));
+	ui.m_lbTitle->setText(tr("ZegoLiveDemo(%1)").arg(ui.m_cbAppVersion->currentText()));
 	//sdk版本号
-	ui.m_lbTitleVersion->setText(QStringLiteral("版本: %1").arg(QString(QLatin1String(LIVEROOM::GetSDKVersion()))));
+	ui.m_lbTitleVersion->setText(tr("版本: %1").arg(QString(QLatin1String(LIVEROOM::GetSDKVersion()))));
 	//pull房间列表
 	PullRoomList();
 
+	m_initedDialog = true;
 }
 
 void ZegoMainDialog::setDefalutVideoQuality(SettingsPtr curSettings)
@@ -186,7 +191,7 @@ void ZegoMainDialog::setDefalutVideoQuality(SettingsPtr curSettings)
 	for (int i = 0; i < sizeof(g_Resolution) / sizeof(g_Resolution[0]); ++i)
 	{
 		QString strResolution;
-		strResolution = QString(QStringLiteral("%1×%2")).arg(g_Resolution[i].cx).arg(g_Resolution[i].cy);
+		strResolution = QString("%1×%2").arg(g_Resolution[i].cx).arg(g_Resolution[i].cy);
 		m_vecResolution.push_back(strResolution);
 
 		if (defResolution.cx == g_Resolution[i].cx && defResolution.cy == g_Resolution[i].cy)
@@ -207,7 +212,7 @@ void ZegoMainDialog::setDefalutVideoQuality(SettingsPtr curSettings)
 	{
 		QString strBitrate;
 		int m = g_Bitrate[i] / (1000 * 1000);
-		strBitrate = QString(QStringLiteral("%1k")).arg(g_Bitrate[i] / 1000);
+		strBitrate = QString("%1k").arg(g_Bitrate[i] / 1000);
 		m_vecBitrate.push_back(strBitrate);
 
 		if (defBitrate == g_Bitrate[i])
@@ -226,7 +231,7 @@ void ZegoMainDialog::setDefalutVideoQuality(SettingsPtr curSettings)
 	for (int i = 0; i < sizeof(g_Fps) / sizeof(g_Fps[0]); ++i)
 	{
 		QString strFPS;
-		strFPS = QString(QStringLiteral("%1")).arg(g_Fps[i]);
+		strFPS = QString("%1").arg(g_Fps[i]);
 		m_vecFPS.push_back(strFPS);
 
 		if (defFPS == g_Fps[i])
@@ -256,9 +261,10 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	{
 		insertStringListModelItem(m_cbMircoPhoneModel, QString::fromUtf8(pDeviceList[i].szDeviceName), m_cbMircoPhoneModel->rowCount());
 		m_vecAudioDeviceIDs.push_back(pDeviceList[i].szDeviceId);
-
+	
 		if (curSettings->GetMircophoneId() == QString(pDeviceList[i].szDeviceId))
 			curSelectionIndex = i;
+		
 	}
 
 	if (curSelectionIndex < 0)
@@ -283,9 +289,10 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	{
 		insertStringListModelItem(m_cbCameraModel, QString::fromUtf8(pDeviceList[i].szDeviceName), m_cbCameraModel->rowCount());
 		m_vecVideoDeviceIDs.push_back(pDeviceList[i].szDeviceId);
-
+	
 		if (curSettings->GetCameraId() == QString(pDeviceList[i].szDeviceId))
 			curSelectionIndex = i;
+		
 	}
 	
 	if (curSelectionIndex < 0)
@@ -294,9 +301,7 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	}
 	else
 	{
-		ui.m_cbCamera->blockSignals(true);
 		ui.m_cbCamera->setCurrentIndex(curSelectionIndex);
-		ui.m_cbCamera->blockSignals(false);
 		curSettings->SetCameraId(m_vecVideoDeviceIDs[curSelectionIndex]);
 	}
 	qDebug() << "[MainDialog::EnumVideoDevice]:current video device_main : " << curSettings->GetCameraId();
@@ -313,17 +318,14 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	if (curSelectionIndex < 0)
 	{
 		//先将第二个camera model用一个空的model绑定，此时就算推了第二路流也会没有图像
-		ui.m_cbCamera2->blockSignals(true);
-		ui.m_cbCamera2->setModel(new QStringListModel(this));
-		ui.m_cbCamera2->blockSignals(false);
+		ui.m_cbCamera2->setModel(new QStringListModel());
+
 		curSettings->SetCameraId2("");
 		LIVEROOM::EnableCamera(false, ZEGO::AV::PUBLISH_CHN_AUX);
 	}
 	else
 	{
-		ui.m_cbCamera2->blockSignals(true);
 		ui.m_cbCamera2->setCurrentIndex(curSelectionIndex);
-		ui.m_cbCamera2->blockSignals(false);
 		curSettings->SetCameraId2(m_vecVideoDeviceIDs[curSelectionIndex]);
 	}
 
@@ -345,6 +347,10 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 
 		if (curSettings->GetMircophoneId() == audioDeviceList[i].deviceId)
 			curSelectionIndex = i;
+		
+
+		if (i == audioDeviceList.size() - 1 && curSelectionIndex < 0)
+			curSelectionIndex = 0;
 	}
 	if (curSelectionIndex < 0)
 	{
@@ -365,6 +371,10 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 
 		if (curSettings->GetCameraId() == videoDeviceList[i].deviceId)
 			curSelectionIndex = i;
+		
+
+		if (i == videoDeviceList.size() - 1 && curSelectionIndex < 0)
+			curSelectionIndex = 0;
 	}
 	if (curSelectionIndex < 0)
 	{
@@ -372,9 +382,7 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	}
 	else
 	{
-		ui.m_cbCamera->blockSignals(true);
 		ui.m_cbCamera->setCurrentIndex(curSelectionIndex);
-		ui.m_cbCamera->blockSignals(false);
 		curSettings->SetCameraId(m_vecVideoDeviceIDs[curSelectionIndex]);
 	}
 	
@@ -390,17 +398,13 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	if (curSelectionIndex < 0)
 	{
 		//先将第二个camera model用一个空的model绑定，此时就算推了第二路流也会没有图像
-		ui.m_cbCamera2->blockSignals(true);
-		ui.m_cbCamera2->setModel(new QStringListModel(this));
-		ui.m_cbCamera2->blockSignals(false);
+		ui.m_cbCamera2->setNewModelWithoutSignal();
 		curSettings->SetCameraId2("");
 		LIVEROOM::EnableCamera(false, ZEGO::AV::PUBLISH_CHN_AUX);
 	}
 	else
 	{
-		ui.m_cbCamera2->blockSignals(true);
 		ui.m_cbCamera2->setCurrentIndex(curSelectionIndex);
-		ui.m_cbCamera2->blockSignals(false);
 		curSettings->SetCameraId2(m_vecVideoDeviceIDs[curSelectionIndex]);
 	}
 #endif
@@ -415,19 +419,28 @@ void ZegoMainDialog::PullRoomList()
 	//暂时禁用app版本的选择
 	ui.m_cbAppVersion->setEnabled(false);
 	//自定义APP版本的房间列表为空
-	if (m_versionMode == Version::ZEGO_PROTOCOL_CUSTOM && ui.m_strEdAPPID->text().isEmpty() && ui.m_strEdAPPSign->text().isEmpty())
+	if (m_versionMode == Version::ZEGO_PROTOCOL_CUSTOM && ui.m_strEdAPPID->text().isEmpty())
 	{
 		ui.m_progIndicator->stopAnimation();
 		//恢复app版本的选择
 		ui.m_cbAppVersion->setEnabled(true);
 		return;
 	}
+	unsigned long strAppID;
+	if (m_versionMode == Version::ZEGO_PROTOCOL_CUSTOM)
+	{
+		strAppID = ui.m_strEdAPPID->text().toULong();
+	}
+	else
+	{
+		strAppID = theApp.GetBase().GetAppID();
+	}
 
 	QString cstrBaseUrl;
 	if (!m_isUseTestEnv) //非测试环境
-	    cstrBaseUrl.sprintf(("https://liveroom%u-api.zego.im/demo/roomlist?appid=%u"), theApp.GetBase().GetAppID(), theApp.GetBase().GetAppID());
+	    cstrBaseUrl.sprintf(("https://liveroom%u-api.zego.im/demo/roomlist?appid=%u"), strAppID, strAppID);
 	else                 //测试环境
-		cstrBaseUrl.sprintf(("https://test2-liveroom-api.zego.im/demo/roomlist?appid=%u"), theApp.GetBase().GetAppID(), theApp.GetBase().GetAppID());
+		cstrBaseUrl.sprintf(("https://test2-liveroom-api.zego.im/demo/roomlist?appid=%u"), strAppID, strAppID);
 
 	QUrl url(cstrBaseUrl);
 
@@ -453,7 +466,7 @@ void ZegoMainDialog::writeJsonData(QNetworkReply *reply)
 	}
 	else{
 		reply->deleteLater();
-		qDebug() << "appID and appSign error!";
+		qDebug() << "Network Reply Error.";
 		return;
 	}
 
@@ -482,7 +495,7 @@ void ZegoMainDialog::ParseRoomList(QByteArray json)
 
 	if (code.toInt() != 0)
 	{
-		QMessageBox::information(this, QStringLiteral("提示"), QStringLiteral("获取房间列表失败"));
+		QMessageBox::information(this, tr("提示"), tr("获取房间列表失败"));
 		return; 
 	}
 
@@ -581,10 +594,10 @@ void ZegoMainDialog::addModeButtonGroup()
 	m_modeButtonGroup->addButton(ui.m_bSingleMode, 0);
 	m_modeButtonGroup->addButton(ui.m_bMultiMode, 1);
 	m_modeButtonGroup->addButton(ui.m_bMixMode, 2);
-	
-	//默认为单主播模式
+	m_modeButtonGroup->addButton(ui.m_bPublish2StreamMode, 3);
+	//默认为连麦模式
 	ui.m_bMultiMode->setChecked(true);
-	m_curMode = LIVEROOM::ZEGO_JOIN_PUBLISH;
+	//m_curMode = LIVEROOM::ZEGO_JOIN_PUBLISH;
 
 	connect(m_modeButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(OnButtonModeSheetChange(int)));
 }
@@ -660,6 +673,9 @@ void ZegoMainDialog::banSwitch()
 	ui.m_switchCapture->setEnabled(false);
 	ui.m_switchFilter->setEnabled(false);
 
+	ui.m_lbUnknown->setVisible(false);
+	ui.m_switchUnknown->setVisible(false);
+
 	ui.m_lbUnknown2->setVisible(false);
 	ui.m_switchUnknown2->setVisible(false);
 	
@@ -667,6 +683,11 @@ void ZegoMainDialog::banSwitch()
 	ui.m_switchNational->setEnabled(false);
 	ui.m_switchRender->setEnabled(false);
 	ui.m_switchTimeCount->setEnabled(false);
+
+
+	//ui.m_lbCamera2->setVisible(false);
+	//ui.m_cbCamera2->setVisible(false);
+	//ui.m_vSpacerTop->hei
 }
 
 QVector<QString> ZegoMainDialog::handleAppSign(QString appSign)
@@ -731,7 +752,7 @@ void ZegoMainDialog::OnAudioDeviceChanged(AV::AudioDeviceType deviceType, const 
 			SettingsPtr curSettings = m_userConfig.GetVideoSettings();
 			curSettings->SetMicrophoneId(m_vecAudioDeviceIDs[0]);
 			m_userConfig.SetVideoSettings(curSettings);
-			ui.m_cbMircoPhone->setCurrentIndex(0);
+			ui.m_cbMircoPhone->setCurrentIndexWithoutSignal(0);
 		}
 		update();
 	}
@@ -756,7 +777,7 @@ void ZegoMainDialog::OnAudioDeviceChanged(AV::AudioDeviceType deviceType, const 
 					SettingsPtr curSettings = m_userConfig.GetVideoSettings();
 					curSettings->SetMicrophoneId(m_vecAudioDeviceIDs[0]);
 					m_userConfig.SetVideoSettings(curSettings);
-					ui.m_cbMircoPhone->setCurrentIndex(0);
+					ui.m_cbMircoPhone->setCurrentIndexWithoutSignal(0);
 
 				}
 				else
@@ -793,9 +814,7 @@ void ZegoMainDialog::OnVideoDeviceChanged(const QString& strDeviceId, const QStr
 			LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[0].toStdString().c_str());
 			curSettings->SetCameraId(m_vecVideoDeviceIDs[0]);
 			
-			ui.m_cbCamera->blockSignals(true);
-			ui.m_cbCamera->setCurrentIndex(0);
-			ui.m_cbCamera->blockSignals(false);
+			ui.m_cbCamera->setCurrentIndexWithoutSignal(0);
 
 			ui.m_cbCamera2->setModel(new QStringListModel(this));
 		}
@@ -810,9 +829,8 @@ void ZegoMainDialog::OnVideoDeviceChanged(const QString& strDeviceId, const QStr
 			ui.m_cbCamera2->setCurrentIndex(1);
 			ui.m_cbCamera2->blockSignals(false);
 
-			ui.m_cbCamera->blockSignals(true);
-			ui.m_cbCamera->setCurrentIndex(0);
-			ui.m_cbCamera->blockSignals(false);
+			ui.m_cbCamera->setCurrentIndexWithoutSignal(0);
+	
 			curSettings->SetCameraId(m_vecVideoDeviceIDs[0]);
 
 			LIVEROOM::EnableCamera(true, ZEGO::AV::PUBLISH_CHN_AUX);
@@ -850,13 +868,11 @@ void ZegoMainDialog::OnVideoDeviceChanged(const QString& strDeviceId, const QStr
 					{
 						LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[currentCurl_2].toStdString().c_str());
 						curSettings->SetCameraId(m_vecVideoDeviceIDs[currentCurl_2]);
-						ui.m_cbCamera->blockSignals(true);
-						ui.m_cbCamera->setCurrentIndex(currentCurl_2);
-						ui.m_cbCamera->blockSignals(false);
 
-						ui.m_cbCamera2->blockSignals(true);
-						ui.m_cbCamera2->setModel(new QStringListModel(this));
-						ui.m_cbCamera2->blockSignals(false);
+						ui.m_cbCamera->setCurrentIndexWithoutSignal(currentCurl_2);
+
+						ui.m_cbCamera2->setNewModelWithoutSignal();
+
 						LIVEROOM::EnableCamera(false, ZEGO::AV::PUBLISH_CHN_AUX);
 						curSettings->SetCameraId2("");
 					}
@@ -864,9 +880,8 @@ void ZegoMainDialog::OnVideoDeviceChanged(const QString& strDeviceId, const QStr
 					{
 						LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[index].toStdString().c_str());
 						curSettings->SetCameraId(m_vecVideoDeviceIDs[index]);
-						ui.m_cbCamera->blockSignals(true);
-						ui.m_cbCamera->setCurrentIndex(index);
-						ui.m_cbCamera->blockSignals(false);
+					
+						ui.m_cbCamera->setCurrentIndexWithoutSignal(index);
 					}
 
 				}
@@ -905,9 +920,9 @@ void ZegoMainDialog::OnVideoDeviceChanged(const QString& strDeviceId, const QStr
 					{
 						LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[index].toStdString().c_str(), ZEGO::AV::PUBLISH_CHN_AUX);
 						curSettings->SetCameraId2(m_vecVideoDeviceIDs[index]);
-						ui.m_cbCamera2->blockSignals(true);
-						ui.m_cbCamera2->setCurrentIndex(index);
-						ui.m_cbCamera2->blockSignals(false);
+
+						ui.m_cbCamera2->setCurrentIndexWithoutSignal(index);
+						
 					}
 				}
 			}
@@ -933,17 +948,18 @@ void ZegoMainDialog::OnButtonModeSheetChange(int id)
 {
 	QPushButton *button = (QPushButton *)m_modeButtonGroup->button(id);
 
-	if (button->isChecked())
+	if (id == MODE_PUBLISH_2_STREAM)
 	{
-		if (id == 0)
-			m_curMode = LIVEROOM::ZEGO_SINGLE_ANCHOR;
-		else if (id == 1)
-			m_curMode = LIVEROOM::ZEGO_JOIN_PUBLISH;
-		else if (id == 2)
-			m_curMode = LIVEROOM::ZEGO_MIX_STREAM;
-		
+		ui.m_vSpacerUpper->changeSize(17, 17, QSizePolicy::Expanding, QSizePolicy::Expanding);
+		ui.m_lbCamera2->setVisible(true);
+		ui.m_cbCamera2->setVisible(true);
 	}
-	
+	else
+	{
+		ui.m_vSpacerUpper->changeSize(30, 30, QSizePolicy::Expanding, QSizePolicy::Expanding);
+		ui.m_lbCamera2->setVisible(false);
+		ui.m_cbCamera2->setVisible(false);
+	}	
 }
 
 void ZegoMainDialog::OnButtonQualityChange(int id)
@@ -1187,18 +1203,22 @@ void ZegoMainDialog::OnButtonClickedPublish()
 	if (pCurSettings->GetCameraId().length() == 0)
 		pCurSettings->InitDeviceId();
 
+	int modeID = m_modeButtonGroup->checkedId();
+	
 	QString strMode;
-	switch (m_curMode)
+	switch (modeID)
 	{
-	case LIVEROOM::ZEGO_SINGLE_ANCHOR:
+	case MODE_SINGLE_ANCHOR:
 		strMode = "#d";
 		break;
-	case LIVEROOM::ZEGO_JOIN_PUBLISH:
+	case MODE_JOIN_PUBLISH:
 		strMode = "#m";
 		break;
-	case LIVEROOM::ZEGO_MIX_STREAM:
+	case MODE_MIX_STREAM:
 		strMode = "#s";
 		break;
+	case MODE_PUBLISH_2_STREAM:
+		strMode = "WWJS";
 	default:
 		break;
 	}
@@ -1223,7 +1243,7 @@ void ZegoMainDialog::OnButtonClickedPublish()
 	}
 
 	RoomPtr pRoom(new QZegoRoomModel(strRoomID, strRoomName, strUserId, strUserName));
-	if (m_curMode == LIVEROOM::ZEGO_SINGLE_ANCHOR)
+	if (modeID == MODE_SINGLE_ANCHOR)
 	{
 		ZegoSingleAnchorDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
@@ -1233,7 +1253,7 @@ void ZegoMainDialog::OnButtonClickedPublish()
 		this->hide();
 		liveroom.exec();
 	}
-	else if (m_curMode == LIVEROOM::ZEGO_JOIN_PUBLISH)
+	else if (modeID == MODE_JOIN_PUBLISH)
 	{
 		ZegoMoreAnchorDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
@@ -1243,12 +1263,22 @@ void ZegoMainDialog::OnButtonClickedPublish()
 		this->hide();
 		liveroom.exec();
 	}
-	else if (m_curMode == LIVEROOM::ZEGO_MIX_STREAM)
+	else if (modeID == MODE_MIX_STREAM)
 	{
 		ZegoMixStreamAnchorDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
-                                                            		connect(&liveroom, &ZegoMixStreamAnchorDialog::sigSaveVideoSettings, this, &ZegoMainDialog::OnSaveVideoSettings);
+        connect(&liveroom, &ZegoMixStreamAnchorDialog::sigSaveVideoSettings, this, &ZegoMainDialog::OnSaveVideoSettings);
 		             
+		//进入直播房间前先隐藏该界面
+		this->hide();
+		liveroom.exec();
+	}
+	else if (modeID = MODE_PUBLISH_2_STREAM)
+	{
+		ZegoPublish2StreamDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
+		liveroom.initDialog();
+		connect(&liveroom, &ZegoPublish2StreamDialog::sigSaveVideoSettings, this, &ZegoMainDialog::OnSaveVideoSettings);
+
 		//进入直播房间前先隐藏该界面
 		this->hide();
 		liveroom.exec();
@@ -1277,20 +1307,32 @@ void ZegoMainDialog::OnButtonEnterRoom()
 		QMessageBox::warning(NULL, tr("警告"), tr("UserID或UserName不能为空"));
 		return;
 	}
-	
+	if (ui.m_strEdAPPID->text() == "")
+	{
+		QMessageBox::information(NULL, tr("提示"), tr("AppID不能为空"));
+		return;
+	}
+
+	if (ui.m_strEdAPPSign->text() == "")
+	{
+		QMessageBox::information(NULL, tr("提示"), tr("AppSign不能为空"));
+		return;
+	}
+
+	int modeID;
 	QString playLiveMode = pRoom->getRoomId().mid(0, 3);
 	if (playLiveMode == "#d-")
-		m_curMode = LIVEROOM::ZEGO_SINGLE_ANCHOR;
+		modeID = MODE_SINGLE_ANCHOR;
 	else if (playLiveMode == "#m-")
-		m_curMode = LIVEROOM::ZEGO_JOIN_PUBLISH;
+		modeID = MODE_JOIN_PUBLISH;
 	else if (playLiveMode == "#s-")
-		m_curMode = LIVEROOM::ZEGO_MIX_STREAM;
+		modeID = MODE_MIX_STREAM;
 	else
 	{
 		if (pRoom->getLivesCount() == 1)
-			m_curMode = LIVEROOM::ZEGO_SINGLE_ANCHOR;
+			modeID = MODE_SINGLE_ANCHOR;
 		else if (pRoom->getLivesCount() > 1)
-			m_curMode = LIVEROOM::ZEGO_JOIN_PUBLISH;
+			modeID = MODE_JOIN_PUBLISH;
 	}
 	
 	m_userConfig.SetUserRole(false);
@@ -1300,6 +1342,26 @@ void ZegoMainDialog::OnButtonEnterRoom()
 
 	QString strUserId = m_userConfig.GetUserId();
 	QString strUserName = m_userConfig.getUserName();
+
+	if (m_versionMode == Version::ZEGO_PROTOCOL_CUSTOM)
+	{
+		unsigned long appId = ui.m_strEdAPPID->text().toUInt();
+		QString strAppSign = ui.m_strEdAPPSign->text();
+		QVector<QString> vecAppSign = handleAppSign(strAppSign);
+		unsigned char *appSign = new unsigned char[32];
+		for (int i = 0; i < vecAppSign.size(); i++)
+		{
+			bool ok;
+			appSign[i] = (unsigned char)vecAppSign[i].toInt(&ok, 16);
+		}
+		LIVEROOM::UnInitSDK();
+		if (!LIVEROOM::InitSDK(appId, appSign, 32))
+		{
+			QMessageBox::information(NULL, tr("提示"), tr("初始化SDK失败"));
+			return;
+		}
+
+	}
 
 	//更新用户信息
 	LIVEROOM::SetUser(strUserId.toStdString().c_str(), strUserName.toStdString().c_str());
@@ -1314,7 +1376,7 @@ void ZegoMainDialog::OnButtonEnterRoom()
 
 	m_userConfig.SaveConfig();
 
-	if (m_curMode == LIVEROOM::ZEGO_SINGLE_ANCHOR)
+	if (modeID = MODE_SINGLE_ANCHOR)
 	{
 		ZegoSingleAudienceDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
@@ -1324,7 +1386,7 @@ void ZegoMainDialog::OnButtonEnterRoom()
 		this->hide();
 		liveroom.exec();
 	}
-	else if (m_curMode == LIVEROOM::ZEGO_JOIN_PUBLISH)
+	else if (modeID = MODE_JOIN_PUBLISH)
 	{
 		ZegoMoreAudienceDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
@@ -1334,7 +1396,7 @@ void ZegoMainDialog::OnButtonEnterRoom()
 		this->hide();
 		liveroom.exec();
 	}
-	else if (m_curMode == LIVEROOM::ZEGO_MIX_STREAM)
+	else if (modeID = MODE_MIX_STREAM)
 	{
 		ZegoMixStreamAudienceDialog liveroom(m_dpi, pCurSettings, pRoom, strUserId, strUserName, this);
 		liveroom.initDialog();
@@ -1420,13 +1482,6 @@ void ZegoMainDialog::OnButtonSwitchSurfaceMerge()
 	{
 		qDebug() << "surface merge checked";
 		m_isUseSurfaceMerge = true;
-
-		if (ui.m_switchPublish2Stream->isChecked())
-		{
-			ui.m_switchPublish2Stream->setChecked(false);
-			OnButtonSwitchPublish2Stream();
-		}
-
 	}
 	else
 	{
@@ -1436,22 +1491,23 @@ void ZegoMainDialog::OnButtonSwitchSurfaceMerge()
 	if (m_isUseSurfaceMerge)
 	{
 		ui.m_bMixMode->setEnabled(false);
-
-		//只有单主播模式和连麦模式下可以开启屏幕推流
-		if (m_curMode == LIVEROOM::ZEGO_MIX_STREAM)
-		{
-			ui.m_bMultiMode->setChecked(false);
-			ui.m_bMixMode->setChecked(false);
-			ui.m_bSingleMode->setChecked(true);
-			m_curMode = LIVEROOM::ZEGO_SINGLE_ANCHOR;
-
-		}
-	}
-	else
-	{
-		//恢复模式按钮
-		ui.m_bMixMode->setEnabled(true);
-	}
+		ui.m_bPublish2StreamMode->setEnabled(false);
+		int modeID = m_modeButtonGroup->checkedId();
+	    //只有单主播模式和连麦模式下可以开启屏幕推流
+	    if (modeID == MODE_MIX_STREAM || modeID == MODE_PUBLISH_2_STREAM)
+	    {
+		    //ui.m_bMultiMode->setChecked(false);
+		    //ui.m_bMixMode->setChecked(false);
+		    ui.m_bMultiMode->setChecked(true);
+		    //m_curMode = LIVEROOM::ZEGO_SINGLE_ANCHOR;
+	    }
+    }
+    else
+    {
+	    //恢复模式按钮
+	    ui.m_bMixMode->setEnabled(true);
+		ui.m_bPublish2StreamMode->setEnabled(true);
+     }
 
 	ui.m_switchSurfaceMerge->setEnabled(false);
 	theApp.GetBase().UninitAVSDK();
@@ -1463,49 +1519,6 @@ void ZegoMainDialog::OnButtonSwitchSurfaceMerge()
 
 	theApp.GetBase().InitAVSDK(m_userConfig.GetVideoSettings(), m_strEdUserId, m_strEdUserName);
 	ui.m_switchSurfaceMerge->setEnabled(true);
-}
-
-void ZegoMainDialog::OnButtonSwitchPublish2Stream()
-{
-	if (ui.m_switchPublish2Stream->isChecked())
-	{
-		qDebug() << "publish 2 stream checked";
-		m_isUsePublish2Stream = true;
-
-		if (ui.m_switchSurfaceMerge->isChecked())
-		{
-			ui.m_switchSurfaceMerge->setChecked(false);
-			OnButtonSwitchSurfaceMerge();
-		}
-	}
-	else
-	{
-		m_isUsePublish2Stream = false;
-	}
-
-	if (m_isUsePublish2Stream)
-	{
-		ui.m_bMixMode->setEnabled(false);
-
-		//只有单主播模式和连麦模式下可以开启推两路
-		if (m_curMode == LIVEROOM::ZEGO_MIX_STREAM)
-		{
-			ui.m_bMultiMode->setChecked(false);
-			ui.m_bMixMode->setChecked(false);
-			ui.m_bSingleMode->setChecked(true);
-			m_curMode = LIVEROOM::ZEGO_SINGLE_ANCHOR;
-
-		}
-	}
-	else
-	{
-		//恢复模式按钮
-		ui.m_bMixMode->setEnabled(true);
-	}
-
-	SettingsPtr curSettings = m_userConfig.GetVideoSettings();
-	curSettings->SetUsePublish2Stream(m_isUsePublish2Stream);
-	m_userConfig.SetVideoSettings(curSettings);
 }
 
 void ZegoMainDialog::OnCheckSliderPressed()
@@ -1534,7 +1547,7 @@ void ZegoMainDialog::OnSaveUserNameChanged()
 
 void ZegoMainDialog::OnSwitchAudioDevice(int id)
 {
-	if (this->isHidden())
+	if (this->isHidden() && m_initedDialog)
 		return;
 
 	if (id < 0)
@@ -1546,14 +1559,14 @@ void ZegoMainDialog::OnSwitchAudioDevice(int id)
 		SettingsPtr curSettings = m_userConfig.GetVideoSettings();
 		curSettings->SetMicrophoneId(m_vecAudioDeviceIDs[id]);
 		m_userConfig.SetVideoSettings(curSettings);
-		ui.m_cbMircoPhone->setCurrentIndex(id);
+		ui.m_cbMircoPhone->setCurrentIndexWithoutSignal(id);
 		update();
 	}
 }
 
 void ZegoMainDialog::OnSwitchVideoDevice(int id)
 {
-	if (this->isHidden())
+	if (this->isHidden() && m_initedDialog)
 		return;
 
 	if (id < 0)
@@ -1572,22 +1585,18 @@ void ZegoMainDialog::OnSwitchVideoDevice(int id)
 			if (curLastCameraIndex < 0)
 				return;
 
-			ui.m_cbCamera2->blockSignals(true);
-			ui.m_cbCamera2->setCurrentIndex(curLastCameraIndex);
-			ui.m_cbCamera2->blockSignals(false);
+			ui.m_cbCamera2->setCurrentIndexWithoutSignal(curLastCameraIndex);
 		}
 
 		LIVEROOM::SetVideoDevice(m_vecVideoDeviceIDs[id].toStdString().c_str());
 		curSettings->SetCameraId(m_vecVideoDeviceIDs[id]);
 
 		m_userConfig.SetVideoSettings(curSettings);
-		ui.m_cbCamera->blockSignals(true);
-		ui.m_cbCamera->setCurrentIndex(id);
-		ui.m_cbCamera->blockSignals(false);
+
+		ui.m_cbCamera->setCurrentIndexWithoutSignal(id);
 		update();
 
 		qDebug() << "[MainDialog::VideoDevice_Changed_1]: current video device_main : " << curSettings->GetCameraId() << " video device_aux : " << curSettings->GetCameraId2();
-
 	}
 
 	
@@ -1595,7 +1604,7 @@ void ZegoMainDialog::OnSwitchVideoDevice(int id)
 
 void ZegoMainDialog::OnSwitchVideoDevice2(int id)
 {
-	if (this->isHidden())
+	if (this->isHidden() && m_initedDialog)
 		return;
 
 	if (id < 0)
@@ -1614,9 +1623,7 @@ void ZegoMainDialog::OnSwitchVideoDevice2(int id)
 			if (curLastCameraIndex < 0)
 				return;
 
-			ui.m_cbCamera->blockSignals(true);
-			ui.m_cbCamera->setCurrentIndex(curLastCameraIndex);
-			ui.m_cbCamera->blockSignals(false);
+			ui.m_cbCamera->setCurrentIndexWithoutSignal(curLastCameraIndex);
 			
 		}
 
@@ -1624,9 +1631,9 @@ void ZegoMainDialog::OnSwitchVideoDevice2(int id)
 		curSettings->SetCameraId2(m_vecVideoDeviceIDs[id]);
 
 		m_userConfig.SetVideoSettings(curSettings);
-		ui.m_cbCamera2->blockSignals(true);
-		ui.m_cbCamera2->setCurrentIndex(id);
-		ui.m_cbCamera2->blockSignals(false);
+
+		ui.m_cbCamera2->setCurrentIndexWithoutSignal(id);
+
 		update();
 
 		qDebug() << "[MainDialog::VideoDevice_Changed_2]: current video device_main : " << curSettings->GetCameraId() << " video device_aux : " << curSettings->GetCameraId2();
@@ -1647,7 +1654,7 @@ void ZegoMainDialog::OnSaveVideoSettings(SettingsPtr settings)
 		    break;
 		}
 		
-	ui.m_cbMircoPhone->setCurrentIndex(index);
+	ui.m_cbMircoPhone->setCurrentIndexWithoutSignal(index);
 		
 	//是否更改了摄像头1和2
 	index = 0;
@@ -1659,9 +1666,9 @@ void ZegoMainDialog::OnSaveVideoSettings(SettingsPtr settings)
 			break;
 		}
 	}
-	ui.m_cbCamera->blockSignals(true);
-	ui.m_cbCamera->setCurrentIndex(index);
-	ui.m_cbCamera->blockSignals(false);
+
+	ui.m_cbCamera->setCurrentIndexWithoutSignal(index);
+
 	index = 0;
 	for (int i = 0; i < m_vecVideoDeviceIDs.size(); i++)
 	{
@@ -1671,16 +1678,16 @@ void ZegoMainDialog::OnSaveVideoSettings(SettingsPtr settings)
 			break;
 		}
 	}
-	ui.m_cbCamera2->blockSignals(true);
-	ui.m_cbCamera2->setCurrentIndex(index);
-	ui.m_cbCamera2->blockSignals(false);
+	
+	ui.m_cbCamera2->setCurrentIndexWithoutSignal(index);
+	
 }
 
 void ZegoMainDialog::OnComboBoxAppVersionChanged(int id)
 {
 	//ui.m_cbAppVersion->setCurrentIndex(id);
 
-	if (id == ZEGO_PROTOCOL_UDP || id == ZEGO_PROTOCOL_UDP_INTERNATIONAL){
+	if (id != ZEGO_PROTOCOL_CUSTOM){
 
 		theApp.GetBase().setKey(id);
 		ui.m_strEdAPPID->setText(QString("%1").arg(theApp.GetBase().GetAppID()));

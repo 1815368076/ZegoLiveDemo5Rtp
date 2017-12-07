@@ -27,6 +27,7 @@
       <file>Resources/images/QQMusic.png</file>
       <file>Resources/images/KuGou.png</file>
       <file>Resources/images/KuWo.png</file>
+      <file>Resources/images/WaterPrint.png</file>
       <file>Resources/images/@2x/refresh_default@2x.png</file>
       <file>Resources/images/@2x/down_arrow@2x.png</file>
       <file>Resources/images/@2x/switch_off@2x.png</file>
@@ -54,6 +55,7 @@
       <file>Resources/images/@2x/QQMusic@2x.png</file>
       <file>Resources/images/@2x/KuGou@2x.png</file>
       <file>Resources/images/@2x/KuWo@2x.png</file>
+      <file>Resources/images/@2x/WaterPrint@2x.png</file>
     </qresource>
 
 

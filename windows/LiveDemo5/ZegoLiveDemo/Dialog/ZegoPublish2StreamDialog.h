@@ -1,18 +1,18 @@
 ﻿#pragma execution_character_set("utf-8")
 
-#ifndef ZEGOMOREANCHORDIALOG_H
-#define ZEGOMOREANCHORDIALOG_H
+#ifndef ZEGOPUBLISH2STREAMDIALOG_H
+#define ZEGOPUBLISH2STREAMDIALOG_H
 
 #include "Base/ZegoBaseDialog.h"
 
-class ZegoMoreAnchorDialog : public ZegoBaseDialog
+class ZegoPublish2StreamDialog : public ZegoBaseDialog
 {
 	Q_OBJECT
 
 public:
-	ZegoMoreAnchorDialog(QWidget *parent = 0);
-	ZegoMoreAnchorDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent = 0);
-	~ZegoMoreAnchorDialog();
+	ZegoPublish2StreamDialog(QWidget *parent = 0);
+	ZegoPublish2StreamDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent = 0);
+	~ZegoPublish2StreamDialog();
 	void initDialog();
 
 protected slots:
@@ -28,18 +28,24 @@ private slots:
 
 private:
 	void StartPublishStream();
-	void StopPublishStream(const QString& streamID);
+	void StartPublishStream_Aux();
+	void StopPublishStream(const QString& streamID, AV::PublishChannelIndex idx = ZEGO::AV::PUBLISH_CHN_MAIN);
 	void StartPlayStream(StreamPtr stream);
 	void StopPlayStream(const QString& streamID);
 	bool praseJsonData(QJsonDocument doc);
 	void GetOut();
-	
+	void initCameraListView2();   //继承父类接口
+	void setWaterPrint(AV::PublishChannelIndex idx);
+
 private:
-	
 	QString m_strPublishStreamID;
+	QString m_strPublishStreamID_Aux;
 	QString m_strCurUserID;
 	QString m_strCurUserName;	
 	bool m_bIsPublishing = false;
+
+	QListView *m_cbCameraListView2;
+	StreamPtr m_anchorStreamInfo_Aux;
 };
 
 #endif

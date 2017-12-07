@@ -13,7 +13,6 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QComboBox>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QFormLayout>
 #include <QtWidgets/QFrame>
@@ -28,6 +27,7 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include <ZegoDeviceComboBox.h>
 #include <ZegoMicrophoneButton.h>
 
 QT_BEGIN_NAMESPACE
@@ -76,11 +76,11 @@ public:
     QSpacerItem *verticalSpacer_3;
     QFormLayout *formLayout;
     QLabel *m_lbMircoPhone;
-    QComboBox *m_cbMircoPhone;
+    ZegoDeviceComboBox *m_cbMircoPhone;
     QLabel *m_lbCamera;
-    QComboBox *m_cbCamera;
+    ZegoDeviceComboBox *m_cbCamera;
     QLabel *m_lbCamera2;
-    QComboBox *m_cbCamera2;
+    ZegoDeviceComboBox *m_cbCamera2;
     QSpacerItem *horizontalSpacer_2;
     QVBoxLayout *verticalLayout_5;
     QSpacerItem *verticalSpacer;
@@ -599,7 +599,7 @@ public:
 
         formLayout->setWidget(0, QFormLayout::LabelRole, m_lbMircoPhone);
 
-        m_cbMircoPhone = new QComboBox(m_zoneSettings);
+        m_cbMircoPhone = new ZegoDeviceComboBox(m_zoneSettings);
         m_cbMircoPhone->setObjectName(QStringLiteral("m_cbMircoPhone"));
         m_cbMircoPhone->setMinimumSize(QSize(260, 32));
         m_cbMircoPhone->setMaximumSize(QSize(260, 32));
@@ -703,7 +703,7 @@ public:
 
         formLayout->setWidget(1, QFormLayout::LabelRole, m_lbCamera);
 
-        m_cbCamera = new QComboBox(m_zoneSettings);
+        m_cbCamera = new ZegoDeviceComboBox(m_zoneSettings);
         m_cbCamera->setObjectName(QStringLiteral("m_cbCamera"));
         m_cbCamera->setMinimumSize(QSize(260, 32));
         m_cbCamera->setMaximumSize(QSize(260, 32));
@@ -806,7 +806,7 @@ public:
 
         formLayout->setWidget(2, QFormLayout::LabelRole, m_lbCamera2);
 
-        m_cbCamera2 = new QComboBox(m_zoneSettings);
+        m_cbCamera2 = new ZegoDeviceComboBox(m_zoneSettings);
         m_cbCamera2->setObjectName(QStringLiteral("m_cbCamera2"));
         m_cbCamera2->setMinimumSize(QSize(260, 32));
         m_cbCamera2->setStyleSheet(QString::fromUtf8("  QComboBox{\n"

@@ -49,13 +49,13 @@ void ZegoMusicHookDialog::searchMusicAppFromReg()
 
 	for (auto it = m_softWareInfo.begin(); it != m_softWareInfo.end(); it++)
 	{
-		if (it->m_strKeyName == QStringLiteral("QQMusic"))
+		if (it->m_strKeyName == tr("QQMusic"))
 			QQMusic = *it;
-		else if (it->m_strKeyName == QStringLiteral("酷狗音乐"))
+		else if (it->m_strKeyName == tr("酷狗音乐"))
 			KuGouMusic = *it;
-		else if (it->m_strKeyName == QStringLiteral("网易云音乐"))
+		else if (it->m_strKeyName == tr("网易云音乐"))
 			CloudMusic = *it;
-		else if (it->m_strKeyName == QStringLiteral("KwMusic7"))
+		else if (it->m_strKeyName == tr("KwMusic7"))
 			KuwoMusic = *it;
 	}
 
@@ -167,7 +167,7 @@ void ZegoMusicHookDialog::OnSelectedMusicApp()
 		QString exeName = "cloudmusic.exe";
 		if (CloudMusic.m_strUninstallPth.size() == 0)
 		{
-			QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("无法找到 %1").arg(exeName));
+			QMessageBox::information(NULL, tr("提示"), tr("无法找到 %1").arg(exeName));
 			return;
 		}
 
@@ -185,7 +185,7 @@ void ZegoMusicHookDialog::OnSelectedMusicApp()
 		QString exeName = "KuGou.exe";
 		if (KuGouMusic.m_strUninstallPth.size() == 0)
 		{
-			QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("无法找到 %1").arg(exeName));
+			QMessageBox::information(NULL, tr("提示"), tr("无法找到 %1").arg(exeName));
 			return;
 		}
 
@@ -203,7 +203,7 @@ void ZegoMusicHookDialog::OnSelectedMusicApp()
 		QString exeName = "QQMusic.exe";
 		if (QQMusic.m_strUninstallPth.size() == 0)
 		{
-			QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("无法找到 %1").arg(exeName));
+			QMessageBox::information(NULL, tr("提示"), tr("无法找到 %1").arg(exeName));
 			return;
 		}
 
@@ -222,13 +222,13 @@ void ZegoMusicHookDialog::OnSelectedMusicApp()
 		QString exeName = "KwMusic.exe";
 		if (KuwoMusic.m_strUninstallPth.size() == 0)
 		{
-			QMessageBox::information(NULL, QStringLiteral("提示"), QStringLiteral("无法找到 %1").arg(exeName));
+			QMessageBox::information(NULL, tr("提示"), tr("无法找到 %1").arg(exeName));
 			return;
 		}
 
 		QString exePath, hookPath;
 		exePath = KuwoMusic.m_strUninstallPth.mid(0, KuwoMusic.m_strUninstallPth.lastIndexOf('\\'));
-		hookPath = exePath + QStringLiteral("\\bin\\KwService.exe");
+		hookPath = exePath + "\\bin\\KwService.exe";
 		exePath = exePath + "\\" + exeName;
 		
 		//若进程已经存在，则kill之

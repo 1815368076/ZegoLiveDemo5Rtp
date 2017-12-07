@@ -5,7 +5,7 @@
 QZegoUserConfig::QZegoUserConfig()
 {
     //生成ini文件,用于在本地保存用户配置信息
-	m_strIniPath =  QStringLiteral("Config/ZegoUserConfig.ini");
+	m_strIniPath =  "Config/ZegoUserConfig.ini";
 }
 
 QZegoUserConfig::~QZegoUserConfig()
@@ -26,9 +26,9 @@ void QZegoUserConfig::LoadConfig(void)
 	//int to QString
 	m_strUserId = QString::number(dist(rd), 10);
 #ifdef Q_OS_WIN32
-	m_strUserName = QStringLiteral("windows-") + m_strUserId;
+	m_strUserName = "windows-" + m_strUserId;
 #else
-	m_strUserName = QStringLiteral("mac-") + m_strUserId;
+	m_strUserName = "mac-" + m_strUserId;
 #endif
 	m_bPrimary = true;
 
@@ -117,7 +117,7 @@ QString QZegoUserConfig::GetUserIdWithRole(void)
 	QString strUserIdWithRole = m_strUserId;
 	if (m_bPrimary)
 	{
-		strUserIdWithRole += QStringLiteral("_primary");
+		strUserIdWithRole += "_primary";
 	}
 	return strUserIdWithRole;
 }

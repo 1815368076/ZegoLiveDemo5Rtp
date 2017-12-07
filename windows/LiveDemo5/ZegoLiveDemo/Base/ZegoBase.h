@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QDir>
 #include "Settings/ZegoSettingsModel.h"
 #include "Signal/ZegoSDKSignal.h"
 #include "VideoCapture/ZegoVideoCaptureFactoryDemo.h"
@@ -11,7 +12,8 @@ typedef enum _Version
 {
 	ZEGO_PROTOCOL_UDP = 0,
 	ZEGO_PROTOCOL_UDP_INTERNATIONAL = 1,
-	ZEGO_PROTOCOL_CUSTOM = 2
+	ZEGO_PROTOCOL_UDP_WAWAJI,
+	ZEGO_PROTOCOL_CUSTOM
 }Version;
 
 class QZegoBase

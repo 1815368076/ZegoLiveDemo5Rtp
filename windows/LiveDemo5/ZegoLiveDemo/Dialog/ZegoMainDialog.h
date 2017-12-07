@@ -1,4 +1,4 @@
-#pragma execution_character_set("utf-8")
+﻿#pragma execution_character_set("utf-8")
 
 #ifndef ZEGOMAINDIALOG_H
 #define ZEGOMAINDIALOG_H
@@ -34,6 +34,14 @@
 #define pos_min_y  0
 #define pos_max_y  ui.m_zoneTitle->size().height()
 
+typedef enum _LiveMode
+{
+	MODE_SINGLE_ANCHOR = 0,
+	MODE_JOIN_PUBLISH,
+	MODE_MIX_STREAM,
+	MODE_PUBLISH_2_STREAM
+}LiveMode;
+
 class ZegoMainDialog : public QDialog
 {
 	Q_OBJECT
@@ -60,7 +68,6 @@ public slots:
 	void OnButtonSwitchVideoCapture();
 	void OnButtonSwitchVideoFilter();
 	void OnButtonSwitchSurfaceMerge();
-	void OnButtonSwitchPublish2Stream();
 	void OnButtonUploadLog();
 	void OnSaveUserIdChanged();
 	void OnSaveUserNameChanged();
@@ -98,7 +105,6 @@ private:
 	void removeStringListModelItem(QStringListModel * model, QString name);
 	void banSwitch();    //禁用未实现功能的按钮
 	QVector<QString> handleAppSign(QString appSign);
-
 	int getCameraIndexFromID(const QString& cameraID);
 private:
 	Ui::ZegoMainDialog ui;
@@ -113,7 +119,7 @@ private:
 	QByteArray json;
 
 	//用户当前选择的直播模式
-	int m_curMode;
+	//int m_curMode;
 
 	//直播属性为UDP,RTMP,国际版或自定义（0,1,2,3）
 	int m_versionMode;
@@ -167,6 +173,8 @@ private:
 	bool m_isUseSurfaceMerge = false;
 	//是否使用推两路流，默认不使用
 	bool m_isUsePublish2Stream = false;
+	//判断是否已经初始化dialog
+	bool m_initedDialog = false;
 };
 
 #endif // ZEGOMAINDIALOG_H

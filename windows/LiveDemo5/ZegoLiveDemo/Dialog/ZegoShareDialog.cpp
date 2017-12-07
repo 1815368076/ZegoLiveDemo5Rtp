@@ -26,7 +26,7 @@ void ZegoShareDialog::OnButtonCopy()
 	QClipboard *board = QApplication::clipboard();
 	board->setText(m_link);
 
-	QMessageBox::information(NULL, QStringLiteral("成功"), QStringLiteral("链接已复制到粘贴板"));
+	QMessageBox::information(NULL, tr("成功"), tr("链接已复制到粘贴板"));
 	this->close();
 }
 

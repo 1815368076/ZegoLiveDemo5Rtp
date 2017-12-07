@@ -890,7 +890,7 @@ QLabel:enabled{
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QComboBox" name="m_cbMircoPhone">
+                  <widget class="ZegoDeviceComboBox" name="m_cbMircoPhone">
                    <property name="minimumSize">
                     <size>
                      <width>260</width>
@@ -1010,7 +1010,7 @@ QLabel:enabled{
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QComboBox" name="m_cbCamera">
+                  <widget class="ZegoDeviceComboBox" name="m_cbCamera">
                    <property name="minimumSize">
                     <size>
                      <width>260</width>
@@ -1127,7 +1127,7 @@ QLabel:enabled{
                   </widget>
                  </item>
                  <item row="2" column="1">
-                  <widget class="QComboBox" name="m_cbCamera2">
+                  <widget class="ZegoDeviceComboBox" name="m_cbCamera2">
                    <property name="minimumSize">
                     <size>
                      <width>260</width>
@@ -2271,6 +2271,11 @@ color: #ffffff;
    <class>ZegoMicrophoneButton</class>
    <extends>QPushButton</extends>
    <header location="global">ZegoMicrophoneButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ZegoDeviceComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">ZegoDeviceComboBox.h</header>
   </customwidget>
  </customwidgets>
  <resources>

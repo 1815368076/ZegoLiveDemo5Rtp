@@ -84,6 +84,9 @@
     <Filter Include="ImageShow">
       <UniqueIdentifier>{06bf3868-ac16-4de3-b177-ca20516c6b12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Publish2Stream">
+      <UniqueIdentifier>{4254917c-09cf-4b8a-aa99-812dfc9f1cb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -254,6 +257,27 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ZegoMusicHookDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="Base\ZegoBaseDialog.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ZegoBaseDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ZegoBaseDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ZegoDeviceComboBox.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialog\ZegoPublish2StreamDialog.cpp">
+      <Filter>Publish2Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ZegoPublish2StreamDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ZegoPublish2StreamDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ZegoMainDialog.qrc">
@@ -334,6 +358,12 @@
     <CustomBuild Include="VideoFilter\ZegoVideoFilterDemo.h">
       <Filter>VideoFilter</Filter>
     </CustomBuild>
+    <CustomBuild Include="Base\ZegoBaseDialog.h">
+      <Filter>Base</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Dialog\ZegoPublish2StreamDialog.h">
+      <Filter>Publish2Stream</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ZegoLiveDemo.h">
@@ -391,6 +421,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="UI\ZegoImageButton.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\ZegoDeviceComboBox.h">
       <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
