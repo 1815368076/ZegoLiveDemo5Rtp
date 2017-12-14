@@ -32,7 +32,7 @@
  耳机插入状态下是否使用回声消除
  
  @param enable true 使用，false 不使用。默认 false
- @discussion 初始化 SDK 后，推流之前调用
+ @discussion 初始化 SDK 之前调用
  */
 - (void)enableAECWhenHeadsetDetected:(bool)enable;
 

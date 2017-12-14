@@ -579,6 +579,17 @@
 
 #pragma mark - ZegoRoomDelegate
 
+- (void)onTempBroken:(int)errorCode roomID:(NSString *)roomID {
+    NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"与服务器连接临时断开, error: %d", nil), errorCode];
+    [self addLogString:logString];
+    
+    self.toolViewController.joinLiveButton.enabled = NO;
+}
+
+- (void)onReconnect:(int)errorCode roomID:(NSString *)roomID {
+    self.toolViewController.joinLiveButton.enabled = YES;
+}
+
 - (void)onDisconnect:(int)errorCode roomID:(NSString *)roomID
 {
     NSString *logString = [NSString stringWithFormat:NSLocalizedString(@"连接失败, error: %d", nil), errorCode];

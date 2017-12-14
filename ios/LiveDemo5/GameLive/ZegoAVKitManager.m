@@ -234,6 +234,8 @@ Byte toByte(NSString* c)
     
     [self.zegoLiveApi setPublisherDelegate:self];
     
+//    [ZegoLiveRoomApi uploadLog];
+    
     [self loginChatRoom];
 }
 
@@ -252,7 +254,8 @@ Byte toByte(NSString* c)
         else
         {
             ZegoAVConfig *config = [ZegoAVConfig new];
-            config.videoEncodeResolution = CGSizeMake(640, 368);
+//            config.videoEncodeResolution = CGSizeMake(640, 368);
+            config.videoEncodeResolution = self.videoSize;
             config.fps = 25;
             config.bitrate = 800000;
             [self.zegoLiveApi setAVConfig:config];
