@@ -18,7 +18,7 @@ ZegoMoreAudienceDialog::ZegoMoreAudienceDialog(qreal dpi, SettingsPtr curSetting
 	:
 	m_strCurUserID(curUserID),
 	m_strCurUserName(curUserName),
-	ZegoBaseDialog(dpi, curSettings, room, curUserID, curUserName, lastDialog, parent)
+	ZegoBaseDialog(dpi, curSettings, room, curUserID, curUserName, lastDialog, false, parent)
 {
 	
 	//通过sdk的信号连接到本类的槽函数中

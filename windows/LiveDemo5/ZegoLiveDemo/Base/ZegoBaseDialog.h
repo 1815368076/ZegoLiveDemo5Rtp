@@ -66,7 +66,7 @@ class ZegoBaseDialog : public QDialog
 
 public:
 	ZegoBaseDialog(QWidget *parent = 0);
-	ZegoBaseDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent = 0);
+	ZegoBaseDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, bool isPublish2Stream, QDialog *parent = 0);
 	~ZegoBaseDialog();
 	void initDialog();
 
@@ -172,7 +172,8 @@ protected:
 	bool isUseDefaultAux = false;
 	bool m_isLiveFullScreen = false;
 	bool m_takeSnapShot = false;
-	
+	bool m_isPublish2StreamMode = false;
+
 	QVector<QString> m_vecAudioDeviceIDs;
 	QVector<QString> m_vecVideoDeviceIDs;
 

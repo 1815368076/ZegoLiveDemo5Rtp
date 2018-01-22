@@ -15,7 +15,7 @@ ZegoBaseDialog::ZegoBaseDialog(QWidget *parent)
 	connect(ui.m_bClose, &QPushButton::clicked, this, &ZegoBaseDialog::OnClickTitleButton);
 }
 
-ZegoBaseDialog::ZegoBaseDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent)
+ZegoBaseDialog::ZegoBaseDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, bool isPublish2Stream, QDialog *parent)
 	:m_dpi(dpi),
 	m_pAVSettings(curSettings),
 	m_pChatRoom(room),
@@ -23,6 +23,7 @@ ZegoBaseDialog::ZegoBaseDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room,
 	m_strCurUserName(curUserName),
 	m_bCKEnableMic(true),
 	m_bCKEnableSpeaker(true),
+	m_isPublish2StreamMode(isPublish2Stream),
 	m_lastDialog(lastDialog)
 {
 	ui.setupUi(this);
@@ -950,8 +951,8 @@ void ZegoBaseDialog::OnVideoDeviceChanged(const QString& strDeviceId, const QStr
 			ui.m_cbCamera2->setNewModelWithoutSignal();
 			
 		}
-		//当前摄像头有两个的话，将最新加入的摄像头分配给摄像头2
-		else if (m_vecVideoDeviceIDs.size() == 2)
+		//当前摄像头有两个的话，并且以推双流模式开播时，将最新加入的摄像头分配给摄像头2
+		else if (m_vecVideoDeviceIDs.size() == 2 && m_isPublish2StreamMode)
 		{
 			LIVEROOM::StopPreview(ZEGO::AV::PUBLISH_CHN_AUX);
 			LIVEROOM::SetVideoDevice(strDeviceId.toStdString().c_str(), ZEGO::AV::PUBLISH_CHN_AUX);
@@ -1448,9 +1449,11 @@ void ZegoBaseDialog::OnSwitchVideoDevice(int id)
 		update();
 
 		LIVEROOM::EnableCamera(true);
-		LIVEROOM::EnableCamera(true, ZEGO::AV::PUBLISH_CHN_AUX);
+		if(m_isPublish2StreamMode)
+		    LIVEROOM::EnableCamera(true, ZEGO::AV::PUBLISH_CHN_AUX);
 		LIVEROOM::StartPreview();
-		LIVEROOM::StartPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+		if (m_isPublish2StreamMode)
+		    LIVEROOM::StartPreview(ZEGO::AV::PUBLISH_CHN_AUX);
 
 		qDebug() << "[MoreAnchorDialog::VideoDevice_Changed_1]: current video device_main : " << m_pAVSettings->GetCameraId() << " video device_aux : " << m_pAVSettings->GetCameraId2();
 	}

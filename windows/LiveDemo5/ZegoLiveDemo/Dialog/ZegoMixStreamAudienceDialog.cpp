@@ -14,7 +14,7 @@ ZegoMixStreamAudienceDialog::ZegoMixStreamAudienceDialog(QWidget *parent)
 ZegoMixStreamAudienceDialog::ZegoMixStreamAudienceDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent)
 	:m_strCurUserID(curUserID),
 	m_strCurUserName(curUserName),
-	ZegoBaseDialog(dpi, curSettings, room, curUserID, curUserName, lastDialog, parent)
+	ZegoBaseDialog(dpi, curSettings, room, curUserID, curUserName, lastDialog, false, parent)
 {
 	//通过sdk的信号连接到本类的槽函数中
 	connect(GetAVSignal(), &QZegoAVSignal::sigLoginRoom, this, &ZegoMixStreamAudienceDialog::OnLoginRoom);

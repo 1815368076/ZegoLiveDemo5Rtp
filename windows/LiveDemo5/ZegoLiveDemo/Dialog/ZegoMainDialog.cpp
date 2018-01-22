@@ -280,6 +280,7 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	{
 		ui.m_cbMircoPhone->setCurrentIndex(curSelectionIndex);
 		curSettings->SetMicrophoneId(m_vecAudioDeviceIDs[curSelectionIndex]);
+		LIVEROOM::SetAudioDevice(AV::AudioDeviceType::AudioDevice_Input, pDeviceList[curSelectionIndex].szDeviceId);
 	}
 
 	qDebug() << "[MainDialog::EnumAudioDevice]:current audio device : " << curSettings->GetMircophoneId();
@@ -308,6 +309,7 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	{
 		ui.m_cbCamera->setCurrentIndex(curSelectionIndex);
 		curSettings->SetCameraId(m_vecVideoDeviceIDs[curSelectionIndex]);
+		LIVEROOM::SetVideoDevice(pDeviceList[curSelectionIndex].szDeviceId);
 	}
 	qDebug() << "[MainDialog::EnumVideoDevice]:current video device_main : " << curSettings->GetCameraId();
 
@@ -332,6 +334,8 @@ void ZegoMainDialog::EnumVideoAndAudioDevice(SettingsPtr curSettings)
 	{
 		ui.m_cbCamera2->setCurrentIndex(curSelectionIndex);
 		curSettings->SetCameraId2(m_vecVideoDeviceIDs[curSelectionIndex]);
+		std::string aux_deviceId = m_vecVideoDeviceIDs[curSelectionIndex].toStdString();
+		LIVEROOM::SetVideoDevice(aux_deviceId.c_str(), ZEGO::AV::PUBLISH_CHN_AUX);
 	}
 
 	qDebug() << "[MainDialog::EnumVideoDevice]:current video device_aux : " << curSettings->GetCameraId2();

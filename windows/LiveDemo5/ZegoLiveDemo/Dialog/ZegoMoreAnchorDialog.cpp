@@ -15,7 +15,7 @@ ZegoMoreAnchorDialog::ZegoMoreAnchorDialog(QWidget *parent)
 ZegoMoreAnchorDialog::ZegoMoreAnchorDialog(qreal dpi, SettingsPtr curSettings, RoomPtr room, QString curUserID, QString curUserName, QDialog *lastDialog, QDialog *parent)
 	:m_strCurUserID(curUserID),
 	m_strCurUserName(curUserName),
-	ZegoBaseDialog(dpi, curSettings, room, curUserID, curUserName, lastDialog, parent)
+	ZegoBaseDialog(dpi, curSettings, room, curUserID, curUserName, lastDialog, false, parent)
 {
 	//ui.setupUi(this);
 	//通过sdk的信号连接到本类的槽函数中
