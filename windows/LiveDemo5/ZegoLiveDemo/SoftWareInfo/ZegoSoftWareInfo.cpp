@@ -1,6 +1,7 @@
 ﻿#include "ZegoSoftWareInfo.h"
 
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN32
+#ifdef Q_PROCESSOR_X86_32
 CSoftInfo::CSoftInfo()
 {
     struct SoftInfo softinfo;
@@ -199,4 +200,5 @@ void CSoftInfo::GetSystemPatchesName (QVector<LPCTSTR>& lpszSoftName)
     }
 }
 
+#endif
 #endif

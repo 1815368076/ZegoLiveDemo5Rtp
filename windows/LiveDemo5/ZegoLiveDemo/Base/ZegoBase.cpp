@@ -4,8 +4,6 @@
 
 #include "./IncludeZegoLiveRoomApi.h"
 
-//#define  ZEGO_PROTOCOL_UDP
-//#ifdef ZEGO_PROTOCOL_UDP
 static unsigned long g_dwAppID_Udp = 1739272706;
 static unsigned char g_bufSignKey_Udp[] =
 {
@@ -15,7 +13,6 @@ static unsigned char g_bufSignKey_Udp[] =
 	0xe0, 0xc8, 0x99, 0xae, 0x82, 0xc0, 0xf6, 0xf8
 };
 
-//#elif defined ZEGO_PROTOCOL_UDP_INTERNATIONAL
 static unsigned long g_dwAppID_International = 3322882036;
 static unsigned char g_bufSignKey_International[] =
 { 
@@ -25,7 +22,6 @@ static unsigned char g_bufSignKey_International[] =
 	0x32, 0xd2, 0xfe, 0x22, 0x5b, 0x6b, 0x2b, 0x2f 
 };
 
-//#else
 static unsigned long  g_dwAppID_Wawaji = 3177435262;
 static unsigned char g_bufSignKey_Wawaji[] =
 {
@@ -34,19 +30,26 @@ static unsigned char g_bufSignKey_Wawaji[] =
 	0xc9, 0xb6, 0x2b, 0x0f, 0x99, 0x75, 0x3a, 0xb3, 
 	0xc1, 0x7e, 0xc4, 0x54, 0x30, 0x93, 0x28, 0xfa
 };
-//#endif
+
+static unsigned long  g_dwAppID_Custom = 0;
+static unsigned char g_bufSignKey_Custom[] =
+{
+	0x0
+};
 
 QZegoBase::QZegoBase(void) : m_dwInitedMask(INIT_NONE)
 {
 	//日志存放的路径
-	m_strLogPathUTF8 = QDir::currentPath() + "/ZegoLog/";
+	//m_strLogPathUTF8 = QDir::currentPath() + "/ZegoLog/";
 	appIDs.push_back(g_dwAppID_Udp);
 	appIDs.push_back(g_dwAppID_International);
 	appIDs.push_back(g_dwAppID_Wawaji);
+	appIDs.push_back(g_dwAppID_Custom);
 
 	appSigns.push_back(g_bufSignKey_Udp);
 	appSigns.push_back(g_bufSignKey_International);
 	appSigns.push_back(g_bufSignKey_Wawaji);
+	appSigns.push_back(g_bufSignKey_Custom);
 
 	m_pAVSignal = new QZegoAVSignal;
 
@@ -64,7 +67,7 @@ bool QZegoBase::InitAVSDK(SettingsPtr pCurSetting, QString userID, QString userN
 	{
 		qDebug() << "SDK init";
 		//Qstring对象.toLocal8Bit().data()用于将QString转为const char*
-		LIVEROOM::SetLogDir(m_strLogPathUTF8.toStdString().c_str());
+		LIVEROOM::SetLogDir(nullptr);
 		LIVEROOM::SetVerbose(true);
 		LIVEROOM::SetBusinessType(0);
 		LIVEROOM::SetUser(userID.toStdString().data(), userName.toStdString().data());
@@ -96,10 +99,10 @@ bool QZegoBase::InitAVSDK(SettingsPtr pCurSetting, QString userID, QString userN
 		}
 		LIVEROOM::SetVideoFilterFactory(g_filterFactory);
 
-#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 		//是否使用截屏推流
 		if (isSurfaceMerge)
-		SurfaceMerge::Init();
+			SurfaceMergeController::getInstance().init();
 #endif
 		//设置回调
 		LIVEROOM::SetLivePublisherCallback(m_pAVSignal);
@@ -107,8 +110,8 @@ bool QZegoBase::InitAVSDK(SettingsPtr pCurSetting, QString userID, QString userN
 		LIVEROOM::SetRoomCallback(m_pAVSignal);
 		LIVEROOM::SetIMCallback(m_pAVSignal);
 		LIVEROOM::SetDeviceStateCallback(m_pAVSignal);
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
-		SurfaceMerge::SetMergeCallback(m_pAVSignal);
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
+		SurfaceMergeController::getInstance().setMergeCallback(m_pAVSignal);
 #endif
 		LIVEROOM::InitSDK(appIDs[key], appSigns[key], 32);
 	}
@@ -149,13 +152,13 @@ void QZegoBase::UninitAVSDK(void)
 		LIVEROOM::SetRoomCallback(nullptr);
 		LIVEROOM::SetIMCallback(nullptr);
 		LIVEROOM::SetDeviceStateCallback(nullptr);
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
-		SurfaceMerge::SetMergeCallback(nullptr);
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
+		SurfaceMergeController::getInstance().setMergeCallback(nullptr);
 #endif
 
-#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE) 
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE) 
 		if (isSurfaceMerge)
-			SurfaceMerge::UnInit();
+			SurfaceMergeController::getInstance().uninit();
 #endif
 		LIVEROOM::UnInitSDK();
 

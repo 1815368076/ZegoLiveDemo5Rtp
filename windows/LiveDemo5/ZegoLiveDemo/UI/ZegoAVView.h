@@ -12,8 +12,9 @@
 #include <QMessageBox>
 #include <QLabel>
 #include <QGraphicsProxyWidget>
+#include <QScrollBar>
 #define USE_SURFACE_MERGE
-#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 #include "ZegoSurfaceMerge.h"
 #include "ZegoSurfaceMergeDefine.h"
 using namespace ZEGO;
@@ -44,7 +45,7 @@ public:
 	void setSurfaceMergeView(bool state);
 	bool getSurfaceMergeView();
 
-#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 	void setSurfaceMergeItemRect(SurfaceMerge::ZegoCaptureItem _screen,
 	                         SurfaceMerge::ZegoCaptureItem _camera);
 #endif
@@ -97,7 +98,7 @@ public:
 	QZegoAVScene(QWidget * parent = 0);
 	~QZegoAVScene();
 
-#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 	void setSurfaceMergeItemRect(SurfaceMerge::ZegoCaptureItem _screen,
 		SurfaceMerge::ZegoCaptureItem _camera);
 
@@ -110,7 +111,7 @@ protected:
 	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 #endif
 
-#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 private:
 	bool isMousePressed = false;
 	SurfaceMerge::ZegoCaptureItem screen;

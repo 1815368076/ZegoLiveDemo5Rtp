@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include <QVector>
 #include <QString>
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN32
+#ifdef Q_PROCESSOR_X86_32
 #include <windows.h>
 #include <tchar.h>
 
@@ -69,4 +70,5 @@ public:
     // 获取所有已安装系统补丁名
     void GetSystemPatchesName (QVector<LPCTSTR>& lpszSoftName);
 };
+#endif
 #endif

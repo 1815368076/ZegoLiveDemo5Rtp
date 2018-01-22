@@ -20,8 +20,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_ZegoBaseDialog_t {
-    QByteArrayData data[79];
-    char stringdata0[1071];
+    QByteArrayData data[74];
+    char stringdata0[996];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -82,33 +82,28 @@ QT_MOC_LITERAL(48, 592, 13), // "strDeviceName"
 QT_MOC_LITERAL(49, 606, 15), // "AV::DeviceState"
 QT_MOC_LITERAL(50, 622, 5), // "state"
 QT_MOC_LITERAL(51, 628, 20), // "OnVideoDeviceChanged"
-QT_MOC_LITERAL(52, 649, 20), // "OnSurfaceMergeResult"
-QT_MOC_LITERAL(53, 670, 16), // "surfaceMergeData"
-QT_MOC_LITERAL(54, 687, 10), // "datalength"
-QT_MOC_LITERAL(55, 698, 17), // "OnPreviewSnapshot"
-QT_MOC_LITERAL(56, 716, 6), // "pImage"
-QT_MOC_LITERAL(57, 723, 10), // "OnSnapshot"
-QT_MOC_LITERAL(58, 734, 8), // "streamID"
-QT_MOC_LITERAL(59, 743, 18), // "OnClickTitleButton"
-QT_MOC_LITERAL(60, 762, 7), // "OnClose"
-QT_MOC_LITERAL(61, 770, 19), // "OnButtonSendMessage"
-QT_MOC_LITERAL(62, 790, 20), // "OnButtonSoundCapture"
-QT_MOC_LITERAL(63, 811, 18), // "OnButtonMircoPhone"
-QT_MOC_LITERAL(64, 830, 13), // "OnButtonSound"
-QT_MOC_LITERAL(65, 844, 12), // "OnProgChange"
-QT_MOC_LITERAL(66, 857, 11), // "OnShareLink"
-QT_MOC_LITERAL(67, 869, 11), // "OnButtonAux"
-QT_MOC_LITERAL(68, 881, 17), // "OnSnapshotPreview"
-QT_MOC_LITERAL(69, 899, 22), // "OnSnapshotWithStreamID"
-QT_MOC_LITERAL(70, 922, 15), // "OnUseDefaultAux"
-QT_MOC_LITERAL(71, 938, 17), // "OnGetMusicAppPath"
-QT_MOC_LITERAL(72, 956, 7), // "exePath"
-QT_MOC_LITERAL(73, 964, 19), // "OnSwitchAudioDevice"
-QT_MOC_LITERAL(74, 984, 2), // "id"
-QT_MOC_LITERAL(75, 987, 19), // "OnSwitchVideoDevice"
-QT_MOC_LITERAL(76, 1007, 20), // "OnSwitchVideoDevice2"
-QT_MOC_LITERAL(77, 1028, 22), // "OnButtonShowFullScreen"
-QT_MOC_LITERAL(78, 1051, 19) // "OnShowSnapShotImage"
+QT_MOC_LITERAL(52, 649, 17), // "OnPreviewSnapshot"
+QT_MOC_LITERAL(53, 667, 6), // "pImage"
+QT_MOC_LITERAL(54, 674, 10), // "OnSnapshot"
+QT_MOC_LITERAL(55, 685, 8), // "streamID"
+QT_MOC_LITERAL(56, 694, 18), // "OnClickTitleButton"
+QT_MOC_LITERAL(57, 713, 7), // "OnClose"
+QT_MOC_LITERAL(58, 721, 19), // "OnButtonSendMessage"
+QT_MOC_LITERAL(59, 741, 20), // "OnButtonSoundCapture"
+QT_MOC_LITERAL(60, 762, 18), // "OnButtonMircoPhone"
+QT_MOC_LITERAL(61, 781, 13), // "OnButtonSound"
+QT_MOC_LITERAL(62, 795, 12), // "OnProgChange"
+QT_MOC_LITERAL(63, 808, 11), // "OnShareLink"
+QT_MOC_LITERAL(64, 820, 11), // "OnButtonAux"
+QT_MOC_LITERAL(65, 832, 17), // "OnSnapshotPreview"
+QT_MOC_LITERAL(66, 850, 22), // "OnSnapshotWithStreamID"
+QT_MOC_LITERAL(67, 873, 15), // "OnUseDefaultAux"
+QT_MOC_LITERAL(68, 889, 19), // "OnSwitchAudioDevice"
+QT_MOC_LITERAL(69, 909, 2), // "id"
+QT_MOC_LITERAL(70, 912, 19), // "OnSwitchVideoDevice"
+QT_MOC_LITERAL(71, 932, 20), // "OnSwitchVideoDevice2"
+QT_MOC_LITERAL(72, 953, 22), // "OnButtonShowFullScreen"
+QT_MOC_LITERAL(73, 976, 19) // "OnShowSnapShotImage"
 
     },
     "ZegoBaseDialog\0sigSaveVideoSettings\0"
@@ -129,15 +124,13 @@ QT_MOC_LITERAL(78, 1051, 19) // "OnShowSnapShotImage"
     "OnAudioDeviceChanged\0AV::AudioDeviceType\0"
     "deviceType\0strDeviceId\0strDeviceName\0"
     "AV::DeviceState\0state\0OnVideoDeviceChanged\0"
-    "OnSurfaceMergeResult\0surfaceMergeData\0"
-    "datalength\0OnPreviewSnapshot\0pImage\0"
-    "OnSnapshot\0streamID\0OnClickTitleButton\0"
-    "OnClose\0OnButtonSendMessage\0"
-    "OnButtonSoundCapture\0OnButtonMircoPhone\0"
-    "OnButtonSound\0OnProgChange\0OnShareLink\0"
-    "OnButtonAux\0OnSnapshotPreview\0"
-    "OnSnapshotWithStreamID\0OnUseDefaultAux\0"
-    "OnGetMusicAppPath\0exePath\0OnSwitchAudioDevice\0"
+    "OnPreviewSnapshot\0pImage\0OnSnapshot\0"
+    "streamID\0OnClickTitleButton\0OnClose\0"
+    "OnButtonSendMessage\0OnButtonSoundCapture\0"
+    "OnButtonMircoPhone\0OnButtonSound\0"
+    "OnProgChange\0OnShareLink\0OnButtonAux\0"
+    "OnSnapshotPreview\0OnSnapshotWithStreamID\0"
+    "OnUseDefaultAux\0OnSwitchAudioDevice\0"
     "id\0OnSwitchVideoDevice\0OnSwitchVideoDevice2\0"
     "OnButtonShowFullScreen\0OnShowSnapShotImage"
 };
@@ -149,7 +142,7 @@ static const uint qt_meta_data_ZegoBaseDialog[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      33,   14, // methods
+      31,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -157,41 +150,39 @@ static const uint qt_meta_data_ZegoBaseDialog[] = {
        2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,  179,    2, 0x06 /* Public */,
-       5,    1,  182,    2, 0x06 /* Public */,
+       1,    1,  169,    2, 0x06 /* Public */,
+       5,    1,  172,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       8,    6,  185,    2, 0x09 /* Protected */,
-      18,    2,  198,    2, 0x09 /* Protected */,
-      21,    2,  203,    2, 0x09 /* Protected */,
-      23,    4,  208,    2, 0x09 /* Protected */,
-      28,    4,  217,    2, 0x09 /* Protected */,
-      29,    5,  226,    2, 0x09 /* Protected */,
-      37,    4,  237,    2, 0x09 /* Protected */,
-      41,    2,  246,    2, 0x09 /* Protected */,
-      44,    4,  251,    2, 0x09 /* Protected */,
-      51,    3,  260,    2, 0x09 /* Protected */,
-      52,    2,  267,    2, 0x09 /* Protected */,
-      55,    1,  272,    2, 0x09 /* Protected */,
-      57,    2,  275,    2, 0x09 /* Protected */,
-      59,    0,  280,    2, 0x0a /* Public */,
-      60,    0,  281,    2, 0x0a /* Public */,
-      61,    0,  282,    2, 0x0a /* Public */,
-      62,    0,  283,    2, 0x0a /* Public */,
-      63,    0,  284,    2, 0x0a /* Public */,
-      64,    0,  285,    2, 0x0a /* Public */,
-      65,    0,  286,    2, 0x0a /* Public */,
-      66,    0,  287,    2, 0x0a /* Public */,
-      67,    0,  288,    2, 0x0a /* Public */,
-      68,    0,  289,    2, 0x0a /* Public */,
-      69,    1,  290,    2, 0x0a /* Public */,
-      70,    1,  293,    2, 0x0a /* Public */,
-      71,    1,  296,    2, 0x0a /* Public */,
-      73,    1,  299,    2, 0x0a /* Public */,
-      75,    1,  302,    2, 0x0a /* Public */,
-      76,    1,  305,    2, 0x0a /* Public */,
-      77,    0,  308,    2, 0x0a /* Public */,
-      78,    1,  309,    2, 0x0a /* Public */,
+       8,    6,  175,    2, 0x09 /* Protected */,
+      18,    2,  188,    2, 0x09 /* Protected */,
+      21,    2,  193,    2, 0x09 /* Protected */,
+      23,    4,  198,    2, 0x09 /* Protected */,
+      28,    4,  207,    2, 0x09 /* Protected */,
+      29,    5,  216,    2, 0x09 /* Protected */,
+      37,    4,  227,    2, 0x09 /* Protected */,
+      41,    2,  236,    2, 0x09 /* Protected */,
+      44,    4,  241,    2, 0x09 /* Protected */,
+      51,    3,  250,    2, 0x09 /* Protected */,
+      52,    1,  257,    2, 0x09 /* Protected */,
+      54,    2,  260,    2, 0x09 /* Protected */,
+      56,    0,  265,    2, 0x0a /* Public */,
+      57,    0,  266,    2, 0x0a /* Public */,
+      58,    0,  267,    2, 0x0a /* Public */,
+      59,    0,  268,    2, 0x0a /* Public */,
+      60,    0,  269,    2, 0x0a /* Public */,
+      61,    0,  270,    2, 0x0a /* Public */,
+      62,    0,  271,    2, 0x0a /* Public */,
+      63,    0,  272,    2, 0x0a /* Public */,
+      64,    0,  273,    2, 0x0a /* Public */,
+      65,    0,  274,    2, 0x0a /* Public */,
+      66,    1,  275,    2, 0x0a /* Public */,
+      67,    1,  278,    2, 0x0a /* Public */,
+      68,    1,  281,    2, 0x0a /* Public */,
+      70,    1,  284,    2, 0x0a /* Public */,
+      71,    1,  287,    2, 0x0a /* Public */,
+      72,    0,  290,    2, 0x0a /* Public */,
+      73,    1,  291,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    4,
@@ -208,9 +199,8 @@ static const uint qt_meta_data_ZegoBaseDialog[] = {
     QMetaType::Void, QMetaType::QString, 0x80000000 | 42,   20,   43,
     QMetaType::Void, 0x80000000 | 45, QMetaType::QString, QMetaType::QString, 0x80000000 | 49,   46,   47,   48,   50,
     QMetaType::Void, QMetaType::QString, QMetaType::QString, 0x80000000 | 49,   47,   48,   50,
-    QMetaType::Void, 0x80000000 | 30, QMetaType::Int,   53,   54,
-    QMetaType::Void, QMetaType::VoidStar,   56,
-    QMetaType::Void, QMetaType::VoidStar, QMetaType::QString,   56,   58,
+    QMetaType::Void, QMetaType::VoidStar,   53,
+    QMetaType::Void, QMetaType::VoidStar, QMetaType::QString,   53,   55,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -221,12 +211,11 @@ static const uint qt_meta_data_ZegoBaseDialog[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,   58,
+    QMetaType::Void, QMetaType::QString,   55,
     QMetaType::Void, QMetaType::Bool,   50,
-    QMetaType::Void, QMetaType::QString,   72,
-    QMetaType::Void, QMetaType::Int,   74,
-    QMetaType::Void, QMetaType::Int,   74,
-    QMetaType::Void, QMetaType::Int,   74,
+    QMetaType::Void, QMetaType::Int,   69,
+    QMetaType::Void, QMetaType::Int,   69,
+    QMetaType::Void, QMetaType::Int,   69,
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 6,    7,
 
@@ -251,27 +240,25 @@ void ZegoBaseDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 9: _t->OnRecvRoomMessage((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< QVector<RoomMsgPtr>(*)>(_a[2]))); break;
         case 10: _t->OnAudioDeviceChanged((*reinterpret_cast< AV::AudioDeviceType(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< const QString(*)>(_a[3])),(*reinterpret_cast< AV::DeviceState(*)>(_a[4]))); break;
         case 11: _t->OnVideoDeviceChanged((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< AV::DeviceState(*)>(_a[3]))); break;
-        case 12: _t->OnSurfaceMergeResult((*reinterpret_cast< unsigned char*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
-        case 13: _t->OnPreviewSnapshot((*reinterpret_cast< void*(*)>(_a[1]))); break;
-        case 14: _t->OnSnapshot((*reinterpret_cast< void*(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2]))); break;
-        case 15: _t->OnClickTitleButton(); break;
-        case 16: _t->OnClose(); break;
-        case 17: _t->OnButtonSendMessage(); break;
-        case 18: _t->OnButtonSoundCapture(); break;
-        case 19: _t->OnButtonMircoPhone(); break;
-        case 20: _t->OnButtonSound(); break;
-        case 21: _t->OnProgChange(); break;
-        case 22: _t->OnShareLink(); break;
-        case 23: _t->OnButtonAux(); break;
-        case 24: _t->OnSnapshotPreview(); break;
-        case 25: _t->OnSnapshotWithStreamID((*reinterpret_cast< const QString(*)>(_a[1]))); break;
-        case 26: _t->OnUseDefaultAux((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 27: _t->OnGetMusicAppPath((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 28: _t->OnSwitchAudioDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 29: _t->OnSwitchVideoDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 30: _t->OnSwitchVideoDevice2((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 31: _t->OnButtonShowFullScreen(); break;
-        case 32: _t->OnShowSnapShotImage((*reinterpret_cast< QImage*(*)>(_a[1]))); break;
+        case 12: _t->OnPreviewSnapshot((*reinterpret_cast< void*(*)>(_a[1]))); break;
+        case 13: _t->OnSnapshot((*reinterpret_cast< void*(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2]))); break;
+        case 14: _t->OnClickTitleButton(); break;
+        case 15: _t->OnClose(); break;
+        case 16: _t->OnButtonSendMessage(); break;
+        case 17: _t->OnButtonSoundCapture(); break;
+        case 18: _t->OnButtonMircoPhone(); break;
+        case 19: _t->OnButtonSound(); break;
+        case 20: _t->OnProgChange(); break;
+        case 21: _t->OnShareLink(); break;
+        case 22: _t->OnButtonAux(); break;
+        case 23: _t->OnSnapshotPreview(); break;
+        case 24: _t->OnSnapshotWithStreamID((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 25: _t->OnUseDefaultAux((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 26: _t->OnSwitchAudioDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 27: _t->OnSwitchVideoDevice((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 28: _t->OnSwitchVideoDevice2((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 29: _t->OnButtonShowFullScreen(); break;
+        case 30: _t->OnShowSnapShotImage((*reinterpret_cast< QImage*(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -334,13 +321,13 @@ int ZegoBaseDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 33)
+        if (_id < 31)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 33;
+        _id -= 31;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 33)
+        if (_id < 31)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 33;
+        _id -= 31;
     }
     return _id;
 }

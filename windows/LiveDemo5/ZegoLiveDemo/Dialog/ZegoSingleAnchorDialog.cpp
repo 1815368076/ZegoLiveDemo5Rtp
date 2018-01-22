@@ -81,8 +81,12 @@ void ZegoSingleAnchorDialog::StartPublishStream()
 		qDebug() << "publish nIndex = " << nIndex;
 		if (m_pAVSettings->GetSurfaceMerge())
 		{
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
-			StartSurfaceMerge();
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE) 
+			SurfaceMergeController::getInstance().setSurfaceSize(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
+			SurfaceMergeController::getInstance().setSurfaceFps(m_pAVSettings->GetFps());
+			SurfaceMergeController::getInstance().setSurfaceCameraId(m_pAVSettings->GetCameraId());
+			SurfaceMergeController::getInstance().setRenderView(AVViews.last());
+			SurfaceMergeController::getInstance().startSurfaceMerge();
 #endif
 		}
 		else
@@ -118,7 +122,7 @@ void ZegoSingleAnchorDialog::StopPublishStream(const QString& streamID)
 
 	if (m_pAVSettings->GetSurfaceMerge())
 	{
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE) 
 		SurfaceMerge::SetRenderView(nullptr);
 		SurfaceMerge::UpdateSurface(nullptr, 0);
 #endif
@@ -137,8 +141,7 @@ void ZegoSingleAnchorDialog::StopPublishStream(const QString& streamID)
 	StreamPtr pStream = m_pChatRoom->removeStream(streamID);
 	FreeAVView(pStream);
     m_strPublishStreamID = "";
-	//AVViews.last()->setViewStreamID(m_strPublishStreamID);
-	//m_AuxLiveView->setViewStreamID("");
+
 }
 
 void ZegoSingleAnchorDialog::GetOut()
@@ -234,6 +237,7 @@ void ZegoSingleAnchorDialog::OnPublishStateUpdate(int stateCode, const QString& 
 			QJsonDocument doc = QJsonDocument::fromVariant(vMap);
 			QByteArray jba = doc.toJson();
 			QString jsonString = QString(jba);
+			jsonString = jsonString.simplified();
 			//设置流附加消息，将混流信息传入
 			LIVEROOM::SetPublishStreamExtraInfo(jsonString.toStdString().c_str());
 		}
@@ -242,7 +246,7 @@ void ZegoSingleAnchorDialog::OnPublishStateUpdate(int stateCode, const QString& 
 		ui.m_bRequestJoinLive->setText(tr("停止直播"));
 		ui.m_bRequestJoinLive->setEnabled(true);
 		//推流成功后启动计时器监听麦克风音量
-		timer->start(0);
+		timer->start(200);
 		
 	}
 	else
@@ -280,12 +284,17 @@ void ZegoSingleAnchorDialog::OnButtonSwitchPublish()
 
 		StopPublishStream(m_strPublishStreamID);
 		
+		if (timer->isActive())
+			timer->stop();
+		ui.m_bProgMircoPhone->setMyEnabled(false);
+		ui.m_bProgMircoPhone->update();
+
 		if (ui.m_bAux->text() == tr("关闭混音"))
 		{
 			ui.m_bAux->setText(tr("关闭中..."));
 			ui.m_bAux->setEnabled(false);
 
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 			if (isUseDefaultAux)
 			{
 				EndAux();

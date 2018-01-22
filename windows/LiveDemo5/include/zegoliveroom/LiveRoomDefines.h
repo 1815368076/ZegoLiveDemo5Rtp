@@ -57,7 +57,17 @@ namespace ZEGO
             int quality;            ///< 质量(0~3)
         };
         
-        typedef ZegoPublishQuality ZegoPlayQuality;
+        struct ZegoPlayQuality
+        {
+            double fps;             ///< 视频帧率
+            double kbps;            ///< 视频码率(kb/s)
+            double akbps;           ///< 音频码率(kb/s)
+            double audioBreakRate;  ///< 音频卡顿率(次/min)
+            int rtt;                ///< 延时(ms)
+            int pktLostRate;        ///< 丢包率(0~255)
+            
+            int quality;            ///< 质量(0~3)
+        };
     }
 }
 

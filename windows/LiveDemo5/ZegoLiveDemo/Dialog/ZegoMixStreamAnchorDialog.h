@@ -23,7 +23,7 @@ protected slots:
 	void OnPlayStateUpdate(int stateCode, const QString& streamId);
 	void OnJoinLiveRequest(int seq, const QString& fromUserId, const QString& fromUserName, const QString& roomId);
 	void OnMixStream(unsigned int errorCode, const QString& hlsUrl, const QString& rtmpUrl, const QString& mixStreamID, int seq);
-
+	void OnKickOut(int reason, const QString& roomId);
 private slots:
 	void OnButtonSwitchPublish();
 
@@ -36,6 +36,7 @@ private:
 
 	//混流需要调用的函数
 	void StartMixStream();
+	void StopMixStream();
 	void MixStreamAdd(QVector<StreamPtr> vStreamList, const QString& roomId);
 	void MixStreamDelete(QVector<StreamPtr> vStreamList, const QString& roomId);
 	bool isStreamExisted(QString streamID);

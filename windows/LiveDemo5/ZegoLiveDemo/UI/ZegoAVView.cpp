@@ -7,7 +7,10 @@ QZegoAVView::QZegoAVView(ZegoDialogType dialogType, QWidget * parent) :
 	scene = new QZegoAVScene(this);
 	scene->setSceneRect(0, 0, dynamic_cast<QZegoAVView *>(scene->parent())->size().width(), dynamic_cast<QZegoAVView *>(scene->parent())->size().height());
     setScene(scene);
-
+	setStyleSheet("background-color: #383838");
+	//进房间闪白边的原因
+	this->horizontalScrollBar()->setVisible(false);
+	this->verticalScrollBar()->setVisible(false);
 	m_nAVQuality = -1;
 
 	//设置AVView不接受焦点，可去除因鼠标点击view时闪烁问题
@@ -49,7 +52,7 @@ bool QZegoAVView::getSurfaceMergeView()
 	return isSurfaceMergeView;
 }
 
-#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 void QZegoAVView::setSurfaceMergeItemRect(SurfaceMerge::ZegoCaptureItem _screen,
 	SurfaceMerge::ZegoCaptureItem _camera)
 {
@@ -252,7 +255,7 @@ QZegoAVScene::~QZegoAVScene()
 	return liveView->winId();
 }*/
 
-#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 void QZegoAVScene::setSurfaceMergeItemRect(ZEGO::SurfaceMerge::ZegoCaptureItem _screen,
 	ZEGO::SurfaceMerge::ZegoCaptureItem _camera)
 {

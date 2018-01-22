@@ -1,4 +1,6 @@
-﻿#ifndef ZEGOSHAREDIALOG_H
+﻿#pragma execution_character_set("utf-8")
+
+#ifndef ZEGOSHAREDIALOG_H
 #define ZEGOSHAREDIALOG_H
 
 #include <QtWidgets/QDialog>

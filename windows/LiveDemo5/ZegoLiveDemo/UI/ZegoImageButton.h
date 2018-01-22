@@ -11,9 +11,8 @@ public:
 	~ZegoImageButton();
 
 	void setButtonIcon(const QString& iconFileName, QIcon::Mode mode = QIcon::Mode::Normal, QIcon::State state = QIcon::State::Off);
-	void setDPI(qreal dpi);
 
 private:
-	qreal m_dpi;
 	QString iconFilePath;
 };
+

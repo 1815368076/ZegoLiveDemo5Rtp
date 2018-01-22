@@ -11,7 +11,7 @@
 
 #include "./LiveRoomDefines.h"
 #include "./LiveRoomCallback-Player.h"
-
+#include "./LiveRoomDefines-Player.h"
 
 namespace ZEGO
 {
@@ -235,6 +235,13 @@ namespace ZEGO
          @warning 已废弃，请使用 EnableSelectedAudioRecord
          */
         ZEGO_API bool EnableAudioRecord(bool bEnable, int nSampleRate = 44100);
+        
+        /**
+         设置回调, 接收媒体次要信息
+         
+         @param pCB 回调函数指针
+         */
+        ZEGO_API void SetMediaSideCallback(OnMediaSideCallback* pCB);
     }
 }
 

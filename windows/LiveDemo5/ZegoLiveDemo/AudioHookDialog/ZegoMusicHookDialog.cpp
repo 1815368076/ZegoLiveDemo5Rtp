@@ -1,7 +1,7 @@
 ﻿#include "ZegoMusicHookDialog.h"
 #include <QDebug>
 
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 ZegoMusicHookDialog::ZegoMusicHookDialog(QWidget *parent) : QDialog(parent)
 {
 	ui.setupUi(this);
@@ -9,7 +9,7 @@ ZegoMusicHookDialog::ZegoMusicHookDialog(QWidget *parent) : QDialog(parent)
 	connect(ui.m_bClose, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnClose);
 	connect(ui.m_bReject, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnClose);
 
-#ifdef Q_OS_WIN
+
 	connect(ui.m_bAccept, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnSendCustomAppPath);
 
 	connect(ui.m_bOpenFile, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnSelectedMusicApp);
@@ -17,10 +17,12 @@ ZegoMusicHookDialog::ZegoMusicHookDialog(QWidget *parent) : QDialog(parent)
 	connect(ui.m_bKuGou, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnSelectedMusicApp);
 	connect(ui.m_bQQMusic, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnSelectedMusicApp);
 	connect(ui.m_bKuWo, &QPushButton::clicked, this, &ZegoMusicHookDialog::OnSelectedMusicApp);
-#endif
+
     
 	this->setFixedSize(QSize(700, 480));
 	this->setWindowFlags(Qt::FramelessWindowHint);//去掉标题栏
+
+	initButtonIcon();
 }
 
 ZegoMusicHookDialog::~ZegoMusicHookDialog()
@@ -28,7 +30,16 @@ ZegoMusicHookDialog::~ZegoMusicHookDialog()
 
 }
 
-#ifdef Q_OS_WIN
+void ZegoMusicHookDialog::initButtonIcon()
+{
+	ui.m_bQQMusic->setButtonIcon("QQMusic");
+	ui.m_bKuGou->setButtonIcon("KuGou");
+	ui.m_bCloudNet->setButtonIcon("CloudNet");
+	ui.m_bKuWo->setButtonIcon("KuWo");
+
+	ui.m_bClose->setButtonIcon("close");
+}
+
 void ZegoMusicHookDialog::searchMusicAppFromReg()
 {
 	CSoftInfo allAppInfo;
@@ -296,5 +307,4 @@ void ZegoMusicHookDialog::mouseReleaseEvent(QMouseEvent *event)
 
 #endif
 
-#endif
 

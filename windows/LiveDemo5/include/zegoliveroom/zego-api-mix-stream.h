@@ -1,8 +1,6 @@
 #ifndef zego_api_mix_stream_h
 #define zego_api_mix_stream_h
 
-#include "zego-api-defines.h"
-
 namespace ZEGO
 {
 namespace MIXSTREAM
@@ -14,7 +12,7 @@ namespace MIXSTREAM
         /// \brief 混流请求结果回调
         /// \param result 混流结果
         /// \param pszMixStreamID 混流 ID
-        /// \param seq
+        /// \param seq 请求 seq
         virtual void OnMixStream(const AV::ZegoMixStreamResult& result, const char* pszMixStreamID, int seq) = 0;
         
         virtual ~ IZegoMixStreamCallback() {}

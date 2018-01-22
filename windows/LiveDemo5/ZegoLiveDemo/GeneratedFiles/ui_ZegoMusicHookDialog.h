@@ -22,6 +22,7 @@
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include "ZegoImageButton.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -36,7 +37,7 @@ public:
     QSpacerItem *horizontalSpacer_9;
     QLabel *m_lbTitle;
     QSpacerItem *horizontalSpacer_10;
-    QPushButton *m_bClose;
+    ZegoImageButton *m_bClose;
     QSpacerItem *verticalSpacer;
     QLabel *m_lbTitleMain;
     QSpacerItem *verticalSpacer_2;
@@ -45,28 +46,28 @@ public:
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
     QSpacerItem *horizontalSpacer_12;
-    QPushButton *m_bCloudNet;
+    ZegoImageButton *m_bCloudNet;
     QSpacerItem *horizontalSpacer_13;
     QLabel *m_lbCloudNet;
     QSpacerItem *horizontalSpacer_5;
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout_3;
     QSpacerItem *horizontalSpacer_14;
-    QPushButton *m_bKuGou;
+    ZegoImageButton *m_bKuGou;
     QSpacerItem *horizontalSpacer_15;
     QLabel *m_lbKuGou;
     QSpacerItem *horizontalSpacer_6;
     QVBoxLayout *verticalLayout_3;
     QHBoxLayout *horizontalLayout_6;
     QSpacerItem *horizontalSpacer_16;
-    QPushButton *m_bQQMusic;
+    ZegoImageButton *m_bQQMusic;
     QSpacerItem *horizontalSpacer_17;
     QLabel *m_lbQQMusic;
     QSpacerItem *horizontalSpacer_8;
     QVBoxLayout *verticalLayout_4;
     QHBoxLayout *horizontalLayout_7;
     QSpacerItem *horizontalSpacer_18;
-    QPushButton *m_bKuWo;
+    ZegoImageButton *m_bKuWo;
     QSpacerItem *horizontalSpacer_19;
     QLabel *m_lbKuWo;
     QSpacerItem *horizontalSpacer_7;
@@ -131,7 +132,7 @@ public:
 
         horizontalLayout_4->addItem(horizontalSpacer_10);
 
-        m_bClose = new QPushButton(m_zoneTitle);
+        m_bClose = new ZegoImageButton(m_zoneTitle);
         m_bClose->setObjectName(QStringLiteral("m_bClose"));
         QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
         sizePolicy1.setHorizontalStretch(0);
@@ -154,9 +155,6 @@ public:
 "    border: 1px solid #0d79d1;\n"
 "    background-color: #0d79d1;\n"
 "}"));
-        QIcon icon;
-        icon.addFile(QStringLiteral(":/Resources/images/close.png"), QSize(), QIcon::Normal, QIcon::Off);
-        m_bClose->setIcon(icon);
 
         horizontalLayout_4->addWidget(m_bClose);
 
@@ -199,14 +197,12 @@ public:
 
         horizontalLayout->addItem(horizontalSpacer_12);
 
-        m_bCloudNet = new QPushButton(ZegoMusicHookDialog);
+        m_bCloudNet = new ZegoImageButton(ZegoMusicHookDialog);
         m_bCloudNet->setObjectName(QStringLiteral("m_bCloudNet"));
         m_bCloudNet->setMinimumSize(QSize(80, 80));
         m_bCloudNet->setMaximumSize(QSize(80, 80));
+        m_bCloudNet->setCursor(QCursor(Qt::PointingHandCursor));
         m_bCloudNet->setStyleSheet(QStringLiteral("border: none;"));
-        QIcon icon1;
-        icon1.addFile(QStringLiteral(":/Resources/images/CloudNet.png"), QSize(), QIcon::Normal, QIcon::Off);
-        m_bCloudNet->setIcon(icon1);
         m_bCloudNet->setIconSize(QSize(80, 80));
 
         horizontalLayout->addWidget(m_bCloudNet);
@@ -243,14 +239,12 @@ public:
 
         horizontalLayout_3->addItem(horizontalSpacer_14);
 
-        m_bKuGou = new QPushButton(ZegoMusicHookDialog);
+        m_bKuGou = new ZegoImageButton(ZegoMusicHookDialog);
         m_bKuGou->setObjectName(QStringLiteral("m_bKuGou"));
         m_bKuGou->setMinimumSize(QSize(80, 80));
         m_bKuGou->setMaximumSize(QSize(80, 80));
+        m_bKuGou->setCursor(QCursor(Qt::PointingHandCursor));
         m_bKuGou->setStyleSheet(QStringLiteral("border: none;"));
-        QIcon icon2;
-        icon2.addFile(QStringLiteral(":/Resources/images/KuGou.png"), QSize(), QIcon::Normal, QIcon::Off);
-        m_bKuGou->setIcon(icon2);
         m_bKuGou->setIconSize(QSize(80, 80));
 
         horizontalLayout_3->addWidget(m_bKuGou);
@@ -287,14 +281,12 @@ public:
 
         horizontalLayout_6->addItem(horizontalSpacer_16);
 
-        m_bQQMusic = new QPushButton(ZegoMusicHookDialog);
+        m_bQQMusic = new ZegoImageButton(ZegoMusicHookDialog);
         m_bQQMusic->setObjectName(QStringLiteral("m_bQQMusic"));
         m_bQQMusic->setMinimumSize(QSize(80, 80));
         m_bQQMusic->setMaximumSize(QSize(80, 80));
+        m_bQQMusic->setCursor(QCursor(Qt::PointingHandCursor));
         m_bQQMusic->setStyleSheet(QStringLiteral("border: none;"));
-        QIcon icon3;
-        icon3.addFile(QStringLiteral(":/Resources/images/QQMusic.png"), QSize(), QIcon::Normal, QIcon::Off);
-        m_bQQMusic->setIcon(icon3);
         m_bQQMusic->setIconSize(QSize(80, 80));
 
         horizontalLayout_6->addWidget(m_bQQMusic);
@@ -331,14 +323,12 @@ public:
 
         horizontalLayout_7->addItem(horizontalSpacer_18);
 
-        m_bKuWo = new QPushButton(ZegoMusicHookDialog);
+        m_bKuWo = new ZegoImageButton(ZegoMusicHookDialog);
         m_bKuWo->setObjectName(QStringLiteral("m_bKuWo"));
         m_bKuWo->setMinimumSize(QSize(80, 80));
         m_bKuWo->setMaximumSize(QSize(80, 80));
+        m_bKuWo->setCursor(QCursor(Qt::PointingHandCursor));
         m_bKuWo->setStyleSheet(QStringLiteral("border: none;"));
-        QIcon icon4;
-        icon4.addFile(QStringLiteral(":/Resources/images/KuWo.png"), QSize(), QIcon::Normal, QIcon::Off);
-        m_bKuWo->setIcon(icon4);
         m_bKuWo->setIconSize(QSize(80, 80));
 
         horizontalLayout_7->addWidget(m_bKuWo);

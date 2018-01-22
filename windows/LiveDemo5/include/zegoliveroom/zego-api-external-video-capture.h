@@ -9,9 +9,6 @@
 #ifndef zego_api_external_video_capture_h
 #define zego_api_external_video_capture_h
 
-#include <zego-api-defines.h>
-#include <video_capture.h>
-
 
 namespace ZEGO
 {

@@ -38,11 +38,15 @@ ZegoMainDialog::ZegoMainDialog(qreal dpi, QWidget *parent)
 	connect(ui.m_switchCapture, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchVideoCapture);
 	connect(ui.m_switchFilter, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchVideoFilter);
 	connect(ui.m_switchSurfaceMerge, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchSurfaceMerge);
+	connect(ui.m_switchReverb, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchReverb);
+	connect(ui.m_switchVirtualStereo, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonSwitchVirtualStereo);
 
 	connect(ui.m_bUploadLog, &QPushButton::clicked, this, &ZegoMainDialog::OnButtonUploadLog);
 
-	connect(ui.m_strEdUserId, &QLineEdit::textChanged, this, &ZegoMainDialog::OnSaveUserIdChanged);
-	connect(ui.m_strEdUserName, &QLineEdit::textChanged, this, &ZegoMainDialog::OnSaveUserNameChanged);
+	connect(ui.m_strEdUserId, &QLineEdit::editingFinished, this, &ZegoMainDialog::OnSaveUserIdChanged);
+	connect(ui.m_strEdUserName, &QLineEdit::editingFinished, this, &ZegoMainDialog::OnSaveUserNameChanged);
+	connect(ui.m_strEdAPPID, &QLineEdit::editingFinished, this, &ZegoMainDialog::OnSaveAppIdChanged);
+	connect(ui.m_strEdAPPSign, &QLineEdit::editingFinished, this, &ZegoMainDialog::OnSaveAppSignChanged);
 
 	//InitSDK成功回调
 	connect(GetAVSignal(), &QZegoAVSignal::sigInitSDK, this, &ZegoMainDialog::OnInitSDK);
@@ -63,6 +67,7 @@ ZegoMainDialog::ZegoMainDialog(qreal dpi, QWidget *parent)
 	ui.m_strEdUserName->installEventFilter(this);
 	ui.m_strEdAPPID->installEventFilter(this);
 	ui.m_strEdAPPSign->installEventFilter(this);
+	this->installEventFilter(this);
 }
 
 ZegoMainDialog::~ZegoMainDialog()
@@ -84,14 +89,8 @@ ZegoMainDialog::~ZegoMainDialog()
 //part1:功能函数
 void ZegoMainDialog::initDialog()
 {
-#if (defined Q_OS_MAC) || (!defined USE_SURFACE_MERGE)
-	ui.m_lbSurfaceMerge->setEnabled(false);
+#if (defined Q_OS_MAC) || (!defined USE_SURFACE_MERGE) || (!defined Q_PROCESSOR_X86_32)
 	ui.m_switchSurfaceMerge->setEnabled(false);
-#endif
-//跨平台UI适配（某些UI在windows中默认居左，在mac中默认居中）
-#ifdef Q_OS_MAC
-	ui.formLayout_appID->setFormAlignment(Qt::AlignLeft);
-	ui.formLayout_appSign->setFormAlignment(Qt::AlignLeft);
 #endif
 
 	ui.m_lbCamera2->setVisible(false);
@@ -110,6 +109,8 @@ void ZegoMainDialog::initDialog()
 
 	//禁用某些高级功能的按钮
 	banSwitch();
+
+	initButtonIcon();
 	//初始化ComboBox
 	initComboBox();
 	//将四个模式按钮加入组中
@@ -134,28 +135,32 @@ void ZegoMainDialog::initDialog()
 	else
 		isVideoCustom = false;
 
-	//高级设置app版本为UDP,RTMP，国际版时，不用设置appid和appsign，默认为UDP
-	m_versionMode = Version::ZEGO_PROTOCOL_UDP;
+	if (m_userConfig.GetUseTestEnv())
+	{
+		ui.m_switchTestEnv->setChecked(true);
+		theApp.GetBase().setTestEnv(true);
+	}
 
-	if (m_versionMode == Version::ZEGO_PROTOCOL_UDP || m_versionMode == Version::ZEGO_PROTOCOL_UDP_INTERNATIONAL)
+	//初始化app版本的ComboBox
+	ui.m_cbAppVersion->blockSignals(true);
+	ui.m_cbAppVersion->addItem(tr("国内版"));
+	ui.m_cbAppVersion->addItem(tr("国际版"));
+	ui.m_cbAppVersion->addItem(tr("娃娃机"));
+	ui.m_cbAppVersion->addItem(tr("自定义"));
+	ui.m_cbAppVersion->blockSignals(false);
+
+	m_versionMode = m_userConfig.GetAppVersion();
+	//当Index = 0 时不会触发信号
+	ui.m_cbAppVersion->setCurrentIndex(m_versionMode);
+	if (m_versionMode == ZEGO_PROTOCOL_UDP)
 	{
 		ui.m_strEdAPPID->setText(QString("%1").arg(theApp.GetBase().GetAppID()));
 		ui.m_strEdAPPSign->setText(tr("AppSign 已设置"));
 		ui.m_strEdAPPID->setEnabled(false);
 		ui.m_strEdAPPSign->setEnabled(false);
 	}
-	else if (m_versionMode == Version::ZEGO_PROTOCOL_CUSTOM)
-	{
-		ui.m_strEdAPPID->setText("");
-		ui.m_strEdAPPSign->setText("");
-	}
 
-	//初始化app版本的ComboBox
-	ui.m_cbAppVersion->addItem(tr("国内版"));
-	ui.m_cbAppVersion->addItem(tr("国际版"));
-	ui.m_cbAppVersion->addItem(tr("娃娃机"));
-	ui.m_cbAppVersion->addItem(tr("自定义"));
-	ui.m_cbAppVersion->setCurrentIndex(theApp.GetBase().getKey());
+	theApp.GetBase().setKey(m_versionMode);
 
 	SettingsPtr pCurSettings = m_userConfig.GetVideoSettings();
 
@@ -178,7 +183,7 @@ void ZegoMainDialog::initDialog()
 	//sdk版本号
 	ui.m_lbTitleVersion->setText(tr("版本: %1").arg(QString(QLatin1String(LIVEROOM::GetSDKVersion()))));
 	//pull房间列表
-	PullRoomList();
+	//PullRoomList();
 
 	m_initedDialog = true;
 }
@@ -450,9 +455,7 @@ void ZegoMainDialog::PullRoomList()
 
 	//建立信号槽，当请求服务器完毕之后，保存房间列表的JSON数据
 	connect(m_networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(writeJsonData(QNetworkReply *)));
-
 	m_networkManager->get(*m_networkRequest);
-
 }
 
 void ZegoMainDialog::writeJsonData(QNetworkReply *reply)
@@ -465,6 +468,10 @@ void ZegoMainDialog::writeJsonData(QNetworkReply *reply)
 		reply->deleteLater();
 	}
 	else{
+		ui.m_progIndicator->stopAnimation();
+		ui.m_cbAppVersion->setEnabled(false);
+		qDebug() << reply->errorString();
+		qDebug() << reply->error();
 		reply->deleteLater();
 		qDebug() << "Network Reply Error.";
 		return;
@@ -643,6 +650,33 @@ void ZegoMainDialog::initComboBox()
 	ui.m_cbCamera2->setItemDelegate(new NoFocusFrameDelegate(this));
 }
 
+void ZegoMainDialog::initButtonIcon()
+{
+	//ImageButton
+	ui.m_bRefreshRoomList->setButtonIcon("refresh_default");
+	ui.m_bMin->setButtonIcon("min");
+	ui.m_bJumpToNet->setButtonIcon("official");
+	ui.m_bClose->setButtonIcon("close");
+	//SwitchButton
+	ui.m_switchTestEnv->setButtonIcon("switch");
+	ui.m_switchCapture->setButtonIcon("switch");
+	ui.m_switchFilter->setButtonIcon("switch");
+	ui.m_switchRender->setButtonIcon("switch");
+	ui.m_switchSurfaceMerge->setButtonIcon("switch");
+	ui.m_switchUnknown->setButtonIcon("switch");
+	ui.m_switchUnknown2->setButtonIcon("switch");
+	ui.m_switchVirtualStereo->setButtonIcon("switch");
+	ui.m_switchReverb->setButtonIcon("switch");
+	ui.m_switchNational->setButtonIcon("switch");
+	//StateButton
+	ui.m_bResolutionDown->setButtonIcon("sub");
+	ui.m_bBitrateDown->setButtonIcon("sub");
+	ui.m_bFPSDown->setButtonIcon("sub");
+	ui.m_bResolutionUp->setButtonIcon("add");
+	ui.m_bBitrateUp->setButtonIcon("add");
+	ui.m_bFPSUp->setButtonIcon("add");
+}
+
 void ZegoMainDialog::insertStringListModelItem(QStringListModel * model, QString name, int size)
 {
 	int row = size;
@@ -679,11 +713,13 @@ void ZegoMainDialog::banSwitch()
 	ui.m_lbUnknown2->setVisible(false);
 	ui.m_switchUnknown2->setVisible(false);
 	
-	ui.m_switchMicAudio->setEnabled(false);
-	ui.m_switchNational->setEnabled(false);
+	//ui.m_switchMicAudio->setEnabled(false);
 	ui.m_switchRender->setEnabled(false);
-	ui.m_switchTimeCount->setEnabled(false);
+	//ui.m_switchTimeCount->setEnabled(false);
 
+	ui.m_lbAudioRight->setVisible(false);
+	ui.m_lbNational->setVisible(false);
+	ui.m_switchNational->setVisible(false);
 
 	//ui.m_lbCamera2->setVisible(false);
 	//ui.m_cbCamera2->setVisible(false);
@@ -1229,7 +1265,7 @@ void ZegoMainDialog::OnButtonClickedPublish()
 
 	QString strRoomID = QString(("%1-%2-%3")).arg(strMode).arg(m_userConfig.GetUserId()).arg(ms);
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 	QString strRoomName = "windows-room-" + strUserId;
 #else
 	QString strRoomName = "mac-room-" + strUserId;
@@ -1428,6 +1464,11 @@ void ZegoMainDialog::OnButtonSwitchTestEnv()
 	theApp.GetBase().UninitAVSDK();
 	theApp.GetBase().InitAVSDK(m_userConfig.GetVideoSettings(), m_strEdUserId, m_strEdUserName);
 	ui.m_switchTestEnv->setEnabled(true);
+
+	//将修改写到用户配置中
+	m_userConfig.SetUseTestEnv(m_isUseTestEnv);
+	m_userConfig.SaveConfig();
+
 	//当开启/关闭了测试环境时，其房间列表需要马上刷新一次，因为在两个环境下拉取房间列表不一样，避免出错
 	PullRoomList();
 }
@@ -1521,6 +1562,45 @@ void ZegoMainDialog::OnButtonSwitchSurfaceMerge()
 	ui.m_switchSurfaceMerge->setEnabled(true);
 }
 
+void ZegoMainDialog::OnButtonSwitchReverb()
+{
+	/** 音频混响模式 */
+	/*ZegoAVAPIAudioReverbMode
+	{
+		ZEGO_AUDIO_REVERB_MODE_SOFT_ROOM = 0,
+		ZEGO_AUDIO_REVERB_MODE_WARM_CLUB = 1,
+		ZEGO_AUDIO_REVERB_MODE_CONCERT_HALL = 2,
+		ZEGO_AUDIO_REVERB_MODE_LARGE_AUDITORIUM = 3,
+	};*/
+	bool isUseReverb;
+	if (ui.m_switchReverb->isChecked())
+	{
+		isUseReverb = true;
+	}
+	else
+	{
+		isUseReverb = false;
+	}
+
+	AUDIOPROCESSING::EnableReverb(isUseReverb, AUDIOPROCESSING::ZEGO_AUDIO_REVERB_MODE_LARGE_AUDITORIUM);
+}
+
+void ZegoMainDialog::OnButtonSwitchVirtualStereo()
+{
+	bool isUseVirtualStereo;
+	if (ui.m_switchVirtualStereo->isChecked())
+	{
+		isUseVirtualStereo = true;
+	}
+	else
+	{
+		isUseVirtualStereo = false;
+	}
+
+	//param angle 虚拟立体声中声源的角度，范围为0～180，90为正前方，0和180分别对应最左边和最右边
+	AUDIOPROCESSING::EnableVirtualStereo(isUseVirtualStereo, 0);
+}
+
 void ZegoMainDialog::OnCheckSliderPressed()
 {
 	m_sliderPressed = true;
@@ -1533,6 +1613,9 @@ void ZegoMainDialog::OnCheckSliderReleased()
 
 void ZegoMainDialog::OnSaveUserIdChanged()
 {
+	if (ui.m_strEdUserId->hasFocus())
+		return;
+
 	m_strEdUserId = ui.m_strEdUserId->text();
 	m_userConfig.SetUserId(m_strEdUserId);
 	m_userConfig.SaveConfig();
@@ -1540,9 +1623,36 @@ void ZegoMainDialog::OnSaveUserIdChanged()
 
 void ZegoMainDialog::OnSaveUserNameChanged()
 {
+	if (ui.m_strEdUserName->hasFocus())
+		return;
+
 	m_strEdUserName = ui.m_strEdUserName->text();
 	m_userConfig.SetUserName(m_strEdUserName);
 	m_userConfig.SaveConfig();
+}
+
+void ZegoMainDialog::OnSaveAppIdChanged()
+{
+	if (ui.m_strEdAPPID->hasFocus())
+		return;
+
+	if (m_versionMode == ZEGO_PROTOCOL_CUSTOM)
+	{
+		m_userConfig.SetAppId(ui.m_strEdAPPID->text());
+		m_userConfig.SaveConfig();
+	}
+}
+
+void ZegoMainDialog::OnSaveAppSignChanged()
+{
+	if (ui.m_strEdAPPSign->hasFocus())
+		return;
+
+	if (m_versionMode == ZEGO_PROTOCOL_CUSTOM)
+	{
+		m_userConfig.SetAppSign(ui.m_strEdAPPSign->text());
+		m_userConfig.SaveConfig();
+	}
 }
 
 void ZegoMainDialog::OnSwitchAudioDevice(int id)
@@ -1687,6 +1797,9 @@ void ZegoMainDialog::OnComboBoxAppVersionChanged(int id)
 {
 	//ui.m_cbAppVersion->setCurrentIndex(id);
 
+	m_versionMode = (Version)id;
+	m_userConfig.SetAppVersion(id);
+
 	if (id != ZEGO_PROTOCOL_CUSTOM){
 
 		theApp.GetBase().setKey(id);
@@ -1700,14 +1813,23 @@ void ZegoMainDialog::OnComboBoxAppVersionChanged(int id)
 	}
 	else
 	{
-		ui.m_strEdAPPID->setText("");
-		ui.m_strEdAPPSign->setText("");
+		if (!m_userConfig.GetAppConfig().m_customAppId.isEmpty())
+			ui.m_strEdAPPID->setText(m_userConfig.GetAppConfig().m_customAppId);
+		else
+		    ui.m_strEdAPPID->setText("");
+
+		if (!m_userConfig.GetAppConfig().m_customAppSign.isEmpty())
+			ui.m_strEdAPPSign->setText(m_userConfig.GetAppConfig().m_customAppSign);
+		else
+		    ui.m_strEdAPPSign->setText("");
+
 		ui.m_strEdAPPID->setEnabled(true);
 		ui.m_strEdAPPSign->setEnabled(true);
-		ui.m_strEdAPPID->setFocus();
+		if(ui.m_strEdAPPID->text().isEmpty())
+		    ui.m_strEdAPPID->setFocus();
 	}
 
-	m_versionMode = (Version)id;
+	
 	//标题
 	ui.m_lbTitle->setText(tr("ZegoLiveDemo(%1)").arg(ui.m_cbAppVersion->currentText()));
 	//刷新房间列表
@@ -1836,7 +1958,15 @@ bool ZegoMainDialog::eventFilter(QObject *target, QEvent *event)
 			}
 		}
 	}
-
+	else
+	{
+		if (event->type() == QEvent::KeyPress)
+		{
+			QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+			if (keyEvent->key() == Qt::Key_Escape)
+				return true;
+		}
+	}
 	return QDialog::eventFilter(target, event);
 }
 

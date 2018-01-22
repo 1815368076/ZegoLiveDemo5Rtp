@@ -12,7 +12,7 @@ ZegoEnterRoomButton::~ZegoEnterRoomButton()
 
 void ZegoEnterRoomButton::initButton()
 {
-	this->setText(QStringLiteral("进入"));
+	this->setText(tr("进入"));
 	this->setStyleSheet("QPushButton:!hover{"
 		                "font-family: 微软雅黑;"
 		                "font-size: 14px;"

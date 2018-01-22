@@ -218,6 +218,22 @@ namespace ZEGO
         ZEGO_API void SetMicDeviceVolume(const char *deviceId, int volume);
         
         /**
+         获取麦克风是否静音
+         
+         @param deviceId 麦克风 deviceId
+         @return true 静音，false 不静音
+         */
+        ZEGO_API bool GetMicDeviceMute(const char *deviceId);
+        
+        /**
+         设置麦克风静音
+         
+         @param deviceId 麦克风 deviceId
+         @param mute true 静音，false 不静音
+         */
+        ZEGO_API void SetMicDeviceMute(const char *deviceId, bool mute);
+        
+        /**
          获取扬声器音量
 
          @param deviceId 扬声器 deviceId
@@ -324,7 +340,7 @@ namespace ZEGO
          设置配置信息
 
          @param config config 配置信息
-         @attention 确保在 Init SDK 前调用
+         @attention 确保在 InitSDK 前调用，但开启拉流加速(config为“prefer_play_ultra_source=1”)可在 InitSDK 之后，拉流之前调用
          */
         ZEGO_API void SetConfig(const char *config);
 	}

@@ -1,4 +1,4 @@
-#ifndef ZEGOVideoCapture_h
+﻿#ifndef ZEGOVideoCapture_h
 #define ZEGOVideoCapture_h
 
 namespace AVE {

@@ -39,8 +39,8 @@ private :
 	typedef enum _INIT_MASK {
 		INIT_NONE = 0,
 		INIT_AVSDK = 1,
-		INIT_CRSDK = 2,
-		INIT_ALL = INIT_AVSDK | INIT_CRSDK,
+		//INIT_CRSDK = 2,
+		//INIT_ALL = INIT_AVSDK | INIT_CRSDK,
 	}INIT_MASK;
 
 	unsigned long m_dwInitedMask;

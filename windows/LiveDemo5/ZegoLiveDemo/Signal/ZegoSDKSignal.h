@@ -9,7 +9,7 @@
 #include "LiveRoomCallback-Player.h"
 #include "LiveRoomCallback-Publisher.h"
 #define USE_SURFACE_MERGE
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 #include "ZegoSurfaceMergeCallback.h"
 #include "ZegoSurfaceMergeDefine.h"
 #endif
@@ -22,7 +22,7 @@ class QZegoAVSignal : public QObject,
 	public LIVEROOM::ILivePublisherCallback,
 	public LIVEROOM::ILivePlayerCallback,
 	public LIVEROOM::IIMCallback,
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 	public SurfaceMerge::IZegoSurfaceMergeCallback,
 #endif
 	public AV::IZegoDeviceStateCallback
@@ -55,7 +55,7 @@ signals:
 	void sigUserUpdate(QVector<QString> userIDs, QVector<QString> userNames, QVector<int> userFlags, QVector<int> userRoles, unsigned int userCount, LIVEROOM::ZegoUserUpdateType type);
 	void sigMixStream(unsigned int errorCode, const QString& hlsUrl, const QString& rtmpUrl, const QString& mixStreamID, int seq);
 	void sigRecvEndJoinLiveCommand(const QString& userId, const QString& userName, const QString& roomId);
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined USE_SURFACE_MERGE)
 	void sigSurfaceMergeResult(unsigned char *surfaceMergeData, int datalength);
 #endif
 	void sigPreviewSnapshot(void *pImage);
@@ -101,7 +101,7 @@ protected:
 	void OnPreviewSnapshot(void *pImage);
 	void OnSnapshot(void *pImage, const char* pszStreamID);
 	
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 	void OnSurfaceMergeResult(
 		unsigned char *surfaceMergeData,
 		int datalength,

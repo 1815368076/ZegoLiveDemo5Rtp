@@ -1,4 +1,5 @@
 ﻿#include "ZegoUserConfig.h"
+#include "Base/ZegoBase.h"
 #include <random>
 #include <QSharedPointer>
 
@@ -25,12 +26,17 @@ void QZegoUserConfig::LoadConfig(void)
 	std::uniform_int_distribution<int> dist(10000000, 99999999);
 	//int to QString
 	m_strUserId = QString::number(dist(rd), 10);
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 	m_strUserName = "windows-" + m_strUserId;
 #else
 	m_strUserName = "mac-" + m_strUserId;
 #endif
 	m_bPrimary = true;
+	m_isUseTestEnv = false;
+
+	m_appVersion = ZEGO_PROTOCOL_UDP;
+	m_customAppConfig.m_customAppId = "";
+	m_customAppConfig.m_customAppSign = "";
 
 	if (m_pVideoSettings == nullptr)
 	{
@@ -64,6 +70,11 @@ bool QZegoUserConfig::LoadConfigInternal(void)
 	sizeResolution.cy = configIni->value("/sUserRecords/kResolutionY").toLongLong();
 	int nBitrate = configIni->value("/sUserRecords/kBitrate").toInt();
 	int nFps = configIni->value("/sUserRecords/kFps").toInt();
+	bool nIsUseTest = configIni->value("/sUserRecords/kIsTestEnv").toBool();
+
+	int nAppVer = configIni->value("/sUserRecords/kAppVersion").toInt();
+	QString nAppId = configIni->value("/sUserRecords/kAppId").toString();
+	QString nAppSign = configIni->value("/sUserRecords/kAppSign").toString();
 	//读ini文件完毕后释放指针
 	delete configIni;
 
@@ -76,6 +87,11 @@ bool QZegoUserConfig::LoadConfigInternal(void)
 	m_strUserName = strUserName;
 	//m_bPrimary = nRole == 1;
 	m_bPrimary = true;
+	m_isUseTestEnv = nIsUseTest;
+
+	m_appVersion = nAppVer;
+	m_customAppConfig.m_customAppId = nAppId;
+	m_customAppConfig.m_customAppSign = nAppSign;
 
 	if (m_pVideoSettings == nullptr)
 	{
@@ -102,6 +118,11 @@ void QZegoUserConfig::SaveConfig()
 	configIni->setValue("/sUserRecords/kResolutionY", m_pVideoSettings->GetResolution().cy);
 	configIni->setValue("/sUserRecords/kBitrate", m_pVideoSettings->GetBitrate());
 	configIni->setValue("/sUserRecords/kFps", m_pVideoSettings->GetFps());
+	configIni->setValue("/sUserRecords/kIsTestEnv", m_isUseTestEnv);
+
+	configIni->setValue("/sUserRecords/kAppVersion", m_appVersion);
+	configIni->setValue("/sUserRecords/kAppId", m_customAppConfig.m_customAppId);
+	configIni->setValue("/sUserRecords/kAppSign", m_customAppConfig.m_customAppSign);
 
 	delete configIni;
 
@@ -200,3 +221,37 @@ void QZegoUserConfig::SetVideoSettings(SettingsPtr curSettings)
 	//m_pVideoSettings->SetQuality(curSettings->GetQuality());
 }
 
+bool QZegoUserConfig::GetUseTestEnv()
+{
+	return m_isUseTestEnv;
+}
+
+void QZegoUserConfig::SetUseTestEnv(bool isUseTestEnv)
+{
+	m_isUseTestEnv = isUseTestEnv;
+}
+
+AppConfig QZegoUserConfig::GetAppConfig()
+{
+	return m_customAppConfig;
+}
+
+void QZegoUserConfig::SetAppId(QString appid)
+{
+	m_customAppConfig.m_customAppId = appid;
+}
+
+void QZegoUserConfig::SetAppSign(QString appsign)
+{
+	m_customAppConfig.m_customAppSign = appsign;
+}
+
+int QZegoUserConfig::GetAppVersion()
+{
+	return m_appVersion;
+}
+
+void QZegoUserConfig::SetAppVersion(int ver)
+{
+	m_appVersion = ver;
+}

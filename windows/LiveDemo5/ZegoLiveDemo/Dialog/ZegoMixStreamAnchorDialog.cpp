@@ -166,6 +166,7 @@ void ZegoMixStreamAnchorDialog::StopPlayStream(const QString& streamID)
 
 void ZegoMixStreamAnchorDialog::GetOut()
 {
+	StopMixStream();
 	for (auto& stream : m_pChatRoom->getStreamList())
 	{
 		if (stream != nullptr){
@@ -179,7 +180,7 @@ void ZegoMixStreamAnchorDialog::GetOut()
 			}
 		}
 	}
-
+	
 	ZegoBaseDialog::GetOut();
 }
 
@@ -227,6 +228,13 @@ void ZegoMixStreamAnchorDialog::StartMixStream()
 	mixStreamConfig.nChannels = 2;
 
 	qDebug() << "startMixStream!";
+	LIVEROOM::MixStream(mixStreamConfig, m_mixStreamRequestSeq++);
+}
+
+void ZegoMixStreamAnchorDialog::StopMixStream()
+{
+	AV::ZegoCompleteMixStreamConfig mixStreamConfig;
+	qDebug() << "stopMixStream!";
 	LIVEROOM::MixStream(mixStreamConfig, m_mixStreamRequestSeq++);
 }
 
@@ -420,7 +428,7 @@ void ZegoMixStreamAnchorDialog::OnPublishStateUpdate(int stateCode, const QStrin
 		StartMixStream();
 
 		//推流成功后启动计时器监听麦克风音量
-		timer->start(0);
+		timer->start(200);
 
 	}
 	else
@@ -487,6 +495,7 @@ void ZegoMixStreamAnchorDialog::OnMixStream(unsigned int errorCode, const QStrin
 			QJsonDocument doc = QJsonDocument::fromVariant(vMap);
 			QByteArray jba = doc.toJson();
 			QString jsonString = QString(jba);
+			jsonString = jsonString.simplified();
 			//设置流附加消息，将混流信息传入
 			LIVEROOM::SetPublishStreamExtraInfo(jsonString.toStdString().c_str());
 		}
@@ -531,14 +540,20 @@ void ZegoMixStreamAnchorDialog::OnButtonSwitchPublish()
 	{
 		ui.m_bRequestJoinLive->setText(tr("停止中..."));
 		ui.m_bRequestJoinLive->setEnabled(false);
+		StopMixStream();
 		StopPublishStream(m_strPublishStreamID);
+
+		if (timer->isActive())
+			timer->stop();
+		ui.m_bProgMircoPhone->setMyEnabled(false);
+		ui.m_bProgMircoPhone->update();
 
 		if (ui.m_bAux->text() == tr("关闭混音"))
 		{
 			ui.m_bAux->setText(tr("关闭中..."));
 			ui.m_bAux->setEnabled(false);
 
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 			if (isUseDefaultAux)
 			{
 				EndAux();
@@ -563,5 +578,14 @@ void ZegoMixStreamAnchorDialog::OnButtonSwitchPublish()
 		ui.m_bProgMircoPhone->setEnabled(false);
 		ui.m_bRequestJoinLive->setEnabled(true);
 		ui.m_bRequestJoinLive->setText(tr("开始直播"));
+	}
+}
+
+void ZegoMixStreamAnchorDialog::OnKickOut(int reason, const QString& roomId)
+{
+	if (m_pChatRoom->getRoomId() == roomId)
+	{
+		QMessageBox::information(NULL, tr("提示"), tr("您已被踢出房间"));
+		OnClose();
 	}
 }

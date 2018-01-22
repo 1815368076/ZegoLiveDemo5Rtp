@@ -115,7 +115,7 @@ border: none;</string>
             <number>0</number>
            </property>
            <item>
-            <widget class="QPushButton" name="m_bMin">
+            <widget class="ZegoImageButton" name="m_bMin">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -158,7 +158,7 @@ QPushButton:hover:pressed{
              </property>
              <property name="icon">
               <iconset resource="style.qrc">
-               <normaloff>:/Resources/images/min.png</normaloff>:/Resources/images/min.png</iconset>
+               <normaloff>:/min</normaloff>:/min</iconset>
              </property>
              <property name="flat">
               <bool>true</bool>
@@ -166,7 +166,7 @@ QPushButton:hover:pressed{
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="m_bMax">
+            <widget class="ZegoImageButton" name="m_bMax">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -214,7 +214,7 @@ QPushButton:hover:pressed{
              </property>
              <property name="icon">
               <iconset resource="style.qrc">
-               <normaloff>:/Resources/images/max.png</normaloff>:/Resources/images/max.png</iconset>
+               <normaloff>:/max</normaloff>:/max</iconset>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -225,7 +225,7 @@ QPushButton:hover:pressed{
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="m_bClose">
+            <widget class="ZegoImageButton" name="m_bClose">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -274,7 +274,7 @@ QPushButton:hover:pressed{
              </property>
              <property name="icon">
               <iconset resource="style.qrc">
-               <normaloff>:/Resources/images/close.png</normaloff>:/Resources/images/close.png</iconset>
+               <normaloff>:/close</normaloff>:/close</iconset>
              </property>
              <property name="flat">
               <bool>true</bool>
@@ -751,7 +751,7 @@ background-color: #e6e6e6;</string>
           <property name="styleSheet">
            <string notr="true">background-color: #ffffff;</string>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <layout class="QVBoxLayout" name="verticalLayout_12">
            <property name="spacing">
             <number>0</number>
            </property>
@@ -768,7 +768,7 @@ background-color: #e6e6e6;</string>
             <number>0</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -793,10 +793,7 @@ background-color: #e6e6e6;</string>
                <property name="spacing">
                 <number>0</number>
                </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
+               <property name="bottomMargin">
                 <number>0</number>
                </property>
                <item>
@@ -862,14 +859,11 @@ color: #666666;</string>
                 </spacer>
                </item>
                <item>
-                <layout class="QFormLayout" name="formLayout">
-                 <property name="horizontalSpacing">
-                  <number>16</number>
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <property name="spacing">
+                  <number>0</number>
                  </property>
-                 <property name="verticalSpacing">
-                  <number>10</number>
-                 </property>
-                 <item row="0" column="0">
+                 <item>
                   <widget class="QLabel" name="m_lbMircoPhone">
                    <property name="styleSheet">
                     <string notr="true">QLabel:!enabled{
@@ -889,8 +883,24 @@ QLabel:enabled{
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="1">
-                  <widget class="ZegoDeviceComboBox" name="m_cbMircoPhone">
+                 <item>
+                  <spacer name="horizontalSpacer_13">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Preferred</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="ZegoComboBox" name="m_cbMircoPhone">
                    <property name="minimumSize">
                     <size>
                      <width>260</width>
@@ -903,93 +913,35 @@ QLabel:enabled{
                      <height>32</height>
                     </size>
                    </property>
-                   <property name="styleSheet">
-                    <string notr="true">  QComboBox{
-     padding-left: 10px;
- }
-
- QComboBox:!enabled{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #cccccc;
- }
-
- QComboBox:enabled:!hover{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #666666;
-}
-QComboBox:enabled:hover{
-     border: 1px solid #0e88eb;
-     border-radius: 2px;
-     font-family: 微软雅黑;
-     font-size: 16px;
-	 background-color: #fafafa;
-	 color: #666666;
-}
-
-QComboBox::drop-down{
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 20px;
- 
-    border-left-width: 1px;
-
-    border-top-right-radius: 2px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 2px;
-
- }
-
- QComboBox::down-arrow{
-
-     border-image: url(:/Resources/images/down_arrow.png);
- }
-
- 
-  QComboBox QAbstractItemView{
-     font-family: 微软雅黑;
-     font-size: 14px;
-     border: 1px solid #0e88eb;
-	 background-color: #ffffff;
-	 border-radius: 2px;
-	 
-  }
-
- QComboBox QAbstractItemView::item{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #666666;
-	 background-color: #ffffff;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-
- QComboBox QAbstractItemView::item:hover{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #ffffff;
-	 background-color: #0e88eb;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-</string>
-                   </property>
                    <property name="frame">
                     <bool>true</bool>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0">
+                </layout>
+               </item>
+               <item>
+                <spacer name="m_vSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <item>
                   <widget class="QLabel" name="m_lbCamera">
                    <property name="styleSheet">
                     <string notr="true">QLabel:!enabled{
@@ -1009,8 +961,24 @@ QLabel:enabled{
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="ZegoDeviceComboBox" name="m_cbCamera">
+                 <item>
+                  <spacer name="horizontalSpacer_14">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Preferred</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="ZegoComboBox" name="m_cbCamera">
                    <property name="minimumSize">
                     <size>
                      <width>260</width>
@@ -1023,90 +991,32 @@ QLabel:enabled{
                      <height>32</height>
                     </size>
                    </property>
-                   <property name="styleSheet">
-                    <string notr="true">  QComboBox{
-     padding-left: 10px;
- }
-
- QComboBox:!enabled{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #cccccc;
- }
-
- QComboBox:enabled:!hover{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #666666;
-}
-QComboBox:enabled:hover{
-     border: 1px solid #0e88eb;
-     border-radius: 2px;
-     font-family: 微软雅黑;
-     font-size: 16px;
-	 background-color: #fafafa;
-	 color: #666666;
-}
-
-QComboBox::drop-down{
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 20px;
- 
-    border-left-width: 1px;
-
-    border-top-right-radius: 2px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 2px;
-
- }
-
- QComboBox::down-arrow{
-
-     border-image: url(:/Resources/images/down_arrow.png);
- }
-
- 
-  QComboBox QAbstractItemView{
-     font-family: 微软雅黑;
-     font-size: 14px;
-     border: 1px solid #0e88eb;
-	 background-color: #ffffff;
-	 border-radius: 2px;
-	 
-  }
-
- QComboBox QAbstractItemView::item{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #666666;
-	 background-color: #ffffff;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-
- QComboBox QAbstractItemView::item:hover{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #ffffff;
-	 background-color: #0e88eb;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-</string>
-                   </property>
                   </widget>
                  </item>
-                 <item row="2" column="0">
+                </layout>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_17">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>10</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <item>
                   <widget class="QLabel" name="m_lbCamera2">
                    <property name="styleSheet">
                     <string notr="true">QLabel:!enabled{
@@ -1126,94 +1036,29 @@ QLabel:enabled{
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="1">
-                  <widget class="ZegoDeviceComboBox" name="m_cbCamera2">
+                 <item>
+                  <spacer name="horizontalSpacer_15">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Preferred</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>15</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="ZegoComboBox" name="m_cbCamera2">
                    <property name="minimumSize">
                     <size>
                      <width>260</width>
                      <height>32</height>
                     </size>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">  QComboBox{
-     padding-left: 10px;
- }
-
- QComboBox:!enabled{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #cccccc;
- }
-
- QComboBox:enabled:!hover{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #666666;
-}
-QComboBox:enabled:hover{
-     border: 1px solid #0e88eb;
-     border-radius: 2px;
-     font-family: 微软雅黑;
-     font-size: 16px;
-	 background-color: #fafafa;
-	 color: #666666;
-}
-
-QComboBox::drop-down{
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 20px;
- 
-    border-left-width: 1px;
-
-    border-top-right-radius: 2px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 2px;
-
- }
-
- QComboBox::down-arrow{
-
-     border-image: url(:/Resources/images/down_arrow.png);
- }
-
- 
-  QComboBox QAbstractItemView{
-     font-family: 微软雅黑;
-     font-size: 14px;
-     border: 1px solid #0e88eb;
-	 background-color: #ffffff;
-	 border-radius: 2px;
-	 
-  }
-
- QComboBox QAbstractItemView::item{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #666666;
-	 background-color: #ffffff;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-
- QComboBox QAbstractItemView::item:hover{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #ffffff;
-	 background-color: #0e88eb;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-</string>
                    </property>
                   </widget>
                  </item>
@@ -1335,19 +1180,6 @@ color: #666666;</string>
                    <property name="cursor">
                     <cursorShape>PointingHandCursor</cursorShape>
                    </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton:!enabled{
-    border-image: url(:/Resources/images/microphone_disabled.png);
-}
-
-QPushButton:enabled:!checked{
-    border-image: url(:/Resources/images/microphone_off.png);
-}
-
-QPushButton:enabled:checked{
-    border-image: url(:/Resources/images/microphone_on.png);
-}</string>
-                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -1376,7 +1208,7 @@ QPushButton:enabled:checked{
                   </spacer>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="m_bSound">
+                  <widget class="ZegoSwitchButton" name="m_bSound">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -1397,15 +1229,6 @@ QPushButton:enabled:checked{
                    </property>
                    <property name="cursor">
                     <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton:!checked{
-    border-image: url(:/Resources/images/sound_off.png);
-}
-
-QPushButton:checked{
-    border-image: url(:/Resources/images/sound_on.png);
-}</string>
                    </property>
                    <property name="text">
                     <string/>
@@ -1547,7 +1370,7 @@ QPushButton:enabled:hover:pressed{
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>100</width>
+                     <width>180</width>
                      <height>32</height>
                     </size>
                    </property>
@@ -1618,10 +1441,13 @@ QPushButton:enabled:hover:pressed{
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
                  <property name="sizeHint" stdset="0">
                   <size>
                    <width>20</width>
-                   <height>40</height>
+                   <height>10</height>
                   </size>
                  </property>
                 </spacer>
@@ -1679,6 +1505,12 @@ QPushButton:enabled:hover:pressed{
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>微软雅黑</family>
+                   <pointsize>-1</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">font-family: 微软雅黑;
 font-size: 14px;
@@ -1715,9 +1547,12 @@ color: #666666;</string>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>68</width>
+                   <width>80</width>
                    <height>32</height>
                   </size>
+                 </property>
+                 <property name="cursor">
+                  <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QPushButton:!enabled{
@@ -1947,13 +1782,29 @@ QPushButton:enabled:hover:pressed{
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>112</width>
+                 <width>100</width>
                  <height>20</height>
                 </size>
                </property>
               </spacer>
              </item>
             </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_18">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Preferred</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>30</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
@@ -2100,7 +1951,7 @@ QScrollBar::handle:vertical:hover{
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>100</width>
+                   <width>120</width>
                    <height>32</height>
                   </size>
                  </property>
@@ -2268,14 +2119,24 @@ color: #ffffff;
  </widget>
  <customwidgets>
   <customwidget>
+   <class>ZegoImageButton</class>
+   <extends>QPushButton</extends>
+   <header>ZegoImageButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ZegoSwitchButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">ZegoSwitchButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ZegoComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">ZegoComboBox.h</header>
+  </customwidget>
+  <customwidget>
    <class>ZegoMicrophoneButton</class>
    <extends>QPushButton</extends>
    <header location="global">ZegoMicrophoneButton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ZegoDeviceComboBox</class>
-   <extends>QComboBox</extends>
-   <header location="global">ZegoDeviceComboBox.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -126,7 +126,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="m_bClose">
+           <widget class="ZegoImageButton" name="m_bClose">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -163,10 +163,6 @@ QPushButton:hover:pressed{
             </property>
             <property name="text">
              <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="style.qrc">
-              <normaloff>:/Resources/images/close.png</normaloff>:/Resources/images/close.png</iconset>
             </property>
            </widget>
           </item>
@@ -261,7 +257,7 @@ color: #666666;</string>
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="m_bCloudNet">
+            <widget class="ZegoImageButton" name="m_bCloudNet">
              <property name="minimumSize">
               <size>
                <width>80</width>
@@ -274,15 +270,14 @@ color: #666666;</string>
                <height>80</height>
               </size>
              </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
              <property name="styleSheet">
               <string notr="true">border: none;</string>
              </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="style.qrc">
-               <normaloff>:/Resources/images/CloudNet.png</normaloff>:/Resources/images/CloudNet.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -358,7 +353,7 @@ color: #666666;</string>
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="m_bKuGou">
+            <widget class="ZegoImageButton" name="m_bKuGou">
              <property name="minimumSize">
               <size>
                <width>80</width>
@@ -371,15 +366,14 @@ color: #666666;</string>
                <height>80</height>
               </size>
              </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
              <property name="styleSheet">
               <string notr="true">border: none;</string>
              </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="style.qrc">
-               <normaloff>:/Resources/images/KuGou.png</normaloff>:/Resources/images/KuGou.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -455,7 +449,7 @@ color: #666666;</string>
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="m_bQQMusic">
+            <widget class="ZegoImageButton" name="m_bQQMusic">
              <property name="minimumSize">
               <size>
                <width>80</width>
@@ -468,15 +462,14 @@ color: #666666;</string>
                <height>80</height>
               </size>
              </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
              <property name="styleSheet">
               <string notr="true">border: none;</string>
              </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="style.qrc">
-               <normaloff>:/Resources/images/QQMusic.png</normaloff>:/Resources/images/QQMusic.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -552,7 +545,7 @@ color: #666666;</string>
             </spacer>
            </item>
            <item>
-            <widget class="QPushButton" name="m_bKuWo">
+            <widget class="ZegoImageButton" name="m_bKuWo">
              <property name="minimumSize">
               <size>
                <width>80</width>
@@ -565,15 +558,14 @@ color: #666666;</string>
                <height>80</height>
               </size>
              </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
              <property name="styleSheet">
               <string notr="true">border: none;</string>
              </property>
              <property name="text">
               <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="style.qrc">
-               <normaloff>:/Resources/images/KuWo.png</normaloff>:/Resources/images/KuWo.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -977,6 +969,13 @@ QPushButton:!hover{
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ZegoImageButton</class>
+   <extends>QPushButton</extends>
+   <header>ZegoImageButton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="style.qrc"/>
  </resources>

@@ -27,6 +27,8 @@
 #include <QStringListModel>
 #include <QStandardItemModel>
 #include <QVector>
+//虚拟立体声和混响接口
+#include "zego-api-audio-processing.h"
 
 //标题栏坐标范围
 #define pos_min_x  0
@@ -68,9 +70,13 @@ public slots:
 	void OnButtonSwitchVideoCapture();
 	void OnButtonSwitchVideoFilter();
 	void OnButtonSwitchSurfaceMerge();
+	void OnButtonSwitchReverb();
+	void OnButtonSwitchVirtualStereo();
 	void OnButtonUploadLog();
 	void OnSaveUserIdChanged();
 	void OnSaveUserNameChanged();
+	void OnSaveAppIdChanged();
+	void OnSaveAppSignChanged();
 	void OnCheckSliderPressed();
 	void OnCheckSliderReleased();
 
@@ -101,6 +107,7 @@ private:
 	void addModeButtonGroup();
 	void addQualityButtonGroup();
 	void initComboBox();
+	void initButtonIcon();
 	void insertStringListModelItem(QStringListModel * model, QString name, int size);
 	void removeStringListModelItem(QStringListModel * model, QString name);
 	void banSwitch();    //禁用未实现功能的按钮

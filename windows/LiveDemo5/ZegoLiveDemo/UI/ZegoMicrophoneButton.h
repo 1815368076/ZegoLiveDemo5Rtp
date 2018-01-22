@@ -13,7 +13,7 @@ public:
 
 protected:
 	virtual void paintEvent(QPaintEvent *event);
-
+	
 public:
 	void setProgValue(int value);
 	void setMyEnabled(bool state);

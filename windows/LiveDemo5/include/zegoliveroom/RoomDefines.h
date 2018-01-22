@@ -46,8 +46,8 @@ namespace ZEGO
                 szExtraInfo[0] = '\0';
             }
             
-            char szUserId[ZEGO_MAX_COMMON_LEN];
-            char szUserName[ZEGO_MAX_COMMON_LEN];
+            char szUserId[ZEGO_MAX_USERID_LEN];
+            char szUserName[ZEGO_MAX_USERNAME_LEN];
             char szStreamId[ZEGO_MAX_COMMON_LEN];
             char szExtraInfo[ZEGO_MAX_COMMON_LEN];
         };
@@ -139,8 +139,8 @@ namespace ZEGO
                 szUserName[0] = '\0';
             }
 
-            char szUserId[ZEGO_MAX_COMMON_LEN];
-            char szUserName[ZEGO_MAX_COMMON_LEN];
+            char szUserId[ZEGO_MAX_USERID_LEN];
+            char szUserName[ZEGO_MAX_USERNAME_LEN];
             ZegoUserUpdateFlag udapteFlag;
             ZegoRoomRole role;
         };
@@ -161,8 +161,8 @@ namespace ZEGO
                 szUserName[0] = '\0';
             }
 
-            char szUserId[ZEGO_MAX_COMMON_LEN];
-            char szUserName[ZEGO_MAX_COMMON_LEN];
+            char szUserId[ZEGO_MAX_USERID_LEN];
+            char szUserName[ZEGO_MAX_USERNAME_LEN];
         };
 
         /** 消息类型 */
@@ -205,8 +205,8 @@ namespace ZEGO
                 sendTime = 0;
             }
 
-            char szUserId[ZEGO_MAX_COMMON_LEN];
-            char szUserName[ZEGO_MAX_COMMON_LEN];
+            char szUserId[ZEGO_MAX_USERID_LEN];
+            char szUserName[ZEGO_MAX_USERNAME_LEN];
             COMMON::ZegoRoomRole role;
             char szContent[ZEGO_MAX_COMMON_LEN];
             unsigned long long messageId;
@@ -227,8 +227,8 @@ namespace ZEGO
                 sendTime = 0;
             }
 
-            char szUserId[ZEGO_MAX_COMMON_LEN];
-            char szUserName[ZEGO_MAX_COMMON_LEN];
+            char szUserId[ZEGO_MAX_USERID_LEN];
+            char szUserName[ZEGO_MAX_USERNAME_LEN];
             char szContent[ZEGO_MAX_COMMON_LEN];
             unsigned long long messageId;
             ZegoMessageType type;
@@ -238,7 +238,7 @@ namespace ZEGO
         struct ZegoConverInfo
         {
             char szConverName[ZEGO_MAX_COMMON_LEN];
-            char szCreatorId[ZEGO_MAX_COMMON_LEN];
+            char szCreatorId[ZEGO_MAX_USERID_LEN];
             int createTime;
         };
     }

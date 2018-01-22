@@ -60,17 +60,20 @@
         <property name="spacing">
          <number>10</number>
         </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
         <item>
          <widget class="QLabel" name="m_lbTitle">
           <property name="minimumSize">
            <size>
-            <width>175</width>
+            <width>0</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>175</width>
+            <width>16777215</width>
             <height>16777215</height>
            </size>
           </property>
@@ -133,6 +136,19 @@
           </property>
          </widget>
         </item>
+        <item>
+         <spacer name="horizontalSpacer_34">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </item>
       <item>
@@ -173,10 +189,6 @@ QPushButton:hover:pressed{
         </property>
         <property name="text">
          <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="style.qrc">
-          <normaloff>:/Resources/images/official.png</normaloff>:/Resources/images/official.png</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -219,10 +231,6 @@ QPushButton:hover:pressed{
         <property name="text">
          <string/>
         </property>
-        <property name="icon">
-         <iconset resource="style.qrc">
-          <normaloff>:/Resources/images/min.png</normaloff>:/Resources/images/min.png</iconset>
-        </property>
         <property name="flat">
          <bool>true</bool>
         </property>
@@ -263,10 +271,6 @@ QPushButton:hover:pressed{
         </property>
         <property name="text">
          <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="style.qrc">
-          <normaloff>:/Resources/images/close.png</normaloff>:/Resources/images/close.png</iconset>
         </property>
         <property name="flat">
          <bool>false</bool>
@@ -360,7 +364,7 @@ QPushButton:hover:pressed{
  }</string>
             </property>
             <property name="text">
-             <string>创建房间</string>
+             <string>創建房间</string>
             </property>
            </widget>
           </item>
@@ -1069,10 +1073,6 @@ QPushButton:pressed{
                 <property name="text">
                  <string>刷新</string>
                 </property>
-                <property name="icon">
-                 <iconset resource="style.qrc">
-                  <normaloff>:/Resources/images/refresh.png</normaloff>:/Resources/images/refresh.png</iconset>
-                </property>
                 <property name="flat">
                  <bool>true</bool>
                 </property>
@@ -1258,7 +1258,7 @@ QTabBar::tab:selected{
 }</string>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="m_tabVideoConfig">
              <property name="styleSheet">
@@ -1298,8 +1298,8 @@ QTabBar::tab:selected{
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">margin-left: 65px;
-margin-right:505px;
+                 <string notr="true">margin-left: 63px;
+margin-right:507px;
 border: none;
 background-color: #0e88eb;</string>
                 </property>
@@ -1815,7 +1815,7 @@ border: none;</string>
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_8">
                     <item>
-                     <widget class="ZegoImageButton" name="m_bResolutionDown">
+                     <widget class="ZegoStateButton" name="m_bResolutionDown">
                       <property name="minimumSize">
                        <size>
                         <width>15</width>
@@ -1835,19 +1835,7 @@ border: none;</string>
                        <enum>Qt::LeftToRight</enum>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">QPushButton:!hover{
-     border-image: url(:/Resources/images/sub_default.png);
- }
-
-QPushButton:hover:!pressed{
-     border-image: url(:/Resources/images/sub_hover.png);
- }
-
-QPushButton:hover:pressed{
-     border-image: url(:/Resources/images/sub_pressed.png);
- }
-
-</string>
+                       <string notr="true"/>
                       </property>
                       <property name="text">
                        <string/>
@@ -1864,52 +1852,12 @@ QPushButton:hover:pressed{
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="m_sliderResolution">
+                     <widget class="ZegoSlider" name="m_sliderResolution">
                       <property name="minimumSize">
                        <size>
                         <width>240</width>
                         <height>0</height>
                        </size>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QSlider::groove:horizontal{
-     border: none;
-	 height: 1px;
- }
-
- QSlider::handle:horizontal:!hover{
-     border: none;
-	 width: 11px;
-	 height: 11px;
-	 margin: -5px 0;
-     border-image: url(:/Resources/images/handle_default.png);
- }
-
- QSlider::handle:horizontal:hover:!pressed{
-     border: none;
-	 width: 11px;
-	 height: 11px;
-	 margin: -5px 0;
-     border-image: url(:/Resources/images/handle_hover.png);
- }
-
- QSlider::handle:horizontal:hover:pressed{
-     border: none;
-     width: 11px;
-	 height: 11px;
-	 margin: -5px 0;
-     border-image: url(:/Resources/images/handle_pressed.png);
- }
-
- QSlider::add-page:horizontal{
-     background-color: #e6e6e6;
-	 
- }
-
- QSlider::sub-page:horizontal{
-     background-color: #0e88eb;
-	 
- }</string>
                       </property>
                       <property name="maximum">
                        <number>9</number>
@@ -1923,7 +1871,7 @@ QPushButton:hover:pressed{
                      </widget>
                     </item>
                     <item>
-                     <widget class="ZegoImageButton" name="m_bResolutionUp">
+                     <widget class="ZegoStateButton" name="m_bResolutionUp">
                       <property name="minimumSize">
                        <size>
                         <width>15</width>
@@ -1937,17 +1885,7 @@ QPushButton:hover:pressed{
                        </size>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">QPushButton:!hover{
-     border-image: url(:/Resources/images/add_default.png);
- }
-
-QPushButton:hover:!pressed{
-     border-image: url(:/Resources/images/add_hover.png);
- }
-
-QPushButton:hover:pressed{
-     border-image: url(:/Resources/images/add_pressed.png);
- }</string>
+                       <string notr="true"/>
                       </property>
                       <property name="text">
                        <string/>
@@ -2029,7 +1967,7 @@ QPushButton:hover:pressed{
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_10">
                     <item>
-                     <widget class="ZegoImageButton" name="m_bFPSDown">
+                     <widget class="ZegoStateButton" name="m_bFPSDown">
                       <property name="minimumSize">
                        <size>
                         <width>15</width>
@@ -2043,19 +1981,7 @@ QPushButton:hover:pressed{
                        </size>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">QPushButton:!hover{
-     border-image: url(:/Resources/images/sub_default.png);
- }
-
-QPushButton:hover:!pressed{
-     border-image: url(:/Resources/images/sub_hover.png);
- }
-
-QPushButton:hover:pressed{
-     border-image: url(:/Resources/images/sub_pressed.png);
- }
-
-</string>
+                       <string notr="true"/>
                       </property>
                       <property name="text">
                        <string/>
@@ -2066,52 +1992,12 @@ QPushButton:hover:pressed{
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="m_sliderFPS">
+                     <widget class="ZegoSlider" name="m_sliderFPS">
                       <property name="minimumSize">
                        <size>
                         <width>240</width>
                         <height>0</height>
                        </size>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QSlider::groove:horizontal{
-     border: none;
-	 height: 1px;
- }
-
- QSlider::handle:horizontal:!hover{
-     border: none;
-	 width: 11px;
-	 height: 11px;
-	 margin: -5px 0;
-     border-image: url(:/Resources/images/handle_default.png);
- }
-
- QSlider::handle:horizontal:hover:!pressed{
-     border: none;
-	 width: 11px;
-	 height: 11px;
-	 margin: -5px 0;
-     border-image: url(:/Resources/images/handle_hover.png);
- }
-
- QSlider::handle:horizontal:hover:pressed{
-     border: none;
-     width: 11px;
-	 height: 11px;
-	 margin: -5px 0;
-     border-image: url(:/Resources/images/handle_pressed.png);
- }
-
- QSlider::add-page:horizontal{
-     background-color: #e6e6e6;
-	 
- }
-
- QSlider::sub-page:horizontal{
-     background-color: #0e88eb;
-	 
- }</string>
                       </property>
                       <property name="maximum">
                        <number>5</number>
@@ -2125,7 +2011,7 @@ QPushButton:hover:pressed{
                      </widget>
                     </item>
                     <item>
-                     <widget class="ZegoImageButton" name="m_bFPSUp">
+                     <widget class="ZegoStateButton" name="m_bFPSUp">
                       <property name="minimumSize">
                        <size>
                         <width>15</width>
@@ -2139,17 +2025,7 @@ QPushButton:hover:pressed{
                        </size>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">QPushButton:!hover{
-     border-image: url(:/Resources/images/add_default.png);
- }
-
-QPushButton:hover:!pressed{
-     border-image: url(:/Resources/images/add_hover.png);
- }
-
-QPushButton:hover:pressed{
-     border-image: url(:/Resources/images/add_pressed.png);
- }</string>
+                       <string notr="true"/>
                       </property>
                       <property name="text">
                        <string/>
@@ -2231,7 +2107,7 @@ QPushButton:hover:pressed{
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_12">
                     <item>
-                     <widget class="ZegoImageButton" name="m_bBitrateDown">
+                     <widget class="ZegoStateButton" name="m_bBitrateDown">
                       <property name="minimumSize">
                        <size>
                         <width>15</width>
@@ -2245,19 +2121,7 @@ QPushButton:hover:pressed{
                        </size>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">QPushButton:!hover{
-     border-image: url(:/Resources/images/sub_default.png);
- }
-
-QPushButton:hover:!pressed{
-     border-image: url(:/Resources/images/sub_hover.png);
- }
-
-QPushButton:hover:pressed{
-     border-image: url(:/Resources/images/sub_pressed.png);
- }
-
-</string>
+                       <string notr="true"/>
                       </property>
                       <property name="text">
                        <string/>
@@ -2268,7 +2132,7 @@ QPushButton:hover:pressed{
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="m_sliderBitrate">
+                     <widget class="ZegoSlider" name="m_sliderBitrate">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                         <horstretch>0</horstretch>
@@ -2280,46 +2144,6 @@ QPushButton:hover:pressed{
                         <width>240</width>
                         <height>0</height>
                        </size>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QSlider::groove:horizontal{
-     border: none;
-	 height: 1px;
- }
-
- QSlider::handle:horizontal:!hover{
-     border: none;
-	 width: 11px;
-	 height: 11px;
-	 margin: -5px 0;
-     border-image: url(:/Resources/images/handle_default.png);
- }
-
- QSlider::handle:horizontal:hover:!pressed{
-     border: none;
-	 width: 11px;
-	 height: 11px;
-	 margin: -5px 0;
-     border-image: url(:/Resources/images/handle_hover.png);
- }
-
- QSlider::handle:horizontal:hover:pressed{
-     border: none;
-     width: 11px;
-	 height: 11px;
-	 margin: -5px 0;
-     border-image: url(:/Resources/images/handle_pressed.png);
- }
-
- QSlider::add-page:horizontal{
-     background-color: #e6e6e6;
-	 
- }
-
- QSlider::sub-page:horizontal{
-     background-color: #0e88eb;
-	 
- }</string>
                       </property>
                       <property name="maximum">
                        <number>22</number>
@@ -2333,7 +2157,7 @@ QPushButton:hover:pressed{
                      </widget>
                     </item>
                     <item>
-                     <widget class="ZegoImageButton" name="m_bBitrateUp">
+                     <widget class="ZegoStateButton" name="m_bBitrateUp">
                       <property name="minimumSize">
                        <size>
                         <width>15</width>
@@ -2347,17 +2171,7 @@ QPushButton:hover:pressed{
                        </size>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">QPushButton:!hover{
-     border-image: url(:/Resources/images/add_default.png);
- }
-
-QPushButton:hover:!pressed{
-     border-image: url(:/Resources/images/add_hover.png);
- }
-
-QPushButton:hover:pressed{
-     border-image: url(:/Resources/images/add_pressed.png);
- }</string>
+                       <string notr="true"/>
                       </property>
                       <property name="text">
                        <string/>
@@ -2442,8 +2256,8 @@ QPushButton:hover:pressed{
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">margin-left: 275px;
-margin-right: 295px;
+                 <string notr="true">margin-left: 273px;
+margin-right: 297px;
 background-color: #0e88eb;
 border: none;</string>
                 </property>
@@ -2491,7 +2305,7 @@ border: none;</string>
                    <enum>Qt::Horizontal</enum>
                   </property>
                   <property name="sizeType">
-                   <enum>QSizePolicy::Fixed</enum>
+                   <enum>QSizePolicy::Expanding</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
@@ -2609,7 +2423,7 @@ border: none;</string>
                      </spacer>
                     </item>
                     <item>
-                     <widget class="ZegoImageButton" name="m_switchTestEnv">
+                     <widget class="ZegoSwitchButton" name="m_switchTestEnv">
                       <property name="minimumSize">
                        <size>
                         <width>32</width>
@@ -2623,13 +2437,7 @@ border: none;</string>
                        </size>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">QPushButton:!checked{
-     border-image: url(:/Resources/images/switch_off.png);
- }
-
- QPushButton:checked{
-     border-image: url(:/Resources/images/switch_on.png);
- }</string>
+                       <string notr="true"/>
                       </property>
                       <property name="text">
                        <string/>
@@ -2674,86 +2482,24 @@ border: none;</string>
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QComboBox" name="m_cbAppVersion">
-                    <property name="styleSheet">
-                     <string notr="true">  QComboBox{
-     padding-left: 10px;
- }
-
- QComboBox:!enabled{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #cccccc;
- }
-
- QComboBox:enabled:!hover{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #666666;
-}
-QComboBox:enabled:hover{
-     border: 1px solid #0e88eb;
-     border-radius: 2px;
-     font-family: 微软雅黑;
-     font-size: 16px;
-	 background-color: #fafafa;
-	 color: #666666;
-}
-
-QComboBox::drop-down{
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 20px;
- 
-    border-left-width: 1px;
-
-    border-top-right-radius: 2px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 2px;
-
- }
-
- QComboBox::down-arrow{
-
-     border-image: url(:/Resources/images/down_arrow.png);
- }
-
- 
-  QComboBox QAbstractItemView{
-     font-family: 微软雅黑;
-     font-size: 14px;
-     border: 1px solid #0e88eb;
-	 background-color: #ffffff;
-	 border-radius: 2px;
-	 
-  }
-
- QComboBox QAbstractItemView::item{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #666666;
-	 background-color: #ffffff;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-
- QComboBox QAbstractItemView::item:hover{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #ffffff;
-	 background-color: #0e88eb;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }</string>
+                   <widget class="ZegoComboBox" name="m_cbAppVersion">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>220</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>220</width>
+                      <height>16777215</height>
+                     </size>
                     </property>
                    </widget>
                   </item>
@@ -2774,14 +2520,11 @@ QComboBox::drop-down{
                    </spacer>
                   </item>
                   <item>
-                   <layout class="QFormLayout" name="formLayout_appID">
-                    <property name="horizontalSpacing">
-                     <number>23</number>
-                    </property>
-                    <property name="verticalSpacing">
+                   <layout class="QHBoxLayout" name="horizontalLayout_33">
+                    <property name="spacing">
                      <number>0</number>
                     </property>
-                    <item row="0" column="0">
+                    <item>
                      <widget class="QLabel" name="m_lbAPPID">
                       <property name="styleSheet">
                        <string notr="true"> QLabel{
@@ -2795,17 +2538,30 @@ QComboBox::drop-down{
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="1">
+                    <item>
+                     <spacer name="horizontalSpacer_35">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
                      <widget class="QLineEdit" name="m_strEdAPPID">
                       <property name="minimumSize">
                        <size>
-                        <width>145</width>
+                        <width>147</width>
                         <height>32</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>145</width>
+                        <width>147</width>
                         <height>32</height>
                        </size>
                       </property>
@@ -2864,14 +2620,11 @@ QComboBox::drop-down{
                    </spacer>
                   </item>
                   <item>
-                   <layout class="QFormLayout" name="formLayout_appSign">
-                    <property name="horizontalSpacing">
-                     <number>9</number>
-                    </property>
-                    <property name="verticalSpacing">
+                   <layout class="QHBoxLayout" name="horizontalLayout_34">
+                    <property name="spacing">
                      <number>0</number>
                     </property>
-                    <item row="2" column="0">
+                    <item>
                      <widget class="QLabel" name="m_lbAPPSign">
                       <property name="styleSheet">
                        <string notr="true"> QLabel{
@@ -2885,17 +2638,30 @@ QComboBox::drop-down{
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="1">
+                    <item>
+                     <spacer name="horizontalSpacer_36">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>10</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
                      <widget class="QLineEdit" name="m_strEdAPPSign">
                       <property name="minimumSize">
                        <size>
-                        <width>145</width>
+                        <width>147</width>
                         <height>32</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>145</width>
+                        <width>147</width>
                         <height>32</height>
                        </size>
                       </property>
@@ -2962,7 +2728,7 @@ QComboBox::drop-down{
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
-                    <width>30</width>
+                    <width>35</width>
                     <height>20</height>
                    </size>
                   </property>
@@ -3015,7 +2781,7 @@ QComboBox::drop-down{
                      <enum>Qt::Vertical</enum>
                     </property>
                     <property name="sizeType">
-                     <enum>QSizePolicy::Fixed</enum>
+                     <enum>QSizePolicy::Preferred</enum>
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
@@ -3039,13 +2805,13 @@ QComboBox::drop-down{
                        <widget class="QLabel" name="m_lbCapture">
                         <property name="minimumSize">
                          <size>
-                          <width>58</width>
+                          <width>0</width>
                           <height>16</height>
                          </size>
                         </property>
                         <property name="maximumSize">
                          <size>
-                          <width>58</width>
+                          <width>16777215</width>
                           <height>16</height>
                          </size>
                         </property>
@@ -3067,7 +2833,7 @@ QComboBox::drop-down{
                          <enum>Qt::Horizontal</enum>
                         </property>
                         <property name="sizeType">
-                         <enum>QSizePolicy::Fixed</enum>
+                         <enum>QSizePolicy::Expanding</enum>
                         </property>
                         <property name="sizeHint" stdset="0">
                          <size>
@@ -3078,7 +2844,7 @@ QComboBox::drop-down{
                        </spacer>
                       </item>
                       <item>
-                       <widget class="ZegoImageButton" name="m_switchCapture">
+                       <widget class="ZegoSwitchButton" name="m_switchCapture">
                         <property name="minimumSize">
                          <size>
                           <width>32</width>
@@ -3092,13 +2858,7 @@ QComboBox::drop-down{
                          </size>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">QPushButton:!checked{
-     border-image: url(:/Resources/images/switch_off.png);
- }
-
- QPushButton:checked{
-     border-image: url(:/Resources/images/switch_on.png);
- }</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string/>
@@ -3135,13 +2895,13 @@ QComboBox::drop-down{
                        <widget class="QLabel" name="m_lbFilter">
                         <property name="minimumSize">
                          <size>
-                          <width>58</width>
+                          <width>0</width>
                           <height>16</height>
                          </size>
                         </property>
                         <property name="maximumSize">
                          <size>
-                          <width>58</width>
+                          <width>16777215</width>
                           <height>16</height>
                          </size>
                         </property>
@@ -3163,7 +2923,7 @@ QComboBox::drop-down{
                          <enum>Qt::Horizontal</enum>
                         </property>
                         <property name="sizeType">
-                         <enum>QSizePolicy::Fixed</enum>
+                         <enum>QSizePolicy::Expanding</enum>
                         </property>
                         <property name="sizeHint" stdset="0">
                          <size>
@@ -3174,7 +2934,7 @@ QComboBox::drop-down{
                        </spacer>
                       </item>
                       <item>
-                       <widget class="ZegoImageButton" name="m_switchFilter">
+                       <widget class="ZegoSwitchButton" name="m_switchFilter">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                           <horstretch>0</horstretch>
@@ -3194,13 +2954,7 @@ QComboBox::drop-down{
                          </size>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">QPushButton:!checked{
-     border-image: url(:/Resources/images/switch_off.png);
- }
-
- QPushButton:checked{
-     border-image: url(:/Resources/images/switch_on.png);
- }</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string/>
@@ -3237,13 +2991,13 @@ QComboBox::drop-down{
                        <widget class="QLabel" name="m_lbRender">
                         <property name="minimumSize">
                          <size>
-                          <width>58</width>
+                          <width>0</width>
                           <height>16</height>
                          </size>
                         </property>
                         <property name="maximumSize">
                          <size>
-                          <width>58</width>
+                          <width>16777215</width>
                           <height>16</height>
                          </size>
                         </property>
@@ -3276,7 +3030,7 @@ QComboBox::drop-down{
                        </spacer>
                       </item>
                       <item>
-                       <widget class="ZegoImageButton" name="m_switchRender">
+                       <widget class="ZegoSwitchButton" name="m_switchRender">
                         <property name="minimumSize">
                          <size>
                           <width>32</width>
@@ -3290,13 +3044,7 @@ QComboBox::drop-down{
                          </size>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">QPushButton:!checked{
-     border-image: url(:/Resources/images/switch_off.png);
- }
-
- QPushButton:checked{
-     border-image: url(:/Resources/images/switch_on.png);
- }</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string/>
@@ -3316,7 +3064,7 @@ QComboBox::drop-down{
                      <enum>Qt::Vertical</enum>
                     </property>
                     <property name="sizeType">
-                     <enum>QSizePolicy::Fixed</enum>
+                     <enum>QSizePolicy::Preferred</enum>
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
@@ -3328,6 +3076,12 @@ QComboBox::drop-down{
                   </item>
                   <item>
                    <widget class="QLabel" name="m_lbExtra">
+                    <property name="font">
+                     <font>
+                      <family>微软雅黑</family>
+                      <pointsize>-1</pointsize>
+                     </font>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true"> QLabel{
      font-family: 微软雅黑;
@@ -3370,24 +3124,18 @@ QComboBox::drop-down{
                        <widget class="QLabel" name="m_lbSurfaceMerge">
                         <property name="minimumSize">
                          <size>
-                          <width>58</width>
+                          <width>0</width>
                           <height>16</height>
                          </size>
                         </property>
                         <property name="maximumSize">
                          <size>
-                          <width>58</width>
+                          <width>16777215</width>
                           <height>16</height>
                          </size>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">QLabel:!enabled{
-    font-family: 微软雅黑;
-    font-size: 14px;
-    color: #cccccc;
- }
- 
-QLabel:enabled{
+                         <string notr="true">QLabel{
     font-family: 微软雅黑;
     font-size: 14px;
     color: #666666;
@@ -3404,7 +3152,7 @@ QLabel:enabled{
                          <enum>Qt::Horizontal</enum>
                         </property>
                         <property name="sizeType">
-                         <enum>QSizePolicy::Fixed</enum>
+                         <enum>QSizePolicy::Preferred</enum>
                         </property>
                         <property name="sizeHint" stdset="0">
                          <size>
@@ -3415,7 +3163,7 @@ QLabel:enabled{
                        </spacer>
                       </item>
                       <item>
-                       <widget class="ZegoImageButton" name="m_switchSurfaceMerge">
+                       <widget class="ZegoSwitchButton" name="m_switchSurfaceMerge">
                         <property name="minimumSize">
                          <size>
                           <width>32</width>
@@ -3429,13 +3177,7 @@ QLabel:enabled{
                          </size>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">QPushButton:!checked{
-     border-image: url(:/Resources/images/switch_off.png);
- }
-
- QPushButton:checked{
-     border-image: url(:/Resources/images/switch_on.png);
- }</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string/>
@@ -3453,7 +3195,7 @@ QLabel:enabled{
                        <enum>Qt::Horizontal</enum>
                       </property>
                       <property name="sizeType">
-                       <enum>QSizePolicy::Fixed</enum>
+                       <enum>QSizePolicy::Expanding</enum>
                       </property>
                       <property name="sizeHint" stdset="0">
                        <size>
@@ -3511,7 +3253,7 @@ QLabel:enabled{
                        </spacer>
                       </item>
                       <item>
-                       <widget class="ZegoImageButton" name="m_switchUnknown">
+                       <widget class="ZegoSwitchButton" name="m_switchUnknown">
                         <property name="minimumSize">
                          <size>
                           <width>32</width>
@@ -3525,13 +3267,7 @@ QLabel:enabled{
                          </size>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">QPushButton:!checked{
-     border-image: url(:/Resources/images/switch_off.png);
- }
-
- QPushButton:checked{
-     border-image: url(:/Resources/images/switch_on.png);
- }</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string/>
@@ -3607,7 +3343,7 @@ QLabel:enabled{
                        </spacer>
                       </item>
                       <item>
-                       <widget class="ZegoImageButton" name="m_switchUnknown2">
+                       <widget class="ZegoSwitchButton" name="m_switchUnknown2">
                         <property name="minimumSize">
                          <size>
                           <width>32</width>
@@ -3621,13 +3357,7 @@ QLabel:enabled{
                          </size>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">QPushButton:!checked{
-     border-image: url(:/Resources/images/switch_off.png);
- }
-
- QPushButton:checked{
-     border-image: url(:/Resources/images/switch_on.png);
- }</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string/>
@@ -3682,6 +3412,12 @@ QLabel:enabled{
                       </property>
                       <item>
                        <widget class="QLabel" name="m_lbAudioLeft">
+                        <property name="font">
+                         <font>
+                          <family>微软雅黑</family>
+                          <pointsize>-1</pointsize>
+                         </font>
+                        </property>
                         <property name="styleSheet">
                          <string notr="true"> QLabel{
      font-family: 微软雅黑;
@@ -3716,7 +3452,7 @@ QLabel:enabled{
                          <number>0</number>
                         </property>
                         <item>
-                         <widget class="QLabel" name="m_lbMicAudio">
+                         <widget class="QLabel" name="m_lbReverb">
                           <property name="minimumSize">
                            <size>
                             <width>0</width>
@@ -3747,7 +3483,7 @@ QLabel:enabled{
                            <enum>Qt::Horizontal</enum>
                           </property>
                           <property name="sizeType">
-                           <enum>QSizePolicy::Fixed</enum>
+                           <enum>QSizePolicy::Expanding</enum>
                           </property>
                           <property name="sizeHint" stdset="0">
                            <size>
@@ -3758,7 +3494,7 @@ QLabel:enabled{
                          </spacer>
                         </item>
                         <item>
-                         <widget class="ZegoImageButton" name="m_switchMicAudio">
+                         <widget class="ZegoSwitchButton" name="m_switchReverb">
                           <property name="minimumSize">
                            <size>
                             <width>32</width>
@@ -3772,13 +3508,7 @@ QLabel:enabled{
                            </size>
                           </property>
                           <property name="styleSheet">
-                           <string notr="true">QPushButton:!checked{
-     border-image: url(:/Resources/images/switch_off.png);
- }
-
- QPushButton:checked{
-     border-image: url(:/Resources/images/switch_on.png);
- }</string>
+                           <string notr="true"/>
                           </property>
                           <property name="text">
                            <string/>
@@ -3798,11 +3528,11 @@ QLabel:enabled{
                        <enum>Qt::Horizontal</enum>
                       </property>
                       <property name="sizeType">
-                       <enum>QSizePolicy::Fixed</enum>
+                       <enum>QSizePolicy::Expanding</enum>
                       </property>
                       <property name="sizeHint" stdset="0">
                        <size>
-                        <width>50</width>
+                        <width>20</width>
                         <height>20</height>
                        </size>
                       </property>
@@ -3814,26 +3544,12 @@ QLabel:enabled{
                        <number>0</number>
                       </property>
                       <item>
-                       <widget class="QLabel" name="m_lbTime">
-                        <property name="styleSheet">
-                         <string notr="true"> QLabel{
-     font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #666666;
- }</string>
-                        </property>
-                        <property name="text">
-                         <string>Time</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
                        <spacer name="verticalSpacer_30">
                         <property name="orientation">
                          <enum>Qt::Vertical</enum>
                         </property>
                         <property name="sizeType">
-                         <enum>QSizePolicy::Fixed</enum>
+                         <enum>QSizePolicy::Expanding</enum>
                         </property>
                         <property name="sizeHint" stdset="0">
                          <size>
@@ -3849,7 +3565,7 @@ QLabel:enabled{
                          <number>0</number>
                         </property>
                         <item>
-                         <widget class="QLabel" name="m_lbTimeCount">
+                         <widget class="QLabel" name="m_lbVirtualStereo">
                           <property name="minimumSize">
                            <size>
                             <width>0</width>
@@ -3870,7 +3586,7 @@ QLabel:enabled{
  }</string>
                           </property>
                           <property name="text">
-                           <string>计时</string>
+                           <string>虚拟立体声</string>
                           </property>
                          </widget>
                         </item>
@@ -3880,7 +3596,7 @@ QLabel:enabled{
                            <enum>Qt::Horizontal</enum>
                           </property>
                           <property name="sizeType">
-                           <enum>QSizePolicy::Fixed</enum>
+                           <enum>QSizePolicy::Expanding</enum>
                           </property>
                           <property name="sizeHint" stdset="0">
                            <size>
@@ -3891,7 +3607,7 @@ QLabel:enabled{
                          </spacer>
                         </item>
                         <item>
-                         <widget class="ZegoImageButton" name="m_switchTimeCount">
+                         <widget class="ZegoSwitchButton" name="m_switchVirtualStereo">
                           <property name="minimumSize">
                            <size>
                             <width>32</width>
@@ -3905,13 +3621,7 @@ QLabel:enabled{
                            </size>
                           </property>
                           <property name="styleSheet">
-                           <string notr="true">QPushButton:!checked{
-     border-image: url(:/Resources/images/switch_off.png);
- }
-
- QPushButton:checked{
-     border-image: url(:/Resources/images/switch_on.png);
- }</string>
+                           <string notr="true"/>
                           </property>
                           <property name="text">
                            <string/>
@@ -3931,11 +3641,11 @@ QLabel:enabled{
                        <enum>Qt::Horizontal</enum>
                       </property>
                       <property name="sizeType">
-                       <enum>QSizePolicy::Fixed</enum>
+                       <enum>QSizePolicy::Expanding</enum>
                       </property>
                       <property name="sizeHint" stdset="0">
                        <size>
-                        <width>50</width>
+                        <width>100</width>
                         <height>20</height>
                        </size>
                       </property>
@@ -3948,6 +3658,12 @@ QLabel:enabled{
                       </property>
                       <item>
                        <widget class="QLabel" name="m_lbAudioRight">
+                        <property name="font">
+                         <font>
+                          <family>微软雅黑</family>
+                          <pointsize>-1</pointsize>
+                         </font>
+                        </property>
                         <property name="styleSheet">
                          <string notr="true"> QLabel{
      font-family: 微软雅黑;
@@ -4024,7 +3740,7 @@ QLabel:enabled{
                          </spacer>
                         </item>
                         <item>
-                         <widget class="ZegoImageButton" name="m_switchNational">
+                         <widget class="ZegoSwitchButton" name="m_switchNational">
                           <property name="minimumSize">
                            <size>
                             <width>32</width>
@@ -4038,13 +3754,7 @@ QLabel:enabled{
                            </size>
                           </property>
                           <property name="styleSheet">
-                           <string notr="true">QPushButton:!checked{
-     border-image: url(:/Resources/images/switch_off.png);
- }
-
- QPushButton:checked{
-     border-image: url(:/Resources/images/switch_on.png);
- }</string>
+                           <string notr="true"/>
                           </property>
                           <property name="text">
                            <string/>
@@ -4081,7 +3791,7 @@ QLabel:enabled{
                    <enum>Qt::Horizontal</enum>
                   </property>
                   <property name="sizeType">
-                   <enum>QSizePolicy::Fixed</enum>
+                   <enum>QSizePolicy::Expanding</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
@@ -4130,8 +3840,8 @@ QLabel:enabled{
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">margin-left: 455px;
-margin-right: 55px;
+                 <string notr="true">margin-left: 453px;
+margin-right: 57px;
 background-color: #0e88eb;
 border: none;</string>
                 </property>
@@ -4244,8 +3954,11 @@ border: none;</string>
                        <number>10</number>
                       </property>
                       <item>
-                       <layout class="QFormLayout" name="formLayout">
-                        <item row="0" column="0">
+                       <layout class="QHBoxLayout" name="horizontalLayout_31">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <item>
                          <widget class="QLabel" name="m_lbUserId">
                           <property name="styleSheet">
                            <string notr="true"> QLabel{
@@ -4259,7 +3972,23 @@ border: none;</string>
                           </property>
                          </widget>
                         </item>
-                        <item row="0" column="1">
+                        <item>
+                         <spacer name="horizontalSpacer_18">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeType">
+                           <enum>QSizePolicy::Fixed</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>10</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
                          <widget class="QLineEdit" name="m_strEdUserId">
                           <property name="minimumSize">
                            <size>
@@ -4312,8 +4041,11 @@ border: none;</string>
                        </layout>
                       </item>
                       <item>
-                       <layout class="QFormLayout" name="formLayout_2">
-                        <item row="0" column="0">
+                       <layout class="QHBoxLayout" name="horizontalLayout_32">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <item>
                          <widget class="QLabel" name="m_lbUserName">
                           <property name="styleSheet">
                            <string notr="true"> QLabel{
@@ -4327,7 +4059,23 @@ border: none;</string>
                           </property>
                          </widget>
                         </item>
-                        <item row="0" column="1">
+                        <item>
+                         <spacer name="horizontalSpacer_19">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeType">
+                           <enum>QSizePolicy::Fixed</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>10</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
                          <widget class="QLineEdit" name="m_strEdUserName">
                           <property name="minimumSize">
                            <size>
@@ -4493,6 +4241,12 @@ border: none;</string>
                         </property>
                         <item>
                          <widget class="QLabel" name="m_lbMircoPhone">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
                           <property name="styleSheet">
                            <string notr="true"> QLabel{
      font-family: 微软雅黑;
@@ -4511,7 +4265,7 @@ border: none;</string>
                            <enum>Qt::Horizontal</enum>
                           </property>
                           <property name="sizeType">
-                           <enum>QSizePolicy::Fixed</enum>
+                           <enum>QSizePolicy::Preferred</enum>
                           </property>
                           <property name="sizeHint" stdset="0">
                            <size>
@@ -4522,105 +4276,24 @@ border: none;</string>
                          </spacer>
                         </item>
                         <item>
-                         <widget class="ZegoDeviceComboBox" name="m_cbMircoPhone">
+                         <widget class="ZegoComboBox" name="m_cbMircoPhone">
                           <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                            </sizepolicy>
                           </property>
                           <property name="minimumSize">
                            <size>
-                            <width>260</width>
+                            <width>250</width>
                             <height>32</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>16777215</width>
+                            <width>250</width>
                             <height>32</height>
                            </size>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">  QComboBox{
-     padding-left: 10px;
- }
-
- QComboBox:!enabled{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #cccccc;
- }
-
- QComboBox:enabled:!hover{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #666666;
-}
-QComboBox:enabled:hover{
-     border: 1px solid #0e88eb;
-     border-radius: 2px;
-     font-family: 微软雅黑;
-     font-size: 16px;
-	 background-color: #fafafa;
-	 color: #666666;
-}
-
-QComboBox::drop-down{
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 20px;
- 
-    border-left-width: 1px;
-
-    border-top-right-radius: 2px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 2px;
-
- }
-
- QComboBox::down-arrow{
-
-     border-image: url(:/Resources/images/down_arrow.png);
- }
-
- 
-  QComboBox QAbstractItemView{
-     font-family: 微软雅黑;
-     font-size: 14px;
-     border: 1px solid #0e88eb;
-	 background-color: #ffffff;
-	 border-radius: 2px;
-	 
-  }
-
- QComboBox QAbstractItemView::item{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #666666;
-	 background-color: #ffffff;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-
- QComboBox QAbstractItemView::item:hover{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #ffffff;
-	 background-color: #0e88eb;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-</string>
                           </property>
                           <property name="frame">
                            <bool>true</bool>
@@ -4652,6 +4325,12 @@ QComboBox::drop-down{
                         </property>
                         <item>
                          <widget class="QLabel" name="m_lbCamera">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
                           <property name="styleSheet">
                            <string notr="true"> QLabel{
      font-family: 微软雅黑;
@@ -4670,7 +4349,7 @@ QComboBox::drop-down{
                            <enum>Qt::Horizontal</enum>
                           </property>
                           <property name="sizeType">
-                           <enum>QSizePolicy::Fixed</enum>
+                           <enum>QSizePolicy::Preferred</enum>
                           </property>
                           <property name="sizeHint" stdset="0">
                            <size>
@@ -4681,105 +4360,24 @@ QComboBox::drop-down{
                          </spacer>
                         </item>
                         <item>
-                         <widget class="ZegoDeviceComboBox" name="m_cbCamera">
+                         <widget class="ZegoComboBox" name="m_cbCamera">
                           <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                            </sizepolicy>
                           </property>
                           <property name="minimumSize">
                            <size>
-                            <width>260</width>
+                            <width>250</width>
                             <height>32</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>16777215</width>
+                            <width>250</width>
                             <height>32</height>
                            </size>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">  QComboBox{
-     padding-left: 10px;
- }
-
- QComboBox:!enabled{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #cccccc;
- }
-
- QComboBox:enabled:!hover{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #666666;
-}
-QComboBox:enabled:hover{
-     border: 1px solid #0e88eb;
-     border-radius: 2px;
-     font-family: 微软雅黑;
-     font-size: 16px;
-	 background-color: #fafafa;
-	 color: #666666;
-}
-
-QComboBox::drop-down{
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 20px;
- 
-    border-left-width: 1px;
-
-    border-top-right-radius: 2px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 2px;
-
- }
-
- QComboBox::down-arrow{
-
-     border-image: url(:/Resources/images/down_arrow.png);
- }
-
- 
-  QComboBox QAbstractItemView{
-     font-family: 微软雅黑;
-     font-size: 14px;
-     border: 1px solid #0e88eb;
-	 background-color: #ffffff;
-	 border-radius: 2px;
-	 
-  }
-
- QComboBox QAbstractItemView::item{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #666666;
-	 background-color: #ffffff;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-
- QComboBox QAbstractItemView::item:hover{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #ffffff;
-	 background-color: #0e88eb;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-</string>
                           </property>
                          </widget>
                         </item>
@@ -4826,7 +4424,7 @@ QComboBox::drop-down{
                            <enum>Qt::Horizontal</enum>
                           </property>
                           <property name="sizeType">
-                           <enum>QSizePolicy::Fixed</enum>
+                           <enum>QSizePolicy::Preferred</enum>
                           </property>
                           <property name="sizeHint" stdset="0">
                            <size>
@@ -4837,105 +4435,24 @@ QComboBox::drop-down{
                          </spacer>
                         </item>
                         <item>
-                         <widget class="ZegoDeviceComboBox" name="m_cbCamera2">
+                         <widget class="ZegoComboBox" name="m_cbCamera2">
                           <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                            </sizepolicy>
                           </property>
                           <property name="minimumSize">
                            <size>
-                            <width>260</width>
+                            <width>250</width>
                             <height>32</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>16777215</width>
+                            <width>250</width>
                             <height>32</height>
                            </size>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">  QComboBox{
-     padding-left: 10px;
- }
-
- QComboBox:!enabled{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #cccccc;
- }
-
- QComboBox:enabled:!hover{
-    border: 1px solid #e6e6e6;
-    border-radius: 2px;
-    font-family: 微软雅黑;
-    font-size: 16px;
-	background-color: #fafafa;
-	color: #666666;
-}
-QComboBox:enabled:hover{
-     border: 1px solid #0e88eb;
-     border-radius: 2px;
-     font-family: 微软雅黑;
-     font-size: 16px;
-	 background-color: #fafafa;
-	 color: #666666;
-}
-
-QComboBox::drop-down{
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 20px;
- 
-    border-left-width: 1px;
-
-    border-top-right-radius: 2px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 2px;
-
- }
-
- QComboBox::down-arrow{
-
-     border-image: url(:/Resources/images/down_arrow.png);
- }
-
- 
-  QComboBox QAbstractItemView{
-     font-family: 微软雅黑;
-     font-size: 14px;
-     border: 1px solid #0e88eb;
-	 background-color: #ffffff;
-	 border-radius: 2px;
-	 
-  }
-
- QComboBox QAbstractItemView::item{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #666666;
-	 background-color: #ffffff;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-
- QComboBox QAbstractItemView::item:hover{
-     
-     height: 32px;
-	 font-family: 微软雅黑;
-     font-size: 14px;
-	 color: #ffffff;
-	 background-color: #0e88eb;
-	 padding-left: 10px;
-	 padding-right: 10px;
- }
-</string>
                           </property>
                          </widget>
                         </item>
@@ -5184,12 +4701,27 @@ QComboBox::drop-down{
   <customwidget>
    <class>ZegoImageButton</class>
    <extends>QPushButton</extends>
-   <header location="global">ZegoImageButton.h</header>
+   <header>ZegoImageButton.h</header>
   </customwidget>
   <customwidget>
-   <class>ZegoDeviceComboBox</class>
+   <class>ZegoStateButton</class>
+   <extends>QPushButton</extends>
+   <header>ZegoStateButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ZegoSwitchButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">ZegoSwitchButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ZegoComboBox</class>
    <extends>QComboBox</extends>
-   <header location="global">ZegoDeviceComboBox.h</header>
+   <header location="global">ZegoComboBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ZegoSlider</class>
+   <extends>QSlider</extends>
+   <header>ZegoSlider.h</header>
   </customwidget>
  </customwidgets>
  <resources>

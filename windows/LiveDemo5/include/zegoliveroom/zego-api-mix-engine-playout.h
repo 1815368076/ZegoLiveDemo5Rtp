@@ -8,8 +8,6 @@
 #ifndef zego_api_mix_engine_playout_h
 #define zego_api_mix_engine_playout_h
 
-#include "zego-api-defines.h"
-
 namespace ZEGO
 {
 namespace MIXENGINE

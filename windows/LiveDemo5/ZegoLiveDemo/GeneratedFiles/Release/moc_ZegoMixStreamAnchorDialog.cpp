@@ -20,8 +20,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_ZegoMixStreamAnchorDialog_t {
-    QByteArrayData data[25];
-    char stringdata0[325];
+    QByteArrayData data[27];
+    char stringdata0[342];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -54,7 +54,9 @@ QT_MOC_LITERAL(20, 264, 11), // "OnMixStream"
 QT_MOC_LITERAL(21, 276, 6), // "hlsUrl"
 QT_MOC_LITERAL(22, 283, 7), // "rtmpUrl"
 QT_MOC_LITERAL(23, 291, 11), // "mixStreamID"
-QT_MOC_LITERAL(24, 303, 21) // "OnButtonSwitchPublish"
+QT_MOC_LITERAL(24, 303, 9), // "OnKickOut"
+QT_MOC_LITERAL(25, 313, 6), // "reason"
+QT_MOC_LITERAL(26, 320, 21) // "OnButtonSwitchPublish"
 
     },
     "ZegoMixStreamAnchorDialog\0OnLoginRoom\0"
@@ -65,7 +67,8 @@ QT_MOC_LITERAL(24, 303, 21) // "OnButtonSwitchPublish"
     "StreamPtr\0streamInfo\0OnPlayStateUpdate\0"
     "OnJoinLiveRequest\0seq\0fromUserId\0"
     "fromUserName\0OnMixStream\0hlsUrl\0rtmpUrl\0"
-    "mixStreamID\0OnButtonSwitchPublish"
+    "mixStreamID\0OnKickOut\0reason\0"
+    "OnButtonSwitchPublish"
 };
 #undef QT_MOC_LITERAL
 
@@ -75,7 +78,7 @@ static const uint qt_meta_data_ZegoMixStreamAnchorDialog[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -83,13 +86,14 @@ static const uint qt_meta_data_ZegoMixStreamAnchorDialog[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    3,   49,    2, 0x09 /* Protected */,
-       7,    3,   56,    2, 0x09 /* Protected */,
-      10,    3,   63,    2, 0x09 /* Protected */,
-      15,    2,   70,    2, 0x09 /* Protected */,
-      16,    4,   75,    2, 0x09 /* Protected */,
-      20,    5,   84,    2, 0x09 /* Protected */,
-      24,    0,   95,    2, 0x08 /* Private */,
+       1,    3,   54,    2, 0x09 /* Protected */,
+       7,    3,   61,    2, 0x09 /* Protected */,
+      10,    3,   68,    2, 0x09 /* Protected */,
+      15,    2,   75,    2, 0x09 /* Protected */,
+      16,    4,   80,    2, 0x09 /* Protected */,
+      20,    5,   89,    2, 0x09 /* Protected */,
+      24,    2,  100,    2, 0x09 /* Protected */,
+      26,    0,  105,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Int, QMetaType::QString, 0x80000000 | 5,    3,    4,    6,
@@ -98,6 +102,7 @@ static const uint qt_meta_data_ZegoMixStreamAnchorDialog[] = {
     QMetaType::Void, QMetaType::Int, QMetaType::QString,   11,   12,
     QMetaType::Void, QMetaType::Int, QMetaType::QString, QMetaType::QString, QMetaType::QString,   17,   18,   19,    4,
     QMetaType::Void, QMetaType::UInt, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::Int,    3,   21,   22,   23,   17,
+    QMetaType::Void, QMetaType::Int, QMetaType::QString,   25,    4,
     QMetaType::Void,
 
        0        // eod
@@ -115,7 +120,8 @@ void ZegoMixStreamAnchorDialog::qt_static_metacall(QObject *_o, QMetaObject::Cal
         case 3: _t->OnPlayStateUpdate((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2]))); break;
         case 4: _t->OnJoinLiveRequest((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< const QString(*)>(_a[3])),(*reinterpret_cast< const QString(*)>(_a[4]))); break;
         case 5: _t->OnMixStream((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< const QString(*)>(_a[3])),(*reinterpret_cast< const QString(*)>(_a[4])),(*reinterpret_cast< int(*)>(_a[5]))); break;
-        case 6: _t->OnButtonSwitchPublish(); break;
+        case 6: _t->OnKickOut((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2]))); break;
+        case 7: _t->OnButtonSwitchPublish(); break;
         default: ;
         }
     }
@@ -146,13 +152,13 @@ int ZegoMixStreamAnchorDialog::qt_metacall(QMetaObject::Call _c, int _id, void *
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 8;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 8)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 7;
+        _id -= 8;
     }
     return _id;
 }

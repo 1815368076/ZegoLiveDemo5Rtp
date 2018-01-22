@@ -279,7 +279,7 @@ void QZegoAVSignal::OnSnapshot(void *pImage, const char* pszStreamID)
 	emit sigSnapshot(pImage, streamID);
 }
 
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 void QZegoAVSignal::OnSurfaceMergeResult(
 	unsigned char *surfaceMergeData,
 	int datalength,

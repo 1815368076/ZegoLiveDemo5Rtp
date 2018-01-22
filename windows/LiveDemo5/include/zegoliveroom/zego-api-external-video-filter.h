@@ -8,7 +8,6 @@
 #ifndef zego_api_external_video_filter_h
 #define zego_api_external_video_filter_h
 
-#include "zego-api-defines.h"
 
 namespace AVE
 {

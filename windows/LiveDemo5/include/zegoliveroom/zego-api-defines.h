@@ -8,10 +8,14 @@
 #ifndef zego_api_defines_h
 #define zego_api_defines_h
 
+
 #define ZEGO_MAX_COMMON_LEN         (512)
 #define ZEGO_MAX_URL_COUNT          (10)
 #define ZEGO_MAX_EVENT_INFO_COUNT   (10)
 #define ZEGO_MAX_MIX_INPUT_COUNT    (12)
+
+#define ZEGO_MAX_USERID_LEN         (64)
+#define ZEGO_MAX_USERNAME_LEN       (256)
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #	define _I64_				"I64"
@@ -123,6 +127,11 @@ namespace ZEGO
             unsigned int uiHlsURLCount;
         };
         
+        const unsigned int SEG_PUBLISH_FATAL_ERROR = 0x0001 << 16;   ///< 推流严重错误段
+        const unsigned int SEG_PUBLISH_NORMAL_ERROR = 0x0002 << 16;  ///< 推流普通错误段
+        const unsigned int SEG_PLAY_FATAL_ERROR = 0x0003 << 16;      ///< 拉流严重错误段
+        const unsigned int SEG_PLAY_NORMAL_ERROR = 0x0004 << 16;     ///< 拉流普通错误段
+        
         enum ZegoAVAPIState
         {
             AVStateBegin = 0,               ///< 直播开始
@@ -141,6 +150,15 @@ namespace ZEGO
             
             PublishBadNameError = 105,
             HttpDNSResolveError = 106,
+            
+            PublishForbidError = (SEG_PUBLISH_FATAL_ERROR | 0x03f3),             ///< 禁止推流, 低8位为服务端返回错误码：1011
+            
+            PublishDeniedError = (SEG_PUBLISH_NORMAL_ERROR | 0x1),              ///< 推流被拒绝
+
+            PlayStreamNotExistError = (SEG_PLAY_FATAL_ERROR | 0x03ec),          ///< 拉的流不存在, 低8位为服务端返回错误码：1004
+            PlayForbidError = (SEG_PLAY_FATAL_ERROR | 0x03f3),                  ///< 禁止拉流, 低8位为服务端返回错误码：1011
+            
+            PlayDeniedError = (SEG_PLAY_NORMAL_ERROR | 0x1),                   ///< 拉流被拒绝
         };
         
         enum ZEGONetType
@@ -208,6 +226,9 @@ namespace ZEGO
             
             int nChannels;                              /**< 混流声道数，默认为单声道 */
             
+            int nOutputBackgroundColor;                 /**< 混流背景颜色，前三个字节为 RGB 颜色值，即 0xRRGGBBxx */
+            const char* pOutputBackgroundImage;         /**< 混流背景图，支持预设图片，如 (preset-id://xxx) */
+            
             ZegoCompleteMixStreamConfig ()
             : bOutputIsUrl(false)
             , nOutputFps(0)
@@ -220,6 +241,8 @@ namespace ZEGO
             , pUserData(0)
             , nLenOfUserData(0)
             , nChannels(1)
+            , nOutputBackgroundColor(0x00000000)
+            , pOutputBackgroundImage(0)
             {
                 szOutputStream[0] = '\0';
             }
@@ -344,7 +367,17 @@ namespace ZEGO
             int quality;            ///< 质量(0~4)
         };
         
-        typedef PublishQuality PlayQuality;
+        struct PlayQuality
+        {
+            double fps;                      ///< 视频帧率
+            double kbps;                     ///< 视频码率(kb/s)
+            double akbps;                   ///< 音频码率(kb/s)
+            double audioBreakRate;          ///< 音频卡顿率(次/min)
+            int rtt;                        ///< 延时(ms)
+            int pktLostRate;                ///< 丢包率(0~255)
+            
+            int quality;                    ///< 质量(0~4)
+        };
         
         /** 推流通道 */
         enum PublishChannelIndex

@@ -18,8 +18,8 @@
 #include "LiveRoom-Publisher.h"
 
 #define USE_SURFACE_MERGE
-#if defined(USE_SURFACE_MERGE)
-#include "ZegoSurfaceMerge.h"
+#if defined(USE_SURFACE_MERGE) && defined(Q_PROCESSOR_X86_32)
+#include "Module/ZegoSurfaceMergeApi.h"
 #endif
 
 #elif defined(Q_OS_MAC)

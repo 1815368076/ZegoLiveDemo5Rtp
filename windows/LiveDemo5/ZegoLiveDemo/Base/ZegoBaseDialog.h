@@ -27,25 +27,28 @@
 Q_GUI_EXPORT QPixmap qt_pixmapFromWinHBITMAP(HBITMAP bitmap, int hbitmapFormat);
 #endif
 #include "ui_ZegoLiveRoomDialog.h"
-#include "Settings/ZegoSettingsModel.h"
-#include "Model/ZegoRoomModel.h"
+#include "ZegoLiveDemo.h"
 #include "ZegoAVView.h"
+#include "ZegoRoomMessageLabel.h"
 #include "LiveRoom.h"
 #include "LiveRoom-IM.h"
 #include "LiveRoom-Publisher.h"
 #include "LiveRoom-Player.h"
 #include "LiveRoomDefines.h"
 #include "LiveRoomDefines-IM.h"
+#include "Settings/ZegoSettingsModel.h"
+#include "Model/ZegoRoomModel.h"
 #include "Model/ZegoRoomMsgModel.h"
-#include "ZegoLiveDemo.h"
 #include "Delegate/NoFocusFrameDelegate.h"
 #include "Dialog/ZegoShareDialog.h"
-#ifdef Q_OS_WIN
+#include "Dialog/ZegoImageShowDialog.h"
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 #include "ZegoMusicHookDialog.h"
 #include "ZegoAudioHook.h"
 #endif
-#include "ZegoRoomMessageLabel.h"
-#include "Dialog/ZegoImageShowDialog.h"
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
+#include "Module/ZegoSurfaceMergeApi.h"
+#endif
 
 #define MAX_VIEW_COUNT 12
 
@@ -67,7 +70,7 @@ public:
 	~ZegoBaseDialog();
 	void initDialog();
 
-	protected slots:
+protected slots:
 	void OnUserUpdate(QVector<QString> userIDs, QVector<QString> userNames, QVector<int> userFlags, QVector<int> userRoles, unsigned int userCount, LIVEROOM::ZegoUserUpdateType type);
 	void OnDisconnect(int errorCode, const QString& roomId);
 	void OnKickOut(int reason, const QString& roomId);
@@ -78,7 +81,7 @@ public:
 	void OnRecvRoomMessage(const QString& roomId, QVector<RoomMsgPtr> vRoomMsgList);
 	void OnAudioDeviceChanged(AV::AudioDeviceType deviceType, const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state);
 	void OnVideoDeviceChanged(const QString& strDeviceId, const QString& strDeviceName, AV::DeviceState state);
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE)
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE)
 	void OnSurfaceMergeResult(unsigned char *surfaceMergeData, int datalength);
 #endif
 	void OnPreviewSnapshot(void *pImage);
@@ -89,6 +92,7 @@ protected:
 	virtual void mouseMoveEvent(QMouseEvent *event);  
 	virtual void mouseReleaseEvent(QMouseEvent *event);  
 	virtual void mouseDoubleClickEvent(QMouseEvent *event);  
+	virtual void showEvent(QShowEvent *event);
 	virtual void closeEvent(QCloseEvent *e);  
 	virtual bool eventFilter(QObject *target, QEvent *event);  
 
@@ -111,7 +115,7 @@ public slots:
 	void OnSnapshotWithStreamID(const QString &streamID);
 	//混音app地址回调
 	void OnUseDefaultAux(bool state);
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 	void OnGetMusicAppPath(QString exePath);
 #endif
 	//切换音视频设备
@@ -128,9 +132,10 @@ protected:
 	void removeStringListModelItem(QStringListModel * model, QString name);
 	void EnumVideoAndAudioDevice();  
 	void initComboBox(); 
+	void initButtonIcon();
 	virtual void initCameraListView2(){}
 	void FreeAVView(StreamPtr stream);  
-	void GetOut();  
+	virtual void GetOut();  
 	void BeginAux();  
 	void EndAux();  
 	QString encodeStringAddingEscape(QString str);  
@@ -143,10 +148,7 @@ protected:
 	void initAVView(QZegoAVView *view);  
 	void addAVView(int addViewIndex, ZegoDialogType dialogType);
 	void removeAVView(int removeViewIndex);  
-	void updateViewLayout(int viewCount);  
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
-	void StartSurfaceMerge(); 
-#endif
+	void updateViewLayout(int viewCount);
 	void setWaterPrint();  
 	int getCameraIndexFromID(const QString& cameraID);  
 
@@ -212,7 +214,7 @@ protected:
 	//view的网格动态布局
 	QGridLayout *gridLayout;
 
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 	ZegoMusicHookDialog hookDialog;
 #endif
 

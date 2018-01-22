@@ -4,19 +4,21 @@
 #define ZEGOMUSICHOOKDIALOG_H
 #include <QtWidgets/QDialog>
 
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN32
+//#ifdef Q_PROCESSOR_X86_32
 #include <QMessageBox>
 #include <QMouseEvent>
 #include "ui_ZegoMusicHookDialog.h"
 
-//#ifdef Q_OS_WIN
-    #include "ZegoAudioHook.h"
-    #include "SoftWareInfo/ZegoSoftWareInfo.h"
-
-    #include <windows.h>
-    #include <tlhelp32.h>
-    #include <Psapi.h>
+//#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
+#include "ZegoAudioHook.h"
+#include "SoftWareInfo/ZegoSoftWareInfo.h"
 //#endif
+
+#include <windows.h>
+#include <tlhelp32.h>
+#include <Psapi.h>
+
 //标题栏坐标范围
 #define pos_min_x  0
 #define pos_max_x  ui.m_zoneTitle->size().width()
@@ -30,18 +32,19 @@ class ZegoMusicHookDialog : public QDialog
 public:
 	ZegoMusicHookDialog(QWidget *parent = 0);
 	~ZegoMusicHookDialog();
-//#ifdef Q_OS_WIN
+
+	void initButtonIcon();
 	void searchMusicAppFromReg();
 	QString getAppPath();
-
+//#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 	BOOL StartProcess(LPTSTR pszProcessPath);
 	BOOL KillProcess(LPTSTR pszProcessPath);
 	DWORD ProcessIsExist(LPTSTR pszProcessPath);
-
+//#endif
 private slots:
     void OnSelectedMusicApp();
     void OnSendCustomAppPath();
-//#endif
+
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);
@@ -56,7 +59,7 @@ private slots:
 	void OnClose();
 private:
 	Ui::ZegoMusicHookDialog ui;
-//#ifdef Q_OS_WIN
+//#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 	SoftInfo KuGouMusic;
 	SoftInfo CloudMusic;
 	SoftInfo QQMusic;
@@ -69,4 +72,5 @@ private:
 
 #endif
 
+//#endif
 #endif

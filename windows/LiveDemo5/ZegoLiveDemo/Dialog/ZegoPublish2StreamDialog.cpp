@@ -46,6 +46,8 @@ void ZegoPublish2StreamDialog::initDialog()
 	ui.m_cbCamera2->setEnabled(false);
 	ui.m_lbCamera2->setEnabled(false);
 
+	ui.m_vSpacer->changeSize(10, 10, QSizePolicy::Expanding, QSizePolicy::Fixed);
+
 	ZegoBaseDialog::initDialog();
 }
 
@@ -88,24 +90,18 @@ void ZegoPublish2StreamDialog::StartPublishStream()
 		connect(AVViews.last(), &QZegoAVView::sigSnapShotPreviewOnMoreAnchor, this, &ZegoBaseDialog::OnSnapshotPreview);
 
 		qDebug() << "publish nIndex = " << nIndex << "publish stream id is" << pPublishStream->getStreamId();
-		if (m_pAVSettings->GetSurfaceMerge())
-		{
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
-			StartSurfaceMerge();
-#endif
-		}
-		else
-		{
-			LIVEROOM::SetVideoFPS(m_pAVSettings->GetFps());
-			LIVEROOM::SetVideoBitrate(m_pAVSettings->GetBitrate());
-			LIVEROOM::SetVideoCaptureResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
-			LIVEROOM::SetVideoEncodeResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
+	
+		
+		LIVEROOM::SetVideoFPS(m_pAVSettings->GetFps());
+		LIVEROOM::SetVideoBitrate(m_pAVSettings->GetBitrate());
+		LIVEROOM::SetVideoCaptureResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
+		LIVEROOM::SetVideoEncodeResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
 
 			//配置View
-			LIVEROOM::SetPreviewView((void *)AVViews.last()->winId());
-			LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFit);
-			LIVEROOM::StartPreview();
-		}
+		LIVEROOM::SetPreviewView((void *)AVViews.last()->winId());
+		LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFit);
+		LIVEROOM::StartPreview();
+		
 
 		QString streamID = m_strPublishStreamID;
 		m_anchorStreamInfo = pPublishStream;
@@ -148,25 +144,17 @@ void ZegoPublish2StreamDialog::StartPublishStream_Aux()
 		connect(AVViews.last(), &QZegoAVView::sigSnapShotPreviewOnMoreAnchor, this, &ZegoBaseDialog::OnSnapshotPreview);
 
 		qDebug() << "publish nIndex = " << nIndex << "publish stream id is" << pPublishStream->getStreamId();
-		if (m_pAVSettings->GetSurfaceMerge())
-		{
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
-			StartSurfaceMerge();
-#endif
-		}
-		else
-		{
-			LIVEROOM::SetVideoFPS(m_pAVSettings->GetFps(), ZEGO::AV::PUBLISH_CHN_AUX);
-			LIVEROOM::SetVideoBitrate(m_pAVSettings->GetBitrate(), ZEGO::AV::PUBLISH_CHN_AUX);
-			LIVEROOM::SetVideoCaptureResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy, ZEGO::AV::PUBLISH_CHN_AUX);
-			LIVEROOM::SetVideoEncodeResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy, ZEGO::AV::PUBLISH_CHN_AUX);
+		
+		LIVEROOM::SetVideoFPS(m_pAVSettings->GetFps(), ZEGO::AV::PUBLISH_CHN_AUX);
+		LIVEROOM::SetVideoBitrate(m_pAVSettings->GetBitrate(), ZEGO::AV::PUBLISH_CHN_AUX);
+		LIVEROOM::SetVideoCaptureResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy, ZEGO::AV::PUBLISH_CHN_AUX);
+		LIVEROOM::SetVideoEncodeResolution(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy, ZEGO::AV::PUBLISH_CHN_AUX);
 
-			//配置View
-			LIVEROOM::SetPreviewView((void *)AVViews.last()->winId(), ZEGO::AV::PUBLISH_CHN_AUX);
-			LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFit, ZEGO::AV::PUBLISH_CHN_AUX);
-			LIVEROOM::StartPreview(ZEGO::AV::PUBLISH_CHN_AUX);
-		}
-
+		//配置View
+		LIVEROOM::SetPreviewView((void *)AVViews.last()->winId(), ZEGO::AV::PUBLISH_CHN_AUX);
+		LIVEROOM::SetPreviewViewMode(LIVEROOM::ZegoVideoViewModeScaleAspectFit, ZEGO::AV::PUBLISH_CHN_AUX);
+		LIVEROOM::StartPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+		
 		QString streamID = m_strPublishStreamID_Aux;
 		m_anchorStreamInfo_Aux = pPublishStream;
 		AVViews.last()->setViewStreamID(streamID);
@@ -181,30 +169,19 @@ void ZegoPublish2StreamDialog::StopPublishStream(const QString& streamID, AV::Pu
 {
 	if (streamID.size() == 0){ return; }
 
-	
-	if (m_pAVSettings->GetSurfaceMerge())
-	{
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
-		SurfaceMerge::SetRenderView(nullptr);
-		SurfaceMerge::UpdateSurface(nullptr, 0);
-#endif
-	}
-	else
+	LIVEROOM::SetPreviewView(nullptr);
+	LIVEROOM::StopPreview();
+	if (idx == ZEGO::AV::PUBLISH_CHN_MAIN)
 	{
 		LIVEROOM::SetPreviewView(nullptr);
 		LIVEROOM::StopPreview();
-		if (idx == ZEGO::AV::PUBLISH_CHN_MAIN)
-		{
-			LIVEROOM::SetPreviewView(nullptr);
-			LIVEROOM::StopPreview();
-		}
-		else
-		{
-			LIVEROOM::SetPreviewView(nullptr, ZEGO::AV::PUBLISH_CHN_AUX);
-			LIVEROOM::StopPreview(ZEGO::AV::PUBLISH_CHN_AUX);
-		}
 	}
-
+	else
+	{
+		LIVEROOM::SetPreviewView(nullptr, ZEGO::AV::PUBLISH_CHN_AUX);
+		LIVEROOM::StopPreview(ZEGO::AV::PUBLISH_CHN_AUX);
+	}
+	
 	if (idx == ZEGO::AV::PUBLISH_CHN_MAIN)
 	{
 		qDebug() << "stop publish view index = " << m_anchorStreamInfo->getPlayView();
@@ -286,14 +263,14 @@ bool ZegoPublish2StreamDialog::praseJsonData(QJsonDocument doc)
 void ZegoPublish2StreamDialog::setWaterPrint(AV::PublishChannelIndex idx)
 {
 	QString waterPrintPath = QDir::currentPath();
-	waterPrintPath += "/Resources/images/";
+	waterPrintPath += "/Resources/waterprint/";
 	if (m_dpi < 2.0)
 	{
 		waterPrintPath += "waterprint.png";
 	}
 	else
 	{
-		waterPrintPath += "@2x/waterprint@2x.png";
+		waterPrintPath += "waterprint@2x.png";
 	}
 
 	QImage waterPrint(waterPrintPath);
@@ -449,6 +426,7 @@ void ZegoPublish2StreamDialog::OnPublishStateUpdate(int stateCode, const QString
 			QJsonDocument doc = QJsonDocument::fromVariant(vMap);
 			QByteArray jba = doc.toJson();
 			QString jsonString = QString(jba);
+			jsonString = jsonString.simplified();
 			//设置流附加消息，将混流信息传入
 			LIVEROOM::SetPublishStreamExtraInfo(jsonString.toStdString().c_str());
 		}
@@ -463,7 +441,7 @@ void ZegoPublish2StreamDialog::OnPublishStateUpdate(int stateCode, const QString
 		ui.m_bRequestJoinLive->setEnabled(true);
 
 		//推流成功后启动计时器监听麦克风音量
-		timer->start(0);
+		timer->start(200);
 
 	}
 	else
@@ -538,7 +516,7 @@ void ZegoPublish2StreamDialog::OnButtonSwitchPublish()
 			ui.m_bAux->setText(tr("关闭中..."));
 			ui.m_bAux->setEnabled(false);
 
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 			if (isUseDefaultAux)
 			{
 				EndAux();

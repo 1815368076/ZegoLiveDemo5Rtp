@@ -446,8 +446,6 @@ void *QZegoAVSignal::qt_metacast(const char *_clname)
         return static_cast< LIVEROOM::ILivePlayerCallback*>(const_cast< QZegoAVSignal*>(this));
     if (!strcmp(_clname, "LIVEROOM::IIMCallback"))
         return static_cast< LIVEROOM::IIMCallback*>(const_cast< QZegoAVSignal*>(this));
-    if (!strcmp(_clname, "SurfaceMerge::IZegoSurfaceMergeCallback"))
-        return static_cast< SurfaceMerge::IZegoSurfaceMergeCallback*>(const_cast< QZegoAVSignal*>(this));
     if (!strcmp(_clname, "AV::IZegoDeviceStateCallback"))
         return static_cast< AV::IZegoDeviceStateCallback*>(const_cast< QZegoAVSignal*>(this));
     return QObject::qt_metacast(_clname);

@@ -145,27 +145,31 @@ namespace ZEGO
         /**
          设置混流数据配置
 
+         @warning Deprecated，请使用 ZEGO::MIXSTREAM::ZegoStreamMixer::mixStream
+         
          @param pszMixStreamID 混流 ID
          @param nMixVideoWidth 混流后视频的宽
          @param nMixVideoHeight 混流后视频的高
          @return true 成功，false 失败
-         @warning Deprecated，请使用 ZEGO::LIVEROOM::MixStream
          */
         ZEGO_API bool SetMixStreamConfig(const char* pszMixStreamID, int nMixVideoWidth, int nMixVideoHeight);
         
         /**
          更新混流配置
 
+         @warning Deprecated，请使用 ZEGO::MIXSTREAM::ZegoStreamMixer::mixStream
+         
          @param pConfigList 输入流配置数组首元素指针
          @param size 输入流个数
          @return true 成功，false 失败
-         @warning Deprecated，请使用 ZEGO::LIVEROOM::MixStream
          */
         ZEGO_API bool UpdateMixInputStreams(AV::ZegoMixStreamConfig* pConfigList, int size);
         
         /**
          开始混流
-
+         
+         @warning Deprecated，请使用 ZEGO::MIXSTREAM::ZegoStreamMixer::mixStream
+         
          @param config 混流配置
          @param seq 请求序号，回调会带回此 seq
          @return true 成功，等待回调，false 失败
@@ -495,12 +499,6 @@ namespace ZEGO
          */
         ZEGO_API void SendMediaSideInfo(const unsigned char *inData, int dataLen, bool bPacket, AV::PublishChannelIndex idx = AV::PUBLISH_CHN_MAIN);
         
-        /**
-         设置回调, 接收媒体次要信息
-
-         @param OnMediaSideCallback 回调函数指针, index 拉流通道索引, buf 媒体数据, dataLen 数据长度
-         */
-        ZEGO_API void SetMediaSideCallback(void(*OnMediaSideCallback)(int index, const unsigned char* buf, int dataLen));
         
         /**
          帧顺序检测开关

@@ -85,45 +85,12 @@ void ZegoMoreAudienceDialog::StartPublishStream()
 		qDebug() << "publish nIndex = " << nIndex;
 		if(m_pAVSettings->GetSurfaceMerge())
 		{
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
-			int cx = m_pAVSettings->GetResolution().cx;
-			int cy = m_pAVSettings->GetResolution().cy;
-
-			SurfaceMerge::SetFPS(m_pAVSettings->GetFps());
-			SurfaceMerge::SetCursorVisible(true);
-			SurfaceMerge::SetSurfaceSize(cx, cy);
-
-			SurfaceMerge::ZegoCaptureItem *itemList = new SurfaceMerge::ZegoCaptureItem[2];
-
-			SurfaceMerge::ZegoCaptureItem itemCam;
-			strcpy(itemCam.captureSource.deviceId, m_pAVSettings->GetCameraId().toStdString().c_str());
-			itemCam.captureType = SurfaceMerge::CaptureType::Camera;
-			itemCam.position = { cx - cx / 4, cy - cy / 4, cx / 4, cy / 4 };  //摄像头默认置于右下角
-
-			unsigned int count = 0;
-			SurfaceMerge::ScreenItem *screenList = SurfaceMerge::EnumScreenList(count);
-			SurfaceMerge::ZegoCaptureItem itemWin;
-			for (int i = 0; i < count; i++)
-			{
-				if (screenList[i].bPrimary)
-				{
-					strcpy(itemWin.captureSource.screenName, screenList[i].szName);
-					break;
-				}
-			}
-
-			itemWin.captureType = SurfaceMerge::CaptureType::Screen;
-			itemWin.position = { 0, 0, cx, cy };
-			itemList[0] = itemCam;
-			itemList[1] = itemWin;
-
-			SurfaceMerge::UpdateSurface(itemList, 2);
-			AVViews.last()->setSurfaceMergeView(true);
-			AVViews.last()->setSurfaceMergeItemRect(itemWin, itemCam);
-			SurfaceMerge::SetRenderView((void *)AVViews.last()->winId());
-
-			delete[]itemList;
-			SurfaceMerge::FreeScreenList(screenList);
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE) 
+			SurfaceMergeController::getInstance().setSurfaceSize(m_pAVSettings->GetResolution().cx, m_pAVSettings->GetResolution().cy);
+			SurfaceMergeController::getInstance().setSurfaceFps(m_pAVSettings->GetFps());
+			SurfaceMergeController::getInstance().setSurfaceCameraId(m_pAVSettings->GetCameraId());
+			SurfaceMergeController::getInstance().setRenderView(AVViews.last());
+			SurfaceMergeController::getInstance().startSurfaceMerge();
 #endif
 		}
 		else
@@ -160,7 +127,7 @@ void ZegoMoreAudienceDialog::StopPublishStream(const QString& streamID)
 
 	if (m_pAVSettings->GetSurfaceMerge())
 	{
-#if (defined Q_OS_WIN) && (defined USE_SURFACE_MERGE) 
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32) && (defined USE_SURFACE_MERGE) 
 		SurfaceMerge::SetRenderView(nullptr);
 		SurfaceMerge::UpdateSurface(nullptr, 0);
 #endif
@@ -435,6 +402,7 @@ void ZegoMoreAudienceDialog::OnPublishStateUpdate(int stateCode, const QString& 
 			QJsonDocument doc = QJsonDocument::fromVariant(vMap);
 			QByteArray jba = doc.toJson();
 			QString jsonString = QString(jba);
+			jsonString = jsonString.simplified();
 			//设置流附加消息，将混流信息传入
 			LIVEROOM::SetPublishStreamExtraInfo(jsonString.toStdString().c_str());
 		}
@@ -450,7 +418,7 @@ void ZegoMoreAudienceDialog::OnPublishStateUpdate(int stateCode, const QString& 
 		}
 
 		//推流成功后启动计时器监听麦克风音量
-		timer->start(0);
+		timer->start(200);
 
 	}
 	else
@@ -532,12 +500,17 @@ void ZegoMoreAudienceDialog::OnButtonJoinLive()
 		ui.m_bRequestJoinLive->setEnabled(false);
 	    StopPublishStream(m_strPublishStreamID);
 
+		if (timer->isActive())
+			timer->stop();
+		ui.m_bProgMircoPhone->setMyEnabled(false);
+		ui.m_bProgMircoPhone->update();
+
 		if (ui.m_bAux->text() == tr("关闭混音"))
 		{
 			ui.m_bAux->setText(tr("关闭中..."));
 			ui.m_bAux->setEnabled(false);
 
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 			if (isUseDefaultAux)
 			{
 				EndAux();

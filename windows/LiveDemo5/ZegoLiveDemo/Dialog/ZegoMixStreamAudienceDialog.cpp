@@ -519,7 +519,7 @@ void ZegoMixStreamAudienceDialog::OnPublishStateUpdate(int stateCode, const QStr
 		}
 
 		//推流成功后启动计时器监听麦克风音量
-		timer->start(0);
+		timer->start(200);
 
 	}
 	else
@@ -615,12 +615,17 @@ void ZegoMixStreamAudienceDialog::OnButtonJoinLive()
 		StopPublishStream(m_strPublishStreamID);
 		StartPlayMixStream(m_anchorStreamInfo);
 		
+		if (timer->isActive())
+			timer->stop();
+		ui.m_bProgMircoPhone->setMyEnabled(false);
+		ui.m_bProgMircoPhone->update();
+
 		if (ui.m_bAux->text() == tr("关闭混音"))
 		{
 			ui.m_bAux->setText(tr("关闭中..."));
 			ui.m_bAux->setEnabled(false);
 
-#ifdef Q_OS_WIN
+#if (defined Q_OS_WIN32) && (defined Q_PROCESSOR_X86_32)
 			if (isUseDefaultAux)
 			{
 				EndAux();
