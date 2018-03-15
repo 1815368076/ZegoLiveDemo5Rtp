@@ -187,9 +187,10 @@ public class ZegoApiManager {
         // 清空高级设置
         ZegoLiveRoom.setTestEnv(false);
         ZegoLiveRoom.enableExternalRender(false);
+
+        // 先置空factory后unintSDK, 或者调换顺序，factory中的destroy方法都会被回调
         ZegoLiveRoom.setVideoCaptureFactory(null);
         ZegoLiveRoom.setVideoFilterFactory(null);
-
         mZegoLiveRoom.unInitSDK();
     }
 

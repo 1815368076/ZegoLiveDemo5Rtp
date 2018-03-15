@@ -22,6 +22,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.widget.EditText;
@@ -43,6 +44,11 @@ import com.zego.livedemo5.utils.LiveQualityLogger;
 import com.zego.livedemo5.utils.PreferenceUtil;
 import com.zego.livedemo5.utils.ZegoRoomUtil;
 import com.zego.zegoavkit2.ZegoMixEnginePlayout;
+import com.zego.zegoavkit2.audioprocessing.ZegoAudioProcessing;
+import com.zego.zegoavkit2.audioprocessing.ZegoAudioReverbMode;
+import com.zego.zegoavkit2.camera.ZegoCamera;
+import com.zego.zegoavkit2.camera.ZegoCameraFocusMode;
+import com.zego.zegoavkit2.camera.ZegoCameraExposureMode;
 import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.callback.im.IZegoRoomMessageCallback;
 import com.zego.zegoliveroom.constants.ZegoAvConfig;
@@ -113,6 +119,14 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
 
     protected boolean mEnableMixEngine = false;
 
+    protected  boolean mEnableVirtualStereo = false;
+
+    protected boolean mEnableReverb = false;
+
+    protected boolean mEnableCustomFocus = false;
+
+    protected boolean mEnableCustomExposure = false;
+
     protected int mSelectedBeauty = 0;
 
     protected int mSelectedFilter = 0;
@@ -151,6 +165,9 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
     protected String mMixStreamID = null;
 
     protected List<ZegoUserState> mListRoomUser = new ArrayList<>();
+
+    protected float[] mListExposureCompensation = {-1.0f, -0.9f, -0.8f, -0.7f, -0.6f, -0.5f, -0.4f, -0.3f, -0.2f, -0.1f, 0,
+                                                   0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f};
 
     protected abstract void initPublishControlText();
 
@@ -191,7 +208,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
 
         mSettingsPannel = (PublishSettingsPannel) findViewById(R.id.publishSettingsPannel);
 
-        mSettingsPannel.initPublishSettings(mEnableCamera, mEnableFrontCam, mEnableMic, mEnableTorch, mEnableBackgroundMusic, mEnableLoopback, mSelectedBeauty, mSelectedFilter, mEnableMixEngine);
+        mSettingsPannel.initPublishSettings(mEnableCamera, mEnableFrontCam, mEnableMic, mEnableTorch, mEnableBackgroundMusic, mEnableLoopback, mSelectedBeauty, mSelectedFilter, mEnableMixEngine, mEnableVirtualStereo, mEnableReverb, mEnableCustomFocus, mEnableCustomExposure);
         mSettingsPannel.setPublishSettingsCallback(new PublishSettingsPannel.PublishSettingsCallback() {
             @Override
             public void onEnableCamera(boolean isEnable) {
@@ -248,6 +265,45 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
             }
 
             @Override
+            public void onEnableVirtualStereo(boolean isEnable) {
+                recordLog(MY_SELF + ": call onEnableVirtualStereo");
+                mEnableVirtualStereo = isEnable;
+                //hardcode angle = 0
+                ZegoAudioProcessing.enableVirtualStereo(isEnable, 0);
+            }
+
+            @Override
+            public void onEnableReverb(boolean isEnable) {
+                recordLog(MY_SELF + ": call onEnableReverb");
+                mEnableReverb = isEnable;
+                //hardcode reverbMode = ZegoAudioReverbMode.LARGE_AUDITORIUM
+                ZegoAudioProcessing.enableReverb(isEnable, ZegoAudioReverbMode.LARGE_AUDITORIUM);
+            }
+
+            @Override
+            public void onEnableCustomFocus(boolean isEnable) {
+                recordLog(MY_SELF + ": call onEnableCustomFocus");
+                mEnableCustomFocus = isEnable;
+                if(!mEnableCustomFocus){
+                    ZegoCamera.setCamFocusMode(ZegoCameraFocusMode.CONTINUOUS_VIDEO, ZegoConstants.PublishChannelIndex.MAIN);
+                }
+
+            }
+
+            @Override
+            public void onEnableCustomExposure(boolean isEnable) {
+                recordLog(MY_SELF + ": call onEnableCustomExposure");
+                mEnableCustomExposure = isEnable;
+                if(mEnableCustomExposure){
+                    ZegoCamera.setCamExposureMode(ZegoCameraExposureMode.CUSTOM, ZegoConstants.PublishChannelIndex.MAIN);
+                }
+                else{
+                    ZegoCamera.setCamExposureMode(ZegoCameraExposureMode.AUTO, ZegoConstants.PublishChannelIndex.MAIN);
+                }
+
+            }
+
+            @Override
             public void onSetBeauty(int beauty) {
                 mSelectedBeauty = beauty;
                 mZegoLiveRoom.enableBeautifying(ZegoRoomUtil.getZegoBeauty(beauty));
@@ -257,6 +313,11 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
             public void onSetFilter(int filter) {
                 mSelectedFilter = filter;
                 mZegoLiveRoom.setFilter(filter);
+            }
+
+            @Override
+            public void onSetCustomExposureProgress(int progress) {
+                ZegoCamera.setCamExposureCompensation(mListExposureCompensation[progress], ZegoConstants.PublishChannelIndex.MAIN);
             }
         });
 
@@ -307,6 +368,25 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         }
 
         initViewList(vlBigView);
+
+        vlBigView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(!mEnableCustomFocus)
+                    return false;
+
+                switch(event.getAction())
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        List<Float> point = focusPointNormalize(event.getX(), event.getY());
+                        ZegoCamera.setCamFocusPoint(point.get(0), point.get(1), ZegoConstants.PublishChannelIndex.MAIN);
+                        ZegoCamera.setCamFocusMode(ZegoCameraFocusMode.AUTO, ZegoConstants.PublishChannelIndex.MAIN);
+                        break;
+                }
+
+                return true;
+            }
+        });
 
         mTvSpeaker.setSelected(!mEnableSpeaker);
 
@@ -548,6 +628,9 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
                 | ZegoConstants.ZegoTrafficControlProperty.ZEGOAPI_TRAFFIC_RESOLUTION;
         mZegoLiveRoom.enableTrafficControl(properties, true);
 
+        //开启双声道
+        mZegoLiveRoom.setAudioChannelCount(2);
+
         // 开始播放
         mZegoLiveRoom.setPreviewView(freeViewLive.getTextureView());
         mZegoLiveRoom.startPreview();
@@ -652,8 +735,27 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
 
     protected void logout() {
 
+        mEnableFrontCam = true;
+        mZegoLiveRoom.setFrontCam(mEnableFrontCam);
+
         mEnableLoopback = false;
         mZegoLiveRoom.enableLoopback(false);
+
+        mEnableVirtualStereo = false;
+        ZegoAudioProcessing.enableVirtualStereo(false, 0);
+
+        mEnableReverb = false;
+        ZegoAudioProcessing.enableReverb(false, ZegoAudioReverbMode.LARGE_AUDITORIUM);
+
+        mEnableCustomFocus = false;
+        ZegoCamera.setCamFocusMode(ZegoCameraFocusMode.CONTINUOUS_VIDEO, ZegoConstants.PublishChannelIndex.MAIN);
+
+        mEnableCustomExposure = false;
+        ZegoCamera.setCamExposureMode(ZegoCameraExposureMode.AUTO, ZegoConstants.PublishChannelIndex.MAIN);
+
+
+        if(!mEnableSpeaker)
+            mZegoLiveRoom.enableSpeaker(true);
 
         if (mIsPublishing) {
             AlertDialog dialog = new AlertDialog.Builder(this).setMessage(getString(R.string.do_you_really_want_to_leave)).setTitle(getString(R.string.hint)).setPositiveButton(getString(R.string.Yes), new DialogInterface.OnClickListener() {
@@ -1091,6 +1193,26 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
             }
         }
         return listUrls;
+    }
+
+    /**
+     *  归一化屏幕获取的坐标点(自定义对焦要用到)
+     */
+    protected List<Float> focusPointNormalize(float fx, float fy) {
+        List<Float> normalizePoint = new ArrayList<>();
+
+        if(mListViewLive.size() > 0) {
+            ViewLive mLiveView = mListViewLive.get(0);
+
+            float width = mLiveView.getWidth();
+            float height = mLiveView.getHeight();
+            float cx = fx / width;
+            float cy = fy / height;
+
+            normalizePoint.add(cx);
+            normalizePoint.add(cy);
+        }
+        return normalizePoint;
     }
 
 }
