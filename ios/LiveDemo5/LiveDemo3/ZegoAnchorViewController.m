@@ -130,6 +130,9 @@
     
     self.viewContainersDict[self.streamID] = self.publishView;
     
+    //开启双声道直播
+    [[ZegoDemoHelper api] setAudioChannelCount:2];
+    
     bool b = [[ZegoDemoHelper api] startPublishing:self.streamID title:self.liveTitle flag:ZEGOAPI_SINGLE_ANCHOR];
     if (b)
     {
@@ -246,7 +249,7 @@
 
 - (void)onPublishQualityUpdate:(NSString *)streamID quality:(ZegoApiPublishQuality)quality
 {
-    NSString *detail = [self addStaticsInfo:YES stream:streamID fps:quality.fps kbs:quality.kbps rtt:quality.rtt pktLostRate:quality.pktLostRate];
+    NSString *detail = [self addStaticsInfo:YES stream:streamID fps:quality.fps kbs:quality.kbps akbs:quality.akbps rtt:quality.rtt pktLostRate:quality.pktLostRate];
     
     UIView *view = self.viewContainersDict[streamID];
     if (view)
@@ -263,6 +266,12 @@
 - (void)onRecvRoomMessage:(NSString *)roomId messageList:(NSArray<ZegoRoomMessage *> *)messageList
 {
     [self.toolViewController updateLayout:messageList];
+}
+
+- (void)onUpdateOnlineCount:(int)onlineCount room:(NSString *)roomId
+{
+    //TODO: update online count
+    NSLog(@"Update Online Count: %d", onlineCount);
 }
 
 #pragma mark -

@@ -77,8 +77,7 @@ static ZegoAVKitManager *avkitManager;
             NSLog(@"assign userID");
         }
         
-        NSLog(@"userID %@", self.userID);
-        NSLog(@"userName %@", self.userName);
+        NSLog(@"[LiveDemo5-GameLive] userID %@, userName: %@", self.userID, self.userName);
         
         [self initZegoLiveApi];
     }
@@ -105,7 +104,7 @@ static ZegoAVKitManager *avkitManager;
     [ZegoLiveRoomApi requireHardwareEncoder:self.requiredHardwareAccelerate];
     
     [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-        NSLog(@"Receive Memory Warning");
+        NSLog(@"[LiveDemo5-GameLive] Received Memory Warning");
     }];
 }
 
@@ -230,7 +229,7 @@ Byte toByte(NSString* c)
         self.liveTitle = liveTitle;
     
     self.videoSize = videoSize;
-    NSLog(@"videoSize %@", NSStringFromCGSize(videoSize));
+    NSLog(@"[LiveDemo5-GameLive] videoSize at start: %@", NSStringFromCGSize(videoSize));
     
     [self.zegoLiveApi setPublisherDelegate:self];
     
@@ -250,7 +249,7 @@ Byte toByte(NSString* c)
     NSString *roomID = [NSString stringWithFormat:@"#d-%@", self.userID];
     [self.zegoLiveApi loginRoom:roomID role:ZEGO_ANCHOR withCompletionBlock:^(int errorCode, NSArray<ZegoStream *> *streamList) {
         if (errorCode != 0)
-            NSLog(@"login room error %d", errorCode);
+            NSLog(@"[LiveDemo5-GameLive] login room error %d", errorCode);
         else
         {
             ZegoAVConfig *config = [ZegoAVConfig new];
@@ -267,7 +266,7 @@ Byte toByte(NSString* c)
         }
     }];
     
-    NSLog(@"login Room %@", self.userName);
+    NSLog(@"[LiveDemo5-GameLive] login Room %@", self.userName);
 }
 
 
@@ -276,9 +275,9 @@ Byte toByte(NSString* c)
 - (void)onPublishStateUpdate:(int)stateCode streamID:(NSString *)streamID streamInfo:(NSDictionary *)info
 {
     if (stateCode == 0)
-        NSLog(@"publish success，streamID：%@", streamID);
+        NSLog(@"[LiveDemo5-GameLive] publish success，streamID：%@", streamID);
     else
-        NSLog(@"publish failed %d", stateCode);
+        NSLog(@"[LiveDemo5-GameLive] publish failed %d", stateCode);
 }
 
 - (void)onPublishQualityUpdate:(NSString *)streamID quality:(ZegoApiPublishQuality)quality {
