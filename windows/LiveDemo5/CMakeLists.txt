@@ -4,7 +4,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "My multi config types" FORCE)
 
-project(VideoTalk)
+project(ZegoLiveDemo)
 
 
 macro(ADD_FRAMEWORK fwname appname)
@@ -35,4 +35,4 @@ macro(source_group_by_dir source_files)
 	endforeach(sgbd_file)
 endmacro(source_group_by_dir)
 
-add_subdirectory(VideoTalk)
+add_subdirectory(ZegoLiveDemo)
