@@ -46,7 +46,7 @@ namespace ZEGO
 
          @param type 消息类型
          @param category 消息分类
-         @param priority 消息优先级
+         @param priority 消息优先级, deprecated, 由 SDK 内部确定优先级
          @param messageContent 消息内容
          @return 消息发送 seq
          */

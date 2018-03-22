@@ -20,6 +20,7 @@ namespace ZEGO
         ZEGO_API const char* GetSDKVersion2();
         ZEGO_API bool SetNetType(int nNetType);
         ZEGO_API bool SetLogDir(const char* pszLogDir);
+        ZEGO_API bool SetLogDirAndSize(const char* pszLogDir, unsigned long long lLogFileSize = 5 * 1024 * 1024);
         ZEGO_API void UploadLog();
         ZEGO_API void SetVerbose(bool bVerbose);
         ZEGO_API void SetUseTestEnv(bool bTestEnv);
@@ -340,7 +341,15 @@ namespace ZEGO
          设置配置信息
 
          @param config config 配置信息
-         @attention 确保在 InitSDK 前调用，但开启拉流加速(config为“prefer_play_ultra_source=1”)可在 InitSDK 之后，拉流之前调用
+         
+         @attention 配置项的写法，例如 "keep_audio_session_active=true", 等号后面值的类型要看下面每一项的定义
+         @attention "prefer_play_ultra_source", int value, 确保在 InitSDK 前调用，但开启拉流加速(config为“prefer_play_ultra_source=1”)可在 InitSDK 之后，拉流之前调用
+         @attention "keep_audio_session_active", bool value, default: false, must be setting before engine started. if set true, app need to set the session inactive yourself. just be available for iOS
+         @attention "enforce_audio_loopback_in_sync", bool value, default: false. enforce audio loopback in synchronous method for iOS
+         @attention "audio_session_mix_with_others", bool value, default: true. set AVAudioSessionCategoryOptionMixWithOthers for iOS
+         @attention "camera_orientation_mode", string value: auto/hardcode/0/90/180/270. for Android, Windows
+         @attention "camera_check_position", bool value, default: false. for Android
+         @attention "lower_audio_cap_sample_rate", bool value, default: false. enforce to use lower audio capture sample. for Android
          */
         ZEGO_API void SetConfig(const char *config);
 	}

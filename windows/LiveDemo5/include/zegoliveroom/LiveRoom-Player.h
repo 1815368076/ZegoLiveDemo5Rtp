@@ -33,7 +33,7 @@ namespace ZEGO
         ZEGO_API bool SetLivePlayerCallback(ILivePlayerCallback* pCB);
         
         /**
-         播放直播流
+         播放多媒体流
 
          @param pszStreamID 流 ID
          @param pView 用来渲染播放视频的视图
@@ -43,6 +43,17 @@ namespace ZEGO
          @note 播放成功后，等待 ILivePlayerCallback::OnPlayStateUpdate 回调
          */
         ZEGO_API bool StartPlayingStream(const char* pszStreamID, void* pView, const char* pszParams = 0);
+        
+        /**
+         播放多媒体流
+
+         @param pszStreamID 流 ID
+         @param pView 用来渲染播放视频的视图
+         @param info 多媒体流附加信息
+         @return 成功，false 失败
+         @note 播放成功后，等待 ILivePlayerCallback::OnPlayStateUpdate 回调
+         */
+        ZEGO_API bool StartPlayingStream2(const char* pszStreamID, void* pView, ZegoStreamExtraPlayInfo* info);
 
         /**
          更新播放视图
@@ -195,8 +206,9 @@ namespace ZEGO
          设置是否使用外部视频渲染
 
          @param bEnable true 开启，false 不开启
+         @param nType 0 表示使用 OnVideoDataCallback 回调接口，1 表示使用 OnVideoDataCallback2 回调接口，这两个接口都定义在 IZegoVideoRenderCallback 中。
          */
-        ZEGO_API void EnableExternalRender(bool bEnable);
+        ZEGO_API void EnableExternalRender(bool bEnable, int nType = 0);
         
         /**
          设置外部渲染回调

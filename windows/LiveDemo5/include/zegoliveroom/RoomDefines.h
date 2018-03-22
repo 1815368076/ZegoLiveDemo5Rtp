@@ -190,6 +190,13 @@ namespace ZEGO
             Gift,               /**< 送礼物 */
             OtherCategory = 100,/**< 其他 */
         };
+        
+        /** Relay类别 */
+        enum ZegoRelayType
+        {
+            RelayTypeNone = 1,
+            RelayTypeDati = 2,
+        };
 
         struct ZegoRoomMessage
         {
@@ -240,6 +247,30 @@ namespace ZEGO
             char szConverName[ZEGO_MAX_COMMON_LEN];
             char szCreatorId[ZEGO_MAX_USERID_LEN];
             int createTime;
+        };
+        
+        struct ZegoBigRoomMessage
+        {
+            ZegoBigRoomMessage()
+            {
+                szUserId[0] = '\0';
+                szUserName[0] = '\0';
+                szContent[0] = '\0';
+                szMessageId[0] = '\0';
+                role = COMMON::Audience;
+                type = Text;
+                category = Chat;
+                sendTime = 0;
+            }
+            
+            char szUserId[ZEGO_MAX_USERID_LEN];
+            char szUserName[ZEGO_MAX_USERNAME_LEN];
+            COMMON::ZegoRoomRole role;
+            char szContent[ZEGO_MAX_COMMON_LEN];
+            char szMessageId[ZEGO_MAX_IDENTITY_LEN];
+            ZegoMessageType type;
+            ZegoMessageCategory category;
+            unsigned long long sendTime;
         };
     }
 }

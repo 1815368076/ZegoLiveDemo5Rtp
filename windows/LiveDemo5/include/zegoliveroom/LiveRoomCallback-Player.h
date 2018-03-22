@@ -10,6 +10,7 @@
 #define LiveRoomCallback_Player_h
 
 #include "./LiveRoomDefines.h"
+#include <video_capture.h>
 
 namespace ZEGO
 {
@@ -106,7 +107,21 @@ namespace ZEGO
              @param height 视频高度
              @param strides 每个平面一行字节数（RGBA 只需考虑 strides[0]）
              */
-            virtual void OnVideoDataCallback(const unsigned char *pData, int dataLen, const char* pszStreamID, int width, int height, int strides[4]) = 0;
+            virtual void OnVideoDataCallback(const unsigned char *pData, int dataLen, const char* pszStreamID, int width, int height, int strides[4]) {};
+            
+            /**
+             视频帧数据回调2
+             
+             @param pData 视频数据起始地址
+             @param dataLen 视频数据长度
+             @param pszStreamID 流 ID
+             @param width 视频宽度
+             @param height 视频高度
+             @param strides 每个平面一行字节数（RGBA 只需考虑 strides[0]）
+             @param pixel_format 视频帧数据格式
+             */
+            virtual void OnVideoDataCallback2(const unsigned char **pData, int* dataLen, const char* pszStreamID, int width, int height, int strides[4], AVE::VideoPixelFormat pixel_format) {}
+
         };
     }
 }

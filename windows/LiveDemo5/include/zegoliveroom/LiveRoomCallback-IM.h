@@ -28,6 +28,14 @@ namespace ZEGO
             virtual void OnUserUpdate(const ZegoUserInfo *pUserInfo, unsigned int userCount, ZegoUserUpdateType type) = 0;
             
             /**
+             在线人数更新
+             
+             @param onlineCount 在线人数
+             @param pszRoomID 房间 ID
+             */
+            virtual void OnUpdateOnlineCount(int onlineCount, const char *pszRoomID) {};
+            
+            /**
              发送房间消息结果
 
              @param errorCode 错误码，0 表示无错误
@@ -98,6 +106,25 @@ namespace ZEGO
              @param pszRoomID 房间 ID
              */
             virtual void OnRecvConversationMessage(ROOM::ZegoConversationMessage *pMessageInfo, const char *pszConversationID, const char *pszRoomID) {}
+            
+            /**
+             发送不可靠消息结果，这个接口用于大并发情景
+             
+             @param errorCode 错误码，0 表示无错误
+             @param pszRoomID 房间 ID
+             @param sendSeq 发送消息 seq
+             @param pszmessageID 消息 Id
+             */
+            virtual void OnSendBigRoomMessage(int errorCode, const char *pszRoomID, int sendSeq, const char *pszmessageID) {}
+            
+            /**
+             收到不可靠消息回调
+             
+             @param pMessageInfo 消息信息
+             @param messageCount 消息个数
+             @param pszRoomID 房间 ID
+             */
+            virtual void OnRecvBigRoomMessage(ROOM::ZegoBigRoomMessage *pMessageInfo, unsigned int messageCount, const char *pszRoomID) {}
             
             virtual ~IIMCallback() {}
         };

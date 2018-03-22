@@ -13,21 +13,19 @@
 #define ZEGO_MAX_URL_COUNT          (10)
 #define ZEGO_MAX_EVENT_INFO_COUNT   (10)
 #define ZEGO_MAX_MIX_INPUT_COUNT    (12)
+#define ZEGO_MAX_IDENTITY_LEN       (64)
 
 #define ZEGO_MAX_USERID_LEN         (64)
 #define ZEGO_MAX_USERNAME_LEN       (256)
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #	define _I64_				"I64"
-#	define _i64_				"i64"
 #	define _64u_				"%I64u"
 #	define _I64uw_				L"%llu"L
 #	define _i64uw_				L"%llu"L
 #else
 #	define _I64_				"ll"
-#	define _i64_				"ll"
 #	define _64u_				"%llu"
-#	define _I64w_				"ll"
 #	define _I64uw_				L"%llu" L
 #	define _i64uw_				L"%llu" L
 #	define __int64				long long
@@ -149,7 +147,7 @@ namespace ZEGO
             LogicServerNetWrokError = 10,   ///< 逻辑服务器网络错误
             
             PublishBadNameError = 105,
-            HttpDNSResolveError = 106,
+            HttpDNSResolveError = 106 ZEGO_DEPRECATED,
             
             PublishForbidError = (SEG_PUBLISH_FATAL_ERROR | 0x03f3),             ///< 禁止推流, 低8位为服务端返回错误码：1011
             
@@ -212,6 +210,7 @@ namespace ZEGO
             
             int nOutputFps;                             /**< 混流输出帧率 */
             int nOutputBitrate;                         /**< 混流输出码率 */
+            int nOutputAudioBitrate;                    /**< 混流输出音频码率 */
             
             int nOutputWidth;                           /**< 混流输出视频分辨率宽 */
             int nOutputHeight;                          /**< 混流输出视频分辨率高 */
@@ -233,6 +232,7 @@ namespace ZEGO
             : bOutputIsUrl(false)
             , nOutputFps(0)
             , nOutputBitrate(0)
+            , nOutputAudioBitrate(0)
             , nOutputWidth(0)
             , nOutputHeight(0)
             , nOutputAudioConfig(0)
@@ -387,5 +387,21 @@ namespace ZEGO
         };
     }
 }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
+    struct ZegoStreamExtraPlayInfo;
+    ZEGOAVKIT_API struct ZegoStreamExtraPlayInfo* zego_stream_extra_info_create();
+    ZEGOAVKIT_API void zego_stream_extra_info_destroy(struct ZegoStreamExtraPlayInfo* info);
+    
+    ZEGOAVKIT_API void zego_stream_extra_info_add_rtmp_url(struct ZegoStreamExtraPlayInfo* info, const char* url);
+    ZEGOAVKIT_API void zego_stream_extra_info_add_flv_url(struct ZegoStreamExtraPlayInfo* info, const char* url);
+    ZEGOAVKIT_API void zego_stream_extra_info_set_params(struct ZegoStreamExtraPlayInfo* info, const char* params);
+    
+#ifdef __cplusplus
+} // __cplusplus defined.
+#endif
 
 #endif /* zego_api_defines_h */

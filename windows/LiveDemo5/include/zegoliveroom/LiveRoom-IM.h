@@ -29,7 +29,7 @@ namespace ZEGO
 
          @param type 消息类型
          @param category 消息分类
-         @param priority 消息优先级
+         @param priority 消息优先级, deprecated, 由 SDK 内部确定优先级
          @param messageContent 消息内容
          @return 消息 seq
          */
@@ -74,6 +74,16 @@ namespace ZEGO
          @return 消息 seq
          */
         ZEGO_API int SendConversationMessage(const char *conversationId, ROOM::ZegoMessageType type, const char *messageContent);
+        
+        /**
+         发送不可靠信道消息，主要用于大并发的场景，发送一些非必须到达的消息
+         
+         @param type 消息类型
+         @param category 消息分类
+         @param messageContent 消息内容
+         @return 消息 seq
+         */
+        ZEGO_API int SendBigRoomMessage(ROOM::ZegoMessageType type, ROOM::ZegoMessageCategory category, const char *messageContent);
     }
 }
 

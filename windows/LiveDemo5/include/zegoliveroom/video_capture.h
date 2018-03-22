@@ -12,6 +12,7 @@ namespace AVE {
         PIXEL_FORMAT_RGBA32 = 5,
         PIXEL_FORMAT_ARGB32 = 6,
         PIXEL_FORMAT_ABGR32 = 7,
+		PIXEL_FORMAT_I422 = 8
     };
   
     struct VideoCaptureFormat {
