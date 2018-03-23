@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/">
+      <file>Resources/images/down_arrow.png</file>
+      <file>Resources/images/switch_off.png</file>
+      <file>Resources/images/switch_on.png</file>
+      <file>Resources/images/add_default.png</file>
+      <file>Resources/images/sub_default.png</file>
+      <file>Resources/images/add_hover.png</file>
+      <file>Resources/images/sub_hover.png</file>
+      <file>Resources/images/add_pressed.png</file>
+      <file>Resources/images/sub_pressed.png</file>
+      <file>Resources/images/handle_default.png</file>
+      <file>Resources/images/handle_hover.png</file>
+      <file>Resources/images/handle_pressed.png</file>
+      <file>Resources/images/mircophone_off.png</file>
+      <file>Resources/images/mircophone_on.png</file>
+      <file>Resources/images/mircophone_disabled.png</file>
+      <file>Resources/images/sound_off.png</file>
+      <file>Resources/images/sound_on.png</file>
+      <file>Resources/images/close.png</file>
+      <file>Resources/images/max.png</file>
+      <file>Resources/images/max_re.png</file>
+      <file>Resources/images/min.png</file>
+      <file>Resources/images/official.png</file>
+      <file>Resources/images/camera_on.png</file>
+      <file>Resources/images/camera_off.png</file>
+      <file>Resources/images/camera_disabeld.png</file>
+      <file>Resources/images/CloudNet.png</file>
+      <file>Resources/images/QQMusic.png</file>
+      <file>Resources/images/KuGou.png</file>
+      <file>Resources/images/KuWo.png</file>
+    </qresource>
+</RCC>
