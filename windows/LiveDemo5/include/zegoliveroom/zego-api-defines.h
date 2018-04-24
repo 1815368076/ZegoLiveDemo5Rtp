@@ -84,8 +84,8 @@ namespace ZEGO
         /** 设备状态 */
         enum DeviceState
         {
-            Device_Added = 0,           /**< 输出设备 */
-            Device_Deleted,             /**< 输出设备 */
+            Device_Added = 0,           /**< 添加设备 */
+            Device_Deleted,             /**< 删除设备 */
         };
         
         /** 音量类型 */

@@ -193,7 +193,7 @@ namespace ZEGO
          */
         ZEGO_API bool SetVideoDevice(const char* pszDeviceID, AV::PublishChannelIndex idx = AV::PUBLISH_CHN_MAIN);
         
-#ifdef WIN32
+#if defined(WIN32) || TARGET_OS_OSX 
         /**
          系统声卡声音采集开关
 
@@ -328,7 +328,7 @@ namespace ZEGO
          */
         ZEGO_API bool StopAudioVolumeNotify(AV::AudioDeviceType deviceType, const char *deviceId);
 
-#endif // WIN32
+#endif // defined(WIN32) || TARGET_OS_OSX 
         /**
          设置“音视频引擎状态通知”的回调
 

@@ -54,7 +54,7 @@ namespace ZEGO
         class IZegoDeviceStateCallback
         {
         public:
-#ifdef WIN32
+#if defined(WIN32) || TARGET_OS_OSX
             /**
             音频设备状态变更
 
