@@ -46,7 +46,7 @@
 		</data>
 		<key>Headers/ZegoLiveRoomApi.h</key>
 		<data>
-		FfXargA/HuDPSu5mFSPgFswjqX4=
+		+pBHUWXl3CFjLXAeFrUdikN7rBo=
 		</data>
 		<key>Headers/ZegoLiveRoomApiDefines-IM.h</key>
 		<data>
@@ -70,7 +70,7 @@
 		</data>
 		<key>Headers/audio_in_output.h</key>
 		<data>
-		zthwkN7VC6aKsDI+YRyiQRKHkH0=
+		Aa19ya7vc8AUrmXfoPFPeU6dtNk=
 		</data>
 		<key>Headers/zego-api-audio-processing-oc.h</key>
 		<data>
@@ -78,7 +78,7 @@
 		</data>
 		<key>Headers/zego-api-defines-oc.h</key>
 		<data>
-		G+9C9MPDsANDrhmkbI3Oa6WSGds=
+		3HePDk9MFqW1bce3izop/lGSfDQ=
 		</data>
 		<key>Headers/zego-api-external-audio-device-oc.h</key>
 		<data>
@@ -229,11 +229,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			FfXargA/HuDPSu5mFSPgFswjqX4=
+			+pBHUWXl3CFjLXAeFrUdikN7rBo=
 			</data>
 			<key>hash2</key>
 			<data>
-			HqjuR8rGkWkHl+byrNG0vqz5x8fjxyTGuH7Sk1oo7BM=
+			A6faSNc1+91IR5iugGdYaJC0I/RL1Ah4wCfLpx0sNgE=
 			</data>
 		</dict>
 		<key>Headers/ZegoLiveRoomApiDefines-IM.h</key>
@@ -295,11 +295,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			zthwkN7VC6aKsDI+YRyiQRKHkH0=
+			Aa19ya7vc8AUrmXfoPFPeU6dtNk=
 			</data>
 			<key>hash2</key>
 			<data>
-			t/ZA57m5uZT0lTsqpZoCJgoA1L0nJNC3+y4fEibe6Vk=
+			D0N7eKOrz8pBAtlpcRJ5DOthtRkK29PvRqBXEUP7L4M=
 			</data>
 		</dict>
 		<key>Headers/zego-api-audio-processing-oc.h</key>
@@ -317,11 +317,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			G+9C9MPDsANDrhmkbI3Oa6WSGds=
+			3HePDk9MFqW1bce3izop/lGSfDQ=
 			</data>
 			<key>hash2</key>
 			<data>
-			LIfWULMwDk29UpMwLHCyLxaAC8TcWl/YNu2rb9ggWtw=
+			lO1jxsXMBaCC9vsLBveNhPZ0TnM4hkDoki8xtz/RKvQ=
 			</data>
 		</dict>
 		<key>Headers/zego-api-external-audio-device-oc.h</key>

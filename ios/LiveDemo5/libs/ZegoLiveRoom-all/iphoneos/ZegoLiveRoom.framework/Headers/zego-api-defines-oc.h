@@ -334,6 +334,40 @@ typedef enum :  NSUInteger {
     ZEGOAPI_CHN_AUX,
 } ZegoAPIPublishChannelIndex;
 
+/** 音频设备类型 */
+typedef enum : NSUInteger {
+    /**< 输入设备 */
+    ZEGOAPI_AUDIO_DEVICE_INPUT = 0,
+    /**< 输出设备 */
+    ZEGOAPI_AUDIO_DEVICE_OUTPUT = 1,
+} ZegoAPIAudioDeviceType;
+
+/** 设备状态 */
+typedef enum : NSUInteger
+{
+    /**< 添加设备 */
+    ZEGOAPI_DEVICE_ADD = 0,
+    /**< 删除设备 */
+    ZEGOAPI_DEVICE_DELETE = 1,
+} ZegoAPIDeviceState;
+
+/** 音量类型 */
+typedef enum : NSUInteger
+{
+    /**< 设备音量 */
+    ZEGOAPI_VOLUME_ENDPOINT = 0,
+    /**< App 音量 */
+    ZEGOAPI_VOLUME_SIMPLE = 1,
+} ZegoAPIVolumeType;
+
+
+@interface ZegoAPIDeviceInfo : NSObject
+/** 设备ID */
+@property (copy) NSString* deviceId;
+/** 设备名 */
+@property (copy) NSString* deviceName;
+
+@end
 
 /**
  多媒体流附加信息
@@ -348,6 +382,7 @@ typedef enum :  NSUInteger {
 @property (strong) NSArray<NSString*>* flvUrls;
 
 @end
+
 
 
 #endif /* zego_api_defines_oc_h */

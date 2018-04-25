@@ -668,22 +668,21 @@
         if (pAuxData == NULL)
             return;
         
+        *pSampleRate = 44100;
+        *pChannelCount = 2;
+        *pDataLen = (*pSampleRate)* 20 / 1000 * 2 * (*pChannelCount);
         int nLeftLen = (int)(pAuxData + nLen - self.pPos);
         if (nLeftLen < *pDataLen) {
             self.pPos = (void *)pAuxData;
             *pDataLen = 0;
             return;
         }
-        
-        if (pSampleRate)
-            *pSampleRate = 44100;
-        
-        if (pChannelCount)
-            *pChannelCount = 2;
-        
+    
         memcpy(pData, self.pPos, *pDataLen);
         self.pPos = self.pPos + *pDataLen;
     }
+    
+    
 }
 
 - (UIView *)getFirstViewInContainer:(UIView *)containerView
