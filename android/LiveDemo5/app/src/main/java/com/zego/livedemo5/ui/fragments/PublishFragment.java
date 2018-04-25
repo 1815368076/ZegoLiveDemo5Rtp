@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -341,6 +342,17 @@ public class PublishFragment extends AbsBaseFragment implements MainActivity.OnR
         startPreview();
     }
 
+    public void refresh(){
+        stopPreview();
+        ZegoApiManager.getInstance().releaseSDK();
+        long newAppId= PreferenceUtil.getInstance().getAppId();
+        byte[] newSignKey=PreferenceUtil.getInstance().getAppKey();
+        ZegoApiManager.getInstance().reInitSDK(newAppId, newSignKey);
+        startPreview();
+        
+
+    }
+
     /**
      * @see MainActivity.OnReInitSDKCallback#onReInitSDK()
      */
@@ -358,7 +370,9 @@ public class PublishFragment extends AbsBaseFragment implements MainActivity.OnR
                 startPreview();
             }
         } else {
-            startPreview();
+           
+                refresh();
+          
         }
     }
 }

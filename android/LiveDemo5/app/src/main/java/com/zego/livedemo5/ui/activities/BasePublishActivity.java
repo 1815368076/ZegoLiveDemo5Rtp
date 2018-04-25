@@ -153,7 +153,7 @@ public abstract class BasePublishActivity extends BaseLiveActivity {
                         dialog.dismiss();
                     }
                 }).create();
-
+        mDialogHandleRequestPublish.setCancelable(false);
         mDialogHandleRequestPublish.show();
     }
 

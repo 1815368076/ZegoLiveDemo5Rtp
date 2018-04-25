@@ -706,6 +706,8 @@ public class WolvesGameHostActivity extends WolvesGameBaseActivity {
         @Override
         public void onPublishStateUpdate(int stateCode, String streamId, HashMap<String, Object> streamInfo) {
             recordLog("推流状态更新, stateCode: %d; streamId: %s; Stream: %s", stateCode, streamId, streamInfo);
+           
+
             if (stateCode == 0) {
                 if (dontPreviewWhenPublishSuccess) {
                     dontPreviewWhenPublishSuccess = false;

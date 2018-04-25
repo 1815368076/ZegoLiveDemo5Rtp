@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -33,7 +34,7 @@ import butterknife.Bind;
  * Copyright © 2016 Zego. All rights reserved.
  * des:
  */
-public class MainActivity extends AbsBaseActivity implements NavigationBar.NavigationBarListener{
+public class MainActivity extends AbsBaseActivity implements NavigationBar.NavigationBarListener {
 
     private List<AbsBaseFragment> mFragments;
 
@@ -66,12 +67,17 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
 
     }
 
+    private RoomListFragment roomListFragment;
+    private PublishFragment publishFragment;
+
     @Override
     protected void initVariables(Bundle savedInstanceState) {
         mTabSelected = 0;
         mFragments = new ArrayList<>();
-        mFragments.add(RoomListFragment.newInstance());
-        mFragments.add(PublishFragment.newInstance());
+        roomListFragment = RoomListFragment.newInstance();
+        mFragments.add(roomListFragment);
+        publishFragment = PublishFragment.newInstance();
+        mFragments.add(publishFragment);
 
         mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
@@ -101,7 +107,7 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
 
                             for (int position = 0; position < mPagerAdapter.getCount(); position++) {
                                 Fragment fragment = mPagerAdapter.getItem(position);
-                                ((OnReInitSDKCallback)fragment).onReInitSDK();
+                                ((OnReInitSDKCallback) fragment).onReInitSDK();
                             }
                         }
                     });
@@ -122,9 +128,9 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
             @Override
             public void onDrawerClosed(View drawerView) {
                 // 当侧边栏关闭时, set配置
-                if(mSetConfigsCallback == null) return;
-
+                if (mSetConfigsCallback == null) return;
                 int errorCode = mSetConfigsCallback.onSetConfig();
+
                 if (errorCode < 0) {
                     drawerLayout.openDrawer(Gravity.LEFT);
                 } else if (errorCode > 0) {
@@ -246,7 +252,7 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if(id == R.id.action_contact_us){
+        if (id == R.id.action_contact_us) {
             Tencent.createInstance("", MainActivity.this).startWPAConversation(MainActivity.this, "84328558", "");
             return true;
         }
@@ -273,6 +279,9 @@ public class MainActivity extends AbsBaseActivity implements NavigationBar.Navig
          * @return < 0: 数据格式非法; 0: 无修改或者不需要重新初始化SDK; > 0: 需要重新初始化 SDK
          */
         int onSetConfig();
+
+
+
     }
 
     public interface OnReInitSDKCallback {

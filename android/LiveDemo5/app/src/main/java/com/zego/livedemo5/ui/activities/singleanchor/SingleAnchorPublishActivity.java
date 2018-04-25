@@ -69,6 +69,8 @@ public class SingleAnchorPublishActivity extends BasePublishActivity {
         mZegoLiveRoom.setZegoLivePublisherCallback(new IZegoLivePublisherCallback() {
             @Override
             public void onPublishStateUpdate(int stateCode, String streamID, HashMap<String, Object> streamInfo) {
+                //按钮允许点击
+                setEnabled(true);
                 //推流状态更新
                 if (stateCode == 0) {
                     handlePublishSucc(streamID, streamInfo);

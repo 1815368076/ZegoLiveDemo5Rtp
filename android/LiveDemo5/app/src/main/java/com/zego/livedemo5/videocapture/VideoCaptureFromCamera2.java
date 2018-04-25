@@ -71,6 +71,7 @@ public class VideoCaptureFromCamera2 extends ZegoVideoCaptureDevice implements
     private boolean mIsPreview = false;
 
     protected void allocateAndStart(ZegoVideoCaptureDevice.Client client) {
+
         mClient = client;
         mThread = new HandlerThread("camera-cap");
         mThread.start();
@@ -114,10 +115,26 @@ public class VideoCaptureFromCamera2 extends ZegoVideoCaptureDevice implements
             cameraThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
+
                     if (captureEglBase != null) {
                         captureEglBase.makeCurrent();
+                        captureDrawer.release();
                         captureDrawer = null;
                         captureEglBase.release();
+
+                        captureEglBase = null;
+                    }
+                    if (previewEglBase != null) {
+                        previewEglBase.release();
+                        previewEglBase = null;
+                    }
+                    if (previewDrawer != null) {
+                        previewDrawer.release();
+                        previewDrawer = null;
+                    }
+                    if (captureEglBase != null) {
+                        captureEglBase.release();
+
                         captureEglBase = null;
                     }
 
@@ -126,10 +143,11 @@ public class VideoCaptureFromCamera2 extends ZegoVideoCaptureDevice implements
                     mInputSurfaceTexture = null;
 
                     if (mInputTextureId != 0) {
-                        int[] textures = new int[] {mInputTextureId};
+                        int[] textures = new int[]{mInputTextureId};
                         GLES20.glDeleteTextures(1, textures, 0);
                         mInputTextureId = 0;
                     }
+
                     mDummyContext.release();
                     mDummyContext = null;
                     barrier.countDown();
@@ -199,7 +217,8 @@ public class VideoCaptureFromCamera2 extends ZegoVideoCaptureDevice implements
     protected int stopCamera() {
         final CountDownLatch barrier = new CountDownLatch(1);
         final boolean didPost = maybePostOnCameraThread(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 mIsCapture = false;
 
                 stopCaptureOnCameraThread(true /* stopHandler */);
@@ -529,7 +548,9 @@ public class VideoCaptureFromCamera2 extends ZegoVideoCaptureDevice implements
 
         if (mCam != null) {
             mCam.stopPreview();
+            mCam.setPreviewCallbackWithBuffer(null);
         }
+
         return 0;
     }
 
@@ -681,7 +702,7 @@ public class VideoCaptureFromCamera2 extends ZegoVideoCaptureDevice implements
         }
 
         if (!previewEglBase.hasSurface()) {
-            return ;
+            return;
         }
 
         if (previewDrawer == null) {
@@ -693,8 +714,8 @@ public class VideoCaptureFromCamera2 extends ZegoVideoCaptureDevice implements
 
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
             previewDrawer.drawOes(mInputTextureId, texMatrix, width, height,
-                                  0, 0,
-                                  mViewWidth, mViewHeight);
+                    0, 0,
+                    mViewWidth, mViewHeight);
             previewEglBase.swapBuffers();
             previewEglBase.detachCurrent();
         } catch (RuntimeException e) {
@@ -704,7 +725,7 @@ public class VideoCaptureFromCamera2 extends ZegoVideoCaptureDevice implements
 
     private void drawToCapture(int width, int height, float[] texMatrix, long timestamp_ns) {
         if (captureEglBase == null) {
-            return ;
+            return;
         }
 
         try {
@@ -712,8 +733,8 @@ public class VideoCaptureFromCamera2 extends ZegoVideoCaptureDevice implements
 
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
             captureDrawer.drawOes(mInputTextureId, texMatrix, width, height,
-                                  0, 0,
-                                  width, height);
+                    0, 0,
+                    width, height);
             if (mIsEgl14) {
                 ((EglBase14) captureEglBase).swapBuffers(timestamp_ns);
             } else {

@@ -20,33 +20,11 @@ public class ZegoApiManager {
 
     private ZegoLiveRoom mZegoLiveRoom = null;
 
-    private ZegoAvConfig mZegoAvConfig;
+    private ZegoAvConfig zegoAvConfig;
 
-    /**
-     * 外部渲染开关.
-     */
-    private boolean mUseExternalRender = false;
 
-    /**
-     *  测试环境开关.
-     */
-    private boolean mUseTestEvn = false;
-
-    /**
-     * 外部采集开关.
-     */
-    private boolean mUseVideoCapture = false;
-
-    /**
-     * 外部滤镜开关.
-     */
-    private boolean mUseVideoFilter = false;
-
-    private boolean mUseHardwareEncode = false;
-
-    private boolean mUseHardwareDecode = false;
-
-    private boolean mUseRateControl = false;
+    private final int[][] VIDEO_RESOLUTIONS = new int[][]{{320, 240}, {352, 288}, {640, 360},
+            {960, 540}, {1280, 720}, {1920, 1080}};
 
     private long mAppID = 0;
     private byte[] mSignKey = null;
@@ -72,18 +50,18 @@ public class ZegoApiManager {
     private void openAdvancedFunctions(){
 
         // 开启测试环境
-        if(mUseTestEvn){
+        if(PreferenceUtil.getInstance().getTestEnv(false)){
             ZegoLiveRoom.setTestEnv(true);
         }
 
         // 外部渲染
-        if(mUseExternalRender){
+        if(PreferenceUtil.getInstance().getUseExternalRender(false)){
             // 开启外部渲染
             ZegoLiveRoom.enableExternalRender(true);
         }
 
         // 外部采集
-        if(mUseVideoCapture){
+        if(PreferenceUtil.getInstance().getVideoCapture(false)){
             // 外部采集
             VideoCaptureFactoryDemo factoryDemo = new VideoCaptureFactoryDemo();
             factoryDemo.setContext(ZegoApplication.sApplicationContext);
@@ -91,7 +69,7 @@ public class ZegoApiManager {
         }
 
         // 外部滤镜
-        if(mUseVideoFilter){
+        if(PreferenceUtil.getInstance().getVideoFilter(false)){
             // 外部滤镜
             VideoFilterFactoryDemo videoFilterFactoryDemo = new VideoFilterFactoryDemo();
             ZegoLiveRoom.setVideoFilterFactory(videoFilterFactoryDemo);
@@ -136,17 +114,49 @@ public class ZegoApiManager {
             // sdk初始化失败
             Toast.makeText(ZegoApplication.sApplicationContext, "Zego SDK初始化失败!", Toast.LENGTH_LONG).show();
         } else {
-            // 初始化设置级别为"High"
-            mZegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.High);
-            mZegoLiveRoom.setAVConfig(mZegoAvConfig);
+            int liveQualityLevel=PreferenceUtil.getInstance().getLiveQuality(3);
+            switch (liveQualityLevel) {
+                case 0:
+                    zegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.VeryLow);
+                    break;
+                case 1:
+                    zegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.Low);
+                    break;
+                case 2:
+                    zegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.Generic);
+                    break;
+                case 3:
+                    zegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.High);
+                    break;
+                case 4:
+                    zegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.VeryHigh);
+                    break;
+                case 5:
+                    zegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.SuperHigh);
+                    break;
+                case 6:
+                    // 自定义设置
+                    zegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.High);
+                    int progress=PreferenceUtil.getInstance().getVideoResolutions(0);
+                    zegoAvConfig.setVideoEncodeResolution(VIDEO_RESOLUTIONS[progress][1],VIDEO_RESOLUTIONS[progress][0]);
+                    zegoAvConfig.setVideoCaptureResolution(VIDEO_RESOLUTIONS[progress][0], VIDEO_RESOLUTIONS[progress][1]);
+                    int videoFps=PreferenceUtil.getInstance().getVideoFps(0);
+                    zegoAvConfig.setVideoFPS(videoFps);
+                    int videoBitrate=PreferenceUtil.getInstance().getVideoBitrate(0);
+                    zegoAvConfig.setVideoBitrate(videoBitrate);
+                    break;
+            }
 
+            mZegoLiveRoom.setAVConfig(zegoAvConfig);
             // 开发者根据需求定制
             // 硬件编码
-            setUseHardwareEncode(mUseHardwareEncode);
+            setUseHardwareEncode(PreferenceUtil.getInstance().getHardwareEncode(false));
             // 硬件解码
-            setUseHardwareDecode(mUseHardwareDecode);
+            setUseHardwareDecode(PreferenceUtil.getInstance().getHardwareDecode(false));
             // 码率控制
-            setUseRateControl(mUseRateControl);
+            setUseRateControl(PreferenceUtil.getInstance().getEnableRateControl(false));
+
+
         }
     }
 
@@ -199,70 +209,75 @@ public class ZegoApiManager {
     }
 
     public void setZegoConfig(ZegoAvConfig config) {
-        mZegoAvConfig = config;
+        zegoAvConfig = config;
         mZegoLiveRoom.setAVConfig(config);
     }
 
 
     public ZegoAvConfig getZegoAvConfig(){
-        return  mZegoAvConfig;
+        return  zegoAvConfig;
     }
 
 
     public void setUseTestEvn(boolean useTestEvn) {
-        mUseTestEvn = useTestEvn;
+
+        PreferenceUtil.getInstance().setUseTestEvn(useTestEvn);
     }
 
     public boolean isUseExternalRender(){
-        return mUseExternalRender;
+        return PreferenceUtil.getInstance().getUseExternalRender(false);
     }
 
     public void setUseExternalRender(boolean useExternalRender){
-        mUseExternalRender = useExternalRender;
+
+        PreferenceUtil.getInstance().setExternalRender(useExternalRender);
     }
 
     public void setUseVideoCapture(boolean useVideoCapture) {
-        mUseVideoCapture = useVideoCapture;
+
+        PreferenceUtil.getInstance().setVideoCapture(useVideoCapture);
     }
 
     public void setUseVideoFilter(boolean useVideoFilter) {
-        mUseVideoFilter = useVideoFilter;
+
+        PreferenceUtil.getInstance().setVideoFilter(useVideoFilter);
     }
 
     public boolean isUseVideoCapture() {
-        return mUseVideoCapture;
+        return PreferenceUtil.getInstance().getVideoCapture(false);
     }
 
     public boolean isUseVideoFilter() {
-        return mUseVideoFilter;
+        return PreferenceUtil.getInstance().getVideoFilter(false);
     }
 
     public void setUseHardwareEncode(boolean useHardwareEncode) {
         if(useHardwareEncode){
             // 开硬编时, 关闭码率控制
-            if(mUseRateControl){
-                mUseRateControl = false;
+            if(PreferenceUtil.getInstance().getEnableRateControl(false)){
                 mZegoLiveRoom.enableRateControl(false);
+                PreferenceUtil.getInstance().setEnableRateControl(false);
             }
         }
-        mUseHardwareEncode = useHardwareEncode;
         ZegoLiveRoom.requireHardwareEncoder(useHardwareEncode);
+
+        PreferenceUtil.getInstance().setRequireHardwareEncoder(useHardwareEncode);
     }
 
     public void setUseHardwareDecode(boolean useHardwareDecode) {
-        mUseHardwareDecode = useHardwareDecode;
         ZegoLiveRoom.requireHardwareDecoder(useHardwareDecode);
+        PreferenceUtil.getInstance().setRequireHardwareDecoder(useHardwareDecode);
     }
 
     public void setUseRateControl(boolean useRateControl) {
         if(useRateControl){
             // 开码率控制时, 关硬编
-            if(mUseHardwareEncode){
-                mUseHardwareEncode = false;
+            if(PreferenceUtil.getInstance().getHardwareEncode(false)){
                 ZegoLiveRoom.requireHardwareEncoder(false);
+                PreferenceUtil.getInstance().setRequireHardwareEncoder(false);
             }
         }
-        mUseRateControl = useRateControl;
+        PreferenceUtil.getInstance().setEnableRateControl(useRateControl);
         mZegoLiveRoom.enableRateControl(useRateControl);
     }
 
@@ -275,7 +290,7 @@ public class ZegoApiManager {
     }
 
     public boolean isUseTestEvn(){
-        return mUseTestEvn;
+        return PreferenceUtil.getInstance().getTestEnv(false);
     }
 
 }

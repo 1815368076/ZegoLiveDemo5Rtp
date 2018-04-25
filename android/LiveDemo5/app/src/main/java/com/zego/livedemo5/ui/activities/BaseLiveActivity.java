@@ -101,6 +101,8 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
 
     protected String mPublishStreamID = null;
 
+    protected LinearLayout mllytHeader = null;
+
     protected boolean mIsPublishing = false;
 
     protected boolean mEnableSpeaker = true;
@@ -119,7 +121,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
 
     protected boolean mEnableMixEngine = false;
 
-    protected  boolean mEnableVirtualStereo = false;
+    protected boolean mEnableVirtualStereo = false;
 
     protected boolean mEnableReverb = false;
 
@@ -167,7 +169,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
     protected List<ZegoUserState> mListRoomUser = new ArrayList<>();
 
     protected float[] mListExposureCompensation = {-1.0f, -0.9f, -0.8f, -0.7f, -0.6f, -0.5f, -0.4f, -0.3f, -0.2f, -0.1f, 0,
-                                                   0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f};
+            0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f};
 
     protected abstract void initPublishControlText();
 
@@ -284,7 +286,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
             public void onEnableCustomFocus(boolean isEnable) {
                 recordLog(MY_SELF + ": call onEnableCustomFocus");
                 mEnableCustomFocus = isEnable;
-                if(!mEnableCustomFocus){
+                if (!mEnableCustomFocus) {
                     ZegoCamera.setCamFocusMode(ZegoCameraFocusMode.CONTINUOUS_VIDEO, ZegoConstants.PublishChannelIndex.MAIN);
                 }
 
@@ -294,10 +296,9 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
             public void onEnableCustomExposure(boolean isEnable) {
                 recordLog(MY_SELF + ": call onEnableCustomExposure");
                 mEnableCustomExposure = isEnable;
-                if(mEnableCustomExposure){
+                if (mEnableCustomExposure) {
                     ZegoCamera.setCamExposureMode(ZegoCameraExposureMode.CUSTOM, ZegoConstants.PublishChannelIndex.MAIN);
-                }
-                else{
+                } else {
                     ZegoCamera.setCamExposureMode(ZegoCameraExposureMode.AUTO, ZegoConstants.PublishChannelIndex.MAIN);
                 }
 
@@ -339,6 +340,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
     protected void initViews(Bundle savedInstanceState) {
 
         mTvSpeaker = (TextView) findViewById(R.id.tv_speaker);
+        mllytHeader = (LinearLayout) findViewById(R.id.llyt_header);
         mTvPublishSetting = (TextView) findViewById(R.id.tv_publish_settings);
         mTvPublisnControl = (TextView) findViewById(R.id.tv_publish_control);
         // 初始化推流控制按钮
@@ -372,11 +374,10 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         vlBigView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(!mEnableCustomFocus)
+                if (!mEnableCustomFocus)
                     return false;
 
-                switch(event.getAction())
-                {
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         List<Float> point = focusPointNormalize(event.getX(), event.getY());
                         ZegoCamera.setCamFocusPoint(point.get(0), point.get(1), ZegoConstants.PublishChannelIndex.MAIN);
@@ -409,6 +410,8 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         mTvTag = (TextView) findViewById(R.id.tv_tag);
 
         mRlytControlHeader.bringToFront();
+
+        mTvPublisnControl.setEnabled(false);
     }
 
     private void initViewList(final ViewLive vlBigView) {
@@ -592,9 +595,20 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         }
     }
 
+    protected void setEnabled(boolean value) {
+
+        mTvPublisnControl.setEnabled(value);
+
+    }
+
+
     protected void publishStream() {
 
         if (TextUtils.isEmpty(mPublishStreamID)) {
+            return;
+        }
+        if (isStreamExisted(mPublishStreamID)) {
+            Toast.makeText(this, "流已存在", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -644,6 +658,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
      * 开始发布.
      */
     protected void startPublish() {
+
         // 6.0及以上的系统需要在运行时申请CAMERA RECORD_AUDIO权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
@@ -682,7 +697,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         }
     }
 
-    private boolean isStreamExisted(String streamID) {
+    public boolean isStreamExisted(String streamID) {
         if (TextUtils.isEmpty(streamID)) {
             return true;
         }
@@ -735,7 +750,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
 
     protected void logout() {
 
-        mEnableFrontCam = true;
+        //  mEnableFrontCam = true;
         mZegoLiveRoom.setFrontCam(mEnableFrontCam);
 
         mEnableLoopback = false;
@@ -754,7 +769,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         ZegoCamera.setCamExposureMode(ZegoCameraExposureMode.AUTO, ZegoConstants.PublishChannelIndex.MAIN);
 
 
-        if(!mEnableSpeaker)
+        if (!mEnableSpeaker)
             mZegoLiveRoom.enableSpeaker(true);
 
         if (mIsPublishing) {
@@ -885,6 +900,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         setPublishEnabled();
 
         mRlytControlHeader.bringToFront();
+
     }
 
     /**
@@ -1016,7 +1032,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
     /**
      * 用户掉线.
      */
-    protected void handleDisconnect(int errorCode, String roomID){
+    protected void handleDisconnect(int errorCode, String roomID) {
         recordLog(MY_SELF + ": onDisconnected, roomID:" + roomID + ", errorCode:" + errorCode);
     }
 
@@ -1024,22 +1040,51 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
      * 用户更新.
      */
     protected void handleUserUpdate(ZegoUserState[] listUser, int updateType) {
-       if(listUser != null){
-           if(updateType == ZegoIM.UserUpdateType.Total){
-               mListRoomUser.clear();
-           }
+        if (listUser != null) {
+            if (updateType == ZegoIM.UserUpdateType.Total) {
+                mListRoomUser.clear();
+            }
 
-           if(updateType == ZegoIM.UserUpdateType.Increase){
-               for(ZegoUserState zegoUserState : listUser) {
-                   if(zegoUserState.updateFlag == ZegoIM.UserUpdateFlag.Added){
+            if (updateType == ZegoIM.UserUpdateType.Increase) {
+                for (ZegoUserState zegoUserState : listUser) {
+                    if (zegoUserState.updateFlag == ZegoIM.UserUpdateFlag.Added) {
                         mListRoomUser.add(zegoUserState);
-                   }else if(zegoUserState.updateFlag == ZegoIM.UserUpdateFlag.Deleted){
+                    } else if (zegoUserState.updateFlag == ZegoIM.UserUpdateFlag.Deleted) {
                         mListRoomUser.remove(zegoUserState);
-                   }
-               }
-           }
-       }
+                    }
+                }
+            }
+
+            for (ZegoUserState zegoUserState : listUser) {
+                if (zegoUserState.roomRole == ZegoConstants.RoomRole.Anchor && zegoUserState.updateFlag == ZegoIM.UserUpdateFlag.Deleted) {
+
+                    AnchorExitDialog(getString(R.string.dialog_stop_live_title),getString(R.string.dialog_anchor_stop_live));
+
+                }
+
+            }
+        }
+
     }
+
+
+
+
+    protected void AnchorExitDialog(String title ,String mMessage){
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(mMessage)
+
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .create().show();
+    }
+
+
 
     /**
      * 房间聊天消息.
@@ -1069,8 +1114,8 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         }
     }
 
-    protected void doSendRoomMsg(final String msg){
-        if(TextUtils.isEmpty(msg)){
+    protected void doSendRoomMsg(final String msg) {
+        if (TextUtils.isEmpty(msg)) {
             Toast.makeText(this, getString(R.string.message_can_not_be_empty), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -1080,7 +1125,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         roomMessage.fromUserName = getString(R.string.me);
         roomMessage.content = msg;
         roomMessage.messageType = ZegoIM.MessageType.Text;
-        roomMessage.messageCategory =  ZegoIM.MessageCategory.Chat;
+        roomMessage.messageCategory = ZegoIM.MessageCategory.Chat;
         roomMessage.messagePriority = ZegoIM.MessagePriority.Default;
 
         mCommentsAdapter.addMsg(roomMessage);
@@ -1178,10 +1223,10 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
     /**
      * 获取流地址.
      */
-    protected List<String> getShareUrlList(HashMap<String, Object> info){
+    protected List<String> getShareUrlList(HashMap<String, Object> info) {
         List<String> listUrls = new ArrayList<>();
 
-        if(info != null){
+        if (info != null) {
             String[] hlsList = (String[]) info.get(ZegoConstants.StreamKey.HLS_URL_LST);
             if (hlsList != null && hlsList.length > 0) {
                 listUrls.add(hlsList[0]);
@@ -1196,12 +1241,12 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
     }
 
     /**
-     *  归一化屏幕获取的坐标点(自定义对焦要用到)
+     * 归一化屏幕获取的坐标点(自定义对焦要用到)
      */
     protected List<Float> focusPointNormalize(float fx, float fy) {
         List<Float> normalizePoint = new ArrayList<>();
 
-        if(mListViewLive.size() > 0) {
+        if (mListViewLive.size() > 0) {
             ViewLive mLiveView = mListViewLive.get(0);
 
             float width = mLiveView.getWidth();

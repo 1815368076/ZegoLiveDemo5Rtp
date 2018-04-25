@@ -77,9 +77,7 @@ public class AboutZegoActivity extends AbsBaseActivity {
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webView.getSettings().setSupportMultipleWindows(true);
         webView.setWebViewClient(new WebViewClient());
-
         webView.loadUrl("https://www.zego.im");
-
 
     }
 

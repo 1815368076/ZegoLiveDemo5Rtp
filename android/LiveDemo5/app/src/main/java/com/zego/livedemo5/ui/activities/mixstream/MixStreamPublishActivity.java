@@ -90,6 +90,8 @@ public class MixStreamPublishActivity extends BasePublishActivity {
         mZegoLiveRoom.setZegoLivePublisherCallback(new IZegoLivePublisherCallback() {
             @Override
             public void onPublishStateUpdate(int stateCode, String streamID, HashMap<String, Object> streamInfo) {
+                //按钮允许点击
+                setEnabled(true);
                 //推流状态更新
                 if (stateCode == 0) {
                     handlePublishSuccMix(streamID, streamInfo);
@@ -352,6 +354,8 @@ public class MixStreamPublishActivity extends BasePublishActivity {
 
             if(listUrls.size() == 0){
                 recordLog("混流失败...errorCode: %d, seq: %d", errorCode, seq);
+            }else{
+                recordLog("混流成功 地址: %s; seq: %d", listUrls.get(1), seq);
             }
 
             if(viewLivePublish != null && listUrls.size() >= 2){

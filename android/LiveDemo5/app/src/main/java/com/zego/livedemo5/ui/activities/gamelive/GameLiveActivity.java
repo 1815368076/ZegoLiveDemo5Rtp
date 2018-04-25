@@ -144,6 +144,7 @@ public  class GameLiveActivity extends AppCompatActivity {
         mZegoLiveRoom.setZegoLivePublisherCallback(new IZegoLivePublisherCallback() {
             @Override
             public void onPublishStateUpdate(int stateCode, String streamID, HashMap<String, Object> streamInfo) {
+
                 //推流状态更新
                 if (stateCode == 0) {
                     mListUrls = new ArrayList<>();

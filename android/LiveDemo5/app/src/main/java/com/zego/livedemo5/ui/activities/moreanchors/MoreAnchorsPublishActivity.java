@@ -166,6 +166,9 @@ public class MoreAnchorsPublishActivity extends BasePublishActivity {
         mZegoLiveRoom.setZegoLivePublisherCallback(new IZegoLivePublisherCallback() {
             @Override
             public void onPublishStateUpdate(int stateCode, String streamID, HashMap<String, Object> streamInfo) {
+
+                //按钮允许点击
+                setEnabled(true);
                 //推流状态更新
                 if(stateCode == 0){
                     if (!TextUtils.isEmpty(streamID) && streamID.equals(mAuxPublishStreamID)){
@@ -234,6 +237,8 @@ public class MoreAnchorsPublishActivity extends BasePublishActivity {
 
             @Override
             public void onRecvEndJoinLiveCommand(String fromUserId, String fromUserName, String roomId) {
+
+
             }
 
             @Override

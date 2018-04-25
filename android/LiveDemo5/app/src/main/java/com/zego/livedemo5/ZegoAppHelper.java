@@ -70,6 +70,18 @@ public class ZegoAppHelper {
         return appId == RTMP_APP_ID;
     }
 
+    static public boolean isAppIdVersion(long appId){
+        if (isRtmpProduct(appId)) {
+            return true;
+        } else if (isUdpProduct(appId)) {
+            return true;
+        } else if (isInternationalProduct(appId)) {
+            return true;
+        }
+        return false;
+    }
+
+
     static public byte[] requestSignKey(long appId) {
         if (isRtmpProduct(appId)) {
             return RTMP_SIGN_KEY;
