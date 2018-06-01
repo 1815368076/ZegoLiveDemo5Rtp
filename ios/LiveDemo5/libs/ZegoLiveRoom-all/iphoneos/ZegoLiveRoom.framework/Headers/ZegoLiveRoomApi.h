@@ -426,7 +426,7 @@ typedef void(^ZegoCustomCommandBlock)(int errorCode, NSString *roomID);
  @param type 更新类型，详见 ZegoStreamType 定义
  @param streamList 直播流列表，列表中包含的是变更流的信息，非房间全部流信息
  @param roomID 房间 ID
- @discussion 房间内增加流、删除流，均会触发此更新。建议对流增加和流删除分别采取不同的处理
+ @discussion 房间内增加流、删除流，均会触发此更新。主播推流，自己不会收到此回调，房间内其他成员会收到。建议对流增加和流删除分别采取不同的处理。
  */
 - (void)onStreamUpdated:(int)type streams:(NSArray<ZegoStream*> *)streamList roomID:(NSString *)roomID;
 
@@ -492,7 +492,7 @@ typedef enum : NSUInteger {
 /**
  设备事件回调
  
- @param deviceName 设备名，支持摄像头和麦克风设备，参考 ZegoLiveRoomApiDefines.h 中定义
+ @param deviceName 设备名，支持摄像头和麦克风设备，参考 zego-api-defines-oc.h 中定义
  @param errorCode 错误码。设备无错误不会回调，目前出错后的错误码均为 -1
  @discussion 调用 [ZegoLiveRoomApi -setDeviceEventDelegate] 设置设备事件代理对象后，在此回调中获取设备状态或错误
  */

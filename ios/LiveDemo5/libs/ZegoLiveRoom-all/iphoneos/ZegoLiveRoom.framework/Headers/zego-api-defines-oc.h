@@ -17,8 +17,10 @@
 #define ZEGO_EXTERN     extern
 #endif
 
-ZEGO_EXTERN NSString *const kZegoStreamIDKey;           ///< 流ID，值为 NSString
-ZEGO_EXTERN NSString *const kZegoMixStreamIDKey;        ///< 混流ID，值为 NSString
+/** 流ID，值为 NSString */
+ZEGO_EXTERN NSString *const kZegoStreamIDKey;
+/** 混流ID，值为 NSString */
+ZEGO_EXTERN NSString *const kZegoMixStreamIDKey;
 
 /** 流信息列表项 */
 /** rtmp 播放 url 列表，值为 <NSArrayNSString *> */
@@ -33,8 +35,8 @@ ZEGO_EXTERN NSString *const kZegoFlvUrlListKey;
 ZEGO_EXTERN NSString *const kZegoDeviceCameraName;
 /** 麦克风设备 */
 ZEGO_EXTERN NSString *const kZegoDeviceMicrophoneName;
-
-ZEGO_EXTERN NSString *const kMixStreamAudioOutputFormat; ///< 混流输出格式，值为 NSNumber，可选 {0, 1}
+/** 混流输出格式，值为 NSNumber，可选 {0, 1} */
+ZEGO_EXTERN NSString *const kMixStreamAudioOutputFormat;
 
 /** 自定义转推 RTMP 地址 */
 ZEGO_EXTERN NSString *const kPublishCustomTarget;
@@ -75,6 +77,24 @@ typedef enum {
     /** 旋转 270 度 */
     CAPTURE_ROTATE_270  = 270
 } CAPTURE_ROTATE;
+
+/** 分层编码 */
+typedef enum {
+    /** 不支持分层编码 */
+    VIDEO_CODEC_DEFAULT = 0,
+    /** 分层编码 要达到和VIDEO_CODEC_DEFAULT相同的编码质量，建议码率和VIDEO_CODEC_DEFAULT相比增加20%左右 */
+    VIDEO_CODEC_MULTILAYER = 1
+} ZegoVideoCodecAvc;
+
+/** 视频分层类型 */
+typedef enum {
+    /**< 根据网络状态选择图层  */
+    VideoStreamLayer_Auto = -1,
+    /**< 指定拉基本层（小分辨率） */
+    VideoStreamLayer_BaseLayer = 0,
+    /**< 指定拉扩展层（大分辨率)  */
+    VideoStreamLayer_ExtendLayer = 1
+} VideoStreamLayer;
 
 /** 远程视图序号 */
 typedef enum {
