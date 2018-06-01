@@ -8,7 +8,7 @@ import com.zego.zegoavkit2.videofilter.ZegoVideoFilterFactory;
  */
 
 public class VideoFilterFactoryDemo extends ZegoVideoFilterFactory {
-    private int mode = 5;
+    private int mode = 1;
     private ZegoVideoFilter mFilter = null;
 
     public ZegoVideoFilter create() {

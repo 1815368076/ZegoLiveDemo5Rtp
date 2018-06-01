@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -123,6 +123,10 @@ public class ViewLive extends RelativeLayout {
         mActivityHost = activity;
     }
 
+    public void destroy(){
+        mActivityHost = null;
+    }
+
     public void setShareToQQCallback(IShareToQQCallback shareToQQCallback) {
         mShareToQQCallback = shareToQQCallback;
     }
@@ -156,8 +160,8 @@ public class ViewLive extends RelativeLayout {
                     if (mIsPlayView && mZegoLiveRoom != null && mActivityHost != null) {
 
                         mZegoLiveRoom.setViewMode(mZegoVideoViewMode, mStreamID);
-
-                        int currentOrientation = mActivityHost.getWindowManager().getDefaultDisplay().getRotation();
+                        WindowManager wm =(WindowManager)mActivityHost.getSystemService(Context.WINDOW_SERVICE);
+                        int currentOrientation = wm.getDefaultDisplay().getRotation();
                         if (mZegoVideoViewMode == ZegoVideoViewMode.ScaleAspectFit) {
                             if (currentOrientation == Surface.ROTATION_90 || currentOrientation == Surface.ROTATION_270) {
                                 mZegoLiveRoom.setViewRotation(Surface.ROTATION_90, mStreamID);

@@ -14,13 +14,14 @@ import com.zego.livedemo5.utils.PreferenceUtil;
 /**
  * des: 自定义Application.
  */
-public class ZegoApplication extends Application implements Thread.UncaughtExceptionHandler{
+public class ZegoApplication extends Application implements Thread.UncaughtExceptionHandler {
 
     public static final String TAG = ZegoApplication.class.getSimpleName();
 
     public static Context sApplicationContext;
 
     Thread.UncaughtExceptionHandler mDefaultHandler;
+
 
     @Override
     public void onCreate() {
@@ -30,7 +31,6 @@ public class ZegoApplication extends Application implements Thread.UncaughtExcep
 
         // 初始化sdk
         ZegoApiManager.getInstance().initSDK();
-
 
         // bugly初始化用户id
         CrashReport.initCrashReport(getApplicationContext(), "2da9d0c1ef", false);
@@ -45,7 +45,7 @@ public class ZegoApplication extends Application implements Thread.UncaughtExcep
         LiveQualityLogger.openAndReset();
     }
 
-    public Context getApplicationContext(){
+    public Context getApplicationContext() {
         return sApplicationContext;
     }
 

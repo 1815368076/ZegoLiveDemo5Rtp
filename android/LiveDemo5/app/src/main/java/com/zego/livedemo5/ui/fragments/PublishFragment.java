@@ -25,6 +25,7 @@ import android.widget.ToggleButton;
 import com.zego.livedemo5.MainActivity;
 import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
+import com.zego.livedemo5.ui.activities.externalrender.VideoRenderer;
 import com.zego.livedemo5.ui.activities.gamelive.GameLiveActivity;
 import com.zego.livedemo5.ui.activities.mixstream.MixStreamPublishActivity;
 import com.zego.livedemo5.ui.activities.moreanchors.MoreAnchorsPublishActivity;
@@ -70,6 +71,7 @@ public class PublishFragment extends AbsBaseFragment implements MainActivity.OnR
     @Bind(R.id.textureView)
     public TextureView textureView;
 
+    private VideoRenderer videoRenderer;
 
     private int mSelectedBeauty = 0;
 
@@ -106,6 +108,9 @@ public class PublishFragment extends AbsBaseFragment implements MainActivity.OnR
 
     @Override
     protected void initViews() {
+
+
+
         ArrayAdapter<String> beautyAdapter = new ArrayAdapter<>(mParentActivity, R.layout.item_spinner, mResources.getStringArray(R.array.beauties));
         spBeauties.setAdapter(beautyAdapter);
         spBeauties.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -189,6 +194,7 @@ public class PublishFragment extends AbsBaseFragment implements MainActivity.OnR
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        stopPreview();
                         startPreview();
                     }
                 }, 500);
@@ -316,23 +322,44 @@ public class PublishFragment extends AbsBaseFragment implements MainActivity.OnR
         rect.bottom = 160;
         ZegoLiveRoom.setPreviewWaterMarkRect(rect);
 
-        textureView.setVisibility(View.VISIBLE);
-        mZegoLiveRoom.setPreviewView(textureView);
-        mZegoLiveRoom.setPreviewViewMode(ZegoVideoViewMode.ScaleAspectFill);
-        mZegoLiveRoom.startPreview();
+        mZegoLiveRoom.enableMic(true);
+        mZegoLiveRoom.enableCamera(true);
 
+        textureView.setVisibility(View.VISIBLE);
+
+        if (PreferenceUtil.getInstance().getUseExternalRender(false)) {
+            if (videoRenderer == null) {
+                videoRenderer = new VideoRenderer();
+                videoRenderer.init();
+                videoRenderer.setRendererView(textureView);
+                // 开启外部渲染
+            }
+            mZegoLiveRoom.setZegoExternalRenderCallback(videoRenderer);
+        } else {
+            if(videoRenderer != null){
+                videoRenderer.uninit();
+                videoRenderer = null;
+            }
+
+            mZegoLiveRoom.setPreviewView(textureView);
+        }
+        mZegoLiveRoom.startPreview();
+        mZegoLiveRoom.setPreviewViewMode(ZegoVideoViewMode.ScaleAspectFill);
         mZegoLiveRoom.setFrontCam(tbEnableFrontCam.isChecked());
         mZegoLiveRoom.enableTorch(tbEnableTorch.isChecked());
         // 设置美颜
         mZegoLiveRoom.enableBeautifying(ZegoRoomUtil.getZegoBeauty(mSelectedBeauty));
         // 设置滤镜
         mZegoLiveRoom.setFilter(mSelectedFilter);
+
+
     }
 
     private void stopPreview() {
         textureView.setVisibility(View.INVISIBLE);
         mZegoLiveRoom.stopPreview();
         mZegoLiveRoom.setPreviewView(null);
+        mZegoLiveRoom.setZegoExternalRenderCallback(null);
     }
 
     @Override
@@ -342,15 +369,13 @@ public class PublishFragment extends AbsBaseFragment implements MainActivity.OnR
         startPreview();
     }
 
-    public void refresh(){
+    public void refresh() {
         stopPreview();
         ZegoApiManager.getInstance().releaseSDK();
-        long newAppId= PreferenceUtil.getInstance().getAppId();
-        byte[] newSignKey=PreferenceUtil.getInstance().getAppKey();
+        long newAppId = PreferenceUtil.getInstance().getAppId();
+        byte[] newSignKey = PreferenceUtil.getInstance().getAppKey();
         ZegoApiManager.getInstance().reInitSDK(newAppId, newSignKey);
         startPreview();
-        
-
     }
 
     /**
@@ -370,9 +395,9 @@ public class PublishFragment extends AbsBaseFragment implements MainActivity.OnR
                 startPreview();
             }
         } else {
-           
-                refresh();
-          
+
+            refresh();
+
         }
     }
 }

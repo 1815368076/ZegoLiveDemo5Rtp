@@ -37,6 +37,7 @@ import com.zego.livedemo5.R;
 import com.zego.livedemo5.ZegoApiManager;
 import com.zego.livedemo5.constants.Constants;
 import com.zego.livedemo5.ui.activities.base.AbsBaseLiveActivity;
+import com.zego.livedemo5.ui.activities.externalrender.VideoRenderer;
 import com.zego.livedemo5.ui.adapters.CommentsAdapter;
 import com.zego.livedemo5.ui.widgets.PublishSettingsPannel;
 import com.zego.livedemo5.ui.widgets.ViewLive;
@@ -49,10 +50,12 @@ import com.zego.zegoavkit2.audioprocessing.ZegoAudioReverbMode;
 import com.zego.zegoavkit2.camera.ZegoCamera;
 import com.zego.zegoavkit2.camera.ZegoCameraFocusMode;
 import com.zego.zegoavkit2.camera.ZegoCameraExposureMode;
+import com.zego.zegoavkit2.soundlevel.ZegoSoundLevelMonitor;
 import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.callback.im.IZegoRoomMessageCallback;
 import com.zego.zegoliveroom.constants.ZegoAvConfig;
 import com.zego.zegoliveroom.constants.ZegoConstants;
+import com.zego.zegoliveroom.constants.ZegoFilter;
 import com.zego.zegoliveroom.constants.ZegoIM;
 import com.zego.zegoliveroom.constants.ZegoVideoViewMode;
 import com.zego.zegoliveroom.entity.AuxData;
@@ -82,6 +85,8 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
     protected LinkedList<ViewLive> mListViewLive = new LinkedList<>();
 
     protected TextView mTvPublisnControl = null;
+
+    protected VideoRenderer videoRenderer = null;
 
     protected TextView mTvPublishSetting = null;
 
@@ -646,8 +651,23 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         mZegoLiveRoom.setAudioChannelCount(2);
 
         // 开始播放
-        mZegoLiveRoom.setPreviewView(freeViewLive.getTextureView());
-        mZegoLiveRoom.startPreview();
+        if(PreferenceUtil.getInstance().getUseExternalRender(false)){
+            if(videoRenderer == null){
+                videoRenderer = new VideoRenderer();
+            }
+            // 开启外部渲染
+            videoRenderer.init();
+            videoRenderer.setRendererView(freeViewLive.getTextureView());
+            mZegoLiveRoom.setZegoExternalRenderCallback(videoRenderer);
+        }else{
+            mZegoLiveRoom.setPreviewView(freeViewLive.getTextureView());
+            mZegoLiveRoom.startPreview();
+        }
+
+        if(PreferenceUtil.getInstance().getVideoFilter(false)){
+            mZegoLiveRoom.setFilter(ZegoFilter.Wine,ZegoConstants.PublishChannelIndex.MAIN);
+        }
+
         mZegoLiveRoom.enableMic(mEnableMic);
         mZegoLiveRoom.enableCamera(mEnableCamera);
         mZegoLiveRoom.startPublishing(mPublishStreamID, mPublishTitle, mPublishFlag);
@@ -683,6 +703,12 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
             mZegoLiveRoom.stopPreview();
             mZegoLiveRoom.stopPublishing();
             mZegoLiveRoom.setPreviewView(null);
+
+            mZegoLiveRoom.setZegoExternalRenderCallback(null);
+            if(videoRenderer != null){
+                videoRenderer.uninit();
+
+            }
         }
     }
 
@@ -794,6 +820,7 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
             finish();
         }
 
+        ZegoSoundLevelMonitor.getInstance().stop();
     }
 
 
@@ -1171,10 +1198,13 @@ public abstract class BaseLiveActivity extends AbsBaseLiveActivity {
         mZegoLiveRoom.setZegoLivePublisherCallback(null);
         mZegoLiveRoom.setZegoLivePlayerCallback(null);
         mZegoLiveRoom.setZegoRoomCallback(null);
-
         // 退出房间
         mZegoLiveRoom.logoutRoom();
         LiveQualityLogger.close();
+        for (ViewLive viewLive:mListViewLive){
+            viewLive.destroy();
+        }
+
     }
 
 

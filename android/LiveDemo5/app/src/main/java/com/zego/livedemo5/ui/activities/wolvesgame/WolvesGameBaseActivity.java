@@ -181,12 +181,19 @@ public abstract class WolvesGameBaseActivity extends AbsBaseLiveActivity {
     @Override
     protected void initViews(Bundle savedInstanceState) {
         int spanCount = 4;
+        if(mJoinedUsers == null) {
+            mJoinedUsers = (RecyclerView)findViewById(R.id.small_view_container);
+        }
+
         mJoinedUsers.addItemDecoration(new GridSpacingItemDecoration(spanCount, 10, false));
         mJoinedUsers.setAdapter(mRecyclerAdapter);
 
         GridLayoutManager mgr = new GridLayoutManager(this, spanCount);
         mJoinedUsers.setLayoutManager(mgr);
 
+        if(toolBar == null){
+            toolBar = (Toolbar) findViewById(R.id.toolbar);
+        }
         setSupportActionBar(toolBar);
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,10 +202,21 @@ public abstract class WolvesGameBaseActivity extends AbsBaseLiveActivity {
             }
         });
 
+        if(mBtnSpeaking == null){
+            mBtnSpeaking = (Button) findViewById(R.id.btn_start_or_stop_speaking);
+        }
         mBtnSpeaking.setEnabled(false);
+        if(mInTurnSpeaking == null){
+            mInTurnSpeaking = (TextView) findViewById(R.id.in_turn_speaking);
+        }
         mInTurnSpeaking.setEnabled(false);
+        if(mEndInTurnSpeaking == null){
+            mEndInTurnSpeaking = (TextView) findViewById(R.id.end_in_turn_speaking);
+        }
         mEndInTurnSpeaking.setEnabled(false);
-
+        if(mTextRole == null){
+            mTextRole = (TextView) findViewById(R.id.wolf_role);
+        }
         mTextRole.setVisibility(View.INVISIBLE);
     }
 

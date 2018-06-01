@@ -182,6 +182,7 @@ public abstract class BasePlayActivity extends BaseLiveActivity {
      * 请求连麦.
      */
     protected void requestJoinLive() {
+        mTvPublisnControl.setEnabled(false);
         mZegoLiveRoom.requestJoinLive(new IZegoResponseCallback() {
             @Override
             public void onResponse(int result, String fromUserID, String fromUserName) {
@@ -217,6 +218,7 @@ public abstract class BasePlayActivity extends BaseLiveActivity {
                                     }).create();
                     dialogNotify.show();
                 }
+                mTvPublisnControl.setEnabled(true);
             }
         });
     }

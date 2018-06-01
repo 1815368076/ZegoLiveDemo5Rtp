@@ -27,6 +27,10 @@ public class VideoFilterSurfaceTextureDemo extends ZegoVideoFilter {
         mFilter.init();
         mFilter.setCustomizedFilter(2);
 
+        // 展示计时器时，使用美颜
+        mFilter.setPolishFactor(4.0f);
+        mFilter.setPolishStep(4.0f);
+        mFilter.setWhitenFactor(4.0f);
         mWidth = 0;
         mHeight = 0;
     }
